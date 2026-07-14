@@ -471,9 +471,22 @@ def _render_v3_vencedor_subpanel(
         df_a_season = df_a.copy()
         df_b_season = df_b.copy()
 
-    # H2H
-    df_h2h = df_a_season[df_a_season["opponent"].astype(str) == str(team_b)].copy() \
-        if "opponent" in df_a_season.columns else pd.DataFrame()
+    # H2H do ANO INTEIRO em todas as ligas (par-a-par; recorte de liga escondia
+    # confrontos em torneios fora da liga doméstica — fix 2026-07-13, mesmo do
+    # painel de mercados).
+    try:
+        _h2h_all = team_games
+        if "year" in _h2h_all.columns and "date" in df_a_season.columns and len(df_a_season):
+            _yr_ref = pd.to_datetime(df_a_season["date"], errors="coerce").dt.year.max()
+            if pd.notna(_yr_ref):
+                _h2h_all = _h2h_all[pd.to_numeric(_h2h_all["year"], errors="coerce") == int(_yr_ref)]
+        df_h2h = _h2h_all[
+            (_h2h_all["team"].astype(str) == str(team_a))
+            & (_h2h_all["opponent"].astype(str) == str(team_b))
+        ].copy()
+    except (TypeError, ValueError, KeyError):
+        df_h2h = df_a_season[df_a_season["opponent"].astype(str) == str(team_b)].copy() \
+            if "opponent" in df_a_season.columns else pd.DataFrame()
 
     # ---------- 3-card panel: OVERALL / RECENT FORM / PAST FACEOFFS ----------
     def _cyan_banner(title: str) -> str:
@@ -834,6 +847,7 @@ def _render_kills_line_content(
         # Handicap: a linha digitada (ex.: -7.5) vira cobertura POR TIME nos 3
         # cards (cobriu X/N com barra), em vez de leitura de total.
         handicap=(str(market_key) == "handicaps"),
+        binary=bool(binary_market),
     )
 
     # ---------- Análise da linha ----------
@@ -895,18 +909,24 @@ def _render_kills_line_content(
     )
     _def_a = default_group_label_for_archetype(archetype_b.archetype)  # vs opponent B's group
     _def_b = default_group_label_for_archetype(archetype_a.archetype)  # vs opponent A's group
+    # Semear SÓ via session_state (sem index=): default + seed juntos disparam
+    # o warning "created with a default value but also had its value set".
+    _key_ga = f"la_oppgrp_a_{market_key}_{line_idx}"
+    _key_gb = f"la_oppgrp_b_{market_key}_{line_idx}"
+    if str(session_state.get(_key_ga, "") or "") not in OPPONENT_GROUP_CHOICES:
+        session_state[_key_ga] = _def_a if _def_a in OPPONENT_GROUP_CHOICES else OPPONENT_GROUP_CHOICES[2]
+    if str(session_state.get(_key_gb, "") or "") not in OPPONENT_GROUP_CHOICES:
+        session_state[_key_gb] = _def_b if _def_b in OPPONENT_GROUP_CHOICES else OPPONENT_GROUP_CHOICES[2]
     _grp_cols = st.columns(2)
     with _grp_cols[0]:
         grp_a = st.selectbox(
             f"Grupo de adversário · {team_a}", OPPONENT_GROUP_CHOICES,
-            index=OPPONENT_GROUP_CHOICES.index(_def_a) if _def_a in OPPONENT_GROUP_CHOICES else 2,
-            key=f"la_oppgrp_a_{market_key}_{line_idx}",
+            key=_key_ga,
         )
     with _grp_cols[1]:
         grp_b = st.selectbox(
             f"Grupo de adversário · {team_b}", OPPONENT_GROUP_CHOICES,
-            index=OPPONENT_GROUP_CHOICES.index(_def_b) if _def_b in OPPONENT_GROUP_CHOICES else 2,
-            key=f"la_oppgrp_b_{market_key}_{line_idx}",
+            key=_key_gb,
         )
     profile_a = build_contextual_opponent_profile(
         focal_team=team_a, focal_team_df=df_a_context_all,
@@ -1383,11 +1403,22 @@ def _render_v3_kills_subpanel(
         if _xl_league_b:
             df_b_context_season = _team_year_in_league(team_b, _xl_league_b)
 
-    # H2H: A's games vs B — re-apply Mapa filter explicitly as a safety net
-    if "opponent" in df_a_context_season.columns:
-        df_h2h_year = df_a_context_season[df_a_context_season["opponent"].astype(str) == str(team_b)].copy()
+    # H2H: A's games vs B — do ANO INTEIRO em TODAS as ligas. H2H é par-a-par:
+    # derivar do recorte de liga escondia confrontos jogados em torneio fora da
+    # liga doméstica (visto 2026-07-13: Vici×PlayTime com 2 H2H reais e o card
+    # dizendo "sem H2H" no cross-league). Mesma regra do usuário no Resumo.
+    try:
+        _h2h_base = _augment_with_total_columns(team_games.copy())
+        try:
+            _h2h_base = _h2h_base[pd.to_numeric(_h2h_base.get("year"), errors="coerce") == int(v3_year)]
+        except (TypeError, ValueError):
+            pass
+        df_h2h_year = _h2h_base[
+            (_h2h_base["team"].astype(str) == str(team_a))
+            & (_h2h_base["opponent"].astype(str) == str(team_b))
+        ].copy()
         df_h2h_year = _filter_by_map(df_h2h_year)
-    else:
+    except (TypeError, ValueError, KeyError):
         df_h2h_year = pd.DataFrame()
     df_h2h_full = df_h2h_year.copy()
 

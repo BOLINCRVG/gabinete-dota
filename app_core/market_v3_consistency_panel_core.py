@@ -205,6 +205,7 @@ def _render_game_lines_with_tags(
     league_avg: float,
     line: Optional[float],
     n: int = 10,
+    binary: bool = False,
 ) -> None:
     """Render a recent-games list with optional contextual tag per row."""
     if df_recent is None or df_recent.empty or str(col_name) not in df_recent.columns:
@@ -216,6 +217,19 @@ def _render_game_lines_with_tags(
     for _, row in d.iterrows():
         opp = str(row.get("opponent", "") or "-")
         v = pd.to_numeric(pd.Series([row.get(col_name)]), errors="coerce").iloc[0]
+        if binary:
+            # Marcação sim/não (ex.: Megacreeps): só ✓/✗ — over/under de 0.5
+            # não faz sentido para evento binário (pedido 2026-07-12).
+            aconteceu = pd.notna(v) and float(v) >= 0.5
+            cor = "#22c55e" if aconteceu else "#ef4444"
+            simbolo = "✓" if aconteceu else "✗"
+            rows_html.append(
+                f"<div style='padding:3px 0;'>"
+                f"<span style='opacity:0.85;'>{escape(opp)}</span>"
+                f"<span style='margin-left:8px;font-weight:800;color:{cor};'>{simbolo}</span>"
+                f"</div>"
+            )
+            continue
         v_str = metric_formatter(str(col_name), v, 0)
         # Build tag
         tag = _classify_game_signal(
@@ -246,6 +260,7 @@ def _render_h2h_lines_with_tags(
     league_avg: float,
     line: Optional[float],
     n: int = 10,
+    binary: bool = False,
 ) -> None:
     """Render H2H games (vs the same opponent across years if available)."""
     if df_h2h is None or df_h2h.empty or str(col_name) not in df_h2h.columns:
@@ -258,6 +273,19 @@ def _render_h2h_lines_with_tags(
         opp = str(row.get("opponent", "") or "-")
         v = pd.to_numeric(pd.Series([row.get(col_name)]), errors="coerce").iloc[0]
         date_str = str(row.get("date", "") or "")[:10]
+        if binary:
+            # Marcação sim/não: só ✓/✗ + data (sem over/under de 0.5).
+            aconteceu = pd.notna(v) and float(v) >= 0.5
+            cor = "#22c55e" if aconteceu else "#ef4444"
+            simbolo = "✓" if aconteceu else "✗"
+            rows_html.append(
+                f"<div style='padding:3px 0;'>"
+                f"<span style='font-weight:800;color:{cor};'>{simbolo}</span>"
+                f"<span style='margin:0 6px;opacity:0.4;'>·</span>"
+                f"<span style='opacity:0.6;font-size:0.88em;'>{escape(date_str)}</span>"
+                f"</div>"
+            )
+            continue
         v_str = metric_formatter(str(col_name), v, 0)
         tag = _classify_game_signal(
             value=v, line=line, opponent=opp,
@@ -348,6 +376,7 @@ def render_v3_market_context_panel(
     min_to_mmss_fn: Callable[[float], str],
     num_formatter: Callable[[Any, int], str],
     handicap: bool = False,
+    binary: bool = False,
 ) -> None:
     """Render the OVERALL / RECENT FORM / PAST FACEOFFS 3-card panel (v3).
 
@@ -434,11 +463,21 @@ def render_v3_market_context_panel(
             if _tot_line is not None:
                 # Totais: barra de acerto Over/Under contra a linha digitada
                 # (verde = Over, vermelho = Under), pedido do usuário 2026-07.
+                # Binário (Megacreeps): legenda vira ✓/✗ — "Over 0.5" não faz
+                # sentido para marcação sim/não (pedido 2026-07-12).
+                if binary:
+                    _legenda = (
+                        f"<span style='color:#22c55e;font-weight:700;'>✓</span> = aconteceu · "
+                        f"<span style='color:#ef4444;font-weight:700;'>✗</span> = não aconteceu"
+                    )
+                else:
+                    _legenda = (
+                        f"<span style='color:#22c55e;font-weight:700;'>verde</span> = Over "
+                        f"<b>{_tot_line:g}</b> · "
+                        f"<span style='color:#ef4444;font-weight:700;'>vermelho</span> = Under"
+                    )
                 st.markdown(
-                    f"<div style='opacity:0.7;font-size:0.82em;margin:2px 0 6px;'>"
-                    f"<span style='color:#22c55e;font-weight:700;'>verde</span> = Over "
-                    f"<b>{_tot_line:g}</b> · "
-                    f"<span style='color:#ef4444;font-weight:700;'>vermelho</span> = Under</div>",
+                    f"<div style='opacity:0.7;font-size:0.82em;margin:2px 0 6px;'>{_legenda}</div>",
                     unsafe_allow_html=True,
                 )
                 st.markdown(
@@ -569,14 +608,14 @@ def render_v3_market_context_panel(
                     st=st, df_recent=df_a_context_all,
                     col_name=col_name, metric_formatter=metric,
                     opp_baselines=opp_baselines, league_avg=league_avg,
-                    line=line_for_tags_a, n=10,
+                    line=line_for_tags_a, n=10, binary=binary,
                 )
             with rc_b:
                 _render_game_lines_with_tags(
                     st=st, df_recent=df_b_context_all,
                     col_name=col_name, metric_formatter=metric,
                     opp_baselines=opp_baselines, league_avg=league_avg,
-                    line=line_for_tags_b, n=10,
+                    line=line_for_tags_b, n=10, binary=binary,
                 )
 
     # =========================== PAST FACEOFFS =========================
@@ -681,7 +720,7 @@ def render_v3_market_context_panel(
                     st=st, df_h2h=df_h2h_context_year_full_a,
                     col_name=col_name, team_a=team_a, metric_formatter=metric,
                     opp_baselines=opp_baselines, league_avg=league_avg,
-                    line=line_for_tags_a, n=10,
+                    line=line_for_tags_a, n=10, binary=binary,
                 )
             else:
                 st.markdown("<div style='opacity:0.55;'>— sem H2H —</div>", unsafe_allow_html=True)

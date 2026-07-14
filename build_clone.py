@@ -280,6 +280,14 @@ with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):''',
 
 
 def main() -> int:
+    # Regra de engenharia (2026-07-14): clone e vendor andam JUNTOS — todo
+    # rebuild do clone re-sincroniza a copia embutida (nunca rar defasado).
+    try:
+        from sync_vendor import main as _sync_vendor
+        _sync_vendor()
+    except SystemExit:
+        pass  # sem repo irmao (maquina de terceiros): vendor atual e mantido
+
     src = LOL_APP.read_text(encoding="utf-8")
     for old, new in PATCHES:
         if old not in src:
