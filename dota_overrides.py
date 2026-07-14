@@ -65,6 +65,9 @@ def apply() -> None:
         "mv2_col": "mv2_total_megacreeps",
         "for_col": "megacreeps_for", "against_col": "megacreeps_against",
         "is_time": False,
+        # mercado binário (sim/não): linha fixa 0.5; V3 vira marcação ✓/✗ e o
+        # Resumo cria a pick Sim/Não que compete no ranking (teto 1.72 etc.)
+        "binary_market": True,
     }
     # reconstroi o dict NA MESMA ordem, trocando Dragoes por Megacreeps
     # (mutacao in-place: quem importou o dict ve a mudanca)
