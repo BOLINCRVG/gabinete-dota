@@ -1,0 +1,36 @@
+# Regra de engenharia (2026-07-14): estado de maquina, dados e segredos NAO
+# entram em commit — so codigo e configuracao portavel.
+
+# segredos (chaves de API dele — nunca versionar)
+.streamlit/secrets.toml
+
+# ambientes
+.venv/
+__pycache__/
+*.pyc
+!mlcore/_recovered/*.pyc
+
+# dados (regeneraveis via esteira/adapter)
+data.csv
+data.pre_*.csv
+CSV_DIARIO/
+CSV_HISTORICO/
+CSV_DOTA/
+raw_matches.jsonl
+league_tiers.csv
+
+# artefatos de modelo (regeneraveis via train_offline/fit_ml_params)
+ml_artifact.json
+players_artifact.json
+params_fitted.json
+team_state_artifact.json
+
+# estado de maquina / caches / relatorios de runtime
+csv_bootstrap_*.json
+opendota_sync_state.json
+sync_daily.log
+ops/
+evidence/
+.gabinete_settings.json
+user_team_aliases.json
+user_schedule_store.json

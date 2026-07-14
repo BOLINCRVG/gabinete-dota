@@ -1,0 +1,2505 @@
+{
+  "generated_at": "2026-07-14T09:00:44",
+  "matchup": {
+    "season": "S15",
+    "teamA": "Team Liquid",
+    "teamB": "Xtreme Gaming",
+    "bo": 3
+  },
+  "filters": {
+    "year": "2026",
+    "split": "All",
+    "playoffs": "all",
+    "league_mode": "auto",
+    "fixed_league": "All"
+  },
+  "engine": "mlcore_v2",
+  "ml_trace": {
+    "generated_at": "2026-07-14T09:00:40",
+    "matchup": {
+      "season": "S15",
+      "teamA": "Team Liquid",
+      "teamB": "Xtreme Gaming",
+      "bo": 3
+    },
+    "input_signature": {
+      "sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "filters": {
+          "year": "2026",
+          "split": "All",
+          "playoffs": "all",
+          "league_mode": "auto",
+          "fixed_league": "All",
+          "weight_mode": "Recência (half-life)",
+          "half_life_days": 180
+        },
+        "config": {
+          "engine": "mlcore_v2",
+          "totals_mode": "map",
+          "ml_mode": "map",
+          "map_mode": "avg",
+          "n_sims": 20000,
+          "ml_microseg_enabled": true,
+          "ml_uncertainty_enabled": false,
+          "ml_uncertainty_exclude_leagues": "LCK",
+          "ml_confidence_governor_budget_runtime_pp": 9.76,
+          "ml_series_coherence_post_max_dev_pp_runtime": 13.12,
+          "use_lineup_adjust": false
+        },
+        "lineup": {
+          "mode": "CSV byTournament (manual)",
+          "sigA": "",
+          "sigB": ""
+        },
+        "versions": {
+          "csv": {
+            "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\CSV_DIARIO\\2026_Dota_match_data_oe_like.csv",
+            "size": 1349845,
+            "mtime": 1783969535
+          },
+          "artifact": {
+            "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\ml_artifact.json",
+            "size": 609966,
+            "mtime": 1783969775
+          },
+          "params_fitted": {
+            "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\params_fitted.json",
+            "size": 113042,
+            "mtime": 1783970770
+          },
+          "artifact_version": "0.4.0"
+        }
+      }
+    },
+    "filters": {
+      "year": "2026",
+      "split": "All",
+      "playoffs": "all",
+      "league_mode": "auto",
+      "fixed_league": "All"
+    },
+    "engine": "mlcore_v2",
+    "model_mode": "Padrao",
+    "probabilities": {
+      "p_raw": 0.6208270774936588,
+      "p_cal": 0.6208786078257545,
+      "p_team": 0.6208786078257545,
+      "p_players": null,
+      "p_fused": 0.6208786078257545,
+      "p_map_used": 0.5415774056775973,
+      "p_series_used": 0.5622223604019808
+    },
+    "players_adjustment": {
+      "enabled": false,
+      "mode": "CSV byTournament (manual)",
+      "delta_raw": 0.0,
+      "delta_effect": 0.0,
+      "delta_mode": "saturado",
+      "delta_cap": 1.6,
+      "delta_slope": 2.4,
+      "n_team_eff": null,
+      "n_players_eff": null,
+      "team_scale_used": 0.5,
+      "players_scale_used": 0.5,
+      "scale_league_used": "",
+      "delta_transfer_adj": null,
+      "player_portability_summary": {}
+    },
+    "fusion": {
+      "season_phase": "",
+      "coverage_eff": null,
+      "w_team": null,
+      "w_players": null,
+      "reason": "",
+      "coherence_guard": {}
+    },
+    "season_form_blend": {
+      "applied": true,
+      "source": "fitted:global",
+      "p_model": 0.6208786078257545,
+      "p_form": 0.6324404761904763,
+      "p_blended": 0.6232706832457111,
+      "w_form": 0.2068935006435008,
+      "n_a": 36,
+      "n_b": 34,
+      "wins_a": 24,
+      "wins_b": 18,
+      "reason": "ok"
+    },
+    "hybrid_blend": {
+      "applied": true,
+      "enabled": true,
+      "p_model": 0.6232706832457111,
+      "p_hybrid": 0.48510219578767727,
+      "p_blended": 0.573638441374678,
+      "w_hybrid": 0.3592153520976197,
+      "n_eff": 27.75,
+      "agree_to_model": 0.7213079611143133,
+      "reason": "ok"
+    },
+    "confidence_guard": {
+      "enabled": true,
+      "applied": false,
+      "n_ref": null,
+      "min_games": 12.0,
+      "coverage": null,
+      "shrink": 0.0,
+      "p_in": null,
+      "p_out": null,
+      "governor": {}
+    },
+    "uncertainty_layer": {
+      "enabled": false,
+      "applied": false,
+      "skipped_by_league": false,
+      "league": "DreamLeague Season 28",
+      "exclude_leagues": "LCK",
+      "n_eff": null,
+      "prior_games": null,
+      "raw_shrink": null,
+      "shrink": null,
+      "p_in": 0.6208786078257545,
+      "p_out": 0.6208786078257545,
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 0.0,
+        "applied_shrink_pp": 0.0,
+        "used_shrink_pp": 0.0,
+        "remaining_shrink_pp": 9.76
+      }
+    },
+    "fused_post_calibration": {
+      "enabled": true,
+      "applied": false,
+      "reason": "gate_not_promoted",
+      "source": "gate:shadow_only",
+      "version": "fused_post_calibration_v1",
+      "league_hint": "DreamLeague Season 28",
+      "gate_decision": "shadow_only",
+      "a": null,
+      "b": null,
+      "max_abs_logit_shift": null,
+      "logit_shift_raw": null,
+      "logit_shift_applied": null,
+      "p_in": 0.6331440837664097,
+      "p_out": 0.6331440837664097,
+      "delta_pp": null
+    },
+    "marginal_trust_guard": {
+      "enabled": false,
+      "applied": false,
+      "reason": "disabled",
+      "league": "DREAMLEAGUE SEASON 28",
+      "tier": "MINOR",
+      "band": "edge",
+      "band_tuning": false,
+      "is_marginal": true,
+      "excluded": false,
+      "gate_score": null,
+      "gate_n_eff": null,
+      "confidence_score": 48.15,
+      "weak_blend": null,
+      "n_eff": null,
+      "shrink": null,
+      "cap_hi": null,
+      "cap_applied": false,
+      "p_in": 0.5415774056775973,
+      "p_out": 0.5415774056775973,
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 0.0,
+        "applied_shrink_pp": 0.0,
+        "used_shrink_pp": 5.63694988115655,
+        "remaining_shrink_pp": 4.12305011884345
+      }
+    },
+    "patch_meta_guard": {
+      "enabled": true,
+      "applied": false,
+      "status": "ok",
+      "league_hint": "DreamLeague Season 28",
+      "changed_leagues": [],
+      "age_days": 0.6861801314236111,
+      "shrink": 0.0,
+      "p_in": 0.573638441374678,
+      "p_out": 0.573638441374678,
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 0.0,
+        "applied_shrink_pp": 0.0,
+        "used_shrink_pp": 0.0,
+        "remaining_shrink_pp": 9.76
+      }
+    },
+    "series_gamma": {
+      "enabled": true,
+      "applied": true,
+      "gamma": 0.7,
+      "source": "global",
+      "bo": 3,
+      "p_base": 0.6096590354849999,
+      "p_out": 0.5774015348685492,
+      "league_hint": "DreamLeague Season 28"
+    },
+    "series_economic_coherence": {
+      "enabled": true,
+      "applied": false,
+      "reason": "already_coherent",
+      "bo": 3,
+      "p_map": 0.573638441374678,
+      "p_series_before": 0.5774015348685492,
+      "p_series_after": 0.5774015348685492,
+      "p_target": 0.6096590354849999,
+      "diff_pp": 0.0,
+      "bounds": {
+        "low": 0.573638441374678,
+        "high": 0.7696590354849999,
+        "max_dev_pp": 16.0
+      }
+    },
+    "series_economic_coherence_post": {
+      "enabled": true,
+      "applied": false,
+      "reason": "already_coherent",
+      "bo": 3,
+      "p_map": 0.5415774056775973,
+      "p_series_before": 0.5622223604019808,
+      "p_series_after": 0.5622223604019808,
+      "p_target": 0.5622223604019808,
+      "diff_pp": 0.0,
+      "bounds": {
+        "low": 0.5415774056775973,
+        "high": 0.6934223604019808,
+        "max_dev_pp": 13.12
+      },
+      "max_dev_pp_runtime": 13.12,
+      "tuning": {
+        "enabled": true,
+        "bo": 3,
+        "league": "DREAMLEAGUE SEASON 28",
+        "base_max_dev_pp": 16.0,
+        "max_dev_pp": 13.12,
+        "multiplier": 0.82,
+        "band": "low_sample",
+        "band_info": {
+          "league": "DREAMLEAGUE SEASON 28",
+          "band": "low_sample",
+          "band_source": "league:DREAMLEAGUE SEASON 28",
+          "evidence_n": 195,
+          "row": {
+            "league": "DREAMLEAGUE SEASON 28",
+            "lv_n": 0,
+            "lv_logloss": null,
+            "lv_gain_vs_team_logloss": null,
+            "wf_n": 195,
+            "wf_months": 2,
+            "wf_logloss_mean": 0.6621416147899943,
+            "wf_drift_mean": -0.008565566041197934,
+            "wf_roi_proxy_mean": 0.012299583099613005,
+            "score_bias": 0.13995976952959321,
+            "quality_band": "low_sample",
+            "n_eff": 195,
+            "score_se": 0.1432229748078866,
+            "score_var": 0.020512820512820516,
+            "score_z": 1.4662452045957386,
+            "score_p": 0.14258149749439789,
+            "score_q": 0.5239041070724387,
+            "fdr_q_alpha": 0.1,
+            "fdr_reject": false,
+            "score_bias_pre_fdr": 0.21,
+            "fdr_shrink": 0.666475092998063
+          }
+        },
+        "use_fitted_by_league": true,
+        "fit_source": "",
+        "fit_n": 0,
+        "fit_improvement_logloss_vs_gamma1": null,
+        "reason": "ok"
+      }
+    },
+    "pipeline": {
+      "version": "v1",
+      "order": [
+        "interregional_strength_prior",
+        "season_form_blend",
+        "hybrid_blend",
+        "confidence_guard",
+        "patch_meta_guard",
+        "consistency_guard",
+        "series_bo_dplite_live",
+        "series_gamma",
+        "series_economic_coherence",
+        "state_areal_live_override",
+        "league_rank_sos_live",
+        "hier_calibration_live",
+        "layer_uncertainty_live",
+        "marginal_trust_guard"
+      ],
+      "steps": [
+        {
+          "stage": "interregional_strength_prior",
+          "before": 0.6208786078257545,
+          "after": 0.6208786078257545,
+          "applied": false,
+          "reason": "same_league",
+          "stronger_side": "",
+          "strength_gap": null
+        },
+        {
+          "stage": "season_form_blend",
+          "before": 0.6208786078257545,
+          "after": 0.6232706832457111,
+          "applied": true,
+          "source": "fitted:global"
+        },
+        {
+          "stage": "hybrid_blend",
+          "before": 0.6232706832457111,
+          "after": 0.573638441374678,
+          "applied": true,
+          "enabled": true
+        },
+        {
+          "stage": "confidence_guard",
+          "before": 0.573638441374678,
+          "after": 0.573638441374678,
+          "applied": false,
+          "enabled": true,
+          "governor_limited": false,
+          "governor_applied_shrink_pp": null
+        },
+        {
+          "stage": "patch_meta_guard",
+          "before": 0.573638441374678,
+          "after": 0.573638441374678,
+          "applied": false,
+          "enabled": true,
+          "status": "ok",
+          "league_hint": "DreamLeague Season 28",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 0.0
+        },
+        {
+          "stage": "consistency_guard",
+          "before": 0.573638441374678,
+          "after": 0.573638441374678,
+          "applied": false,
+          "enabled": true,
+          "triggered": false,
+          "drift_pp": 0.0
+        },
+        {
+          "stage": "series_bo_dplite_live",
+          "before": 0.6096590354849999,
+          "after": 0.6034902923106705,
+          "applied": true,
+          "enabled": true,
+          "source": "series_bo_v5_live"
+        },
+        {
+          "stage": "series_gamma",
+          "before": 0.6034902923106705,
+          "after": 0.5774015348685492,
+          "applied": true,
+          "enabled": true,
+          "source": "global",
+          "gamma": 0.7
+        },
+        {
+          "stage": "series_economic_coherence",
+          "before": 0.5774015348685492,
+          "after": 0.5774015348685492,
+          "applied": false,
+          "enabled": true,
+          "source": "already_coherent"
+        },
+        {
+          "stage": "state_areal_live_override",
+          "before": 0.573638441374678,
+          "after": 0.5311036791857624,
+          "applied": true,
+          "enabled": true,
+          "source": "shadow_state_areal",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 4.253476218891561
+        },
+        {
+          "stage": "league_rank_sos_live",
+          "before": 0.5311036791857624,
+          "after": 0.5554121423002472,
+          "applied": true,
+          "enabled": true,
+          "source": "league_rank_sos_h2h_quality_v2",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 0.0
+        },
+        {
+          "stage": "hier_calibration_live",
+          "before": 0.5554121423002472,
+          "after": 0.5537648162249269,
+          "applied": true,
+          "enabled": true,
+          "source": "hier_calibration_v3",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 0.16473260753202545
+        },
+        {
+          "stage": "layer_uncertainty_live",
+          "before": 0.5537648162249269,
+          "after": 0.5415774056775973,
+          "applied": true,
+          "enabled": true,
+          "source": "layer_uncertainty_v2",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 1.2187410547329636
+        },
+        {
+          "stage": "marginal_trust_guard",
+          "before": 0.5415774056775973,
+          "after": 0.5415774056775973,
+          "applied": false,
+          "enabled": false,
+          "source": "marginal_trust_guard",
+          "league": "DREAMLEAGUE SEASON 28",
+          "tier": "MINOR",
+          "confidence_score": 48.15,
+          "shrink": null,
+          "cap_hi": null,
+          "reason": "disabled",
+          "governor_limited": false,
+          "governor_applied_shrink_pp": 0.0
+        }
+      ],
+      "final_p_map": 0.5415774056775973,
+      "final_p_series": 0.5622223604019808
+    },
+    "guards": {
+      "consistency_guard_on": true,
+      "consistency_guard_triggered": false,
+      "consistency_guard_drift_pp": 0.0,
+      "wf_correction_applied": false,
+      "wf_shrink": null,
+      "wf_league": "",
+      "fused_post_cal_applied": false,
+      "confidence_governor_on": true,
+      "confidence_governor_live_on": true,
+      "patch_guard_on": true,
+      "patch_guard_applied": false,
+      "patch_guard_status": "ok",
+      "state_areal_live_on": true,
+      "state_areal_live_applied": true,
+      "state_alite_live_on": false,
+      "state_alite_live_applied": false,
+      "style_b_lite_live_on": false,
+      "style_b_lite_live_applied": false,
+      "league_rank_sos_live_on": true,
+      "league_rank_sos_live_applied": true,
+      "roster_continuity_live_on": true,
+      "roster_continuity_live_applied": false,
+      "hier_calibration_live_on": true,
+      "hier_calibration_live_applied": true,
+      "series_bo_dplite_live_on": true,
+      "series_bo_dplite_live_applied": true,
+      "series_economic_coherence_applied": false,
+      "series_economic_coherence_post_applied": false,
+      "layer_uncertainty_live_on": true,
+      "layer_uncertainty_live_applied": true,
+      "marginal_trust_guard_on": false,
+      "marginal_trust_guard_applied": false,
+      "meta_c_lite_live_on": false,
+      "meta_c_lite_live_applied": false
+    },
+    "confidence_governor": {
+      "enabled": true,
+      "live_enabled": true,
+      "max_total_shrink_pp_config": 8.0,
+      "budget_runtime_pp": 9.76,
+      "max_total_shrink_pp_state": 9.76,
+      "used_shrink_pp": 5.63694988115655,
+      "remaining_shrink_pp": 4.12305011884345,
+      "limited_stages": [],
+      "applied_shrink_pp_by_stage": {
+        "patch_meta_guard": 0.0,
+        "state_areal_live_override": 4.253476218891561,
+        "league_rank_sos_live": 0.0,
+        "hier_calibration_live": 0.16473260753202545,
+        "layer_uncertainty_live": 1.2187410547329636,
+        "marginal_trust_guard": 0.0
+      },
+      "state": {
+        "enabled": true,
+        "max_total_shrink_pp": 9.76,
+        "used_shrink_pp": 5.63694988115655,
+        "stages": [
+          {
+            "stage": "uncertainty_layer",
+            "requested_shrink_pp": 0.0,
+            "applied_shrink_pp": 0.0,
+            "limited": false
+          },
+          {
+            "stage": "patch_meta_guard",
+            "requested_shrink_pp": 0.0,
+            "applied_shrink_pp": 0.0,
+            "limited": false
+          },
+          {
+            "stage": "state_areal_live_override",
+            "requested_shrink_pp": 4.253476218891561,
+            "applied_shrink_pp": 4.253476218891561,
+            "limited": false
+          },
+          {
+            "stage": "league_rank_sos_live",
+            "requested_shrink_pp": 0.0,
+            "applied_shrink_pp": 0.0,
+            "limited": false
+          },
+          {
+            "stage": "hier_calibration_live",
+            "requested_shrink_pp": 0.16473260753202545,
+            "applied_shrink_pp": 0.16473260753202545,
+            "limited": false
+          },
+          {
+            "stage": "layer_uncertainty_live",
+            "requested_shrink_pp": 1.2187410547329636,
+            "applied_shrink_pp": 1.2187410547329636,
+            "limited": false
+          },
+          {
+            "stage": "marginal_trust_guard",
+            "requested_shrink_pp": 0.0,
+            "applied_shrink_pp": 0.0,
+            "limited": false
+          }
+        ]
+      },
+      "tuning": {
+        "enabled": true,
+        "league": "DREAMLEAGUE SEASON 28",
+        "base_budget_pp": 8.0,
+        "budget_pp": 9.76,
+        "multiplier": 1.22,
+        "band": "low_sample",
+        "band_info": {
+          "league": "DREAMLEAGUE SEASON 28",
+          "band": "low_sample",
+          "band_source": "league:DREAMLEAGUE SEASON 28",
+          "evidence_n": 195,
+          "row": {
+            "league": "DREAMLEAGUE SEASON 28",
+            "lv_n": 0,
+            "lv_logloss": null,
+            "lv_gain_vs_team_logloss": null,
+            "wf_n": 195,
+            "wf_months": 2,
+            "wf_logloss_mean": 0.6621416147899943,
+            "wf_drift_mean": -0.008565566041197934,
+            "wf_roi_proxy_mean": 0.012299583099613005,
+            "score_bias": 0.13995976952959321,
+            "quality_band": "low_sample",
+            "n_eff": 195,
+            "score_se": 0.1432229748078866,
+            "score_var": 0.020512820512820516,
+            "score_z": 1.4662452045957386,
+            "score_p": 0.14258149749439789,
+            "score_q": 0.5239041070724387,
+            "fdr_q_alpha": 0.1,
+            "fdr_reject": false,
+            "score_bias_pre_fdr": 0.21,
+            "fdr_shrink": 0.666475092998063
+          }
+        },
+        "use_fitted_by_league": true,
+        "fit_source": "",
+        "fit_n": 0,
+        "fit_improvement_logloss_vs_baseline": null
+      }
+    },
+    "shadow_vnext": {
+      "enabled": false,
+      "applied": false,
+      "reason": "disabled_by_flag",
+      "p_map_old": 0.573638441374678,
+      "p_series_old": 0.5774015348685492,
+      "p_map_new": null,
+      "p_series_new": null,
+      "diff_pp_map": null,
+      "diff_pp_series": null
+    },
+    "shadow_state_alite": {
+      "enabled": true,
+      "applied": true,
+      "method": "state_shadow_alite_v1",
+      "reason": "state+uncertainty+recent_form",
+      "bo": 3,
+      "p_map_old": 0.573638441374678,
+      "p_series_old": 0.5774015348685492,
+      "p_map_new": 0.6017433919844684,
+      "p_series_new": 0.6505086502104819,
+      "diff_pp_map": 2.8104950609790347,
+      "diff_pp_series": 7.3107115341932705,
+      "weights": {
+        "uncertainty": 0.18,
+        "evidence": 0.9673659673659674,
+        "rd_conf": 0.8187607128330733,
+        "patch": 1.0,
+        "consistency": 1.0,
+        "floor": 0.5699625668449197,
+        "final": 0.5699625668449197,
+        "recent_direction": 0.14596411679536686,
+        "interregional_relief": 0.0
+      },
+      "uncertainty": {
+        "rd_blue": 0.3632455532033676,
+        "rd_red": 0.36864064729836443,
+        "rd_pair": 0.5175357560232701,
+        "games_blue": 489.0,
+        "games_red": 415.0,
+        "shrink_blue": 1.0,
+        "shrink_red": 1.0
+      },
+      "inputs": {
+        "league_a": "DreamLeague Season 28",
+        "league_b": "DreamLeague Season 28",
+        "macro_a": "OTHER",
+        "macro_b": "OTHER",
+        "interregional": false,
+        "unknown_macro": true,
+        "roster_changed": false,
+        "patch_status": "ok",
+        "patch_shrink": 0.0,
+        "n_eff_uncertainty": 0.0,
+        "prior_games_uncertainty": 22.0,
+        "n_team_eff": 415.0,
+        "n_players_eff": 0.0,
+        "season_form_applied": true,
+        "season_form_w": 0.2068935006435008,
+        "season_form_n_min": 34.0,
+        "season_form_p_form": 0.6324404761904763,
+        "season_form_p_model": 0.6208786078257545,
+        "recent_evidence": 0.85,
+        "recent_delta_logit": 0.04942169778572314
+      },
+      "targets": {
+        "p_struct": 0.620827077493659,
+        "z_old": 0.2967115893082483,
+        "z_struct": 0.4930602240758428,
+        "z_target": 0.5002740185436635,
+        "z_delta_to_target": 0.20356242923541518,
+        "z_new": 0.4127345539884529
+      },
+      "odds": {
+        "teamA_map_old": 1.7432583451059889,
+        "teamA_map_new": 1.6618379417547655,
+        "teamA_series_old": 1.7318970241872655,
+        "teamA_series_new": 1.537258574004258
+      }
+    },
+    "shadow_state_areal": {
+      "enabled": true,
+      "applied": true,
+      "method": "state_shadow_areal_v9",
+      "reason": "team_state_artifact_mu_sigma",
+      "bo": 3,
+      "p_map_old": 0.573638441374678,
+      "p_series_old": 0.5774015348685492,
+      "p_map_new": 0.5311036791857624,
+      "p_series_new": 0.546595336962846,
+      "diff_pp_map": -4.253476218891561,
+      "diff_pp_series": -3.080619790570316,
+      "artifact_version": "team_state_artifact_v9",
+      "artifact_meta": {
+        "update_mode": "full_rebuild_history_source_changed",
+        "seed_used": false,
+        "backfill_detected": false,
+        "last_processed_game": {
+          "gameid": "DOTA_8888819433",
+          "date": "2026-07-09",
+          "league": "Esports World Cup 2026",
+          "patch": "nan",
+          "blue": "LGD Gaming",
+          "red": "1w",
+          "y_blue": 0
+        },
+        "online_journal_tail_count": 120,
+        "quality_adjust_avg": 0.13616542036859025,
+        "quality_early_avg": 0.0,
+        "quality_objective_avg": 0.007644602422327556,
+        "quality_kill_avg": 0.031972748815165875,
+        "quality_tempo_avg": 0.021834494470774034,
+        "quality_conversion_avg": 0.0,
+        "quality_throw_avg": 0.0,
+        "quality_comeback_avg": 0.0
+      },
+      "qwl_trace": {
+        "enabled": true,
+        "params": {
+          "qwl_expected_base": 0.12,
+          "qwl_expected_slope": 0.6,
+          "qwl_surplus_mix": 0.7,
+          "qwl_tempo_weight": 0.08,
+          "qwl_conversion_weight": 0.12,
+          "qwl_throw_weight": 1.2,
+          "qwl_comeback_weight": 0.65,
+          "qwl_phase_dynamic_strength": 0.35,
+          "qwl_opponent_context_mix": 0.3
+        },
+        "map_overrides_count": {
+          "qwl_surplus_mix_by_league": 0,
+          "qwl_surplus_mix_by_patch": 0,
+          "qwl_throw_weight_by_league": 0,
+          "qwl_throw_weight_by_patch": 0,
+          "qwl_comeback_weight_by_league": 0,
+          "qwl_comeback_weight_by_patch": 0,
+          "qwl_phase_dynamic_strength_by_league": 0,
+          "qwl_phase_dynamic_strength_by_patch": 0,
+          "qwl_opponent_context_mix_by_league": 0,
+          "qwl_opponent_context_mix_by_patch": 0
+        },
+        "artifact_meta": {
+          "quality_adjust_avg": 0.13616542036859025,
+          "quality_expected_avg": 0.15225334714612473,
+          "quality_surplus_avg": 0.09832813197650837,
+          "quality_context_multiplier_avg": 1.001496209401163,
+          "quality_context_boost_games": 8578,
+          "quality_context_cut_games": 12109,
+          "quality_tempo_avg": 0.021834494470774034,
+          "quality_conversion_avg": 0.0,
+          "quality_throw_avg": 0.0,
+          "quality_comeback_avg": 0.0
+        },
+        "team_edge": {
+          "edge_core": 0.009395404812810971,
+          "edge_surplus": 0.004646015529666025,
+          "edge_secondary": 0.004053713368842805,
+          "edge_total": 0.00708426065682021,
+          "n_blue": 495,
+          "n_red": 421,
+          "n_harmonic": 455.01091703056767,
+          "w_n": 0.9784951285362131,
+          "w_reliability": 0.9665682414641178,
+          "quality_k_boost": 0.22,
+          "surplus_mix": 0.7,
+          "logit_shift": 0.0011792296469924093
+        }
+      },
+      "weights": {
+        "state_conf": 0.7453410459003437,
+        "uncertainty": 0.2,
+        "evidence": 0.25,
+        "patch": 1.0,
+        "roster": 1.0,
+        "league": 0.72,
+        "interregional_state_damp": 1.0,
+        "league_coverage": 0.82,
+        "roster_state": 1.0,
+        "qwl_n": 0.9784951285362131,
+        "qwl_reliability": 0.9665682414641178,
+        "qwl_state_boost": 1.0011792296469924,
+        "qwl_logit_shift": 0.0011792296469924093,
+        "consistency": 1.0,
+        "state_recency": 1.0,
+        "model_precision": 0.44499999999999995,
+        "state_precision": 1.257599700513437,
+        "state_precision_effective": 1.1318397304620933,
+        "disagree_penalty": 0.9,
+        "precision_state_weight": 0.7177899621608389,
+        "floor": 0.3145648818160326,
+        "floor_effective": 0.3145648818160326,
+        "final": 0.7177899621608389
+      },
+      "state": {
+        "blue": {
+          "team": "Team Liquid",
+          "mu": 0.257312832213345,
+          "sigma": 0.4049640950643212,
+          "gp": 495
+        },
+        "red": {
+          "team": "Xtreme Gaming",
+          "mu": 0.1925345224005619,
+          "sigma": 0.4331792892597941,
+          "gp": 421
+        },
+        "rd_pair": 0.5929925926475683,
+        "gp_harmonic": 455.01091703056767,
+        "stale_days_max": 0.0,
+        "blue_last_league": "ESPORTS WORLD CUP 2026",
+        "red_last_league": "ESPORTS WORLD CUP 2026",
+        "blue_league_mismatch": true,
+        "red_league_mismatch": true,
+        "interregional": false,
+        "cross_tier_interregional": false,
+        "cross_strength_interregional": false,
+        "tier_gap": 0,
+        "strength_gap": 0.0,
+        "shared_last_league": true,
+        "shared_foreign_last_league": false,
+        "recent_shared_event": false,
+        "blue_roster_cont_avg": 1.0,
+        "red_roster_cont_avg": 1.0,
+        "blue_roster_cont_n": 0,
+        "red_roster_cont_n": 0,
+        "p_state": 0.5142205847759694,
+        "artifact_version": "team_state_artifact_v9",
+        "artifact_update_mode": "full_rebuild_history_source_changed"
+      },
+      "inputs": {
+        "team_blue": "Team Liquid",
+        "team_red": "Xtreme Gaming",
+        "team_blue_key": "teamliquid",
+        "team_red_key": "xtremegaming",
+        "league_blue": "DreamLeague Season 28",
+        "league_red": "DreamLeague Season 28",
+        "roster_changed": false,
+        "patch_status": "ok",
+        "patch_shrink": 0.0,
+        "n_team_eff": 0.0,
+        "n_players_eff": 0.0,
+        "n_eff_uncertainty": 0.0
+      },
+      "odds": {
+        "teamA_map_old": 1.7432583451059889,
+        "teamA_map_state": 1.944690721464739,
+        "teamA_map_new": 1.8828715356163692,
+        "teamA_series_old": 1.7318970241872655,
+        "teamA_series_new": 1.829507008889784
+      }
+    },
+    "state_areal_live": {
+      "enabled": true,
+      "applied": true,
+      "reason": "promoted_from_shadow_state_areal",
+      "p_map_before": 0.573638441374678,
+      "p_series_before": 0.5774015348685492,
+      "p_map_after": 0.5311036791857624,
+      "p_series_after": 0.546595336962846,
+      "diff_pp_map": -4.253476218891561,
+      "diff_pp_series": -3.080619790570316,
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 4.253476218891561,
+        "applied_shrink_pp": 4.253476218891561,
+        "used_shrink_pp": 4.253476218891561,
+        "remaining_shrink_pp": 5.506523781108439
+      },
+      "qwl_trace": {
+        "enabled": true,
+        "params": {
+          "qwl_expected_base": 0.12,
+          "qwl_expected_slope": 0.6,
+          "qwl_surplus_mix": 0.7,
+          "qwl_tempo_weight": 0.08,
+          "qwl_conversion_weight": 0.12,
+          "qwl_throw_weight": 1.2,
+          "qwl_comeback_weight": 0.65,
+          "qwl_phase_dynamic_strength": 0.35,
+          "qwl_opponent_context_mix": 0.3
+        },
+        "map_overrides_count": {
+          "qwl_surplus_mix_by_league": 0,
+          "qwl_surplus_mix_by_patch": 0,
+          "qwl_throw_weight_by_league": 0,
+          "qwl_throw_weight_by_patch": 0,
+          "qwl_comeback_weight_by_league": 0,
+          "qwl_comeback_weight_by_patch": 0,
+          "qwl_phase_dynamic_strength_by_league": 0,
+          "qwl_phase_dynamic_strength_by_patch": 0,
+          "qwl_opponent_context_mix_by_league": 0,
+          "qwl_opponent_context_mix_by_patch": 0
+        },
+        "artifact_meta": {
+          "quality_adjust_avg": 0.13616542036859025,
+          "quality_expected_avg": 0.15225334714612473,
+          "quality_surplus_avg": 0.09832813197650837,
+          "quality_context_multiplier_avg": 1.001496209401163,
+          "quality_context_boost_games": 8578,
+          "quality_context_cut_games": 12109,
+          "quality_tempo_avg": 0.021834494470774034,
+          "quality_conversion_avg": 0.0,
+          "quality_throw_avg": 0.0,
+          "quality_comeback_avg": 0.0
+        },
+        "team_edge": {
+          "edge_core": 0.009395404812810971,
+          "edge_surplus": 0.004646015529666025,
+          "edge_secondary": 0.004053713368842805,
+          "edge_total": 0.00708426065682021,
+          "n_blue": 495,
+          "n_red": 421,
+          "n_harmonic": 455.01091703056767,
+          "w_n": 0.9784951285362131,
+          "w_reliability": 0.9665682414641178,
+          "quality_k_boost": 0.22,
+          "surplus_mix": 0.7,
+          "logit_shift": 0.0011792296469924093
+        }
+      }
+    },
+    "state_alite_live": {
+      "enabled": false,
+      "applied": false,
+      "reason": "disabled_by_flag",
+      "p_map_before": 0.573638441374678,
+      "p_series_before": 0.5774015348685492,
+      "p_map_after": null,
+      "p_series_after": null
+    },
+    "style_b_lite_live": {
+      "enabled": false,
+      "applied": false,
+      "reason": "disabled_by_flag",
+      "p_map_before": 0.5311036791857624,
+      "p_series_before": 0.546595336962846,
+      "p_map_after": null,
+      "p_series_after": null
+    },
+    "league_rank_sos_live": {
+      "enabled": true,
+      "applied": true,
+      "reason": "applied",
+      "method": "league_rank_sos_h2h_quality_v2",
+      "p_before": 0.5311036791857624,
+      "p_after": 0.5554121423002472,
+      "diff_pp": 2.4308463114484757,
+      "p_rank": 0.6176730784036116,
+      "p_rank_base": 0.5975954074545792,
+      "weight": 0.27593649860218494,
+      "n_team_a": 36,
+      "n_team_b": 34,
+      "n_teams_league": 16,
+      "n_games_league": 390,
+      "same_league": true,
+      "h2h_maps": 2,
+      "h2h_a_wins": 2,
+      "h2h_b_wins": 0,
+      "h2h_n_eff": 1.9293592330516824,
+      "h2h_p_laplace": 0.75,
+      "h2h_p_quality": 0.7573909276886349,
+      "h2h_quality_weight": 0.11336539841779096,
+      "h2h_quality_edge": 1.0,
+      "h2h_quality_surplus": 0.0,
+      "h2h_quality_conversion_edge": 0.0,
+      "h2h_quality_tempo_edge": 0.2654390434333826,
+      "h2h_quality_coverage": 0.6308571428571429,
+      "h2h_quality_freshness": 0.9790924038060368,
+      "h2h_quality_data_reliability": 1.0,
+      "h2h_quality_age_days_mean": 8.30051278835828,
+      "team_a_found": true,
+      "team_b_found": true,
+      "team_a_lookup": "Team Liquid",
+      "team_b_lookup": "Xtreme Gaming",
+      "h2h_quality_signal": {
+        "available": true,
+        "reason": "ok",
+        "n_maps": 2,
+        "wins_a": 2,
+        "wins_b": 0,
+        "n_eff": 1.9293592330516824,
+        "p_laplace": 0.75,
+        "p_quality": 0.7573909276886349,
+        "weight": 0.11336539841779096,
+        "edge_win": 1.0,
+        "edge_quality": 1.0,
+        "edge_surplus": 0.0,
+        "edge_conversion": 0.0,
+        "tempo_edge": 0.2654390434333826,
+        "coverage": 0.6308571428571429,
+        "freshness": 0.9790924038060368,
+        "data_reliability": 1.0,
+        "age_days_mean": 8.30051278835828
+      },
+      "h2h_quality_disagree": 0.7429722279829742,
+      "league_rank_top": [
+        {
+          "team": "Tundra Esports",
+          "n_games": 38,
+          "wins": 27,
+          "raw_wp": 0.6951219512195121,
+          "opp_sos_wp": 0.5204695359005282,
+          "dom": 0.0,
+          "score": 0.7374621851632253,
+          "shrink": 0.8260869565217391
+        },
+        {
+          "team": "Aurora Gaming",
+          "n_games": 42,
+          "wins": 28,
+          "raw_wp": 0.6555555555555556,
+          "opp_sos_wp": 0.5244846322797881,
+          "dom": 0.0,
+          "score": 0.6051348723980797,
+          "shrink": 0.84
+        },
+        {
+          "team": "Team Liquid",
+          "n_games": 36,
+          "wins": 24,
+          "raw_wp": 0.6538461538461539,
+          "opp_sos_wp": 0.5173766580121982,
+          "dom": 0.0,
+          "score": 0.5647031991001555,
+          "shrink": 0.8181818181818182
+        },
+        {
+          "team": "PARIVISION",
+          "n_games": 31,
+          "wins": 17,
+          "raw_wp": 0.5441176470588235,
+          "opp_sos_wp": 0.5050682804903841,
+          "dom": 0.0,
+          "score": 0.15201328534051756,
+          "shrink": 0.7948717948717948
+        },
+        {
+          "team": "Xtreme Gaming",
+          "n_games": 34,
+          "wins": 18,
+          "raw_wp": 0.527027027027027,
+          "opp_sos_wp": 0.5266926094487603,
+          "dom": 0.0,
+          "score": 0.14843381257368884,
+          "shrink": 0.8095238095238095
+        },
+        {
+          "team": "Team Falcons",
+          "n_games": 30,
+          "wins": 16,
+          "raw_wp": 0.5303030303030303,
+          "opp_sos_wp": 0.5117512604641654,
+          "dom": 0.0,
+          "score": 0.12191193431696355,
+          "shrink": 0.7894736842105263
+        }
+      ],
+      "team_a_rank_row": [
+        {
+          "team": "Team Liquid",
+          "n_games": 36,
+          "wins": 24,
+          "raw_wp": 0.6538461538461539,
+          "opp_sos_wp": 0.5173766580121982,
+          "dom": 0.0,
+          "score": 0.5647031991001555,
+          "shrink": 0.8181818181818182
+        }
+      ],
+      "team_b_rank_row": [
+        {
+          "team": "Xtreme Gaming",
+          "n_games": 34,
+          "wins": 18,
+          "raw_wp": 0.527027027027027,
+          "opp_sos_wp": 0.5266926094487603,
+          "dom": 0.0,
+          "score": 0.14843381257368884,
+          "shrink": 0.8095238095238095
+        }
+      ],
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 0.0,
+        "applied_shrink_pp": 0.0,
+        "used_shrink_pp": 4.253476218891561,
+        "remaining_shrink_pp": 5.506523781108439
+      },
+      "p_map_before": 0.5311036791857624,
+      "p_map_after": 0.5554121423002472,
+      "p_series_before": 0.546595336962846,
+      "p_series_after": 0.5827779268733863,
+      "diff_pp_series": 3.618258991054024
+    },
+    "roster_continuity_live": {
+      "enabled": true,
+      "applied": false,
+      "reason": "low_lineup_coverage",
+      "method": "roster_continuity_v2",
+      "p_before": 0.5554121423002472,
+      "p_after": null,
+      "diff_pp": null,
+      "weight": null,
+      "target_p": null,
+      "lineup_continuity": 1.0,
+      "freshness_avg": 1.0,
+      "coverage_eff": null,
+      "roster_changed": false,
+      "season_phase": "auto",
+      "bo": 3,
+      "n_team_eff": null,
+      "n_players_eff": null,
+      "transfer_signal": 0.0,
+      "hist_weight": null,
+      "players_evidence": null,
+      "cfg": {
+        "strength": 1.0,
+        "team_shrink_mult": 1.0,
+        "players_alpha_mult": 1.0,
+        "min_coverage": 0.15,
+        "weight_cap": 0.28
+      },
+      "signal_source": "areal_fallback",
+      "fallback_used": true,
+      "source_parts": [
+        "shadow_state_areal.roster_cont_avg",
+        "shadow_state_areal.stale_days",
+        "derived_from_lineup_continuity"
+      ],
+      "roster_changed_source": "lineup_vs_gate"
+    },
+    "hier_calibration_live": {
+      "enabled": true,
+      "applied": true,
+      "reason": "ok",
+      "method": "hier_calibration_v3",
+      "scope_used": "league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0",
+      "p_before": 0.5554121423002472,
+      "p_after": 0.5537648162249269,
+      "diff_pp": -0.16473260753202545,
+      "weight": 0.03,
+      "bias_raw": 0.14975099987255214,
+      "bias_adj": 3.743774996813803e-05,
+      "n_team_eff": 0.0,
+      "n_players_eff": 0.0,
+      "bo": 3,
+      "playoffs": false,
+      "interregional": false,
+      "league_a": "DREAMLEAGUE SEASON 28",
+      "league_b": "DREAMLEAGUE SEASON 28",
+      "patch_status": "ok",
+      "interleague": {},
+      "runtime_fine": {
+        "band": "mid",
+        "z_abs_before": 0.22257107860373762,
+        "fine_shrink": 0.03,
+        "z_hi": 1.0,
+        "z_xhi": 1.55,
+        "profile_used": "strict_low_sample",
+        "profile_source": "league_override",
+        "inter_reliability_band": "na",
+        "inter_ev": null
+      },
+      "hier": {
+        "segment_scope": "league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0",
+        "segment_bias": 0.13995976952959321,
+        "segment_bias_adj": 0.013825326778686668,
+        "segment_n": 195.0,
+        "league_bias": 0.13995976952959321,
+        "league_bias_adj": 0.01998489859728809,
+        "league_n": 195.0,
+        "global_bias": 0.15,
+        "global_bias_adj": 0.15,
+        "global_n": 20505.0,
+        "weights": {
+          "segment": 2.645166810426485,
+          "league": 2.535802880280105,
+          "global": 2765.4898798134423
+        },
+        "stats": {
+          "segment_z": 1.4662452045957386,
+          "segment_q": 0.7573181178390969,
+          "segment_sig_mult": 0.0987807198107984,
+          "segment_fdr_reject": false,
+          "league_z": 1.4662452045957386,
+          "league_q": 0.5239041070724387,
+          "league_sig_mult": 0.14279030798962888,
+          "league_fdr_reject": false,
+          "global_z": 10.739675274420545,
+          "global_q": 6.627708894964559e-27,
+          "global_sig_mult": 1.0,
+          "global_fdr_reject": true
+        },
+        "params": {
+          "seg_shrink_k": 160.0,
+          "league_shrink_k": 260.0,
+          "global_shrink_k": 400.0,
+          "hier_decay": 0.78,
+          "same_sigma0": 2.0,
+          "same_z_gate": 1.96,
+          "same_fdr_q_alpha": 0.1
+        },
+        "segment_class": "same_minor",
+        "league_class_a": "minor",
+        "league_class_b": "minor",
+        "patch_tag": "ok"
+      },
+      "league_resolution_source": "resolved",
+      "league_resolution_parts": [
+        "ml_info.blue",
+        "ml_info.red"
+      ],
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 0.16473260753202545,
+        "applied_shrink_pp": 0.16473260753202545,
+        "used_shrink_pp": 4.418208826423586,
+        "remaining_shrink_pp": 5.341791173576413
+      },
+      "p_map_before": 0.5554121423002472,
+      "p_map_after": 0.5537648162249269,
+      "p_series_before": 0.5827779268733863,
+      "p_series_after": 0.5803363932178396,
+      "diff_pp_series": -0.24415336555466682
+    },
+    "series_bo_dplite_live": {
+      "enabled": true,
+      "applied": true,
+      "reason": "ok",
+      "method": "series_bo_v5_live",
+      "bo": 3,
+      "same_league": true,
+      "interregional": false,
+      "playoffs": true,
+      "patch_status": "ok",
+      "league_hint": "DREAMLEAGUE SEASON 28",
+      "p_map": 0.573638441374678,
+      "p_before": 0.6096590354849999,
+      "p_after": 0.6034902923106705,
+      "diff_pp": -0.6168743174329361,
+      "weight": 0.64,
+      "cap_pp": 8.0,
+      "n_team_eff": 0.0,
+      "n_players_eff": 0.0,
+      "side_bias_pp": 0.0,
+      "style_volatility": 0.0,
+      "layer_confidence_score": null,
+      "anchor_mode": "dp_sideaware_v5",
+      "anchor_weight": 0.64,
+      "tuning": {
+        "applied": true,
+        "source": "global",
+        "league": "DREAMLEAGUE SEASON 28",
+        "macro": "OTHER",
+        "patch_bucket": "OK",
+        "params": {
+          "decider_side_revert": 0.14,
+          "series_corr_sigma": 0.07,
+          "pick_shift": 0.017,
+          "g1_blue_shift": 0.001,
+          "momentum_shift": 0.007,
+          "loser_pick_decay": 0.22,
+          "decider_variance": 0.13
+        },
+        "resolved": {
+          "pick_shift": 0.017,
+          "g1_blue_shift": 0.001,
+          "momentum_shift": 0.007,
+          "loser_pick_decay": 0.22,
+          "decider_variance": 0.13,
+          "decider_side_revert": 0.14,
+          "series_corr_sigma": 0.07
+        }
+      },
+      "dp": {
+        "p_blue": 0.573638441374678,
+        "p_red": 0.573638441374678,
+        "q_blue_base": 0.5365098388948841,
+        "pick_shift": 0.017,
+        "g1_blue_shift": 0.001,
+        "momentum_shift": 0.007,
+        "loser_pick_decay": 0.22,
+        "decider_variance": 0.13,
+        "decider_side_revert": 0.14,
+        "series_corr_sigma": 0.07,
+        "p_series_anchor": 0.600005716125483,
+        "expected_maps": 2.496292168460112,
+        "decider_reach_prob": 0.4962921684601123,
+        "map_play_prob": {
+          "m1": 1.0,
+          "m2": 1.0,
+          "m3": 0.4962921684601123
+        },
+        "map_win_if_played": {
+          "m1": 0.572044454979183,
+          "m2": 0.5644905465584025,
+          "m3": 0.563950667315922
+        },
+        "scoreline_probs": {
+          "0-2": 0.18358641500115092,
+          "1-2": 0.216407868873366,
+          "2-0": 0.3201214165387367,
+          "2-1": 0.2798842995867463
+        }
+      },
+      "coherence_guard": {
+        "enabled": false,
+        "applied": false,
+        "reason": "deferred_to_pipeline",
+        "stage": "series_bo_dplite_live",
+        "bo": 3,
+        "p_map": 0.573638441374678,
+        "p_series_before": 0.6034902923106705,
+        "p_series_after": 0.6034902923106705
+      },
+      "p_series_before": 0.6096590354849999,
+      "p_series_after": 0.6034902923106705
+    },
+    "series_economic_coherence_post_raw": {
+      "enabled": true,
+      "applied": false,
+      "reason": "already_coherent",
+      "bo": 3,
+      "p_map": 0.5415774056775973,
+      "p_series_before": 0.5622223604019808,
+      "p_series_after": 0.5622223604019808,
+      "p_target": 0.5622223604019808,
+      "bounds": {
+        "low": 0.5415774056775973,
+        "high": 0.6934223604019808,
+        "max_dev_pp": 13.12
+      },
+      "diff_pp": 0.0
+    },
+    "layer_uncertainty_live": {
+      "enabled": true,
+      "applied": true,
+      "reason": "ok",
+      "method": "layer_uncertainty_v2",
+      "p_before": 0.5537648162249269,
+      "p_after": 0.5415774056775973,
+      "diff_pp": -1.2187410547329636,
+      "p_series_before": 0.5803363932178396,
+      "p_series_after": 0.56315524297394,
+      "diff_pp_series": -1.7181150243899546,
+      "bo": 3,
+      "interregional": false,
+      "playoffs": false,
+      "patch_status": "ok",
+      "evidence_score": 0.0,
+      "uncertainty_score": 0.5425878001115423,
+      "confidence_score": 0.4574121998884577,
+      "shrink_map": 0.22788687604684776,
+      "shrink_series": 0.21649253224450538,
+      "cap_pp_map": 2.0,
+      "cap_pp_series": 2.3,
+      "components": {
+        "Areal": {
+          "applied": true,
+          "diff_pp_abs": 4.253476218891561,
+          "reason": "promoted_from_shadow_state_areal",
+          "method": ""
+        },
+        "Alite": {
+          "applied": false,
+          "diff_pp_abs": null,
+          "reason": "disabled_by_flag",
+          "method": ""
+        },
+        "B": {
+          "applied": false,
+          "diff_pp_abs": null,
+          "reason": "disabled_by_flag",
+          "method": ""
+        },
+        "RankSOS": {
+          "applied": true,
+          "diff_pp_abs": 2.4308463114484757,
+          "reason": "applied",
+          "method": "league_rank_sos_h2h_quality_v2"
+        },
+        "Roster": {
+          "applied": false,
+          "diff_pp_abs": null,
+          "reason": "low_lineup_coverage",
+          "method": "roster_continuity_v2"
+        },
+        "HierCal": {
+          "applied": true,
+          "diff_pp_abs": 0.16473260753202545,
+          "reason": "ok",
+          "method": "hier_calibration_v3"
+        },
+        "SeriesBO": {
+          "applied": true,
+          "diff_pp_abs": 0.6168743174329361,
+          "reason": "ok",
+          "method": "series_bo_v5_live"
+        },
+        "C": {
+          "applied": false,
+          "diff_pp_abs": null,
+          "reason": "disabled_by_flag",
+          "method": ""
+        }
+      },
+      "layer_scores": {
+        "Areal": {
+          "weight": 1.25,
+          "uncertainty": 0.64,
+          "confidence": 0.36
+        },
+        "Alite": {
+          "weight": 1.1,
+          "uncertainty": 0.6,
+          "confidence": 0.4
+        },
+        "B": {
+          "weight": 0.95,
+          "uncertainty": 0.6,
+          "confidence": 0.4
+        },
+        "RankSOS": {
+          "weight": 0.85,
+          "uncertainty": 0.4,
+          "confidence": 0.6
+        },
+        "Roster": {
+          "weight": 0.95,
+          "uncertainty": 0.66,
+          "confidence": 0.33999999999999997
+        },
+        "HierCal": {
+          "weight": 0.9,
+          "uncertainty": 0.22,
+          "confidence": 0.78
+        },
+        "SeriesBO": {
+          "weight": 0.8,
+          "uncertainty": 0.3,
+          "confidence": 0.7
+        },
+        "C": {
+          "weight": 1.05,
+          "uncertainty": 0.6,
+          "confidence": 0.4
+        }
+      },
+      "dominant_risk_layers": [
+        {
+          "layer": "Roster",
+          "uncertainty": 0.66,
+          "applied": false,
+          "diff_pp_abs": null
+        },
+        {
+          "layer": "Areal",
+          "uncertainty": 0.64,
+          "applied": true,
+          "diff_pp_abs": 4.253476218891561
+        },
+        {
+          "layer": "Alite",
+          "uncertainty": 0.6,
+          "applied": false,
+          "diff_pp_abs": null
+        }
+      ],
+      "actionability_zone": "medium",
+      "actionability_note": "Incerteza moderada: stake conservadora e confirmação por mercado.",
+      "applied_layers": 4,
+      "missing_layers": 4,
+      "governor": {
+        "enabled": true,
+        "limited": false,
+        "requested_shrink_pp": 1.2187410547329636,
+        "applied_shrink_pp": 1.2187410547329636,
+        "used_shrink_pp": 5.63694988115655,
+        "remaining_shrink_pp": 4.12305011884345
+      }
+    },
+    "meta_c_lite_live": {
+      "enabled": false,
+      "applied": false,
+      "reason": "disabled_by_flag",
+      "p_map_before": 0.5537648162249269,
+      "p_series_before": 0.5803363932178396,
+      "p_map_after": null,
+      "p_series_after": null
+    },
+    "odds": {
+      "teamA_map": 1.8464581230984793,
+      "teamB_map": 2.18139335273844
+    }
+  },
+  "resumo_markets_trace": [
+    {
+      "mercado": "Kills (52.5)",
+      "lado": "Abaixo",
+      "linha": "52.5",
+      "odd_model": 1.5206265885082375,
+      "odd_hist": 1.5135135135135136,
+      "odd_mix": 1.5158678465183997,
+      "obs_mix": "",
+      "calib_reason": "mix",
+      "calib_source": "mix"
+    },
+    {
+      "mercado": "Torres (11.5)",
+      "lado": "Acima",
+      "linha": "11.5",
+      "odd_model": 1.611025822462506,
+      "odd_hist": 1.731958762886598,
+      "odd_mix": 1.6350707554147763,
+      "obs_mix": "",
+      "calib_reason": "mix",
+      "calib_source": "mix"
+    },
+    {
+      "mercado": "Roshans (1.5)",
+      "lado": "Acima",
+      "linha": "1.5",
+      "odd_model": 1.4256284699080686,
+      "odd_hist": 1.4237288135593222,
+      "odd_mix": 1.3825615623414738,
+      "obs_mix": "",
+      "calib_reason": "mix",
+      "calib_source": "mix"
+    },
+    {
+      "mercado": "Tempo (39:30)",
+      "lado": "Acima",
+      "linha": "39:30",
+      "odd_model": 1.4592839495858083,
+      "odd_hist": 1.731958762886598,
+      "odd_mix": 1.6771885401681785,
+      "obs_mix": "",
+      "calib_reason": "mix",
+      "calib_source": "mix"
+    }
+  ],
+  "players_trace": [],
+  "feature_trace": [
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_shadow_state_alite_v1",
+      "event": "shadow_compare",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.601743, \"pm_old\": 0.573638, \"ps_new\": 0.650509, \"ps_old\": 0.577402, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "state+uncertainty+recent_form",
+        "p_map_old": 0.573638441374678,
+        "p_map_new": 0.6017433919844684,
+        "p_series_old": 0.5774015348685492,
+        "p_series_new": 0.6505086502104819,
+        "diff_pp_map": 2.8104950609790347,
+        "diff_pp_series": 7.3107115341932705,
+        "weights": {
+          "uncertainty": 0.18,
+          "evidence": 0.9673659673659674,
+          "rd_conf": 0.8187607128330733,
+          "patch": 1.0,
+          "consistency": 1.0,
+          "floor": 0.5699625668449197,
+          "final": 0.5699625668449197,
+          "recent_direction": 0.14596411679536686,
+          "interregional_relief": 0.0
+        },
+        "inputs": {
+          "league_a": "DreamLeague Season 28",
+          "league_b": "DreamLeague Season 28",
+          "macro_a": "OTHER",
+          "macro_b": "OTHER",
+          "interregional": false,
+          "unknown_macro": true,
+          "roster_changed": false,
+          "patch_status": "ok",
+          "patch_shrink": 0.0,
+          "n_eff_uncertainty": 0.0,
+          "prior_games_uncertainty": 22.0,
+          "n_team_eff": 415.0,
+          "n_players_eff": 0.0,
+          "season_form_applied": true,
+          "season_form_w": 0.2068935006435008,
+          "season_form_n_min": 34.0,
+          "season_form_p_form": 0.6324404761904763,
+          "season_form_p_model": 0.6208786078257545,
+          "recent_evidence": 0.85,
+          "recent_delta_logit": 0.04942169778572314
+        },
+        "uncertainty": {
+          "rd_blue": 0.3632455532033676,
+          "rd_red": 0.36864064729836443,
+          "rd_pair": 0.5175357560232701,
+          "games_blue": 489.0,
+          "games_red": 415.0,
+          "shrink_blue": 1.0,
+          "shrink_red": 1.0
+        }
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_shadow_state_areal_v1",
+      "event": "shadow_compare",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.531104, \"pm_old\": 0.573638, \"ps_new\": 0.546595, \"ps_old\": 0.577402, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "team_state_artifact_mu_sigma",
+        "p_map_old": 0.573638441374678,
+        "p_map_new": 0.5311036791857624,
+        "p_series_old": 0.5774015348685492,
+        "p_series_new": 0.546595336962846,
+        "diff_pp_map": -4.253476218891561,
+        "diff_pp_series": -3.080619790570316,
+        "weights": {
+          "state_conf": 0.7453410459003437,
+          "uncertainty": 0.2,
+          "evidence": 0.25,
+          "patch": 1.0,
+          "roster": 1.0,
+          "league": 0.72,
+          "interregional_state_damp": 1.0,
+          "league_coverage": 0.82,
+          "roster_state": 1.0,
+          "qwl_n": 0.9784951285362131,
+          "qwl_reliability": 0.9665682414641178,
+          "qwl_state_boost": 1.0011792296469924,
+          "qwl_logit_shift": 0.0011792296469924093,
+          "consistency": 1.0,
+          "state_recency": 1.0,
+          "model_precision": 0.44499999999999995,
+          "state_precision": 1.257599700513437,
+          "state_precision_effective": 1.1318397304620933,
+          "disagree_penalty": 0.9,
+          "precision_state_weight": 0.7177899621608389,
+          "floor": 0.3145648818160326,
+          "floor_effective": 0.3145648818160326,
+          "final": 0.7177899621608389
+        },
+        "inputs": {
+          "team_blue": "Team Liquid",
+          "team_red": "Xtreme Gaming",
+          "team_blue_key": "teamliquid",
+          "team_red_key": "xtremegaming",
+          "league_blue": "DreamLeague Season 28",
+          "league_red": "DreamLeague Season 28",
+          "roster_changed": false,
+          "patch_status": "ok",
+          "patch_shrink": 0.0,
+          "n_team_eff": 0.0,
+          "n_players_eff": 0.0,
+          "n_eff_uncertainty": 0.0
+        },
+        "state": {
+          "blue": {
+            "team": "Team Liquid",
+            "mu": 0.257312832213345,
+            "sigma": 0.4049640950643212,
+            "gp": 495
+          },
+          "red": {
+            "team": "Xtreme Gaming",
+            "mu": 0.1925345224005619,
+            "sigma": 0.4331792892597941,
+            "gp": 421
+          },
+          "rd_pair": 0.5929925926475683,
+          "gp_harmonic": 455.01091703056767,
+          "stale_days_max": 0.0,
+          "blue_last_league": "ESPORTS WORLD CUP 2026",
+          "red_last_league": "ESPORTS WORLD CUP 2026",
+          "blue_league_mismatch": true,
+          "red_league_mismatch": true,
+          "interregional": false,
+          "cross_tier_interregional": false,
+          "cross_strength_interregional": false,
+          "tier_gap": 0,
+          "strength_gap": 0.0,
+          "shared_last_league": true,
+          "shared_foreign_last_league": false,
+          "recent_shared_event": false,
+          "blue_roster_cont_avg": 1.0,
+          "red_roster_cont_avg": 1.0,
+          "blue_roster_cont_n": 0,
+          "red_roster_cont_n": 0,
+          "p_state": 0.5142205847759694,
+          "artifact_version": "team_state_artifact_v9",
+          "artifact_update_mode": "full_rebuild_history_source_changed"
+        },
+        "qwl_trace": {
+          "enabled": true,
+          "params": {
+            "qwl_expected_base": 0.12,
+            "qwl_expected_slope": 0.6,
+            "qwl_surplus_mix": 0.7,
+            "qwl_tempo_weight": 0.08,
+            "qwl_conversion_weight": 0.12,
+            "qwl_throw_weight": 1.2,
+            "qwl_comeback_weight": 0.65,
+            "qwl_phase_dynamic_strength": 0.35,
+            "qwl_opponent_context_mix": 0.3
+          },
+          "map_overrides_count": {
+            "qwl_surplus_mix_by_league": 0,
+            "qwl_surplus_mix_by_patch": 0,
+            "qwl_throw_weight_by_league": 0,
+            "qwl_throw_weight_by_patch": 0,
+            "qwl_comeback_weight_by_league": 0,
+            "qwl_comeback_weight_by_patch": 0,
+            "qwl_phase_dynamic_strength_by_league": 0,
+            "qwl_phase_dynamic_strength_by_patch": 0,
+            "qwl_opponent_context_mix_by_league": 0,
+            "qwl_opponent_context_mix_by_patch": 0
+          },
+          "artifact_meta": {
+            "quality_adjust_avg": 0.13616542036859025,
+            "quality_expected_avg": 0.15225334714612473,
+            "quality_surplus_avg": 0.09832813197650837,
+            "quality_context_multiplier_avg": 1.001496209401163,
+            "quality_context_boost_games": 8578,
+            "quality_context_cut_games": 12109,
+            "quality_tempo_avg": 0.021834494470774034,
+            "quality_conversion_avg": 0.0,
+            "quality_throw_avg": 0.0,
+            "quality_comeback_avg": 0.0
+          },
+          "team_edge": {
+            "edge_core": 0.009395404812810971,
+            "edge_surplus": 0.004646015529666025,
+            "edge_secondary": 0.004053713368842805,
+            "edge_total": 0.00708426065682021,
+            "n_blue": 495,
+            "n_red": 421,
+            "n_harmonic": 455.01091703056767,
+            "w_n": 0.9784951285362131,
+            "w_reliability": 0.9665682414641178,
+            "quality_k_boost": 0.22,
+            "surplus_mix": 0.7,
+            "logit_shift": 0.0011792296469924093
+          }
+        }
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_league_rank_sos_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": 0.555412, \"p_before\": 0.531104, \"p_rank\": 0.617673, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "league_rank_sos_h2h_quality_v2",
+        "reason": "applied",
+        "p_before": 0.5311036791857624,
+        "p_after": 0.5554121423002472,
+        "diff_pp": 2.4308463114484757,
+        "p_rank": 0.6176730784036116,
+        "weight": 0.27593649860218494,
+        "n_team_a": 36,
+        "n_team_b": 34,
+        "n_teams_league": 16,
+        "n_games_league": 390,
+        "h2h_maps": 2,
+        "h2h_a_wins": 2,
+        "h2h_b_wins": 0,
+        "h2h_n_eff": 1.9293592330516824,
+        "h2h_p_laplace": 0.75,
+        "h2h_p_quality": 0.7573909276886349,
+        "h2h_quality_weight": 0.11336539841779096,
+        "h2h_quality_edge": 1.0,
+        "h2h_quality_surplus": 0.0,
+        "h2h_quality_conversion_edge": 0.0,
+        "h2h_quality_coverage": 0.6308571428571429,
+        "h2h_quality_freshness": 0.9790924038060368,
+        "h2h_quality_data_reliability": 1.0,
+        "team_a_row": {},
+        "team_b_row": {}
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_roster_continuity_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.555412, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\", \"target_p\": null}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": false,
+        "method": "roster_continuity_v2",
+        "reason": "low_lineup_coverage",
+        "p_before": 0.5554121423002472,
+        "p_after": null,
+        "diff_pp": null,
+        "weight": null,
+        "target_p": null,
+        "lineup_continuity": 1.0,
+        "freshness_avg": 1.0,
+        "coverage_eff": null,
+        "roster_changed": false,
+        "season_phase": "auto",
+        "evidence": null,
+        "roster_pressure": null,
+        "target_source": null,
+        "signal_source": "areal_fallback",
+        "fallback_used": true,
+        "source_parts": [
+          "shadow_state_areal.roster_cont_avg",
+          "shadow_state_areal.stale_days",
+          "derived_from_lineup_continuity"
+        ],
+        "roster_changed_source": "lineup_vs_gate"
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_hier_calibration_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"bias_adj\": 3.7e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.553765, \"p_before\": 0.555412, \"scope\": \"league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0\", \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "hier_calibration_v3",
+        "reason": "ok",
+        "scope_used": "league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0",
+        "p_before": 0.5554121423002472,
+        "p_after": 0.5537648162249269,
+        "diff_pp": -0.16473260753202545,
+        "weight": 0.03,
+        "bias_raw": 0.14975099987255214,
+        "bias_adj": 3.743774996813803e-05,
+        "league_resolution_source": "resolved",
+        "league_resolution_parts": [
+          "ml_info.blue",
+          "ml_info.red"
+        ],
+        "inputs": {}
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_series_bo_dplite_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"bo\": 3, \"eng\": \"mlcore_v2\", \"p_after\": 0.60349, \"p_before\": 0.609659, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "series_bo_v5_live",
+        "reason": "ok",
+        "bo": 3,
+        "same_league": true,
+        "interregional": false,
+        "playoffs": true,
+        "p_map": 0.573638441374678,
+        "p_before": 0.6096590354849999,
+        "p_after": 0.6034902923106705,
+        "diff_pp": -0.6168743174329361,
+        "weight": 0.64,
+        "cap_pp": 8.0,
+        "bias_raw": null,
+        "bias_adj": null
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:10",
+      "feature": "ml_layer_uncertainty_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.541577, \"pm_before\": 0.553765, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "ok",
+        "method": "layer_uncertainty_v2",
+        "p_before": 0.5537648162249269,
+        "p_after": 0.5415774056775973,
+        "diff_pp": -1.2187410547329636,
+        "p_series_before": 0.5803363932178396,
+        "p_series_after": 0.56315524297394,
+        "diff_pp_series": -1.7181150243899546,
+        "evidence_score": 0.0,
+        "uncertainty_score": 0.5425878001115423,
+        "confidence_score": 0.4574121998884577,
+        "shrink_map": 0.22788687604684776,
+        "shrink_series": 0.21649253224450538,
+        "cap_pp_map": 2.0,
+        "cap_pp_series": 2.3,
+        "components": {
+          "Areal": {
+            "applied": true,
+            "diff_pp_abs": 4.253476218891561,
+            "reason": "promoted_from_shadow_state_areal",
+            "method": ""
+          },
+          "Alite": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          },
+          "B": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          },
+          "RankSOS": {
+            "applied": true,
+            "diff_pp_abs": 2.4308463114484757,
+            "reason": "applied",
+            "method": "league_rank_sos_h2h_quality_v2"
+          },
+          "Roster": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "low_lineup_coverage",
+            "method": "roster_continuity_v2"
+          },
+          "HierCal": {
+            "applied": true,
+            "diff_pp_abs": 0.16473260753202545,
+            "reason": "ok",
+            "method": "hier_calibration_v3"
+          },
+          "SeriesBO": {
+            "applied": true,
+            "diff_pp_abs": 0.6168743174329361,
+            "reason": "ok",
+            "method": "series_bo_v5_live"
+          },
+          "C": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          }
+        }
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_shadow_state_alite_v1",
+      "event": "shadow_compare",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.601743, \"pm_old\": 0.573638, \"ps_new\": 0.650509, \"ps_old\": 0.577402, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "state+uncertainty+recent_form",
+        "p_map_old": 0.573638441374678,
+        "p_map_new": 0.6017433919844684,
+        "p_series_old": 0.5774015348685492,
+        "p_series_new": 0.6505086502104819,
+        "diff_pp_map": 2.8104950609790347,
+        "diff_pp_series": 7.3107115341932705,
+        "weights": {
+          "uncertainty": 0.18,
+          "evidence": 0.9673659673659674,
+          "rd_conf": 0.8187607128330733,
+          "patch": 1.0,
+          "consistency": 1.0,
+          "floor": 0.5699625668449197,
+          "final": 0.5699625668449197,
+          "recent_direction": 0.14596411679536686,
+          "interregional_relief": 0.0
+        },
+        "inputs": {
+          "league_a": "DreamLeague Season 28",
+          "league_b": "DreamLeague Season 28",
+          "macro_a": "OTHER",
+          "macro_b": "OTHER",
+          "interregional": false,
+          "unknown_macro": true,
+          "roster_changed": false,
+          "patch_status": "ok",
+          "patch_shrink": 0.0,
+          "n_eff_uncertainty": 0.0,
+          "prior_games_uncertainty": 22.0,
+          "n_team_eff": 415.0,
+          "n_players_eff": 0.0,
+          "season_form_applied": true,
+          "season_form_w": 0.2068935006435008,
+          "season_form_n_min": 34.0,
+          "season_form_p_form": 0.6324404761904763,
+          "season_form_p_model": 0.6208786078257545,
+          "recent_evidence": 0.85,
+          "recent_delta_logit": 0.04942169778572314
+        },
+        "uncertainty": {
+          "rd_blue": 0.3632455532033676,
+          "rd_red": 0.36864064729836443,
+          "rd_pair": 0.5175357560232701,
+          "games_blue": 489.0,
+          "games_red": 415.0,
+          "shrink_blue": 1.0,
+          "shrink_red": 1.0
+        }
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_shadow_state_areal_v1",
+      "event": "shadow_compare",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.531104, \"pm_old\": 0.573638, \"ps_new\": 0.546595, \"ps_old\": 0.577402, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "team_state_artifact_mu_sigma",
+        "p_map_old": 0.573638441374678,
+        "p_map_new": 0.5311036791857624,
+        "p_series_old": 0.5774015348685492,
+        "p_series_new": 0.546595336962846,
+        "diff_pp_map": -4.253476218891561,
+        "diff_pp_series": -3.080619790570316,
+        "weights": {
+          "state_conf": 0.7453410459003437,
+          "uncertainty": 0.2,
+          "evidence": 0.25,
+          "patch": 1.0,
+          "roster": 1.0,
+          "league": 0.72,
+          "interregional_state_damp": 1.0,
+          "league_coverage": 0.82,
+          "roster_state": 1.0,
+          "qwl_n": 0.9784951285362131,
+          "qwl_reliability": 0.9665682414641178,
+          "qwl_state_boost": 1.0011792296469924,
+          "qwl_logit_shift": 0.0011792296469924093,
+          "consistency": 1.0,
+          "state_recency": 1.0,
+          "model_precision": 0.44499999999999995,
+          "state_precision": 1.257599700513437,
+          "state_precision_effective": 1.1318397304620933,
+          "disagree_penalty": 0.9,
+          "precision_state_weight": 0.7177899621608389,
+          "floor": 0.3145648818160326,
+          "floor_effective": 0.3145648818160326,
+          "final": 0.7177899621608389
+        },
+        "inputs": {
+          "team_blue": "Team Liquid",
+          "team_red": "Xtreme Gaming",
+          "team_blue_key": "teamliquid",
+          "team_red_key": "xtremegaming",
+          "league_blue": "DreamLeague Season 28",
+          "league_red": "DreamLeague Season 28",
+          "roster_changed": false,
+          "patch_status": "ok",
+          "patch_shrink": 0.0,
+          "n_team_eff": 0.0,
+          "n_players_eff": 0.0,
+          "n_eff_uncertainty": 0.0
+        },
+        "state": {
+          "blue": {
+            "team": "Team Liquid",
+            "mu": 0.257312832213345,
+            "sigma": 0.4049640950643212,
+            "gp": 495
+          },
+          "red": {
+            "team": "Xtreme Gaming",
+            "mu": 0.1925345224005619,
+            "sigma": 0.4331792892597941,
+            "gp": 421
+          },
+          "rd_pair": 0.5929925926475683,
+          "gp_harmonic": 455.01091703056767,
+          "stale_days_max": 0.0,
+          "blue_last_league": "ESPORTS WORLD CUP 2026",
+          "red_last_league": "ESPORTS WORLD CUP 2026",
+          "blue_league_mismatch": true,
+          "red_league_mismatch": true,
+          "interregional": false,
+          "cross_tier_interregional": false,
+          "cross_strength_interregional": false,
+          "tier_gap": 0,
+          "strength_gap": 0.0,
+          "shared_last_league": true,
+          "shared_foreign_last_league": false,
+          "recent_shared_event": false,
+          "blue_roster_cont_avg": 1.0,
+          "red_roster_cont_avg": 1.0,
+          "blue_roster_cont_n": 0,
+          "red_roster_cont_n": 0,
+          "p_state": 0.5142205847759694,
+          "artifact_version": "team_state_artifact_v9",
+          "artifact_update_mode": "full_rebuild_history_source_changed"
+        },
+        "qwl_trace": {
+          "enabled": true,
+          "params": {
+            "qwl_expected_base": 0.12,
+            "qwl_expected_slope": 0.6,
+            "qwl_surplus_mix": 0.7,
+            "qwl_tempo_weight": 0.08,
+            "qwl_conversion_weight": 0.12,
+            "qwl_throw_weight": 1.2,
+            "qwl_comeback_weight": 0.65,
+            "qwl_phase_dynamic_strength": 0.35,
+            "qwl_opponent_context_mix": 0.3
+          },
+          "map_overrides_count": {
+            "qwl_surplus_mix_by_league": 0,
+            "qwl_surplus_mix_by_patch": 0,
+            "qwl_throw_weight_by_league": 0,
+            "qwl_throw_weight_by_patch": 0,
+            "qwl_comeback_weight_by_league": 0,
+            "qwl_comeback_weight_by_patch": 0,
+            "qwl_phase_dynamic_strength_by_league": 0,
+            "qwl_phase_dynamic_strength_by_patch": 0,
+            "qwl_opponent_context_mix_by_league": 0,
+            "qwl_opponent_context_mix_by_patch": 0
+          },
+          "artifact_meta": {
+            "quality_adjust_avg": 0.13616542036859025,
+            "quality_expected_avg": 0.15225334714612473,
+            "quality_surplus_avg": 0.09832813197650837,
+            "quality_context_multiplier_avg": 1.001496209401163,
+            "quality_context_boost_games": 8578,
+            "quality_context_cut_games": 12109,
+            "quality_tempo_avg": 0.021834494470774034,
+            "quality_conversion_avg": 0.0,
+            "quality_throw_avg": 0.0,
+            "quality_comeback_avg": 0.0
+          },
+          "team_edge": {
+            "edge_core": 0.009395404812810971,
+            "edge_surplus": 0.004646015529666025,
+            "edge_secondary": 0.004053713368842805,
+            "edge_total": 0.00708426065682021,
+            "n_blue": 495,
+            "n_red": 421,
+            "n_harmonic": 455.01091703056767,
+            "w_n": 0.9784951285362131,
+            "w_reliability": 0.9665682414641178,
+            "quality_k_boost": 0.22,
+            "surplus_mix": 0.7,
+            "logit_shift": 0.0011792296469924093
+          }
+        }
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_league_rank_sos_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": 0.555412, \"p_before\": 0.531104, \"p_rank\": 0.617673, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "league_rank_sos_h2h_quality_v2",
+        "reason": "applied",
+        "p_before": 0.5311036791857624,
+        "p_after": 0.5554121423002472,
+        "diff_pp": 2.4308463114484757,
+        "p_rank": 0.6176730784036116,
+        "weight": 0.27593649860218494,
+        "n_team_a": 36,
+        "n_team_b": 34,
+        "n_teams_league": 16,
+        "n_games_league": 390,
+        "h2h_maps": 2,
+        "h2h_a_wins": 2,
+        "h2h_b_wins": 0,
+        "h2h_n_eff": 1.9293592330516824,
+        "h2h_p_laplace": 0.75,
+        "h2h_p_quality": 0.7573909276886349,
+        "h2h_quality_weight": 0.11336539841779096,
+        "h2h_quality_edge": 1.0,
+        "h2h_quality_surplus": 0.0,
+        "h2h_quality_conversion_edge": 0.0,
+        "h2h_quality_coverage": 0.6308571428571429,
+        "h2h_quality_freshness": 0.9790924038060368,
+        "h2h_quality_data_reliability": 1.0,
+        "team_a_row": {},
+        "team_b_row": {}
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_roster_continuity_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.555412, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\", \"target_p\": null}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": false,
+        "method": "roster_continuity_v2",
+        "reason": "low_lineup_coverage",
+        "p_before": 0.5554121423002472,
+        "p_after": null,
+        "diff_pp": null,
+        "weight": null,
+        "target_p": null,
+        "lineup_continuity": 1.0,
+        "freshness_avg": 1.0,
+        "coverage_eff": null,
+        "roster_changed": false,
+        "season_phase": "auto",
+        "evidence": null,
+        "roster_pressure": null,
+        "target_source": null,
+        "signal_source": "areal_fallback",
+        "fallback_used": true,
+        "source_parts": [
+          "shadow_state_areal.roster_cont_avg",
+          "shadow_state_areal.stale_days",
+          "derived_from_lineup_continuity"
+        ],
+        "roster_changed_source": "lineup_vs_gate"
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_hier_calibration_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"bias_adj\": 3.7e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.553765, \"p_before\": 0.555412, \"scope\": \"league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0\", \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "hier_calibration_v3",
+        "reason": "ok",
+        "scope_used": "league:DREAMLEAGUE SEASON 28|patch:ok|bo:3|po:0|inter:0",
+        "p_before": 0.5554121423002472,
+        "p_after": 0.5537648162249269,
+        "diff_pp": -0.16473260753202545,
+        "weight": 0.03,
+        "bias_raw": 0.14975099987255214,
+        "bias_adj": 3.743774996813803e-05,
+        "league_resolution_source": "resolved",
+        "league_resolution_parts": [
+          "ml_info.blue",
+          "ml_info.red"
+        ],
+        "inputs": {}
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_series_bo_dplite_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"bo\": 3, \"eng\": \"mlcore_v2\", \"p_after\": 0.60349, \"p_before\": 0.609659, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "method": "series_bo_v5_live",
+        "reason": "ok",
+        "bo": 3,
+        "same_league": true,
+        "interregional": false,
+        "playoffs": true,
+        "p_map": 0.573638441374678,
+        "p_before": 0.6096590354849999,
+        "p_after": 0.6034902923106705,
+        "diff_pp": -0.6168743174329361,
+        "weight": 0.64,
+        "cap_pp": 8.0,
+        "bias_raw": null,
+        "bias_adj": null
+      }
+    },
+    {
+      "generated_at": "2026-07-14T09:00:40",
+      "feature": "ml_layer_uncertainty_live_v1",
+      "event": "live_apply",
+      "enabled": true,
+      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.541577, \"pm_before\": 0.553765, \"sig\": \"fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289\"}",
+      "payload": {
+        "matchup": {
+          "season": "S15",
+          "teamA": "Team Liquid",
+          "teamB": "Xtreme Gaming",
+          "bo": 3
+        },
+        "engine": "mlcore_v2",
+        "input_signature_sha256": "fd2f46755fc94f199cb3394c12fd0415e59ce69b80f37b8698d6bd7ca11f9289",
+        "applied": true,
+        "reason": "ok",
+        "method": "layer_uncertainty_v2",
+        "p_before": 0.5537648162249269,
+        "p_after": 0.5415774056775973,
+        "diff_pp": -1.2187410547329636,
+        "p_series_before": 0.5803363932178396,
+        "p_series_after": 0.56315524297394,
+        "diff_pp_series": -1.7181150243899546,
+        "evidence_score": 0.0,
+        "uncertainty_score": 0.5425878001115423,
+        "confidence_score": 0.4574121998884577,
+        "shrink_map": 0.22788687604684776,
+        "shrink_series": 0.21649253224450538,
+        "cap_pp_map": 2.0,
+        "cap_pp_series": 2.3,
+        "components": {
+          "Areal": {
+            "applied": true,
+            "diff_pp_abs": 4.253476218891561,
+            "reason": "promoted_from_shadow_state_areal",
+            "method": ""
+          },
+          "Alite": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          },
+          "B": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          },
+          "RankSOS": {
+            "applied": true,
+            "diff_pp_abs": 2.4308463114484757,
+            "reason": "applied",
+            "method": "league_rank_sos_h2h_quality_v2"
+          },
+          "Roster": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "low_lineup_coverage",
+            "method": "roster_continuity_v2"
+          },
+          "HierCal": {
+            "applied": true,
+            "diff_pp_abs": 0.16473260753202545,
+            "reason": "ok",
+            "method": "hier_calibration_v3"
+          },
+          "SeriesBO": {
+            "applied": true,
+            "diff_pp_abs": 0.6168743174329361,
+            "reason": "ok",
+            "method": "series_bo_v5_live"
+          },
+          "C": {
+            "applied": false,
+            "diff_pp_abs": null,
+            "reason": "disabled_by_flag",
+            "method": ""
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "app_version": "gabinete-2026.02.12",
+    "generated_at": "2026-07-14T09:00:44",
+    "season": "S15",
+    "teams": {
+      "teamA": "Team Liquid",
+      "teamB": "Xtreme Gaming",
+      "bo": 3
+    },
+    "filters": {
+      "year": "2026",
+      "split": "All",
+      "playoffs": "all",
+      "map_mode": "",
+      "league_mode": "auto"
+    },
+    "calibration": {
+      "ml_engine": "mlcore_v2",
+      "microseg_enabled": true,
+      "microseg_strength": 0.6,
+      "wf_half_life_days": 180.0,
+      "series_gamma_on": true
+    }
+  }
+}

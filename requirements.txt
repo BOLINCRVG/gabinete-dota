@@ -1,0 +1,13 @@
+# Dependencias do Gabinete Dota (clone do app do LoL) — versoes espelhadas do
+# requirements do repo LoL (testadas juntas em 2026-07). O SETUP bat instala.
+streamlit==1.51.0
+pandas==2.3.3
+numpy==2.2.6
+requests==2.32.5
+scikit-learn==1.7.2
+scipy==1.16.2
+# live/in-game ML (mesma nota do LoL: pre-jogo roda sem; necessario p/ live)
+lightgbm==4.6.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+tzdata==2025.2
