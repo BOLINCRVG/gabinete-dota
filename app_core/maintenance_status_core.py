@@ -230,8 +230,12 @@ def collect_maintenance_status(
         csv_m = _mtime_as_datetime(csv_p)
         pl_m = _mtime_as_datetime(players_p)
         if csv_m is not None and pl_m is not None and csv_m > pl_m + timedelta(minutes=2):
+            # Aviso informativo APENAS: quem resolve players desatualizado é o
+            # fit profundo de players, não o retreino de modelo (que roda com
+            # --no-fit-players e não toca neste arquivo). Ligar need_retrain_model
+            # aqui criava flag insaciável: toda troca de CSV pagava retreino
+            # completo de ~16min e a pendência reacendia (visto 2026-07-14).
             _push("Drift de dados: CSV diário mais novo que o `players_artifact.json`.")
-            need_retrain_model = True
 
     csv_m = _mtime_as_datetime(csv_p)
     art_m = _mtime_as_datetime(art_p)

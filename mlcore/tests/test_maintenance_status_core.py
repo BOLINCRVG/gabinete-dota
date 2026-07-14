@@ -138,6 +138,42 @@ class TestMaintenanceStatusCore(unittest.TestCase):
             self.assertTrue(any("Retreino de parâmetros em execução" in x for x in out["alerts"]))
 
 
+    def test_stale_players_artifact_warns_but_does_not_flag_model_retrain(self):
+        """Regressão 2026-07-14: players_artifact mais velho que o CSV ligava
+        need_retrain_model — flag insaciável (o retreino roda --no-fit-players
+        e não toca no players_artifact), toda troca de CSV pagava retreino
+        completo de ~16min em loop. Drift de players é aviso, não gatilho."""
+        with workspace_tempdir("maintenance_status_core") as td:
+            root = Path(td)
+            csv = root / "daily.csv"
+            art = root / "ml_artifact.json"
+            params = root / "params_fitted.json"
+            players = root / "players_artifact.json"
+            for p in [csv, art, params, players]:
+                p.write_text("{}", encoding="utf-8")
+            now_dt = datetime(2026, 7, 14, 15, 0, 0)
+            # modelo/params recém-treinados e CSV atual; só players ficou velho
+            fresh = now_dt.timestamp()
+            stale = datetime(2026, 7, 1, 12, 0, 0).timestamp()
+            for p in [csv, art, params]:
+                os.utime(p, (fresh, fresh))
+            os.utime(players, (stale, stale))
+            out = collect_maintenance_status(
+                str(csv),
+                str(art),
+                app_root=root,
+                wf_report_path=root / "wf_last_report.json",
+                wf_last_report_at=now_dt.isoformat(timespec="seconds"),
+                file_sig_fn=lambda p: (str(p), 1, 1),
+                patch_meta_guard_payload_fn=lambda a, b: {"status": "ok"},
+                now=now_dt,
+            )
+            self.assertTrue(
+                any("players_artifact" in x for x in out["alerts"]),
+                out["alerts"],
+            )
+            self.assertFalse(out["need_retrain_model"], out["alerts"])
+
     def test_players_artifact_resolution_uses_custom_path(self):
         with workspace_tempdir("maintenance_status_core") as td:
             root = Path(td)

@@ -12,6 +12,7 @@ clica em nada que dispare retreino; Dota só roda se a pasta existir ao lado.
 """
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import unittest
@@ -57,10 +58,15 @@ print("RESULT|OK|" + ";".join(tabs))
 
 def _run_flow(app_path: Path, hint_a: str, hint_b: str) -> tuple[str, str]:
     """Roda o fluxo num subprocesso isolado. Retorna (status, payload)."""
+    # PYTHONIOENCODING: sem isso o driver imprime cp1252 no Windows e
+    # "Visão Geral" chega como "Vis�o Geral" (mesma família do bug do
+    # run_cmd, 2026-07-14).
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
     cp = subprocess.run(
         [sys.executable, "-c", _DRIVER, str(app_path), hint_a, hint_b],
         capture_output=True, text=True, timeout=1200,
-        cwd=str(app_path.parent), encoding="utf-8", errors="replace",
+        cwd=str(app_path.parent), encoding="utf-8", errors="replace", env=env,
     )
     for line in (cp.stdout or "").splitlines():
         if line.startswith("RESULT|"):
