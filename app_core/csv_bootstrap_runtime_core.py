@@ -181,9 +181,26 @@ def reset_bootstrap_selection(session_state: MutableMapping[str, Any], *, show_s
 
 def resolve_ml_paths(session_state: Mapping[str, Any], root: Path) -> tuple[str, list[str], str]:
     """Resolve os caminhos ativos de CSV diário, CSVs históricos e artefato ML a partir da session_state."""
-    daily = str(session_state.get("boot_daily_csv") or session_state.get("cfg_csv_override") or "").strip()
+
+    def _valid_override(value: Any) -> str:
+        """Override cujo DIRETÓRIO não existe = lixo de outra máquina → ignora.
+
+        Regra de engenharia 2026-07-14: caminho absoluto persistido em settings
+        viajou num rar e quebrou o app em outro PC (retreino salvava em
+        C:\\Users\\<origem>\\... inexistente). Override só vale se o diretório
+        pai existir NESTA máquina; senão cai no automático (root).
+        """
+        s = str(value or "").strip()
+        if not s:
+            return ""
+        try:
+            return s if Path(s).parent.exists() else ""
+        except (OSError, ValueError):
+            return ""
+
+    daily = str(session_state.get("boot_daily_csv") or _valid_override(session_state.get("cfg_csv_override")) or "").strip()
     hist = [str(x) for x in (session_state.get("boot_hist_csvs") or []) if str(x or "").strip()]
-    art = str(session_state.get("cfg_artifact_override") or str(root / "ml_artifact.json")).strip()
+    art = str(_valid_override(session_state.get("cfg_artifact_override")) or str(root / "ml_artifact.json")).strip()
     return daily, hist, art
 
 

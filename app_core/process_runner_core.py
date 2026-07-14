@@ -22,6 +22,10 @@ def _env_with_repo_on_pythonpath() -> dict:
     prev = env.get("PYTHONPATH") or ""
     if _REPO_ROOT not in prev.split(os.pathsep):
         env["PYTHONPATH"] = _REPO_ROOT + (os.pathsep + prev if prev else "")
+    # Filhos python devem logar em UTF-8: sem isso, no Windows eles escrevem
+    # cp1252 e um "ç" no log (0xE7) estourava UnicodeDecodeError na leitura —
+    # retreino de 16min bem-sucedido era carimbado rc=1 (visto 2026-07-14).
+    env["PYTHONIOENCODING"] = "utf-8"
     return env
 
 
@@ -55,7 +59,9 @@ def run_cmd(
     timed_out = False
     proc: Optional[subprocess.Popen] = None
     try:
-        with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", delete=True) as _tmp:
+        # errors="replace": log é diagnóstico humano — byte fora do encoding
+        # NUNCA pode derrubar a leitura e reclassificar um treino OK como falha.
+        with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", errors="replace", delete=True) as _tmp:
             proc = subprocess.Popen(
                 cmd,
                 stdout=_tmp,

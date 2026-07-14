@@ -1,0 +1,3645 @@
+{
+  "generated_at": "2026-07-13T19:26:10+00:00",
+  "artifact": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\ml_artifact.json",
+  "players_artifact": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\players_artifact.json",
+  "csvs": [
+    "C:\\Users\\steam\\Desktop\\GabineteDOTA\\CSV_HISTORICO\\2025_Dota_match_data_oe_like.csv",
+    "C:\\Users\\steam\\Desktop\\GabineteDOTA\\CSV_DIARIO\\2026_Dota_match_data_oe_like.csv"
+  ],
+  "samples_total": 2500,
+  "speed_profile": "fast",
+  "players_context_budget": "fast",
+  "min_train_games": 300,
+  "w_lineup_used": 0.85,
+  "fit_plan": {
+    "run_label": "",
+    "start_stage": "load_inputs",
+    "seeded_base_params": false,
+    "base_params_path": "",
+    "stage_order": [
+      "load_inputs",
+      "player_weights",
+      "global_scales",
+      "form_combined",
+      "segmented_form",
+      "series_models",
+      "context_models",
+      "snapshots",
+      "finalize"
+    ]
+  },
+  "baseline": {
+    "team_scale": 1.0,
+    "players_scale": 1.0,
+    "logloss": 0.5893328634479176,
+    "brier": 0.19960722844714612,
+    "n_total": 1769,
+    "folds": 4
+  },
+  "best": {
+    "team_scale": 0.5,
+    "players_scale": 0.5,
+    "logloss": 0.5893328634479176,
+    "brier": 0.19960722844714612,
+    "n_total": 1769,
+    "folds": 4,
+    "improvement_logloss_vs_baseline": 0.0
+  },
+  "best_folds": [
+    {
+      "month": "2026-04",
+      "n": 700,
+      "logloss": 0.5649641813465345,
+      "brier": 0.19224111269007554
+    },
+    {
+      "month": "2026-05",
+      "n": 393,
+      "logloss": 0.5309780795403173,
+      "brier": 0.1766176582764477
+    },
+    {
+      "month": "2026-06",
+      "n": 532,
+      "logloss": 0.6280417635290302,
+      "brier": 0.21453108943983412
+    },
+    {
+      "month": "2026-07",
+      "n": 144,
+      "logloss": 0.7240437850001015,
+      "brier": 0.2430217288563409
+    }
+  ],
+  "best_form_baseline_no_form": {
+    "enabled": false,
+    "logloss": 0.5893328634479176,
+    "brier": 0.19960722844714612,
+    "n_total": 1769,
+    "folds": 4
+  },
+  "best_form": {
+    "enabled": true,
+    "max_weight": 0.85,
+    "knee_games": 3.0,
+    "beta_prior": 1.0,
+    "signal_power": 1.0,
+    "elite_same_league_parity_strength": 0.2,
+    "logloss": 0.5832512881966392,
+    "brier": 0.19922220662351675,
+    "n_total": 1769,
+    "folds": 4,
+    "improvement_logloss_vs_no_form": 0.006081575251278393,
+    "improvement_brier_vs_no_form": 0.0003850218236293723,
+    "settings": {
+      "ml_form_blend_enabled": true,
+      "ml_form_blend_max_weight": 0.85,
+      "ml_form_blend_knee_games": 3.0,
+      "ml_form_blend_beta": 1.0,
+      "ml_form_blend_signal_power": 1.0,
+      "ml_form_blend_parity_strength": 0.2,
+      "ml_form_use_fitted": true
+    }
+  },
+  "best_combined": {
+    "team_scale": 0.5,
+    "players_scale": 0.5,
+    "form_enabled": true,
+    "form_settings": {
+      "ml_form_blend_enabled": true,
+      "ml_form_blend_max_weight": 0.85,
+      "ml_form_blend_knee_games": 3.0,
+      "ml_form_blend_beta": 1.0,
+      "ml_form_blend_signal_power": 1.0,
+      "ml_form_blend_parity_strength": 0.2,
+      "ml_form_use_fitted": true
+    },
+    "logloss": 0.5832512881966392,
+    "brier": 0.19922220662351675,
+    "n_total": 1769,
+    "folds": 4,
+    "improvement_logloss_vs_scale_only": 0.006081575251278393
+  },
+  "microseg_calibration": {
+    "schema": "league|split|side|bo|phase",
+    "source": "walkforward_oos",
+    "shrink_k": 90.0,
+    "pred_rows_n": 1769,
+    "table": {
+      "Premier Series|nan|blue|1|regular": {
+        "n": 34.0,
+        "raw_bias": 0.13940945305219204,
+        "bias": 0.0803376509114327,
+        "shrink_k": 25.0
+      },
+      "Premier Series|*|blue|1|regular": {
+        "n": 34.0,
+        "raw_bias": 0.13940945305219204,
+        "bias": 0.0803376509114327,
+        "shrink_k": 25.0
+      },
+      "Premier Series|*|blue|*|regular": {
+        "n": 88.0,
+        "raw_bias": 0.10073409292270032,
+        "bias": 0.07844778917874007,
+        "shrink_k": 25.0
+      },
+      "Premier Series|*|*|*|regular": {
+        "n": 88.0,
+        "raw_bias": 0.10073409292270032,
+        "bias": 0.07844778917874007,
+        "shrink_k": 25.0
+      },
+      "Premier Series|*|*|*|*": {
+        "n": 88.0,
+        "raw_bias": 0.10073409292270032,
+        "bias": 0.07844778917874007,
+        "shrink_k": 25.0
+      },
+      "*|*|*|*|*": {
+        "n": 1769.0,
+        "raw_bias": 0.020722656637988873,
+        "bias": 0.020433879371573198,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|nan|blue|1|regular": {
+        "n": 10.0,
+        "raw_bias": 0.11770871230275937,
+        "bias": 0.03363106065793125,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|*|blue|1|regular": {
+        "n": 10.0,
+        "raw_bias": 0.11770871230275937,
+        "bias": 0.03363106065793125,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|*|blue|*|regular": {
+        "n": 16.0,
+        "raw_bias": 0.05557682771236074,
+        "bias": 0.021688518131652974,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|*|*|*|regular": {
+        "n": 16.0,
+        "raw_bias": 0.05557682771236074,
+        "bias": 0.021688518131652974,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|*|*|*|*": {
+        "n": 16.0,
+        "raw_bias": 0.05557682771236074,
+        "bias": 0.021688518131652974,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|nan|blue|1|regular": {
+        "n": 10.0,
+        "raw_bias": 0.053364241491309264,
+        "bias": 0.015246926140374074,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|*|blue|1|regular": {
+        "n": 10.0,
+        "raw_bias": 0.053364241491309264,
+        "bias": 0.015246926140374074,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|*|blue|*|regular": {
+        "n": 16.0,
+        "raw_bias": 0.07418487033239698,
+        "bias": 0.028950193300447603,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|*|*|*|regular": {
+        "n": 16.0,
+        "raw_bias": 0.07418487033239698,
+        "bias": 0.028950193300447603,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|*|*|*|*": {
+        "n": 16.0,
+        "raw_bias": 0.07418487033239698,
+        "bias": 0.028950193300447603,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|nan|blue|3|regular": {
+        "n": 6.0,
+        "raw_bias": 0.10888591840087651,
+        "bias": 0.021074693884040614,
+        "shrink_k": 25.0
+      },
+      "BLAST Slam VII China Qualifier|*|blue|3|regular": {
+        "n": 6.0,
+        "raw_bias": 0.10888591840087651,
+        "bias": 0.021074693884040614,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|nan|blue|3|regular": {
+        "n": 9.0,
+        "raw_bias": 0.1831955763829003,
+        "bias": 0.048492946689591254,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|*|blue|3|regular": {
+        "n": 9.0,
+        "raw_bias": 0.1831955763829003,
+        "bias": 0.048492946689591254,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|*|blue|*|regular": {
+        "n": 15.0,
+        "raw_bias": 0.23849371063188213,
+        "bias": 0.0894351414869558,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|*|*|*|regular": {
+        "n": 15.0,
+        "raw_bias": 0.23849371063188213,
+        "bias": 0.0894351414869558,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|*|*|*|*": {
+        "n": 15.0,
+        "raw_bias": 0.23849371063188213,
+        "bias": 0.0894351414869558,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|nan|blue|3|regular": {
+        "n": 6.0,
+        "raw_bias": -0.04797631327163701,
+        "bias": -0.009285738052574904,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier SEA|*|blue|3|regular": {
+        "n": 6.0,
+        "raw_bias": -0.04797631327163701,
+        "bias": -0.009285738052574904,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|nan|blue|1|regular": {
+        "n": 6.0,
+        "raw_bias": 0.3214409120053548,
+        "bias": 0.06221437006555254,
+        "shrink_k": 25.0
+      },
+      "RES Unchained - A Blast Dota Slam VII Qualifier EU|*|blue|1|regular": {
+        "n": 6.0,
+        "raw_bias": 0.3214409120053548,
+        "bias": 0.06221437006555254,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|nan|blue|1|regular": {
+        "n": 37.0,
+        "raw_bias": 0.03336035125598546,
+        "bias": 0.019908596717281644,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|*|blue|1|regular": {
+        "n": 37.0,
+        "raw_bias": 0.03336035125598546,
+        "bias": 0.019908596717281644,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|*|blue|*|regular": {
+        "n": 40.0,
+        "raw_bias": 0.03408727053433101,
+        "bias": 0.020976781867280626,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|*|*|*|regular": {
+        "n": 40.0,
+        "raw_bias": 0.03408727053433101,
+        "bias": 0.020976781867280626,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|*|*|*|*": {
+        "n": 40.0,
+        "raw_bias": 0.03408727053433101,
+        "bias": 0.020976781867280626,
+        "shrink_k": 25.0
+      },
+      "Premier Series|nan|blue|3|regular": {
+        "n": 54.0,
+        "raw_bias": 0.07638294024857582,
+        "bias": 0.052211123714216386,
+        "shrink_k": 25.0
+      },
+      "Premier Series|*|blue|3|regular": {
+        "n": 54.0,
+        "raw_bias": 0.07638294024857582,
+        "bias": 0.052211123714216386,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|nan|blue|1|regular": {
+        "n": 150.0,
+        "raw_bias": -0.028003167087609217,
+        "bias": -0.024002714646522184,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|blue|1|regular": {
+        "n": 150.0,
+        "raw_bias": -0.028003167087609217,
+        "bias": -0.024002714646522184,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|blue|*|regular": {
+        "n": 253.0,
+        "raw_bias": 0.012077061457787676,
+        "bias": 0.010990994779929071,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|*|*|regular": {
+        "n": 253.0,
+        "raw_bias": 0.012077061457787676,
+        "bias": 0.010990994779929071,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|*|*|*": {
+        "n": 253.0,
+        "raw_bias": 0.012077061457787676,
+        "bias": 0.010990994779929071,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|nan|blue|3|regular": {
+        "n": 97.0,
+        "raw_bias": 0.06323057042991757,
+        "bias": 0.05027348632542627,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|blue|3|regular": {
+        "n": 97.0,
+        "raw_bias": 0.06323057042991757,
+        "bias": 0.05027348632542627,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|nan|blue|5|regular": {
+        "n": 6.0,
+        "raw_bias": 0.18710104670994307,
+        "bias": 0.03621310581482769,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29 Qualifiers|*|blue|5|regular": {
+        "n": 6.0,
+        "raw_bias": 0.18710104670994307,
+        "bias": 0.03621310581482769,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|nan|blue|1|regular": {
+        "n": 29.0,
+        "raw_bias": 0.01866440164146402,
+        "bias": 0.010023474955601049,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|*|blue|1|regular": {
+        "n": 29.0,
+        "raw_bias": 0.01866440164146402,
+        "bias": 0.010023474955601049,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|*|blue|*|regular": {
+        "n": 45.0,
+        "raw_bias": 0.10230499377949345,
+        "bias": 0.06576749600110293,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|*|*|*|regular": {
+        "n": 45.0,
+        "raw_bias": 0.10230499377949345,
+        "bias": 0.06576749600110293,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|*|*|*|*": {
+        "n": 45.0,
+        "raw_bias": 0.10230499377949345,
+        "bias": 0.06576749600110293,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|nan|blue|1|regular": {
+        "n": 44.0,
+        "raw_bias": 0.06959096559831006,
+        "bias": 0.04437684762790786,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|*|blue|1|regular": {
+        "n": 44.0,
+        "raw_bias": 0.06959096559831006,
+        "bias": 0.04437684762790786,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|*|blue|*|regular": {
+        "n": 119.0,
+        "raw_bias": 0.020455444825292955,
+        "bias": 0.016904152320901818,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|*|*|*|regular": {
+        "n": 119.0,
+        "raw_bias": 0.020455444825292955,
+        "bias": 0.016904152320901818,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|*|*|*|*": {
+        "n": 119.0,
+        "raw_bias": 0.020455444825292955,
+        "bias": 0.016904152320901818,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|nan|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": -0.008370727361543788,
+        "bias": -0.00627804552115784,
+        "shrink_k": 25.0
+      },
+      "PGL Wallachia 2026 Season 8|*|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": -0.008370727361543788,
+        "bias": -0.00627804552115784,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|nan|blue|3|regular": {
+        "n": 16.0,
+        "raw_bias": 0.25390356702967176,
+        "bias": 0.09908431884084752,
+        "shrink_k": 25.0
+      },
+      "ESL challenger China powered By ACL|*|blue|3|regular": {
+        "n": 16.0,
+        "raw_bias": 0.25390356702967176,
+        "bias": 0.09908431884084752,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|nan|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": 0.13232070226749024,
+        "bias": 0.09924052670061767,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|*|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": 0.13232070226749024,
+        "bias": 0.09924052670061767,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|*|blue|*|regular": {
+        "n": 170.0,
+        "raw_bias": 0.08793956520653111,
+        "bias": 0.07666526197492456,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|*|*|*|regular": {
+        "n": 170.0,
+        "raw_bias": 0.08793956520653111,
+        "bias": 0.07666526197492456,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|*|*|*|*": {
+        "n": 170.0,
+        "raw_bias": 0.08793956520653111,
+        "bias": 0.07666526197492456,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|nan|blue|1|regular": {
+        "n": 95.0,
+        "raw_bias": 0.05290182542156336,
+        "bias": 0.04188061179207099,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Division 2 Season 4|*|blue|1|regular": {
+        "n": 95.0,
+        "raw_bias": 0.05290182542156336,
+        "bias": 0.04188061179207099,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|nan|blue|3|regular": {
+        "n": 3.0,
+        "raw_bias": 0.043052608300592876,
+        "bias": 0.004612779460777808,
+        "shrink_k": 25.0
+      },
+      "Party To Play league|*|blue|3|regular": {
+        "n": 3.0,
+        "raw_bias": 0.043052608300592876,
+        "bias": 0.004612779460777808,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|nan|blue|3|regular": {
+        "n": 93.0,
+        "raw_bias": 0.04507544939232643,
+        "bias": 0.03552556604649456,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|blue|3|regular": {
+        "n": 93.0,
+        "raw_bias": 0.04507544939232643,
+        "bias": 0.03552556604649456,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|blue|*|regular": {
+        "n": 185.0,
+        "raw_bias": 0.036069335700558654,
+        "bias": 0.031775367164777864,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|*|*|regular": {
+        "n": 185.0,
+        "raw_bias": 0.036069335700558654,
+        "bias": 0.031775367164777864,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|*|*|*": {
+        "n": 185.0,
+        "raw_bias": 0.036069335700558654,
+        "bias": 0.031775367164777864,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|nan|blue|1|regular": {
+        "n": 87.0,
+        "raw_bias": 0.025465605704447915,
+        "bias": 0.019781318716847934,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|blue|1|regular": {
+        "n": 87.0,
+        "raw_bias": 0.025465605704447915,
+        "bias": 0.019781318716847934,
+        "shrink_k": 25.0
+      },
+      "肛宝联赛-老婆杯|nan|blue|1|regular": {
+        "n": 7.0,
+        "raw_bias": -0.03376541161667769,
+        "bias": -0.007386183791148245,
+        "shrink_k": 25.0
+      },
+      "肛宝联赛-老婆杯|*|blue|1|regular": {
+        "n": 7.0,
+        "raw_bias": -0.03376541161667769,
+        "bias": -0.007386183791148245,
+        "shrink_k": 25.0
+      },
+      "肛宝联赛-老婆杯|*|blue|*|regular": {
+        "n": 7.0,
+        "raw_bias": -0.03376541161667769,
+        "bias": -0.007386183791148245,
+        "shrink_k": 25.0
+      },
+      "肛宝联赛-老婆杯|*|*|*|regular": {
+        "n": 7.0,
+        "raw_bias": -0.03376541161667769,
+        "bias": -0.007386183791148245,
+        "shrink_k": 25.0
+      },
+      "肛宝联赛-老婆杯|*|*|*|*": {
+        "n": 7.0,
+        "raw_bias": -0.03376541161667769,
+        "bias": -0.007386183791148245,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|nan|blue|5|regular": {
+        "n": 5.0,
+        "raw_bias": 0.05306052296600405,
+        "bias": 0.008843420494334009,
+        "shrink_k": 25.0
+      },
+      "DreamLeague Season 29|*|blue|5|regular": {
+        "n": 5.0,
+        "raw_bias": 0.05306052296600405,
+        "bias": 0.008843420494334009,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|nan|blue|1|regular": {
+        "n": 80.0,
+        "raw_bias": -0.02839493262693877,
+        "bias": -0.021634234382429538,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|*|blue|1|regular": {
+        "n": 80.0,
+        "raw_bias": -0.02839493262693877,
+        "bias": -0.021634234382429538,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|*|blue|*|regular": {
+        "n": 102.0,
+        "raw_bias": -0.04257155320769661,
+        "bias": -0.03419132619830751,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|*|*|*|regular": {
+        "n": 102.0,
+        "raw_bias": -0.04257155320769661,
+        "bias": -0.03419132619830751,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|*|*|*|*": {
+        "n": 102.0,
+        "raw_bias": -0.04257155320769661,
+        "bias": -0.03419132619830751,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|nan|blue|1|regular": {
+        "n": 126.0,
+        "raw_bias": 0.06757737344423413,
+        "bias": 0.056389066582605965,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|blue|1|regular": {
+        "n": 126.0,
+        "raw_bias": 0.06757737344423413,
+        "bias": 0.056389066582605965,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|blue|*|regular": {
+        "n": 206.0,
+        "raw_bias": 0.02089146644028521,
+        "bias": 0.018630485223804127,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|*|*|regular": {
+        "n": 206.0,
+        "raw_bias": 0.02089146644028521,
+        "bias": 0.018630485223804127,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|*|*|*": {
+        "n": 206.0,
+        "raw_bias": 0.02089146644028521,
+        "bias": 0.018630485223804127,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|nan|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": -0.07391650594922311,
+        "bias": -0.05543737946191733,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|blue|3|regular": {
+        "n": 75.0,
+        "raw_bias": -0.07391650594922311,
+        "bias": -0.05543737946191733,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|nan|blue|3|regular": {
+        "n": 22.0,
+        "raw_bias": -0.09412290077408877,
+        "bias": -0.04405752802191389,
+        "shrink_k": 25.0
+      },
+      "BLAST SLAM VII|*|blue|3|regular": {
+        "n": 22.0,
+        "raw_bias": -0.09412290077408877,
+        "bias": -0.04405752802191389,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|nan|blue|5|regular": {
+        "n": 5.0,
+        "raw_bias": 0.26652619578339615,
+        "bias": 0.04442103263056602,
+        "shrink_k": 25.0
+      },
+      "Road To EWC 2026 Regional Qualifiers|*|blue|5|regular": {
+        "n": 5.0,
+        "raw_bias": 0.26652619578339615,
+        "bias": 0.04442103263056602,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|nan|blue|1|regular": {
+        "n": 20.0,
+        "raw_bias": -0.05480476980229435,
+        "bias": -0.024357675467686378,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|*|blue|1|regular": {
+        "n": 20.0,
+        "raw_bias": -0.05480476980229435,
+        "bias": -0.024357675467686378,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|*|blue|*|regular": {
+        "n": 29.0,
+        "raw_bias": -0.09296372276292839,
+        "bias": -0.04992496222453562,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|*|*|*|regular": {
+        "n": 29.0,
+        "raw_bias": -0.09296372276292839,
+        "bias": -0.04992496222453562,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|*|*|*|*": {
+        "n": 29.0,
+        "raw_bias": -0.09296372276292839,
+        "bias": -0.04992496222453562,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|nan|blue|3|regular": {
+        "n": 13.0,
+        "raw_bias": 0.06505253515616093,
+        "bias": 0.022254814658686634,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|*|blue|3|regular": {
+        "n": 13.0,
+        "raw_bias": 0.06505253515616093,
+        "bias": 0.022254814658686634,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|*|blue|*|regular": {
+        "n": 39.0,
+        "raw_bias": 0.06259371240422272,
+        "bias": 0.03814304349632322,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|*|*|*|regular": {
+        "n": 39.0,
+        "raw_bias": 0.06259371240422272,
+        "bias": 0.03814304349632322,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|*|*|*|*": {
+        "n": 39.0,
+        "raw_bias": 0.06259371240422272,
+        "bias": 0.03814304349632322,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|nan|blue|1|regular": {
+        "n": 26.0,
+        "raw_bias": 0.0613643010282536,
+        "bias": 0.03128376130852144,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier South America|*|blue|1|regular": {
+        "n": 26.0,
+        "raw_bias": 0.0613643010282536,
+        "bias": 0.03128376130852144,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|nan|blue|3|regular": {
+        "n": 9.0,
+        "raw_bias": -0.1777613960087817,
+        "bias": -0.04705448717879516,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier China|*|blue|3|regular": {
+        "n": 9.0,
+        "raw_bias": -0.1777613960087817,
+        "bias": -0.04705448717879516,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|nan|blue|1|regular": {
+        "n": 22.0,
+        "raw_bias": -0.13192602509361295,
+        "bias": -0.06175260749062734,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|*|blue|1|regular": {
+        "n": 22.0,
+        "raw_bias": -0.13192602509361295,
+        "bias": -0.06175260749062734,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|*|blue|*|regular": {
+        "n": 44.0,
+        "raw_bias": -0.051473413350442,
+        "bias": -0.03282362590462968,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|*|*|*|regular": {
+        "n": 44.0,
+        "raw_bias": -0.051473413350442,
+        "bias": -0.03282362590462968,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|*|*|*|*": {
+        "n": 44.0,
+        "raw_bias": -0.051473413350442,
+        "bias": -0.03282362590462968,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|nan|blue|3|regular": {
+        "n": 22.0,
+        "raw_bias": 0.02897919839272891,
+        "bias": 0.013564731162553958,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Southeast Asia|*|blue|3|regular": {
+        "n": 22.0,
+        "raw_bias": 0.02897919839272891,
+        "bias": 0.013564731162553958,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|nan|blue|1|regular": {
+        "n": 30.0,
+        "raw_bias": 0.09714565649187014,
+        "bias": 0.052988539904656434,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|*|blue|1|regular": {
+        "n": 30.0,
+        "raw_bias": 0.09714565649187014,
+        "bias": 0.052988539904656434,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|*|blue|*|regular": {
+        "n": 63.0,
+        "raw_bias": 0.03670189714136006,
+        "bias": 0.026275221817110044,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|*|*|*|regular": {
+        "n": 63.0,
+        "raw_bias": 0.03670189714136006,
+        "bias": 0.026275221817110044,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|*|*|*|*": {
+        "n": 63.0,
+        "raw_bias": 0.03670189714136006,
+        "bias": 0.026275221817110044,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|nan|blue|3|regular": {
+        "n": 33.0,
+        "raw_bias": -0.01824697499546728,
+        "bias": -0.010381899566386557,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier Europe|*|blue|3|regular": {
+        "n": 33.0,
+        "raw_bias": -0.01824697499546728,
+        "bias": -0.010381899566386557,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier North America|nan|blue|1|regular": {
+        "n": 13.0,
+        "raw_bias": -0.09672793215863473,
+        "bias": -0.033091134685848726,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier North America|*|blue|1|regular": {
+        "n": 13.0,
+        "raw_bias": -0.09672793215863473,
+        "bias": -0.033091134685848726,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier North America|*|blue|*|regular": {
+        "n": 13.0,
+        "raw_bias": -0.09672793215863473,
+        "bias": -0.033091134685848726,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier North America|*|*|*|regular": {
+        "n": 13.0,
+        "raw_bias": -0.09672793215863473,
+        "bias": -0.033091134685848726,
+        "shrink_k": 25.0
+      },
+      "The International 2026 - Regional Qualifier North America|*|*|*|*": {
+        "n": 13.0,
+        "raw_bias": -0.09672793215863473,
+        "bias": -0.033091134685848726,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|nan|blue|1|regular": {
+        "n": 182.0,
+        "raw_bias": -0.00011515546280690211,
+        "bias": -0.00010124779821669655,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|*|blue|1|regular": {
+        "n": 182.0,
+        "raw_bias": -0.00011515546280690211,
+        "bias": -0.00010124779821669655,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|*|blue|*|regular": {
+        "n": 245.0,
+        "raw_bias": -0.0076933308769500915,
+        "bias": -0.006980985425380639,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|*|*|*|regular": {
+        "n": 245.0,
+        "raw_bias": -0.0076933308769500915,
+        "bias": -0.006980985425380639,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|*|*|*|*": {
+        "n": 245.0,
+        "raw_bias": -0.0076933308769500915,
+        "bias": -0.006980985425380639,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|nan|blue|3|regular": {
+        "n": 63.0,
+        "raw_bias": -0.029585837628919306,
+        "bias": -0.021180770120703594,
+        "shrink_k": 25.0
+      },
+      "Road to ENC 2026 Regional Qualifiers|*|blue|3|regular": {
+        "n": 63.0,
+        "raw_bias": -0.029585837628919306,
+        "bias": -0.021180770120703594,
+        "shrink_k": 25.0
+      },
+      "FB杯DOTA2精英联赛26赛季|nan|blue|1|regular": {
+        "n": 2.0,
+        "raw_bias": -0.48087500000000005,
+        "bias": -0.03562037037037037,
+        "shrink_k": 25.0
+      },
+      "FB杯DOTA2精英联赛26赛季|*|blue|1|regular": {
+        "n": 2.0,
+        "raw_bias": -0.48087500000000005,
+        "bias": -0.03562037037037037,
+        "shrink_k": 25.0
+      },
+      "FB杯DOTA2精英联赛26赛季|*|blue|*|regular": {
+        "n": 2.0,
+        "raw_bias": -0.48087500000000005,
+        "bias": -0.03562037037037037,
+        "shrink_k": 25.0
+      },
+      "FB杯DOTA2精英联赛26赛季|*|*|*|regular": {
+        "n": 2.0,
+        "raw_bias": -0.48087500000000005,
+        "bias": -0.03562037037037037,
+        "shrink_k": 25.0
+      },
+      "FB杯DOTA2精英联赛26赛季|*|*|*|*": {
+        "n": 2.0,
+        "raw_bias": -0.48087500000000005,
+        "bias": -0.03562037037037037,
+        "shrink_k": 25.0
+      },
+      "Esports World Cup 2026|nan|blue|1|regular": {
+        "n": 72.0,
+        "raw_bias": -0.0882330469221078,
+        "bias": -0.06549257091125528,
+        "shrink_k": 25.0
+      },
+      "Esports World Cup 2026|*|blue|1|regular": {
+        "n": 72.0,
+        "raw_bias": -0.0882330469221078,
+        "bias": -0.06549257091125528,
+        "shrink_k": 25.0
+      },
+      "Esports World Cup 2026|*|blue|*|regular": {
+        "n": 72.0,
+        "raw_bias": -0.0882330469221078,
+        "bias": -0.06549257091125528,
+        "shrink_k": 25.0
+      },
+      "Esports World Cup 2026|*|*|*|regular": {
+        "n": 72.0,
+        "raw_bias": -0.0882330469221078,
+        "bias": -0.06549257091125528,
+        "shrink_k": 25.0
+      },
+      "Esports World Cup 2026|*|*|*|*": {
+        "n": 72.0,
+        "raw_bias": -0.0882330469221078,
+        "bias": -0.06549257091125528,
+        "shrink_k": 25.0
+      }
+    }
+  },
+  "fused_post_calibration": {
+    "enabled": true,
+    "version": "fused_post_calibration_v1",
+    "source": "walkforward_oos_platt",
+    "gate": {
+      "decision": "shadow_only",
+      "reasons": [
+        "logloss_regression",
+        "brier_regression",
+        "ece_gain_small"
+      ],
+      "thresholds": {
+        "min_n_total": 450,
+        "min_gain_ece": 0.002,
+        "max_logloss_regression": 0.0005,
+        "max_brier_regression": 0.0005
+      }
+    },
+    "raw": {
+      "n_total": 1769,
+      "logloss": 0.5832512881966392,
+      "brier": 0.19922220662351675,
+      "ece": 0.03164464222041852
+    },
+    "oof_platt": {
+      "n_total": 1769,
+      "logloss": 0.5881328122701374,
+      "brier": 0.19995544664405504,
+      "ece": 0.0362372903474547,
+      "folds": 3,
+      "fold_rows": [
+        {
+          "month": "2026-05",
+          "n": 393,
+          "raw_logloss": 0.5361534019458823,
+          "cal_logloss": 0.5196107243312317,
+          "raw_brier": 0.17839861673436547,
+          "cal_brier": 0.17234871420119074,
+          "raw_ece": 0.08458380175255614,
+          "cal_ece": 0.05345787180454859
+        },
+        {
+          "month": "2026-06",
+          "n": 532,
+          "raw_logloss": 0.6138922859064834,
+          "cal_logloss": 0.634011498381895,
+          "raw_brier": 0.21208376437099535,
+          "cal_brier": 0.21665762346446335,
+          "raw_ece": 0.06449822305138785,
+          "cal_ece": 0.08947929876040277
+        },
+        {
+          "month": "2026-07",
+          "n": 144,
+          "raw_logloss": 0.6662033078149179,
+          "cal_logloss": 0.6969898866458257,
+          "raw_brier": 0.23309437298769634,
+          "cal_brier": 0.24171534697482175,
+          "raw_ece": 0.09156313047171373,
+          "cal_ece": 0.12897992038991513
+        }
+      ]
+    },
+    "improvements": {
+      "gain_logloss": -0.004881524073498178,
+      "gain_brier": -0.0007332400205382894,
+      "gain_ece": -0.004592648127036185
+    },
+    "model_global": {
+      "a": 1.1236803131710276,
+      "b": 0.09648302919621322
+    },
+    "model_by_league": {},
+    "model_by_league_diagnostics": {},
+    "promoted_model_global": {},
+    "promoted_model_by_league": {},
+    "runtime": {
+      "enabled": true,
+      "max_abs_logit_shift": 1.1896666666666667,
+      "use_league_override": true
+    }
+  },
+  "best_by_league": {},
+  "best_form_by_league": {},
+  "best_form_by_macro": {},
+  "league_macro_map": {
+    "BLAST SLAM VII": "OTHER",
+    "BLAST Slam VII China Qualifier": "OTHER",
+    "DreamLeague Division 2 Season 4": "OTHER",
+    "DreamLeague Season 28": "OTHER",
+    "DreamLeague Season 29": "OTHER",
+    "DreamLeague Season 29 Qualifiers": "OTHER",
+    "EPICENTER CUP - VERANO": "OTHER",
+    "EPL Championship 2025-2026": "OTHER",
+    "ESL One Birmingham 2026": "OTHER",
+    "ESL challenger China powered By ACL": "OTHER",
+    "Esports World Cup 2026": "OTHER",
+    "FB杯DOTA2精英联赛26赛季": "OTHER",
+    "PGL Wallachia 2026 Season 7": "OTHER",
+    "PGL Wallachia 2026 Season 8": "OTHER",
+    "Party To Play league": "OTHER",
+    "Premier Series": "OTHER",
+    "RES Unchained - A Blast Dota Slam VII Qualifier EU": "OTHER",
+    "RES Unchained - A Blast Dota Slam VII Qualifier SEA": "OTHER",
+    "Road To EWC 2026 Regional Qualifiers": "OTHER",
+    "Road to ENC 2026 Regional Qualifiers": "OTHER",
+    "Snake Trophy": "OTHER",
+    "The International 2026 - Regional Qualifier China": "OTHER",
+    "The International 2026 - Regional Qualifier Europe": "OTHER",
+    "The International 2026 - Regional Qualifier North America": "OTHER",
+    "The International 2026 - Regional Qualifier South America": "OTHER",
+    "The International 2026 - Regional Qualifier Southeast Asia": "OTHER",
+    "WBT CYBER CLUB #1": "OTHER",
+    "肛宝联赛-老婆杯": "OTHER"
+  },
+  "players_lane_weights": {
+    "global": {
+      "Top": 1.0,
+      "Jungle": 1.0,
+      "Mid": 1.0,
+      "Bot": 1.0,
+      "Support": 1.0
+    },
+    "by_league": {},
+    "by_macro": {},
+    "meta": {
+      "samples_with_lineup": 0,
+      "min_n": 120,
+      "global_scores": {
+        "Top": {
+          "n": 0,
+          "score": 0.0
+        },
+        "Jungle": {
+          "n": 0,
+          "score": 0.0
+        },
+        "Mid": {
+          "n": 0,
+          "score": 0.0
+        },
+        "Bot": {
+          "n": 0,
+          "score": 0.0
+        },
+        "Support": {
+          "n": 0,
+          "score": 0.0
+        }
+      }
+    }
+  },
+  "players_league_weights": {
+    "global": 1.0,
+    "by_league": {},
+    "by_macro": {
+      "OTHER": 1.0
+    },
+    "meta": {
+      "min_n": 140,
+      "global_gain_players_vs_team": 0.0,
+      "league_stats": {},
+      "macro_stats": {
+        "OTHER": {
+          "n": 2226,
+          "logloss_team_only": 0.5924143082533321,
+          "logloss_players_only": 0.5924143082533321,
+          "gain_players_vs_team": 0.0
+        }
+      }
+    }
+  },
+  "patch_snapshot": {
+    "Xmas League 2024": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-08",
+      "games_on_latest_patch": 45
+    },
+    "Ultras Dota Pro League  2024-25": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-22",
+      "games_on_latest_patch": 4683
+    },
+    "Ancients League": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-31",
+      "games_on_latest_patch": 2190
+    },
+    "DreamLeague Season 25 Qualifiers powered by Intel": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-12",
+      "games_on_latest_patch": 291
+    },
+    "PREDATOR LEAGUE APAC FINALS 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-12",
+      "games_on_latest_patch": 19
+    },
+    "European Pro League  2024-2025 Season": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-28",
+      "games_on_latest_patch": 911
+    },
+    "PGL Wallachia Season #3 SEA Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-15",
+      "games_on_latest_patch": 30
+    },
+    "PGL Wallachia Season #3 CN Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-14",
+      "games_on_latest_patch": 14
+    },
+    "ESL One Raleigh 2025 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-21",
+      "games_on_latest_patch": 315
+    },
+    "PGL Wallachia Season #3 EEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-15",
+      "games_on_latest_patch": 30
+    },
+    "PGL Wallachia Season #3 WEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-15",
+      "games_on_latest_patch": 31
+    },
+    "SIVVIT League": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-28",
+      "games_on_latest_patch": 417
+    },
+    "PGL Wallachia Season #3 SA Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-16",
+      "games_on_latest_patch": 32
+    },
+    "PGL Wallachia Season #3 NA Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-14",
+      "games_on_latest_patch": 12
+    },
+    "EPL World Series: Southeast Asia 2024-2025 Season": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-28",
+      "games_on_latest_patch": 681
+    },
+    "AsiaPro League S2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-04",
+      "games_on_latest_patch": 54
+    },
+    "CCT Dota 2 Series 6": {
+      "latest_patch": "nan",
+      "latest_date": "2025-01-31",
+      "games_on_latest_patch": 81
+    },
+    "FISSURE PLAYGROUND 1 - Dota": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-02",
+      "games_on_latest_patch": 87
+    },
+    "Party To Play league": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-14",
+      "games_on_latest_patch": 402
+    },
+    "Prime Series by TechHub.bg Season 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-20",
+      "games_on_latest_patch": 64
+    },
+    "ABOY PRO GAMING LEAGUE": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-01",
+      "games_on_latest_patch": 2
+    },
+    "SLAM II": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-09",
+      "games_on_latest_patch": 43
+    },
+    "Кубок федерации Туркменистана": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-06",
+      "games_on_latest_patch": 18
+    },
+    "Asian Dragon Series: Continental Collision": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-10",
+      "games_on_latest_patch": 49
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - SEA": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-10",
+      "games_on_latest_patch": 15
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - EEU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-10",
+      "games_on_latest_patch": 28
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - SA": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-11",
+      "games_on_latest_patch": 15
+    },
+    "DogeLon Dota League": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-10",
+      "games_on_latest_patch": 4
+    },
+    "NITRO FRESH MASTERS": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-16",
+      "games_on_latest_patch": 13
+    },
+    "PGL Wallachia Season #4 SEA Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-14",
+      "games_on_latest_patch": 37
+    },
+    "PGL Wallachia Season #4 EEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-14",
+      "games_on_latest_patch": 39
+    },
+    "PGL Wallachia Season #4 WEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-14",
+      "games_on_latest_patch": 37
+    },
+    "PGL Wallachia Season #4 AMER Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-15",
+      "games_on_latest_patch": 36
+    },
+    "PGL Wallachia Season #4 CN Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-14",
+      "games_on_latest_patch": 16
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - China": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-16",
+      "games_on_latest_patch": 12
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - WEU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-15",
+      "games_on_latest_patch": 26
+    },
+    "FISSURE Universe Ep.4 - Closed Qualifiers - NA": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-16",
+      "games_on_latest_patch": 11
+    },
+    "DreamLeague Season 25 powered by Intel": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-04",
+      "games_on_latest_patch": 196
+    },
+    "GDUgame Cup": {
+      "latest_patch": "nan",
+      "latest_date": "2025-02-22",
+      "games_on_latest_patch": 20
+    },
+    "CCT Dota 2 Series 7": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-07",
+      "games_on_latest_patch": 85
+    },
+    "Universal League S2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-05",
+      "games_on_latest_patch": 12
+    },
+    "PGL Wallachia 2025 Season 3": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-16",
+      "games_on_latest_patch": 112
+    },
+    "WBT CYBER CLUB #1": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-25",
+      "games_on_latest_patch": 417
+    },
+    "ACL×ESL Challenger China": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-16",
+      "games_on_latest_patch": 65
+    },
+    "EPL World Series: America 2024-2025 Season": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-13",
+      "games_on_latest_patch": 170
+    },
+    "E-sport SM 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-15",
+      "games_on_latest_patch": 2
+    },
+    "ANUBISS CUP": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-15",
+      "games_on_latest_patch": 7
+    },
+    "互联网联赛": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-07",
+      "games_on_latest_patch": 81
+    },
+    "FISSURE Universe Episode 4": {
+      "latest_patch": "nan",
+      "latest_date": "2025-03-30",
+      "games_on_latest_patch": 110
+    },
+    "Eternal DOTA League Season 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-01",
+      "games_on_latest_patch": 2
+    },
+    "DreamLeague Season 26 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-04",
+      "games_on_latest_patch": 269
+    },
+    "FONBET MEDIA ELEAGUE DOTA2 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-02",
+      "games_on_latest_patch": 16
+    },
+    "5th Nepal Esports Championship &amp; Expo 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-03",
+      "games_on_latest_patch": 13
+    },
+    "Prime Series by TechHub.bg Season 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-17",
+      "games_on_latest_patch": 44
+    },
+    "CCT Dota 2 Series 8": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-11",
+      "games_on_latest_patch": 72
+    },
+    "Asian Regional League": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-10",
+      "games_on_latest_patch": 27
+    },
+    "FISSURE Special": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-13",
+      "games_on_latest_patch": 59
+    },
+    "ESL One Raleigh 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-14",
+      "games_on_latest_patch": 90
+    },
+    "DOTA2-Ticu梦幻联赛": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-09",
+      "games_on_latest_patch": 348
+    },
+    "Kwalifikacje do Narodowej Drużyny Esportu w Dota2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-27",
+      "games_on_latest_patch": 16
+    },
+    "刀塔校运会": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-01",
+      "games_on_latest_patch": 47
+    },
+    "PGL Wallachia 2025 Season 4": {
+      "latest_patch": "nan",
+      "latest_date": "2025-04-27",
+      "games_on_latest_patch": 115
+    },
+    "Snake Trophy": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-02",
+      "games_on_latest_patch": 431
+    },
+    "SLAM III": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-11",
+      "games_on_latest_patch": 43
+    },
+    "FISSURE Universe Episode 5": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-04",
+      "games_on_latest_patch": 116
+    },
+    "上海市网络游戏行业协会杯第二届电竞赛": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-08",
+      "games_on_latest_patch": 33
+    },
+    "Всероссийская киберспортивная студенческая лига Сбера 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-18",
+      "games_on_latest_patch": 3
+    },
+    "DreamLeague Season 26": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-01",
+      "games_on_latest_patch": 202
+    },
+    "ULD Season 2 : Americas": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-26",
+      "games_on_latest_patch": 8
+    },
+    "NADCL Season 8": {
+      "latest_patch": "nan",
+      "latest_date": "2025-05-31",
+      "games_on_latest_patch": 23
+    },
+    "BetBoom Streamers Battle 10": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-08",
+      "games_on_latest_patch": 66
+    },
+    "EPICENTER - 9° TORNEO UNSCH": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-01",
+      "games_on_latest_patch": 23
+    },
+    "Esports World Cup 2025 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-13",
+      "games_on_latest_patch": 205
+    },
+    "Road To The International 2025 - Regional Qualifiers Eastern Europe": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-08",
+      "games_on_latest_patch": 44
+    },
+    "Road To The International 2025 - Regional Qualifiers South America": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-09",
+      "games_on_latest_patch": 44
+    },
+    "Road To The International 2025 - Regional Qualifiers China": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-12",
+      "games_on_latest_patch": 31
+    },
+    "CCT Dota 2 Season 2 Series 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-18",
+      "games_on_latest_patch": 55
+    },
+    "Road To The International 2025 - Regional Qualifiers North America": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-13",
+      "games_on_latest_patch": 24
+    },
+    "Road To The International 2025 - Regional Qualifiers Southeast Asia": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-17",
+      "games_on_latest_patch": 43
+    },
+    "Road To The International 2025 - Regional Qualifiers Western Europe": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-17",
+      "games_on_latest_patch": 39
+    },
+    "PGL Wallachia 2025 Season 5": {
+      "latest_patch": "nan",
+      "latest_date": "2025-06-29",
+      "games_on_latest_patch": 116
+    },
+    "CCT Dota 2 Season 2 Series 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-08",
+      "games_on_latest_patch": 55
+    },
+    "The Flame League": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-07",
+      "games_on_latest_patch": 19
+    },
+    "Чемпионат России Сбера 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-06",
+      "games_on_latest_patch": 10
+    },
+    "Esports World Cup 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-19",
+      "games_on_latest_patch": 89
+    },
+    "European Esports Championship 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-13",
+      "games_on_latest_patch": 40
+    },
+    "Snake Trophy 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-27",
+      "games_on_latest_patch": 62
+    },
+    "FISSURE Universe Episode 6": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-24",
+      "games_on_latest_patch": 117
+    },
+    "CCT Dota 2 Season 2 Series 3": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-01",
+      "games_on_latest_patch": 57
+    },
+    "Boss Battle": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-16",
+      "games_on_latest_patch": 541
+    },
+    "Qualificatorias abertas - Campeonato NEXTLEVEL #1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-30",
+      "games_on_latest_patch": 84
+    },
+    "Clavision DOTA2 Masters 2025: Snow-Ruyi": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-03",
+      "games_on_latest_patch": 85
+    },
+    "Americas Convergence Series 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-24",
+      "games_on_latest_patch": 144
+    },
+    "NADCL Season 9": {
+      "latest_patch": "nan",
+      "latest_date": "2025-07-30",
+      "games_on_latest_patch": 3
+    },
+    "Campeonato NEXTLEVEL": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-10",
+      "games_on_latest_patch": 87
+    },
+    "Europa Masters Cup": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-12",
+      "games_on_latest_patch": 55
+    },
+    "CIS Battle Dota 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-15",
+      "games_on_latest_patch": 87
+    },
+    "CCT Dota 2 Season 2 Series 4": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-24",
+      "games_on_latest_patch": 56
+    },
+    "Кубок России Сбера по компьютерному спорту 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-24",
+      "games_on_latest_patch": 9
+    },
+    "BetBoom RU Battle": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-03",
+      "games_on_latest_patch": 85
+    },
+    "III Киберспортивный турнир Сбера по Dota 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-08-30",
+      "games_on_latest_patch": 3
+    },
+    "DreamLeague Season 27 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-27",
+      "games_on_latest_patch": 285
+    },
+    "BLAST Slam IV: China Closed Qualifier": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-28",
+      "games_on_latest_patch": 59
+    },
+    "FISSURE PLAYGROUND 2 - Closed Qualifiers - EEU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-28",
+      "games_on_latest_patch": 31
+    },
+    "FISSURE PLAYGROUND 2 - Closed Qualifiers - Americas": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-01",
+      "games_on_latest_patch": 35
+    },
+    "BetBoom Streamers Battle x Динамо 11": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-05",
+      "games_on_latest_patch": 72
+    },
+    "RES Unchained - A Blast Dota Slam IV Qualifier EU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-28",
+      "games_on_latest_patch": 29
+    },
+    "RES Unchained - A Blast Dota Slam IV Qualifier SEA": {
+      "latest_patch": "nan",
+      "latest_date": "2025-09-28",
+      "games_on_latest_patch": 27
+    },
+    "FISSURE PLAYGROUND 2 - Closed Qualifiers - China": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-01",
+      "games_on_latest_patch": 34
+    },
+    "FISSURE PLAYGROUND 2 - Closed Qualifiers - WEU+EEU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-01",
+      "games_on_latest_patch": 34
+    },
+    "FISSURE PLAYGROUND 2 - Closed Qualifiers - Americas (SA)": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-01",
+      "games_on_latest_patch": 3
+    },
+    "PGL Wallachia Season #6 SEA Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-05",
+      "games_on_latest_patch": 37
+    },
+    "PGL Wallachia Season #6 EEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-05",
+      "games_on_latest_patch": 39
+    },
+    "PGL Wallachia Season #6 WEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-05",
+      "games_on_latest_patch": 33
+    },
+    "PGL Wallachia Season #6 AMER Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-06",
+      "games_on_latest_patch": 38
+    },
+    "PGL Wallachia Season #6 CN Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-05",
+      "games_on_latest_patch": 13
+    },
+    "CCT Dota 2 Season 2 Series 5": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-14",
+      "games_on_latest_patch": 48
+    },
+    "FISSURE Universe Episode 7": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-12",
+      "games_on_latest_patch": 75
+    },
+    "RES Unchained - A Blast Dota Slam V Qualifier SEA": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-12",
+      "games_on_latest_patch": 32
+    },
+    "RES Unchained - A Blast Dota Slam V Qualifier EU": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-12",
+      "games_on_latest_patch": 29
+    },
+    "INDIA PREDATOR LEAGUE 2026": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-11",
+      "games_on_latest_patch": 2
+    },
+    "DreamLeague Division 2 Season 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-26",
+      "games_on_latest_patch": 170
+    },
+    "SLAM IV": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-09",
+      "games_on_latest_patch": 96
+    },
+    "BLAST Slam V: China Closed Qualifier": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-26",
+      "games_on_latest_patch": 61
+    },
+    "Redragon Latam Series Dota2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-21",
+      "games_on_latest_patch": 38
+    },
+    "FISSURE PLAYGROUND 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-02",
+      "games_on_latest_patch": 124
+    },
+    "CCT Dota 2 Season 2 South America Series 1": {
+      "latest_patch": "nan",
+      "latest_date": "2025-10-31",
+      "games_on_latest_patch": 50
+    },
+    "Road to APAC Predator League 2026 : Indonesian Series": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-16",
+      "games_on_latest_patch": 11
+    },
+    "Pakistan Dota Masters - Season 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-02",
+      "games_on_latest_patch": 59
+    },
+    "CIS Battle 3": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-14",
+      "games_on_latest_patch": 112
+    },
+    "DreamLeague Division 2 Season 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-11",
+      "games_on_latest_patch": 98
+    },
+    "1win Series Dota 2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-16",
+      "games_on_latest_patch": 40
+    },
+    "PGL Wallachia 2025 Season 6": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-23",
+      "games_on_latest_patch": 118
+    },
+    "BetBoom Streamers Battle x Динамо 12": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-30",
+      "games_on_latest_patch": 75
+    },
+    "REDRAGON Battle Series DOTA2": {
+      "latest_patch": "nan",
+      "latest_date": "2025-11-30",
+      "games_on_latest_patch": 15
+    },
+    "SLAM V": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-07",
+      "games_on_latest_patch": 94
+    },
+    "CCT Dota 2 Season 2 Series 6": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-06",
+      "games_on_latest_patch": 61
+    },
+    "Открытые Киберспортивные Игры Сбера 2025": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-07",
+      "games_on_latest_patch": 10
+    },
+    "DreamLeague Season 27": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-21",
+      "games_on_latest_patch": 206
+    },
+    "Games of the Future 2025 Abu Dhabi": {
+      "latest_patch": "nan",
+      "latest_date": "2025-12-19",
+      "games_on_latest_patch": 46
+    },
+    "BLAST Slam VI China Qualifier": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-05",
+      "games_on_latest_patch": 18
+    },
+    "ESL challenger China": {
+      "latest_patch": "nan",
+      "latest_date": "2026-02-01",
+      "games_on_latest_patch": 41
+    },
+    "RES Unchained - A Blast Dota Slam VI Qualifier SEA": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-05",
+      "games_on_latest_patch": 5
+    },
+    "RES Unchained - A Blast Dota Slam VI Qualifier EU": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-05",
+      "games_on_latest_patch": 15
+    },
+    "DreamLeague Season 28 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-12",
+      "games_on_latest_patch": 238
+    },
+    "Asia Pacific Predator League 2026": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-11",
+      "games_on_latest_patch": 27
+    },
+    "EPL Championship 2025-2026": {
+      "latest_patch": "nan",
+      "latest_date": "2026-02-28",
+      "games_on_latest_patch": 135
+    },
+    "ESL One Birmingham 2026 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-20",
+      "games_on_latest_patch": 235
+    },
+    "EPICENTER CUP - VERANO": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-15",
+      "games_on_latest_patch": 52
+    },
+    "FISSURE Universe Episode 8": {
+      "latest_patch": "nan",
+      "latest_date": "2026-02-01",
+      "games_on_latest_patch": 96
+    },
+    "PGL Wallachia Season #7 Asia Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-29",
+      "games_on_latest_patch": 39
+    },
+    "PGL Wallachia Season #7 EEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-29",
+      "games_on_latest_patch": 37
+    },
+    "PGL Wallachia Season #7 WEU Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-29",
+      "games_on_latest_patch": 34
+    },
+    "PGL Wallachia Season #7 AMER Closed Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-01-30",
+      "games_on_latest_patch": 32
+    },
+    "BLAST SLAM VI": {
+      "latest_patch": "nan",
+      "latest_date": "2026-02-15",
+      "games_on_latest_patch": 100
+    },
+    "DreamLeague Division 2 Season 3": {
+      "latest_patch": "nan",
+      "latest_date": "2026-02-12",
+      "games_on_latest_patch": 89
+    },
+    "DreamLeague Season 28": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-01",
+      "games_on_latest_patch": 195
+    },
+    "PGL Wallachia 2026 Season 7": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-15",
+      "games_on_latest_patch": 124
+    },
+    "Premier Series": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-11",
+      "games_on_latest_patch": 165
+    },
+    "ESL One Birmingham 2026": {
+      "latest_patch": "nan",
+      "latest_date": "2026-03-29",
+      "games_on_latest_patch": 142
+    },
+    "BLAST Slam VII China Qualifier": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-03",
+      "games_on_latest_patch": 31
+    },
+    "RES Unchained - A Blast Dota Slam VII Qualifier SEA": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-03",
+      "games_on_latest_patch": 16
+    },
+    "RES Unchained - A Blast Dota Slam VII Qualifier EU": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-03",
+      "games_on_latest_patch": 15
+    },
+    "DreamLeague Season 29 Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-15",
+      "games_on_latest_patch": 253
+    },
+    "ESL challenger China powered By ACL": {
+      "latest_patch": "nan",
+      "latest_date": "2026-05-03",
+      "games_on_latest_patch": 45
+    },
+    "PGL Wallachia 2026 Season 8": {
+      "latest_patch": "nan",
+      "latest_date": "2026-04-26",
+      "games_on_latest_patch": 119
+    },
+    "DreamLeague Division 2 Season 4": {
+      "latest_patch": "nan",
+      "latest_date": "2026-05-01",
+      "games_on_latest_patch": 170
+    },
+    "DreamLeague Season 29": {
+      "latest_patch": "nan",
+      "latest_date": "2026-05-24",
+      "games_on_latest_patch": 185
+    },
+    "肛宝联赛-老婆杯": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-01",
+      "games_on_latest_patch": 7
+    },
+    "BLAST SLAM VII": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-07",
+      "games_on_latest_patch": 102
+    },
+    "Road To EWC 2026 Regional Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-05",
+      "games_on_latest_patch": 206
+    },
+    "The International 2026 - Regional Qualifier China": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-18",
+      "games_on_latest_patch": 29
+    },
+    "The International 2026 - Regional Qualifier South America": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-19",
+      "games_on_latest_patch": 39
+    },
+    "The International 2026 - Regional Qualifier Southeast Asia": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-23",
+      "games_on_latest_patch": 44
+    },
+    "The International 2026 - Regional Qualifier Europe": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-28",
+      "games_on_latest_patch": 63
+    },
+    "The International 2026 - Regional Qualifier North America": {
+      "latest_patch": "nan",
+      "latest_date": "2026-06-27",
+      "games_on_latest_patch": 13
+    },
+    "Road to ENC 2026 Regional Qualifiers": {
+      "latest_patch": "nan",
+      "latest_date": "2026-07-02",
+      "games_on_latest_patch": 245
+    },
+    "FB杯DOTA2精英联赛26赛季": {
+      "latest_patch": "nan",
+      "latest_date": "2026-07-04",
+      "games_on_latest_patch": 2
+    },
+    "Esports World Cup 2026": {
+      "latest_patch": "nan",
+      "latest_date": "2026-07-09",
+      "games_on_latest_patch": 72
+    }
+  },
+  "series_gamma_global": {
+    "rows": 306,
+    "bo3": {
+      "gamma": 0.7,
+      "logloss": 0.6292406541672964,
+      "n": 301,
+      "improvement_logloss_vs_gamma1": 0.00703631386009651
+    }
+  },
+  "series_gamma_by_league": {},
+  "series_gamma_by_macro": {},
+  "series_bo_dplite_tuning": {
+    "version": "series_bo_dplite_tuning_v2",
+    "generated_at": "2026-07-13T19:12:45+00:00",
+    "speed_profile": "fast",
+    "meta": {
+      "rows_total": 307,
+      "rows_bo3": 302,
+      "rows_bo5": 5,
+      "min_n_league": 80,
+      "min_n_patch_status": 120,
+      "min_n_league_patch": 100,
+      "min_gain_logloss": 0.0003,
+      "top_k_for_segments": 8
+    },
+    "global": {
+      "bo3": {
+        "decider_side_revert": 0.14,
+        "series_corr_sigma": 0.07,
+        "pick_shift": 0.017,
+        "g1_blue_shift": 0.001,
+        "momentum_shift": 0.007,
+        "loser_pick_decay": 0.22,
+        "decider_variance": 0.13,
+        "n": 302,
+        "logloss": 0.6311662359787217,
+        "brier": 0.21953023873956345,
+        "baseline_logloss_no_tuning": 0.6323101199378899,
+        "improvement_logloss_vs_no_tuning": 0.0011438839591682015,
+        "extra_refine_gain": 0.0,
+        "extra_refine_grid_evals": 16
+      },
+      "bo5": {
+        "pick_shift": 0.017,
+        "g1_blue_shift": 0.001,
+        "momentum_shift": 0.007,
+        "loser_pick_decay": 0.22,
+        "decider_variance": 0.13,
+        "decider_side_revert": 0.14,
+        "series_corr_sigma": 0.07,
+        "n": 0,
+        "fallback_from": "bo3"
+      }
+    },
+    "by_league": {},
+    "by_patch_status": {},
+    "by_league_patch": {},
+    "diagnostics": {
+      "bo3": {
+        "rows": 302,
+        "candidate_count": 32,
+        "shortlist_count": 8,
+        "global_best_logloss": 0.6311662359787217,
+        "global_baseline_logloss_no_tuning": 0.6323101199378899,
+        "global_gain_vs_no_tuning": 0.0011438839591682015,
+        "segments": {
+          "league": {
+            "BLAST SLAM VII": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "BLAST SLAM VII CHINA QUALIFIER": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE DIVISION 2 SEASON 4": {
+              "n": 25,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 28": {
+              "n": 14,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29": {
+              "n": 31,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29 QUALIFIERS": {
+              "n": 31,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "EPL CHAMPIONSHIP 2025-2026": {
+              "n": 11,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ESL CHALLENGER CHINA POWERED BY ACL": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ESL ONE BIRMINGHAM 2026": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PARTY TO PLAY LEAGUE": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 7": {
+              "n": 27,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 8": {
+              "n": 25,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PREMIER SERIES": {
+              "n": 29,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "RES UNCHAINED - A BLAST DOTA SLAM VII QUALIFIER EU": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "RES UNCHAINED - A BLAST DOTA SLAM VII QUALIFIER SEA": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO ENC 2026 REGIONAL QUALIFIERS": {
+              "n": 21,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO EWC 2026 REGIONAL QUALIFIERS": {
+              "n": 25,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "SNAKE TROPHY": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER CHINA": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER EUROPE": {
+              "n": 11,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTH AMERICA": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTHEAST ASIA": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "WBT CYBER CLUB #1": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            }
+          },
+          "patch_status": {
+            "OK": {
+              "n": 186,
+              "selected": false,
+              "gain_vs_global": 0.0,
+              "logloss": 0.6336052562971459,
+              "reason": "low_gain"
+            },
+            "REFIT": {
+              "n": 44,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "WARN": {
+              "n": 72,
+              "selected": false,
+              "reason": "low_n"
+            }
+          },
+          "league_patch": {
+            "BLAST SLAM VII CHINA QUALIFIER|REFIT": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "BLAST SLAM VII CHINA QUALIFIER|WARN": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "BLAST SLAM VII|OK": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE DIVISION 2 SEASON 4|OK": {
+              "n": 19,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE DIVISION 2 SEASON 4|REFIT": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE DIVISION 2 SEASON 4|WARN": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 28|OK": {
+              "n": 13,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 28|WARN": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29 QUALIFIERS|OK": {
+              "n": 30,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29 QUALIFIERS|WARN": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29|OK": {
+              "n": 23,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29|REFIT": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "DREAMLEAGUE SEASON 29|WARN": {
+              "n": 5,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "EPL CHAMPIONSHIP 2025-2026|OK": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "EPL CHAMPIONSHIP 2025-2026|REFIT": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "EPL CHAMPIONSHIP 2025-2026|WARN": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ESL CHALLENGER CHINA POWERED BY ACL|REFIT": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ESL CHALLENGER CHINA POWERED BY ACL|WARN": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ESL ONE BIRMINGHAM 2026|OK": {
+              "n": 6,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PARTY TO PLAY LEAGUE|OK": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PARTY TO PLAY LEAGUE|WARN": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 7|OK": {
+              "n": 14,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 7|REFIT": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 7|WARN": {
+              "n": 9,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 8|OK": {
+              "n": 11,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 8|REFIT": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PGL WALLACHIA 2026 SEASON 8|WARN": {
+              "n": 10,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PREMIER SERIES|OK": {
+              "n": 20,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PREMIER SERIES|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "PREMIER SERIES|WARN": {
+              "n": 7,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "RES UNCHAINED - A BLAST DOTA SLAM VII QUALIFIER EU|REFIT": {
+              "n": 3,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "RES UNCHAINED - A BLAST DOTA SLAM VII QUALIFIER SEA|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO ENC 2026 REGIONAL QUALIFIERS|OK": {
+              "n": 17,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO ENC 2026 REGIONAL QUALIFIERS|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO ENC 2026 REGIONAL QUALIFIERS|WARN": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO EWC 2026 REGIONAL QUALIFIERS|OK": {
+              "n": 23,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "ROAD TO EWC 2026 REGIONAL QUALIFIERS|WARN": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "SNAKE TROPHY|REFIT": {
+              "n": 5,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "SNAKE TROPHY|WARN": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER CHINA|REFIT": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER CHINA|WARN": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER EUROPE|OK": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER EUROPE|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER EUROPE|WARN": {
+              "n": 8,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTH AMERICA|REFIT": {
+              "n": 1,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTH AMERICA|WARN": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTHEAST ASIA|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "THE INTERNATIONAL 2026 - REGIONAL QUALIFIER SOUTHEAST ASIA|WARN": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "WBT CYBER CLUB #1|REFIT": {
+              "n": 2,
+              "selected": false,
+              "reason": "low_n"
+            },
+            "WBT CYBER CLUB #1|WARN": {
+              "n": 4,
+              "selected": false,
+              "reason": "low_n"
+            }
+          }
+        }
+      }
+    }
+  },
+  "blind_backtest_by_league": {
+    "rows": [
+      {
+        "league": "Road to ENC 2026 Regional Qualifiers",
+        "holdout_month": "2026-07",
+        "n_total": 70,
+        "logloss_team_only": 0.7588948474909327,
+        "logloss_players_only": 0.7588948474909327,
+        "logloss_fused": 0.7134198200284351,
+        "gain_fused_vs_team": 0.04547502746249765,
+        "gain_fused_vs_players": 0.04547502746249765,
+        "brier_team_only": 0.2611009007174115,
+        "brier_players_only": 0.2611009007174115,
+        "brier_fused": 0.25518781686571396
+      },
+      {
+        "league": "Premier Series",
+        "holdout_month": "2026-04",
+        "n_total": 88,
+        "logloss_team_only": 0.6314786282672947,
+        "logloss_players_only": 0.6314786282672947,
+        "logloss_fused": 0.6347180936561893,
+        "gain_fused_vs_team": -0.0032394653888945246,
+        "gain_fused_vs_players": -0.0032394653888945246,
+        "brier_team_only": 0.22056954309187018,
+        "brier_players_only": 0.22056954309187018,
+        "brier_fused": 0.22186715610873906
+      },
+      {
+        "league": "Road To EWC 2026 Regional Qualifiers",
+        "holdout_month": "2026-06",
+        "n_total": 132,
+        "logloss_team_only": 0.495469645028952,
+        "logloss_players_only": 0.495469645028952,
+        "logloss_fused": 0.5131642004445996,
+        "gain_fused_vs_team": -0.017694555415647628,
+        "gain_fused_vs_players": -0.017694555415647628,
+        "brier_team_only": 0.16455460901343522,
+        "brier_players_only": 0.16455460901343522,
+        "brier_fused": 0.17085802864386876
+      }
+    ],
+    "by_league": {
+      "Premier Series": {
+        "league": "Premier Series",
+        "holdout_month": "2026-04",
+        "n_total": 88,
+        "logloss_team_only": 0.6314786282672947,
+        "logloss_players_only": 0.6314786282672947,
+        "logloss_fused": 0.6347180936561893,
+        "gain_fused_vs_team": -0.0032394653888945246,
+        "gain_fused_vs_players": -0.0032394653888945246,
+        "brier_team_only": 0.22056954309187018,
+        "brier_players_only": 0.22056954309187018,
+        "brier_fused": 0.22186715610873906
+      },
+      "Road To EWC 2026 Regional Qualifiers": {
+        "league": "Road To EWC 2026 Regional Qualifiers",
+        "holdout_month": "2026-06",
+        "n_total": 132,
+        "logloss_team_only": 0.495469645028952,
+        "logloss_players_only": 0.495469645028952,
+        "logloss_fused": 0.5131642004445996,
+        "gain_fused_vs_team": -0.017694555415647628,
+        "gain_fused_vs_players": -0.017694555415647628,
+        "brier_team_only": 0.16455460901343522,
+        "brier_players_only": 0.16455460901343522,
+        "brier_fused": 0.17085802864386876
+      },
+      "Road to ENC 2026 Regional Qualifiers": {
+        "league": "Road to ENC 2026 Regional Qualifiers",
+        "holdout_month": "2026-07",
+        "n_total": 70,
+        "logloss_team_only": 0.7588948474909327,
+        "logloss_players_only": 0.7588948474909327,
+        "logloss_fused": 0.7134198200284351,
+        "gain_fused_vs_team": 0.04547502746249765,
+        "gain_fused_vs_players": 0.04547502746249765,
+        "brier_team_only": 0.2611009007174115,
+        "brier_players_only": 0.2611009007174115,
+        "brier_fused": 0.25518781686571396
+      }
+    },
+    "meta": {
+      "min_holdout_n": 30,
+      "leagues_tested": 3
+    }
+  },
+  "style_matchup_b_model": {
+    "enabled": false,
+    "error": "insufficient_rows",
+    "rows": 0
+  },
+  "meta_blend_c_model": {
+    "enabled": true,
+    "version": "meta_blend_c_model_v3",
+    "features": [
+      "z_anchor",
+      "z_adjusted",
+      "abs_z_delta",
+      "sign_z_delta",
+      "log1p_n_team",
+      "log1p_n_players",
+      "recent_evidence",
+      "rd_conf",
+      "hybrid_agree",
+      "bo_is_3",
+      "bo_is_5",
+      "is_playoffs",
+      "interregional",
+      "unknown_macro",
+      "roster_changed",
+      "patch_refit",
+      "cons_guard",
+      "cons_drift_scaled",
+      "rank_sos_applied",
+      "rank_sos_weight",
+      "rank_sos_diff_scaled",
+      "rank_sos_p_centered",
+      "roster_cont_applied",
+      "roster_cont_weight",
+      "roster_cont_diff_scaled",
+      "roster_cont_p_centered"
+    ],
+    "coef": [
+      0.5352288658139424,
+      0.5327454184723104,
+      -0.0725933567649738,
+      -0.18689268132659245,
+      -0.05160879814845105,
+      0.0,
+      -0.03597219274131059,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "intercept": 0.22536429275455544,
+    "x_mean": [
+      0.0649410465526254,
+      0.06183252950926812,
+      0.09333268762437795,
+      0.043,
+      3.7355341034069576,
+      0.0,
+      0.10786833112808532,
+      0.5,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "x_std": [
+      1.0834869386320827,
+      0.9707733806486132,
+      0.16348702566367293,
+      0.9990750722543296,
+      1.9454840626719747,
+      1.0,
+      0.09376997941281473,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "n_total": 2500,
+    "improvement_vs_anchor": -0.0017686835150667601,
+    "improvement_vs_adjusted": -0.03864870527203046,
+    "oos_logloss": 0.700167745820986,
+    "runtime_guard": {
+      "enabled": true,
+      "min_n_total": 220.0,
+      "min_improvement_vs_adjusted": -0.003,
+      "min_improvement_vs_anchor": -0.0015,
+      "allow_context_override": true
+    },
+    "runtime_stability": {
+      "enabled": true,
+      "cap_pp_lo": 2.2,
+      "cap_pp_hi_bo1": 5.2,
+      "cap_pp_hi_bo3": 6.3,
+      "cap_pp_hi_bo5": 7.2,
+      "small_delta_logit": 0.08,
+      "tiny_delta_logit": 0.03,
+      "cap_pp_small_delta": 3.2,
+      "cap_pp_tiny_delta": 2.2,
+      "mult_interregional": 0.88,
+      "mult_patch_refit": 0.86,
+      "mult_patch_warn": 0.94,
+      "mult_roster_changed": 0.93,
+      "weak_imp_threshold": -0.001,
+      "mult_weak_improvement": 0.92
+    },
+    "context_models": {},
+    "meta": {
+      "rows_total": 2500,
+      "n_train": 2000,
+      "n_test": 500,
+      "_source": "fit_meta_blend_c_model_rewrite_v1",
+      "train_logloss": 0.5600803078911316,
+      "train_brier": 0.19044914978385835,
+      "test_logloss": 0.700167745820986,
+      "test_anchor_logloss": 0.6983990623059192,
+      "test_adjusted_logloss": 0.6615190405489555,
+      "test_brier": 0.24377343070946042
+    }
+  },
+  "players_context_fit": {
+    "enabled": true,
+    "version": "ml_players_context_fit_v1",
+    "source": "walkforward_oos_ablation",
+    "baseline_off": {
+      "logloss": 0.5923594568684079,
+      "brier": 0.20253022332292156,
+      "ece": 0.0491477584441328,
+      "n_total": 1069,
+      "folds": 3,
+      "context": {
+        "enabled": false,
+        "has_team_games": true,
+        "ctx_total": 0,
+        "ctx_applied": 0,
+        "ctx_applied_rate": 0.0,
+        "ctx_mean_abs_delta": 0.0,
+        "reason_counts": {},
+        "cache_entries": 0
+      }
+    },
+    "best_on": {
+      "cfg": {
+        "enabled": true,
+        "lookback_games": 32,
+        "half_life_days": 60.0,
+        "min_games": 8,
+        "strength": 0.35,
+        "cap": 0.22,
+        "min_reliability": 0.3,
+        "interregional_mult": 0.85
+      },
+      "settings": {
+        "ml_players_context_enabled": true,
+        "ml_players_context_lookback_games": 32,
+        "ml_players_context_half_life_days": 60.0,
+        "ml_players_context_min_games": 8,
+        "ml_players_context_strength": 0.35,
+        "ml_players_context_cap": 0.22,
+        "ml_players_context_min_reliability": 0.3,
+        "ml_players_context_inter_mult": 0.85
+      },
+      "logloss": 0.5921090376581011,
+      "brier": 0.20241385476266255,
+      "ece": 0.04905401569388568,
+      "n_total": 1069,
+      "context": {
+        "enabled": true,
+        "has_team_games": true,
+        "ctx_total": 1069,
+        "ctx_applied": 504,
+        "ctx_applied_rate": 0.4714686623012161,
+        "ctx_mean_abs_delta": 0.002171590172139595,
+        "reason_counts": {
+          "low_sample": 565,
+          "ok": 504
+        },
+        "cache_entries": 6414
+      }
+    },
+    "ablation": {
+      "improvement_logloss_on_vs_off": 0.0002504192103067737,
+      "improvement_brier_on_vs_off": 0.00011636856025901143,
+      "improvement_ece_on_vs_off": 9.37427502471222e-05
+    },
+    "gate": {
+      "decision": "shadow_only",
+      "reasons": [
+        "logloss_gain_small"
+      ],
+      "thresholds": {
+        "min_n_total": 100,
+        "min_improvement_logloss": 0.0004,
+        "max_brier_regression": 0.0006,
+        "max_ece_regression": 0.0015,
+        "max_logloss_regression": 0.001
+      }
+    },
+    "settings": {
+      "ml_players_context_enabled": true,
+      "ml_players_context_lookback_games": 32,
+      "ml_players_context_half_life_days": 60.0,
+      "ml_players_context_min_games": 8,
+      "ml_players_context_strength": 0.35,
+      "ml_players_context_cap": 0.22,
+      "ml_players_context_min_reliability": 0.3,
+      "ml_players_context_inter_mult": 0.85
+    },
+    "promoted_settings": {},
+    "settings_by_league": {},
+    "settings_by_macro": {},
+    "promoted_settings_by_league": {},
+    "promoted_settings_by_macro": {},
+    "by_league": {},
+    "by_macro": {},
+    "segment_diagnostics": {
+      "by_league": {
+        "_meta": {
+          "skipped": true,
+          "reason": "speed_fast"
+        }
+      },
+      "by_macro": {
+        "_meta": {
+          "skipped": true,
+          "reason": "speed_fast"
+        }
+      }
+    },
+    "grid_top": [
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 24,
+          "half_life_days": 45.0,
+          "min_games": 6,
+          "strength": 0.55,
+          "cap": 0.28,
+          "min_reliability": 0.24,
+          "interregional_mult": 0.9
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 24,
+          "ml_players_context_half_life_days": 45.0,
+          "ml_players_context_min_games": 6,
+          "ml_players_context_strength": 0.55,
+          "ml_players_context_cap": 0.28,
+          "ml_players_context_min_reliability": 0.24,
+          "ml_players_context_inter_mult": 0.9
+        },
+        "n_total": 1069,
+        "logloss": 0.5912788313768912,
+        "brier": 0.2020787768545505,
+        "ece": 0.05298894445337956,
+        "improvement_logloss_vs_off": 0.0010806254915166624,
+        "improvement_brier_vs_off": 0.0004514464683710584,
+        "improvement_ece_vs_off": -0.0038411860092467595,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 786,
+          "ctx_applied_rate": 0.735266604303087,
+          "ctx_mean_abs_delta": 0.006736706056912117,
+          "reason_counts": {
+            "ok": 786,
+            "low_sample": 283
+          },
+          "cache_entries": 5345
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 16,
+          "half_life_days": 35.0,
+          "min_games": 5,
+          "strength": 0.45,
+          "cap": 0.18,
+          "min_reliability": 0.28,
+          "interregional_mult": 0.88
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 16,
+          "ml_players_context_half_life_days": 35.0,
+          "ml_players_context_min_games": 5,
+          "ml_players_context_strength": 0.45,
+          "ml_players_context_cap": 0.18,
+          "ml_players_context_min_reliability": 0.28,
+          "ml_players_context_inter_mult": 0.88
+        },
+        "n_total": 1069,
+        "logloss": 0.591336938291684,
+        "brier": 0.20210508449332154,
+        "ece": 0.05414007263328953,
+        "improvement_logloss_vs_off": 0.0010225185767238631,
+        "improvement_brier_vs_off": 0.00042513882960001914,
+        "improvement_ece_vs_off": -0.00499231418915673,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 853,
+          "ctx_applied_rate": 0.7979420018709074,
+          "ctx_mean_abs_delta": 0.006351178719590155,
+          "reason_counts": {
+            "ok": 853,
+            "low_sample": 216
+          },
+          "cache_entries": 3207
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 24,
+          "half_life_days": 45.0,
+          "min_games": 6,
+          "strength": 0.35,
+          "cap": 0.22,
+          "min_reliability": 0.28,
+          "interregional_mult": 0.88
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 24,
+          "ml_players_context_half_life_days": 45.0,
+          "ml_players_context_min_games": 6,
+          "ml_players_context_strength": 0.35,
+          "ml_players_context_cap": 0.22,
+          "ml_players_context_min_reliability": 0.28,
+          "ml_players_context_inter_mult": 0.88
+        },
+        "n_total": 1069,
+        "logloss": 0.5916674140114312,
+        "brier": 0.20224113234907096,
+        "ece": 0.053462919121738124,
+        "improvement_logloss_vs_off": 0.0006920428569766601,
+        "improvement_brier_vs_off": 0.0002890909738506031,
+        "improvement_ece_vs_off": -0.0043151606776053245,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 786,
+          "ctx_applied_rate": 0.735266604303087,
+          "ctx_mean_abs_delta": 0.004298083687705923,
+          "reason_counts": {
+            "ok": 786,
+            "low_sample": 283
+          },
+          "cache_entries": 1069
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 16,
+          "half_life_days": 35.0,
+          "min_games": 5,
+          "strength": 0.3,
+          "cap": 0.18,
+          "min_reliability": 0.24,
+          "interregional_mult": 0.88
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 16,
+          "ml_players_context_half_life_days": 35.0,
+          "ml_players_context_min_games": 5,
+          "ml_players_context_strength": 0.3,
+          "ml_players_context_cap": 0.18,
+          "ml_players_context_min_reliability": 0.24,
+          "ml_players_context_inter_mult": 0.88
+        },
+        "n_total": 1069,
+        "logloss": 0.591669687128755,
+        "brier": 0.20224349867061794,
+        "ece": 0.05384600566658282,
+        "improvement_logloss_vs_off": 0.0006897697396528457,
+        "improvement_brier_vs_off": 0.000286724652303616,
+        "improvement_ece_vs_off": -0.004698247222450019,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 853,
+          "ctx_applied_rate": 0.7979420018709074,
+          "ctx_mean_abs_delta": 0.004265065688032297,
+          "reason_counts": {
+            "ok": 853,
+            "low_sample": 216
+          },
+          "cache_entries": 2138
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 24,
+          "half_life_days": 45.0,
+          "min_games": 6,
+          "strength": 0.25,
+          "cap": 0.18,
+          "min_reliability": 0.32,
+          "interregional_mult": 0.82
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 24,
+          "ml_players_context_half_life_days": 45.0,
+          "ml_players_context_min_games": 6,
+          "ml_players_context_strength": 0.25,
+          "ml_players_context_cap": 0.18,
+          "ml_players_context_min_reliability": 0.32,
+          "ml_players_context_inter_mult": 0.82
+        },
+        "n_total": 1069,
+        "logloss": 0.591863637455339,
+        "brier": 0.20232310643674103,
+        "ece": 0.05351238159327058,
+        "improvement_logloss_vs_off": 0.0004958194130688653,
+        "improvement_brier_vs_off": 0.00020711688618052504,
+        "improvement_ece_vs_off": -0.0043646231491377835,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 786,
+          "ctx_applied_rate": 0.735266604303087,
+          "ctx_mean_abs_delta": 0.003073689908884443,
+          "reason_counts": {
+            "ok": 786,
+            "low_sample": 283
+          },
+          "cache_entries": 4276
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 32,
+          "half_life_days": 60.0,
+          "min_games": 8,
+          "strength": 0.35,
+          "cap": 0.22,
+          "min_reliability": 0.3,
+          "interregional_mult": 0.85
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 32,
+          "ml_players_context_half_life_days": 60.0,
+          "ml_players_context_min_games": 8,
+          "ml_players_context_strength": 0.35,
+          "ml_players_context_cap": 0.22,
+          "ml_players_context_min_reliability": 0.3,
+          "ml_players_context_inter_mult": 0.85
+        },
+        "n_total": 1069,
+        "logloss": 0.5921090376581011,
+        "brier": 0.20241385476266255,
+        "ece": 0.04905401569388568,
+        "improvement_logloss_vs_off": 0.0002504192103067737,
+        "improvement_brier_vs_off": 0.00011636856025901143,
+        "improvement_ece_vs_off": 9.37427502471222e-05,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 504,
+          "ctx_applied_rate": 0.4714686623012161,
+          "ctx_mean_abs_delta": 0.002171590172139595,
+          "reason_counts": {
+            "low_sample": 565,
+            "ok": 504
+          },
+          "cache_entries": 6414
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 28,
+          "half_life_days": 60.0,
+          "min_games": 8,
+          "strength": 0.18,
+          "cap": 0.12,
+          "min_reliability": 0.36,
+          "interregional_mult": 0.8
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 28,
+          "ml_players_context_half_life_days": 60.0,
+          "ml_players_context_min_games": 8,
+          "ml_players_context_strength": 0.18,
+          "ml_players_context_cap": 0.12,
+          "ml_players_context_min_reliability": 0.36,
+          "ml_players_context_inter_mult": 0.8
+        },
+        "n_total": 1069,
+        "logloss": 0.5922320442668223,
+        "brier": 0.20247104818583733,
+        "ece": 0.04909768669942159,
+        "improvement_logloss_vs_off": 0.00012741260158555257,
+        "improvement_brier_vs_off": 5.91751370842275e-05,
+        "improvement_ece_vs_off": 5.007174471120812e-05,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 504,
+          "ctx_applied_rate": 0.4714686623012161,
+          "ctx_mean_abs_delta": 0.001146445593073966,
+          "reason_counts": {
+            "low_sample": 565,
+            "ok": 504
+          },
+          "cache_entries": 7483
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 32,
+          "half_life_days": 70.0,
+          "min_games": 9,
+          "strength": 0.12,
+          "cap": 0.1,
+          "min_reliability": 0.4,
+          "interregional_mult": 0.78
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 32,
+          "ml_players_context_half_life_days": 70.0,
+          "ml_players_context_min_games": 9,
+          "ml_players_context_strength": 0.12,
+          "ml_players_context_cap": 0.1,
+          "ml_players_context_min_reliability": 0.4,
+          "ml_players_context_inter_mult": 0.78
+        },
+        "n_total": 1069,
+        "logloss": 0.5922975449762107,
+        "brier": 0.20250088888098883,
+        "ece": 0.049121175439554465,
+        "improvement_logloss_vs_off": 6.191189219717508e-05,
+        "improvement_brier_vs_off": 2.933444193273238e-05,
+        "improvement_ece_vs_off": 2.65830045783344e-05,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 453,
+          "ctx_applied_rate": 0.4237605238540692,
+          "ctx_mean_abs_delta": 0.0006726649866758228,
+          "reason_counts": {
+            "low_sample": 616,
+            "ok": 453
+          },
+          "cache_entries": 8552
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 36,
+          "half_life_days": 85.0,
+          "min_games": 10,
+          "strength": 0.08,
+          "cap": 0.08,
+          "min_reliability": 0.44,
+          "interregional_mult": 0.75
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 36,
+          "ml_players_context_half_life_days": 85.0,
+          "ml_players_context_min_games": 10,
+          "ml_players_context_strength": 0.08,
+          "ml_players_context_cap": 0.08,
+          "ml_players_context_min_reliability": 0.44,
+          "ml_players_context_inter_mult": 0.75
+        },
+        "n_total": 1069,
+        "logloss": 0.5923225058976684,
+        "brier": 0.2025139397983921,
+        "ece": 0.04819658309197793,
+        "improvement_logloss_vs_off": 3.6950970739413336e-05,
+        "improvement_brier_vs_off": 1.6283524529453475e-05,
+        "improvement_ece_vs_off": 0.0009511753521548663,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 388,
+          "ctx_applied_rate": 0.362956033676333,
+          "ctx_mean_abs_delta": 0.00039345288822173333,
+          "reason_counts": {
+            "low_sample": 681,
+            "ok": 388
+          },
+          "cache_entries": 9621
+        }
+      },
+      {
+        "cfg": {
+          "enabled": true,
+          "lookback_games": 40,
+          "half_life_days": 100.0,
+          "min_games": 12,
+          "strength": 0.05,
+          "cap": 0.06,
+          "min_reliability": 0.48,
+          "interregional_mult": 0.7
+        },
+        "settings": {
+          "ml_players_context_enabled": true,
+          "ml_players_context_lookback_games": 40,
+          "ml_players_context_half_life_days": 100.0,
+          "ml_players_context_min_games": 12,
+          "ml_players_context_strength": 0.05,
+          "ml_players_context_cap": 0.06,
+          "ml_players_context_min_reliability": 0.48,
+          "ml_players_context_inter_mult": 0.7
+        },
+        "n_total": 1069,
+        "logloss": 0.5923427702316346,
+        "brier": 0.20252276882175463,
+        "ece": 0.048207606800935235,
+        "improvement_logloss_vs_off": 1.6686636773233232e-05,
+        "improvement_brier_vs_off": 7.45450116693136e-06,
+        "improvement_ece_vs_off": 0.0009401516431975648,
+        "context": {
+          "enabled": true,
+          "has_team_games": true,
+          "ctx_total": 1069,
+          "ctx_applied": 298,
+          "ctx_applied_rate": 0.27876520112254444,
+          "ctx_mean_abs_delta": 0.00018189253409702058,
+          "reason_counts": {
+            "low_sample": 771,
+            "ok": 298
+          },
+          "cache_entries": 10690
+        }
+      }
+    ],
+    "meta": {
+      "samples_total": 1600,
+      "team_games_rows": 44672,
+      "candidates_tested": 10,
+      "cache_entries": 10690,
+      "speed_profile": "fast",
+      "budget_profile": "fast",
+      "safe_candidates": 5,
+      "selected_pool": "safe",
+      "segment_fit_skipped": true,
+      "segment_fit_restricted": false
+    }
+  },
+  "grid": [
+    {
+      "team_scale": 0.5,
+      "players_scale": 0.5,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 0.5,
+      "players_scale": 1.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 0.5,
+      "players_scale": 2.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 1.0,
+      "players_scale": 0.5,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 1.0,
+      "players_scale": 1.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 1.0,
+      "players_scale": 2.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 2.0,
+      "players_scale": 0.5,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 2.0,
+      "players_scale": 1.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    },
+    {
+      "team_scale": 2.0,
+      "players_scale": 2.0,
+      "n_total": 1769,
+      "logloss": 0.5893328634479176,
+      "brier": 0.19960722844714612,
+      "folds": 4
+    }
+  ],
+  "grid_form_top20": [
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5832512881966392,
+      "brier": 0.19922220662351675,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5832670430020848,
+      "brier": 0.19906137099698074,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5832982022025216,
+      "brier": 0.19914069423877975,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.5833318853292024,
+      "brier": 0.19924310968408349,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.5833318853292024,
+      "brier": 0.19924310968408349,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.5833591957392803,
+      "brier": 0.19908021746767932,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.85,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.5833591957392803,
+      "brier": 0.19908021746767932,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.5833747509483117,
+      "brier": 0.19915839205785646,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.5833747509483117,
+      "brier": 0.19915839205785646,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5836028804578328,
+      "brier": 0.1990819552044356,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5836065227708324,
+      "brier": 0.19912323503080223,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.5836777463650636,
+      "brier": 0.19913752037957294,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.0,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.5836777463650636,
+      "brier": 0.19913752037957294,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 0.7,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.5836779969483749,
+      "brier": 0.19930544583343357,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.583689358419366,
+      "brier": 0.19909776548361932,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 1.4,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.583689358419366,
+      "brier": 0.19909776548361932,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 0.7,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.5837390589244508,
+      "brier": 0.19932025707476145,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.55,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 0.7,
+      "elite_same_league_parity_strength": 0.35,
+      "logloss": 0.5837390589244508,
+      "brier": 0.19932025707476145,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 0.7,
+      "elite_same_league_parity_strength": 0.2,
+      "logloss": 0.583848152086423,
+      "brier": 0.19949925170728094,
+      "n_total": 1769,
+      "folds": 4
+    },
+    {
+      "enabled": true,
+      "max_weight": 0.7,
+      "knee_games": 3.0,
+      "beta_prior": 1.0,
+      "signal_power": 0.7,
+      "elite_same_league_parity_strength": 0.0,
+      "logloss": 0.583913077091359,
+      "brier": 0.1995174147736282,
+      "n_total": 1769,
+      "folds": 4
+    }
+  ]
+}

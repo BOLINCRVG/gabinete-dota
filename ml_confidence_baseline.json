@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T16:05:59",
+  "generated_at": "2026-07-14T12:53:39",
   "version": "ml_confidence_baseline_v3",
   "source": "layer_validation+walkforward",
   "global": {
@@ -66271,7 +66271,7 @@
       "refit": 0.5
     }
   },
-  "params_generated_at": "2026-07-12T03:50:50+00:00",
+  "params_generated_at": "2026-07-14T15:53:38+00:00",
   "params_active_scales": {
     "team_scale": 0.5,
     "players_scale": 0.5

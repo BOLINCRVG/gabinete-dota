@@ -86,6 +86,28 @@ class TestRunCmd(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("4", result.stdout)
 
+    def test_cp1252_bytes_in_output_do_not_fail_run(self):
+        """Regressão 2026-07-14: filho escrevia log em cp1252 e um "ç" (0xE7)
+        estourava UnicodeDecodeError na leitura — retreino de 16min OK era
+        carimbado rc=1 e as flags de manutenção nunca limpavam."""
+        code = (
+            "import sys; "
+            "sys.stdout.buffer.write(b'manuten\\xe7\\xe3o conclu\\xedda\\n'); "
+            "sys.stdout.buffer.flush()"
+        )
+        result = run_cmd([sys.executable, "-c", code])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("run_cmd_error", result.stderr or "")
+        # o texto chega (com ou sem substituição), nunca derruba a leitura
+        self.assertIn("manuten", result.stdout)
+
+    def test_child_python_logs_utf8(self):
+        """PYTHONIOENCODING=utf-8 propaga: print() com acento no filho volta
+        legível (sem mojibake) em vez de cp1252."""
+        result = run_cmd([sys.executable, "-c", "print('manutenção concluída')"])
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("manutenção concluída", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

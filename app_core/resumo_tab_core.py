@@ -712,6 +712,17 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         "inhibitors": _with_v3("inhibitors", _ctx(ctx, "inhibitors")),
         "time": _with_v3("time", _ctx(ctx, "time_m")),
     }
+    # Mercados BINÁRIOS do registro central (ex.: Megacreeps no Dota): linha
+    # fixa 0.5 — a pick Sim/Não compete no ranking pelas MESMAS regras (teto,
+    # score). No LoL o registro não tem binários → no-op. (Pedido 2026-07-14.)
+    try:
+        from app_core.stats_config import STATS_MARKET_CONFIG as _smc_bin
+        for _cfg_bin in _smc_bin.values():
+            _mk_bin = str(_cfg_bin.get("metric_key") or "")
+            if _mk_bin and bool(_cfg_bin.get("binary_market")) and _mk_bin not in lines_by_metric:
+                lines_by_metric[_mk_bin] = [0.5]
+    except Exception:
+        pass
 
     # Valores de cálculo lidos do estado (sem UI de "ajuste fino" — removida).
     # Sem gates "Exigir": mostramos todas as picks acima de um piso mínimo de
@@ -1066,6 +1077,21 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 oc_map_cur.pop(row_key, None)
     oc_map_all[matchup_key_oc] = oc_map_cur
     session_state[oc_store_key] = oc_map_all
+
+    # Mercados binários: a pick fala a língua do mercado ("Sim/Não"), não
+    # "Acima/Abaixo 0.5" (pedido 2026-07-14, junto com o ✓/✗ do V3).
+    try:
+        from app_core.stats_config import STATS_MARKET_CONFIG as _smc_lbl
+        _bin_keys = {str(c.get("metric_key")) for c in _smc_lbl.values() if c.get("binary_market")}
+        if _bin_keys:
+            for _r in rows:
+                if _metric_leaf(str(_r.get("_metric", ""))) in _bin_keys:
+                    _lado = str(_r.get("Lado", ""))
+                    _r["Lado"] = "Sim" if _lado in ("Acima", "Over") else ("Não" if _lado in ("Abaixo", "Under") else _lado)
+                    _r["Mercado"] = str(_r.get("Mercado", "")).replace("(0.5)", "(sim/não)")
+                    _r["Linha"] = "-"
+    except Exception:
+        pass
 
     # Teto de odd em TODOS os mercados — regra ATUALIZADA pelo usuário em
     # 2026-07-10: "TODAS as apostas abaixo do teto devem aparecer (ML, combos,
