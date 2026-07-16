@@ -173,6 +173,29 @@ class TestCSVBootstrapRuntimeCore(unittest.TestCase):
         )
         self.assertEqual(csv_path3, "C:/data/2025.csv")
 
+    def test_dead_artifact_override_falls_back_to_repo_default(self):
+        """Regressão 2026-07-15 (nuvem): cfg_artifact_override de OUTRA máquina
+        (caminho absoluto morto, ex.: C:\\... no Linux) era usado cru — o motor
+        v2 recebia artifact inexistente e o ML sumia mudo. Override morto deve
+        cair no padrão do repo."""
+        with workspace_tempdir("bootstrap_runtime_core") as td:
+            root = Path(td)
+            (root / "ml_artifact.json").write_text("{}", encoding="utf-8")
+            _, artifact_path = resolve_active_csv_and_artifact(
+                {
+                    "cfg_auto_paths": False,
+                    "cfg_artifact_override": r"C:\maquina\de\outra\pessoa\ml_artifact.json"
+                    if not Path(r"C:\maquina").exists()
+                    else str(root / "nao_existe" / "ml_artifact.json"),
+                },
+                app_root=root,
+                season_label="S16",
+                season_year=2026,
+                season_csv_path="",
+                seasons_available=False,
+            )
+            self.assertEqual(Path(artifact_path), root / "ml_artifact.json")
+
     def test_resolve_season_context(self):
         seasons = [
             {"season": "S14", "year": 2024, "csv_path": "C:/data/2024.csv"},

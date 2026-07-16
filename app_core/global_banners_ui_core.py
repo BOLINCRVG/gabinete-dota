@@ -55,6 +55,11 @@ def render_global_maintenance_banner(
     collect_status_fn: Callable[[str, str], Dict[str, Any]],
 ) -> None:
     """Banner visível no topo do Plays para drift/calibração/parâmetros."""
+    # Modo visualização: alertas de manutenção são assunto do robô/PC de
+    # casa — na nuvem viram ruído (e apontam ações que não existem lá).
+    from app_core.viewer_mode_core import is_viewer_mode as _is_viewer_mode
+    if _is_viewer_mode():
+        return
     status = collect_status_fn(csv_path_s, artifact_path_s)
     st.session_state["_global_maintenance_status"] = status
     if not bool(status.get("has_issues", False)):

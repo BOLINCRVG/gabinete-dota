@@ -17,6 +17,91 @@ def _parse_names(text: str) -> list[str]:
     return [t.strip() for t in re.split(r"[\n\t,;]+", str(text or "").strip()) if t.strip()]
 
 
+def _render_matchup_pool_block(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    csv_sig: Any,
+    load_player_rows_fn: Any,
+) -> None:
+    """Pool do confronto (redesign 2026-07-16): o que CADA time joga, cruzado
+    com o tier do patch atual da aba Meta. Leitura descritiva, n visível."""
+    ta = str(team_a or "").strip()
+    tb = str(team_b or "").strip()
+    if not ta or not tb:
+        return
+    try:
+        from app_core.matchup_pool_core import (
+            build_team_pool,
+            cross_pool_with_meta,
+            pool_verdict_lines,
+        )
+
+        rows = load_player_rows_fn(csv_sig)
+        if rows is None or rows.empty:
+            return
+        year = None
+        try:
+            yr = pd.to_numeric(rows.get("year"), errors="coerce")
+            year = int(yr.max()) if yr.notna().any() else None
+        except Exception:
+            year = None
+
+        # tiers do patch atual (mesmo cache de sessão do Radar)
+        meta_map: dict = {}
+        try:
+            meta_lu = st.session_state.get("_radar_meta_lu")
+            if not (isinstance(meta_lu, tuple) and len(meta_lu) == 2 and meta_lu[0] == str(csv_sig)):
+                from app_core.champion_knowledge_core import load_champion_knowledge_registry
+                from app_core.meta_patch_core import meta_lookup_for_radar
+                from app_core.meta_tab_core import _get_draft_rows
+
+                meta_lu = (str(csv_sig), meta_lookup_for_radar(
+                    _get_draft_rows(st.session_state, csv_sig),
+                    registry=load_champion_knowledge_registry(),
+                ))
+                st.session_state["_radar_meta_lu"] = meta_lu
+            meta_map = dict(meta_lu[1] or {})
+        except Exception:
+            meta_map = {}
+
+        pools = {}
+        for tm in (ta, tb):
+            p = cross_pool_with_meta(build_team_pool(rows, tm, year=year), meta_map)
+            pools[tm] = p
+        if all(p.empty for p in pools.values()):
+            return
+
+        with st.container(border=True):
+            render_tab_section(
+                st,
+                title=f"Pool do confronto — {ta} × {tb}",
+                subtitle=f"O que cada time joga ({'temporada ' + str(year) if year else 'todo o CSV'}) × tier do patch atual (aba Meta). Leitura descritiva — não mexe em odd.",
+            )
+            c1, c2 = st.columns(2)
+            for col, tm in ((c1, ta), (c2, tb)):
+                with col:
+                    st.markdown(f"**{tm}**")
+                    p = pools[tm]
+                    if p.empty:
+                        st.caption("Sem picks no recorte.")
+                        continue
+                    view = pd.DataFrame({
+                        "Campeão": p["champion"],
+                        "J": p["games"].astype(int),
+                        "WR": (p["wr"] * 100).round(0).map(lambda v: f"{v:.0f}%" if pd.notna(v) else "-"),
+                        "Tier": p["tier"].replace("", "-"),
+                        "Piloto": p["player"].fillna(""),
+                    })
+                    st.dataframe(view, hide_index=True, use_container_width=True)
+                    for ln in pool_verdict_lines(tm, p):
+                        st.caption(ln)
+    except Exception:
+        # bloco novo NUNCA derruba a aba inteira
+        return
+
+
 def render_champions_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(
         st,
@@ -40,6 +125,14 @@ def render_champions_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     reset_champions_league_dependents_fn = ctx["reset_champions_league_dependents_fn"]
     resolve_blue_side_choice_fn = ctx["resolve_blue_side_choice_fn"]
     sync_blue_side_choice_fn = ctx["sync_blue_side_choice_fn"]
+
+    _render_matchup_pool_block(
+        st=st,
+        team_a=team_a,
+        team_b=team_b,
+        csv_sig=csv_sig,
+        load_player_rows_fn=load_player_rows_fn,
+    )
 
     years, splits, leagues = collect_year_split_league_options(team_games)
     teams = []

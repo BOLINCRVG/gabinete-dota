@@ -118,10 +118,16 @@ def compute_ml_core_prediction(
             tier_hint_blue=tta or None, tier_hint_red=ttb or None,
         )
 
+    ml_error = ""
     try:
         ml_info = _core_ml(team_a, team_b, league_a, league_b, tier_a, tier_b)
-    except Exception:
+    except Exception as exc:
+        # Nunca engolir mudo: o motivo viaja no resultado e aparece no aviso
+        # da UI (na nuvem o traceback é redigido; sem isso o NaN é indecifrável).
+        ml_error = f"{type(exc).__name__}: {exc}"
         ml_info = None
+    if ml_info is None and not ml_error:
+        ml_error = "motor v2 retornou vazio (times fora do artifact?)"
     ml_info_rev: Optional[Dict[str, Any]] = None
     if ml_info is not None:
         try:
@@ -233,6 +239,7 @@ def compute_ml_core_prediction(
 
     return {
         "ml_info": ml_info,
+        "ml_error": str(ml_error),
         "p_map_raw": float(p_map_raw),
         "p_map_cal": float(p_map_cal),
         "league_a": str(league_a),

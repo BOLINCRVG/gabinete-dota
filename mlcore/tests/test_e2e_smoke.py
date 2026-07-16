@@ -56,13 +56,15 @@ print("RESULT|OK|" + ";".join(tabs))
 """
 
 
-def _run_flow(app_path: Path, hint_a: str, hint_b: str) -> tuple[str, str]:
+def _run_flow(app_path: Path, hint_a: str, hint_b: str,
+              extra_env: dict | None = None) -> tuple[str, str]:
     """Roda o fluxo num subprocesso isolado. Retorna (status, payload)."""
     # PYTHONIOENCODING: sem isso o driver imprime cp1252 no Windows e
     # "Visão Geral" chega como "Vis�o Geral" (mesma família do bug do
     # run_cmd, 2026-07-14).
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
+    env.update(extra_env or {})
     cp = subprocess.run(
         [sys.executable, "-c", _DRIVER, str(app_path), hint_a, hint_b],
         capture_output=True, text=True, timeout=1200,
@@ -81,6 +83,22 @@ class TestE2ESmokeLoL(unittest.TestCase):
         if status == "SKIP":
             self.skipTest(payload)
         self.assertEqual(status, "OK", f"fluxo LoL quebrou: {payload}")
+        tabs = payload.split(";")
+        self.assertGreaterEqual(len(tabs), 7, f"poucas tabs: {tabs}")
+        self.assertIn("Visão Geral", tabs)
+
+
+class TestE2ESmokeLoLViewer(unittest.TestCase):
+    def test_viewer_mode_boots_straight_to_app(self):
+        """Modo visualização (nuvem): sem gate de manutenção, boot direto,
+        abas renderizam. É o modo do Streamlit Community Cloud."""
+        status, payload = _run_flow(
+            ROOT / "plays_app.py", "T1", "Gen",
+            extra_env={"GABINETE_VIEWER": "1"},
+        )
+        if status == "SKIP":
+            self.skipTest(payload)
+        self.assertEqual(status, "OK", f"fluxo viewer quebrou: {payload}")
         tabs = payload.split(";")
         self.assertGreaterEqual(len(tabs), 7, f"poucas tabs: {tabs}")
         self.assertIn("Visão Geral", tabs)

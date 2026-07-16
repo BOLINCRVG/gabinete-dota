@@ -1351,6 +1351,12 @@ def csv_bootstrap_gate(
     fp = core_csv_bootstrap_fingerprint(csv_path_s, hist_csvs, artifact_path, file_sig_fn=_file_sig)
     fp_key = core_csv_bootstrap_fingerprint_key(csv_path_s, hist_csvs, artifact_path, file_sig_fn=_file_sig)
     _gate_state = core_consume_bootstrap_gate_state(st.session_state)
+    # Modo visualização (nuvem): o gate não existe — o app confia no
+    # modelo/CSV que vieram do repositório; manutenção é papel do robô.
+    from app_core.viewer_mode_core import is_viewer_mode as _is_viewer_mode
+    if _is_viewer_mode():
+        core_mark_bootstrap_gate_completed(st.session_state, fp_key)
+        return
     # Test harness bypass: evita prender AppTest na pré-tela e disparar manutenção pesada.
     if bool(_gate_state.get("probe_skip", False)):
         core_mark_bootstrap_gate_completed(st.session_state, fp_key)

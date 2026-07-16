@@ -345,6 +345,17 @@ def resolve_active_csv_and_artifact(
             default_artifact_for(app_root, str(season_label or ""), int(season_year or 0)),
         )
     ).strip()
+    # Blindagem (mesmo espírito do _valid_override, bug do amigo 07/2026):
+    # override vindo de OUTRA máquina (caminho absoluto morto — ex.: C:\...
+    # rodando no Linux da nuvem) é ignorado e cai no padrão do repo. Sem
+    # isso o motor v2 recebia artifact inexistente e o ML sumia mudo.
+    try:
+        if artifact_path and not Path(artifact_path).exists():
+            artifact_path = default_artifact_for(
+                app_root, str(season_label or ""), int(season_year or 0)
+            )
+    except OSError:
+        pass
     return csv_path, artifact_path
 
 

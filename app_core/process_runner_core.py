@@ -50,6 +50,15 @@ def run_cmd(
     heartbeat_cb: Optional[Callable[[float], None]] = None,
     heartbeat_interval_s: float = 2.0,
 ) -> subprocess.CompletedProcess:
+    # Modo visualização (nuvem): NENHUM subprocesso pesado roda na instância
+    # web — retreino/params são papel do robô. Rede de segurança: mesmo que
+    # algum botão escape escondido na UI, ele falha rápido e explicado.
+    from app_core.viewer_mode_core import is_viewer_mode as _is_viewer_mode
+    if _is_viewer_mode():
+        return subprocess.CompletedProcess(
+            cmd, returncode=1, stdout="",
+            stderr="[viewer] modo visualização: manutenção/retreino rodam no robô, não aqui.",
+        )
     _timeout = int(timeout_s or 0)
     if _timeout <= 0:
         _timeout = 1200
