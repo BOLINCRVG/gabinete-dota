@@ -102,53 +102,68 @@ class TestCsvUpload(unittest.TestCase):
         ok, msg, _ = validate_csv_upload(b"\x00\x01isto nao e csv", "Z:/x.csv")
         self.assertFalse(ok)
 
-    def test_commit_uses_existing_sha_and_puts(self):
+    def test_commit_via_real_git_end_to_end(self):
+        """Regressão 2026-07-16: NENHUMA API do GitHub aceita o CSV de 47MB
+        ('input too large... create the blob in a local clone'). O upload
+        agora é git de verdade — validado aqui contra um repositório local."""
+        import subprocess
+        import tempfile
+        from pathlib import Path as P
+
         from app_core.viewer_mode_core import commit_csv_to_repo
 
-        seen = {}
+        def _git(*args, cwd=None):
+            cp = subprocess.run(["git", *args], cwd=cwd, capture_output=True,
+                                text=True, encoding="utf-8", errors="replace")
+            self.assertEqual(cp.returncode, 0, cp.stderr)
+            return cp
 
-        class _R:
-            def __init__(self, code, payload=None):
-                self.status_code = code
-                self._p = payload
+        with tempfile.TemporaryDirectory() as td:
+            bare = P(td) / "remote.git"
+            seed = P(td) / "seed"
+            _git("init", "--bare", "-b", "master", str(bare))
+            _git("clone", str(bare), str(seed))
+            (seed / "CSV_DIARIO").mkdir()
+            (seed / "CSV_DIARIO" / "x.csv").write_bytes(self._csv_bytes(3, "2026-07-10"))
+            _git("-C", str(seed), "config", "user.email", "t@t")
+            _git("-C", str(seed), "config", "user.name", "t")
+            _git("-C", str(seed), "add", "-A")
+            _git("-C", str(seed), "commit", "-m", "seed")
+            _git("-C", str(seed), "push", "origin", "master")
 
-            def json(self):
-                return self._p
-
-        def fake_get(url, **kw):
-            seen["get"] = url
-            return _R(200, [{"name": "x.csv", "sha": "abc123"}])
-
-        def fake_put(url, **kw):
-            seen["put"] = url
-            seen["sha"] = kw.get("json", {}).get("sha")
-            seen["branch"] = kw.get("json", {}).get("branch")
-            return _R(200)
-
-        ok, msg = commit_csv_to_repo(
-            b"data", token="t", repo="U/r", repo_path="CSV_DIARIO/x.csv",
-            message="m", get_fn=fake_get, put_fn=fake_put,
-        )
-        self.assertTrue(ok, msg)
-        self.assertEqual(seen["sha"], "abc123")
-        self.assertEqual(seen["branch"], "master")
-        self.assertIn("/contents/CSV_DIARIO/x.csv", seen["put"])
+            new_bytes = self._csv_bytes(9, "2026-07-16")
+            ok, msg = commit_csv_to_repo(
+                new_bytes, token="irrelevante", repo="x/y",
+                repo_path="CSV_DIARIO/x.csv", message="upload teste",
+                clone_url=bare.as_uri(),
+            )
+            self.assertTrue(ok, msg)
+            shown = subprocess.run(
+                ["git", "--git-dir", str(bare), "show", "master:CSV_DIARIO/x.csv"],
+                capture_output=True, text=True, encoding="utf-8", errors="replace",
+            )
+            self.assertEqual(shown.stdout.encode(), new_bytes.replace(b"\r\n", b"\n"))
+            log = subprocess.run(
+                ["git", "--git-dir", str(bare), "log", "-1", "--format=%s"],
+                capture_output=True, text=True, encoding="utf-8", errors="replace",
+            )
+            self.assertIn("upload teste", log.stdout)
 
     def test_commit_failure_is_explained(self):
         from app_core.viewer_mode_core import commit_csv_to_repo
 
-        class _R:
-            status_code = 404
-
-            def json(self):
-                return []
+        class _CP:
+            returncode = 128
+            stderr = "fatal: could not read from remote repository"
+            stdout = ""
 
         ok, msg = commit_csv_to_repo(
             b"d", token="t", repo="U/r", repo_path="CSV_DIARIO/x.csv",
-            message="m", get_fn=lambda *a, **k: _R(), put_fn=lambda *a, **k: _R(),
+            message="m", run_fn=lambda *a, **k: _CP(),
         )
         self.assertFalse(ok)
-        self.assertIn("404", msg)
+        self.assertIn("clone falhou", msg)
+        self.assertIn("remote repository", msg)
 
 
 if __name__ == "__main__":

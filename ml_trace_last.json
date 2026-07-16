@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T14:44:31",
+  "generated_at": "2026-07-16T15:12:14",
   "matchup": {
     "season": "S15",
     "teamA": "Asia Spirit",
@@ -15,7 +15,7 @@
   },
   "engine": "mlcore_v2",
   "ml_trace": {
-    "generated_at": "2026-07-16T14:44:26",
+    "generated_at": "2026-07-16T15:12:09",
     "matchup": {
       "season": "S15",
       "teamA": "Asia Spirit",
@@ -205,7 +205,7 @@
       "excluded": false,
       "gate_score": null,
       "gate_n_eff": null,
-      "confidence_score": 34.15,
+      "confidence_score": 35.15,
       "weak_blend": null,
       "n_eff": null,
       "shrink": null,
@@ -228,7 +228,7 @@
       "status": "ok",
       "league_hint": "Road To EWC 2026 Regional Qualifiers",
       "changed_leagues": [],
-      "age_days": 0.0009989439467592593,
+      "age_days": 0.020276867291666667,
       "shrink": 0.0,
       "p_in": 0.07491770117798649,
       "p_out": 0.07491770117798646,
@@ -399,7 +399,7 @@
           "source": "marginal_trust_guard",
           "league": "ROAD TO EWC REGIONAL QUALIFIERS",
           "tier": "T2",
-          "confidence_score": 34.15,
+          "confidence_score": 35.15,
           "shrink": null,
           "cap_hi": null,
           "reason": "disabled",
@@ -1400,7 +1400,7 @@
   "players_trace": [],
   "feature_trace": [
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_shadow_state_alite_v1",
       "event": "shadow_compare",
       "enabled": true,
@@ -1467,7 +1467,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_shadow_state_areal_v1",
       "event": "shadow_compare",
       "enabled": true,
@@ -1619,7 +1619,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_league_rank_sos_live_v1",
       "event": "live_apply",
       "enabled": true,
@@ -1663,7 +1663,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_roster_continuity_live_v1",
       "event": "live_apply",
       "enabled": true,
@@ -1704,7 +1704,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_hier_calibration_live_v1",
       "event": "live_apply",
       "enabled": true,
@@ -1737,7 +1737,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_series_bo_dplite_live_v1",
       "event": "live_apply",
       "enabled": true,
@@ -1769,7 +1769,7 @@
       }
     },
     {
-      "generated_at": "2026-07-16T14:44:26",
+      "generated_at": "2026-07-16T15:12:09",
       "feature": "ml_layer_uncertainty_live_v1",
       "event": "live_apply",
       "enabled": true,
@@ -1854,7 +1854,7 @@
   ],
   "meta": {
     "app_version": "gabinete-2026.02.12",
-    "generated_at": "2026-07-16T14:44:31",
+    "generated_at": "2026-07-16T15:12:14",
     "season": "S15",
     "teams": {
       "teamA": "Asia Spirit",
