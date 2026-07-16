@@ -160,10 +160,129 @@ def render_update_now_button(st: Any) -> None:
             st.error(msg)
 
 
+# --- Upload de CSV no site (pedido dele 16/07: "anexar o csv do meu pc") ---
+
+def validate_csv_upload(file_bytes: bytes, current_csv_path: str) -> tuple[bool, str, dict]:
+    """Valida o CSV enviado com as MESMAS guardas do robô: parseável, com as
+    colunas do OE, e NUNCA regride (>= jogos e >= data máxima do atual)."""
+    import io
+
+    import pandas as pd
+
+    try:
+        df = pd.read_csv(io.BytesIO(file_bytes), usecols=["gameid", "date"], low_memory=False)
+    except Exception as exc:
+        return False, f"Arquivo não parece o CSV do Oracle's Elixir ({type(exc).__name__}).", {}
+    new_n = int(df["gameid"].nunique())
+    new_dmax = str(df["date"].max())
+    info = {"games": new_n, "date_max": new_dmax}
+    cur = Path(str(current_csv_path or ""))
+    if cur.exists():
+        try:
+            import pandas as pd2  # noqa: F401
+
+            cdf = pd.read_csv(cur, usecols=["gameid", "date"], low_memory=False)
+            cur_n = int(cdf["gameid"].nunique())
+            cur_dmax = str(cdf["date"].max())
+            if new_n < cur_n or new_dmax < cur_dmax:
+                return False, (
+                    f"REGRESSÃO: o enviado tem {new_n} jogos (máx {new_dmax}) vs "
+                    f"{cur_n} ({cur_dmax}) do atual — mantendo o atual."
+                ), info
+            if new_n == cur_n and new_dmax == cur_dmax:
+                return False, f"Sem novidade: mesmo conteúdo do atual ({cur_n} jogos).", info
+        except Exception:
+            pass  # atual ilegível não pode bloquear um upload válido
+    return True, f"OK: {new_n} jogos, última partida {new_dmax}.", info
+
+
+def commit_csv_to_repo(
+    file_bytes: bytes,
+    *,
+    token: str,
+    repo: str,
+    repo_path: str,
+    message: str,
+    get_fn: Any = None,
+    put_fn: Any = None,
+) -> tuple[bool, str]:
+    """Commita o CSV no GitHub via contents API (persistência real do site)."""
+    import base64
+
+    try:
+        if get_fn is None or put_fn is None:
+            import requests
+
+            get_fn = get_fn or requests.get
+            put_fn = put_fn or requests.put
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+        folder = repo_path.rsplit("/", 1)[0]
+        fname = repo_path.rsplit("/", 1)[1]
+        sha = ""
+        listing = get_fn(f"https://api.github.com/repos/{repo}/contents/{folder}",
+                         headers=headers, timeout=30)
+        if int(getattr(listing, "status_code", 0)) == 200:
+            for item in (listing.json() or []):
+                if str(item.get("name")) == fname:
+                    sha = str(item.get("sha") or "")
+                    break
+        body = {
+            "message": message,
+            "content": base64.b64encode(file_bytes).decode("ascii"),
+            "branch": "master",
+        }
+        if sha:
+            body["sha"] = sha
+        resp = put_fn(f"https://api.github.com/repos/{repo}/contents/{repo_path}",
+                      json=body, headers=headers, timeout=300)
+        code = int(getattr(resp, "status_code", 0))
+        if code in (200, 201):
+            return True, "CSV publicado! O site renasce com ele em ~2-3 min (recarrega a página)."
+        return False, f"GitHub recusou o envio (HTTP {code})."
+    except Exception as exc:
+        return False, f"Falha ao publicar: {type(exc).__name__}"
+
+
+def render_csv_upload_panel(st: Any, csv_path: str) -> None:
+    """📤 Enviar CSV novo — só no site (viewer + token). Valida e commita;
+    o arquivo enviado vira O oficial até alguém (você ou o robô) trocar."""
+    if not is_viewer_mode():
+        return
+    tok, repo = _gh_dispatch_config()
+    if not tok:
+        return
+    cur = Path(str(csv_path or ""))
+    if not cur.name:
+        return
+    with st.expander("📤 Enviar CSV novo (quando o robô estiver bloqueado pela cota)"):
+        st.caption(
+            "Baixa o CSV no site do Oracle's Elixir e solta aqui. O arquivo é "
+            "validado (nunca aceita um pior que o atual) e publicado — o site "
+            "passa a usar ELE até a próxima troca (sua ou do robô)."
+        )
+        up = st.file_uploader("CSV do Oracle's Elixir", type=["csv"], key="viewer_csv_upload")
+        if up is not None and st.button("Validar e publicar", key="viewer_csv_upload_go"):
+            data = up.getvalue()
+            ok, msg, _info = validate_csv_upload(data, str(cur))
+            if not ok:
+                st.error(msg)
+                return
+            with st.spinner("Publicando no repositório (arquivo grande, ~1 min)..."):
+                ok2, msg2 = commit_csv_to_repo(
+                    data, token=tok, repo=repo,
+                    repo_path=f"CSV_DIARIO/{cur.name}",
+                    message=f"Upload manual pelo site: {cur.name}",
+                )
+            (st.success if ok2 else st.error)(msg2 if ok2 else f"{msg} → {msg2}")
+
+
 __all__ = [
+    "commit_csv_to_repo",
     "dispatch_data_workflow",
     "is_viewer_mode",
+    "render_csv_upload_panel",
     "render_update_now_button",
     "render_viewer_badge",
+    "validate_csv_upload",
     "viewer_data_freshness_caption",
 ]
