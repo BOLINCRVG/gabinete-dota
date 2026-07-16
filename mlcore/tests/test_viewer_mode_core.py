@@ -166,5 +166,67 @@ class TestCsvUpload(unittest.TestCase):
         self.assertIn("remote repository", msg)
 
 
+class TestPublishProgress(unittest.TestCase):
+    """Tela de acompanhamento pós-upload (pedido dele 16/07)."""
+
+    class _R:
+        def __init__(self, code, payload):
+            self.status_code = code
+            self._p = payload
+
+        def json(self):
+            return self._p
+
+    def _get(self, commits, run):
+        def fake_get(url, **kw):
+            if "/commits?" in url:
+                return self._R(200, commits)
+            return self._R(200, {"workflow_runs": [run] if run else []})
+        return fake_get
+
+    def test_full_cascade_detected(self):
+        from app_core.viewer_mode_core import check_publish_progress
+
+        commits = [
+            {"commit": {"message": "Robô: modelo atualizado (incremental pós-CSV novo)"}},
+            {"commit": {"message": "Upload manual pelo site: x.csv"}},
+        ]
+        run = {"status": "completed", "conclusion": "success",
+               "created_at": "2026-07-16T18:18:25Z"}
+        p = check_publish_progress(token="t", repo="U/r",
+                                   since_iso="2026-07-16T18:00:00Z",
+                                   get_fn=self._get(commits, run))
+        self.assertTrue(p["upload_commit"])
+        self.assertEqual(p["retrain"], "ok")
+        self.assertTrue(p["model_commit"])
+
+    def test_retrain_running_and_old_run_ignored(self):
+        from app_core.viewer_mode_core import check_publish_progress
+
+        run_old = {"status": "completed", "conclusion": "success",
+                   "created_at": "2026-07-16T10:00:00Z"}
+        p = check_publish_progress(token="t", repo="U/r",
+                                   since_iso="2026-07-16T18:00:00Z",
+                                   get_fn=self._get([], run_old))
+        self.assertEqual(p["retrain"], "aguardando")
+
+        run_now = {"status": "in_progress", "conclusion": None,
+                   "created_at": "2026-07-16T18:05:00Z"}
+        p2 = check_publish_progress(token="t", repo="U/r",
+                                    since_iso="2026-07-16T18:00:00Z",
+                                    get_fn=self._get([], run_now))
+        self.assertEqual(p2["retrain"], "rodando")
+
+    def test_network_failure_never_raises(self):
+        from app_core.viewer_mode_core import check_publish_progress
+
+        def boom(*a, **k):
+            raise ConnectionError
+
+        p = check_publish_progress(token="t", repo="U/r",
+                                   since_iso="x", get_fn=boom)
+        self.assertEqual(p["retrain"], "aguardando")
+
+
 if __name__ == "__main__":
     unittest.main()

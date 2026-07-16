@@ -266,6 +266,94 @@ def commit_csv_to_repo(
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def check_publish_progress(
+    *,
+    token: str,
+    repo: str,
+    since_iso: str,
+    get_fn: Any = None,
+) -> dict:
+    """Estado do dominó pós-publicação, direto do GitHub (para a tela de
+    acompanhamento — pedido dele 16/07: 'o site reiniciar sozinho é cruel')."""
+    out = {"upload_commit": False, "retrain": "aguardando", "model_commit": False}
+    try:
+        if get_fn is None:
+            import requests
+
+            get_fn = requests.get
+        hdr = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+        commits = get_fn(
+            f"https://api.github.com/repos/{repo}/commits?since={since_iso}&per_page=10",
+            headers=hdr, timeout=20,
+        )
+        if int(getattr(commits, "status_code", 0)) == 200:
+            for c in commits.json() or []:
+                msg = str(((c.get("commit") or {}).get("message")) or "")
+                if msg.startswith("Upload manual pelo site"):
+                    out["upload_commit"] = True
+                if msg.startswith("Robô: modelo atualizado"):
+                    out["model_commit"] = True
+        runs = get_fn(
+            f"https://api.github.com/repos/{repo}/actions/workflows/retreino.yml/runs?per_page=1",
+            headers=hdr, timeout=20,
+        )
+        if int(getattr(runs, "status_code", 0)) == 200:
+            arr = (runs.json() or {}).get("workflow_runs") or []
+            if arr and str(arr[0].get("created_at", "")) >= since_iso:
+                status = str(arr[0].get("status"))
+                concl = str(arr[0].get("conclusion") or "")
+                if status == "completed":
+                    out["retrain"] = "ok" if concl == "success" else "falhou"
+                else:
+                    out["retrain"] = "rodando"
+    except Exception:
+        pass
+    return out
+
+
+def _render_publish_watch(st: Any) -> None:
+    """Checklist ao vivo do pós-publicação; expira em 12 min ou no fim."""
+    import time as _time
+    from datetime import datetime, timezone
+
+    t0 = float(st.session_state.get("_upload_watch_t0", 0.0) or 0.0)
+    if not t0 or (_time.time() - t0) > 720:
+        return
+    tok, repo = _gh_dispatch_config()
+    if not tok:
+        return
+    since_iso = datetime.fromtimestamp(t0 - 60, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    prog = check_publish_progress(token=tok, repo=repo, since_iso=since_iso)
+
+    def _ln(done: bool, doing: str, txt: str) -> str:
+        return f"{'✅' if done else doing} {txt}"
+
+    lines = [
+        _ln(prog["upload_commit"], "⏳", "CSV publicado no repositório"),
+        _ln(prog["retrain"] == "ok",
+            "⚙️" if prog["retrain"] == "rodando" else ("❌" if prog["retrain"] == "falhou" else "⏳"),
+            f"Retreino do modelo na nuvem ({'~2-4 min' if prog['retrain'] in ('aguardando', 'rodando') else prog['retrain']})"),
+        _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
+    ]
+    done = prog["upload_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
+    box = st.success if done else st.info
+    tail = (
+        "**Tudo pronto! Recarrega a página (F5)** — o selo lá de cima vai mostrar os dados novos."
+        if done else
+        "O site vai piscar/reconectar sozinho no meio — é normal, não precisa fazer nada. "
+        "Esta lista se atualiza a cada ~10s."
+    )
+    box("\n\n".join(["**Acompanhamento da publicação:**", *lines, tail]))
+    if done:
+        st.session_state["_upload_watch_t0"] = 0.0
+        return
+    _time.sleep(10)
+    try:
+        st.rerun()
+    except Exception:
+        pass
+
+
 def render_csv_upload_panel(st: Any, csv_path: str) -> None:
     """📤 Enviar CSV novo — só no site (viewer + token). Valida e commita;
     o arquivo enviado vira O oficial até alguém (você ou o robô) trocar."""
@@ -296,10 +384,18 @@ def render_csv_upload_panel(st: Any, csv_path: str) -> None:
                     repo_path=f"CSV_DIARIO/{cur.name}",
                     message=f"Upload manual pelo site: {cur.name}",
                 )
-            (st.success if ok2 else st.error)(msg2 if ok2 else f"{msg} → {msg2}")
+            if ok2:
+                import time as _time
+
+                st.session_state["_upload_watch_t0"] = _time.time()
+                st.success(msg2)
+            else:
+                st.error(f"{msg} → {msg2}")
+    _render_publish_watch(st)
 
 
 __all__ = [
+    "check_publish_progress",
     "commit_csv_to_repo",
     "dispatch_data_workflow",
     "is_viewer_mode",
