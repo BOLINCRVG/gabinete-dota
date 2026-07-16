@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-12T03:51:55+00:00",
+  "generated_at": "2026-07-16T14:47:23+00:00",
   "mode": "elo_proxy",
   "source": "legacy_elo_proxy",
   "overall": {
     "folds": 18,
     "n_total": 20505,
-    "logloss_mean": 0.681564234597982,
-    "brier_mean": 0.24431247040509008,
-    "roi_proxy_mean": 0.00659134960619578
+    "logloss_mean": 0.6814209879150779,
+    "brier_mean": 0.24424221833141688,
+    "roi_proxy_mean": 0.007895062035623849
   },
   "folds": [
     {
@@ -41,100 +41,100 @@
     {
       "month": "2025-06",
       "n": 1616,
-      "logloss": 0.6763157653153887,
-      "brier": 0.24183746685897708,
-      "roi_proxy": 0.0010124126952798303
+      "logloss": 0.6747083960399396,
+      "brier": 0.24106813921626924,
+      "roi_proxy": 0.010348401866111488
     },
     {
       "month": "2025-07",
       "n": 1727,
-      "logloss": 0.6802826888454941,
-      "brier": 0.24370153282926293,
-      "roi_proxy": -0.015080157924055353
+      "logloss": 0.6804756943213411,
+      "brier": 0.24380962359151964,
+      "roi_proxy": -0.022714151634444905
     },
     {
       "month": "2025-08",
       "n": 1737,
-      "logloss": 0.6850737164534285,
-      "brier": 0.2461687113730982,
-      "roi_proxy": -0.025378094437520763
+      "logloss": 0.6857728982059736,
+      "brier": 0.24651489221491402,
+      "roi_proxy": -0.02789832481826697
     },
     {
       "month": "2025-09",
       "n": 1819,
-      "logloss": 0.6894650148071235,
-      "brier": 0.2481929053082788,
-      "roi_proxy": 0.016822792951253166
+      "logloss": 0.6884327389925727,
+      "brier": 0.24767849513965276,
+      "roi_proxy": 0.03040082177186305
     },
     {
       "month": "2025-10",
       "n": 1927,
-      "logloss": 0.6903600373602164,
-      "brier": 0.24861580022283608,
-      "roi_proxy": -0.03490596643163292
+      "logloss": 0.6905314698426919,
+      "brier": 0.24871075421920288,
+      "roi_proxy": -0.032277104735553494
     },
     {
       "month": "2025-11",
       "n": 986,
-      "logloss": 0.6827099376636767,
-      "brier": 0.24484387161522836,
-      "roi_proxy": 0.026826319024553152
+      "logloss": 0.6837264827945181,
+      "brier": 0.24522906154419155,
+      "roi_proxy": 0.036519005723542636
     },
     {
       "month": "2025-12",
       "n": 591,
-      "logloss": 0.6846657029414739,
-      "brier": 0.24572978427507638,
-      "roi_proxy": -0.020520854507811097
+      "logloss": 0.6845400316189473,
+      "brier": 0.24566783901084543,
+      "roi_proxy": -0.003837218759245201
     },
     {
       "month": "2026-01",
       "n": 927,
-      "logloss": 0.6700300748212021,
-      "brier": 0.2386879533804934,
-      "roi_proxy": 0.09036887069691352
+      "logloss": 0.6675561212306348,
+      "brier": 0.23752445847746678,
+      "roi_proxy": 0.08838380398301707
     },
     {
       "month": "2026-02",
       "n": 618,
-      "logloss": 0.6710766074359052,
-      "brier": 0.23919252223755974,
-      "roi_proxy": 0.05193160816750226
+      "logloss": 0.6708148484566224,
+      "brier": 0.23909919412920733,
+      "roi_proxy": 0.06762265996506123
     },
     {
       "month": "2026-03",
       "n": 457,
-      "logloss": 0.659070242782733,
-      "brier": 0.2334303298964693,
-      "roi_proxy": 0.0907376636646221
+      "logloss": 0.65839159500098,
+      "brier": 0.2331499293213132,
+      "roi_proxy": 0.1038797910587599
     },
     {
       "month": "2026-04",
       "n": 700,
-      "logloss": 0.6764956196039127,
-      "brier": 0.24164031983498807,
-      "roi_proxy": 0.02190060402385657
+      "logloss": 0.6773853054194648,
+      "brier": 0.2420136956289622,
+      "roi_proxy": 0.015341280591904807
     },
     {
       "month": "2026-05",
       "n": 393,
-      "logloss": 0.6781513036398017,
-      "brier": 0.24216153214078587,
-      "roi_proxy": -0.05428666364085968
+      "logloss": 0.6781590449133985,
+      "brier": 0.24211068969356192,
+      "roi_proxy": -0.0653826153995388
     },
     {
       "month": "2026-06",
       "n": 532,
-      "logloss": 0.6780759443007861,
-      "brier": 0.24231563409171972,
-      "roi_proxy": 0.031797761558094724
+      "logloss": 0.6786410414094927,
+      "brier": 0.24261947977815046,
+      "roi_proxy": 0.0062390465647436605
     },
     {
       "month": "2026-07",
       "n": 144,
-      "logloss": 0.6610196429985221,
-      "brier": 0.23525473895526539,
-      "roi_proxy": -0.02872253886433897
+      "logloss": 0.664981892522345,
+      "brier": 0.23723825067707136,
+      "roi_proxy": -0.10710760912353005
     }
   ],
   "by_league": {
@@ -142,7 +142,7 @@
       "n_total": 40,
       "months": 1,
       "logloss_mean": 0.6931471805599446,
-      "drift_mean": 0.010437242896267906,
+      "drift_mean": 0.009420697765426533,
       "roi_proxy_mean": -0.3
     },
     "5th Nepal Esports Championship &amp; Expo 2025": {
@@ -176,23 +176,23 @@
     "Americas Convergence Series 1": {
       "n_total": 144,
       "months": 4,
-      "logloss_mean": 0.6889887316943507,
-      "drift_mean": 0.0016462980809630338,
-      "roi_proxy_mean": -0.050359520195341095
+      "logloss_mean": 0.6889920870016576,
+      "drift_mean": 0.0015531879512623327,
+      "roi_proxy_mean": -0.0503563327725238
     },
     "Ancients League": {
       "n_total": 1968,
       "months": 9,
       "logloss_mean": 0.6991169466455306,
-      "drift_mean": 0.015466163281582379,
+      "drift_mean": 0.015635214001962428,
       "roi_proxy_mean": -0.08456420353925664
     },
     "Asia Pacific Predator League 2026": {
       "n_total": 27,
       "months": 1,
-      "logloss_mean": 0.7563611691257291,
-      "drift_mean": 0.086331094304527,
-      "roi_proxy_mean": -0.12147609584654216
+      "logloss_mean": 0.7563443802134037,
+      "drift_mean": 0.08878825898276889,
+      "roi_proxy_mean": -0.12265560597770395
     },
     "AsiaPro League S2": {
       "n_total": 10,
@@ -218,128 +218,128 @@
     "BLAST SLAM VI": {
       "n_total": 100,
       "months": 1,
-      "logloss_mean": 0.7073658613622241,
-      "drift_mean": 0.036289253926318876,
-      "roi_proxy_mean": -0.1097073084664776
+      "logloss_mean": 0.7068449789818861,
+      "drift_mean": 0.036030130525263715,
+      "roi_proxy_mean": -0.09399620157712796
     },
     "BLAST SLAM VII": {
       "n_total": 102,
       "months": 2,
-      "logloss_mean": 0.7579989931668404,
-      "drift_mean": 0.07986763758736644,
-      "roi_proxy_mean": -0.25167758518561806
+      "logloss_mean": 0.7619660015498242,
+      "drift_mean": 0.08367936932863602,
+      "roi_proxy_mean": -0.2536340090970759
     },
     "BLAST Slam IV: China Closed Qualifier": {
       "n_total": 59,
       "months": 1,
-      "logloss_mean": 0.7016771108259077,
-      "drift_mean": 0.012212096018784147,
-      "roi_proxy_mean": 0.07353430341198623
+      "logloss_mean": 0.6863293312779858,
+      "drift_mean": -0.0021034077145869468,
+      "roi_proxy_mean": 0.3059862374222414
     },
     "BLAST Slam V: China Closed Qualifier": {
       "n_total": 61,
       "months": 1,
-      "logloss_mean": 0.6913630683310396,
-      "drift_mean": 0.0010030309708231044,
-      "roi_proxy_mean": 0.06098645971032554
+      "logloss_mean": 0.6920129473609316,
+      "drift_mean": 0.0014814775182396822,
+      "roi_proxy_mean": 0.061129758626310295
     },
     "BLAST Slam VI China Qualifier": {
       "n_total": 18,
       "months": 1,
-      "logloss_mean": 0.6517337557090415,
-      "drift_mean": -0.018296319112160675,
-      "roi_proxy_mean": -0.010872086692263102
+      "logloss_mean": 0.6471682118710376,
+      "drift_mean": -0.020387909359597223,
+      "roi_proxy_mean": -0.02089548942407793
     },
     "BLAST Slam VII China Qualifier": {
       "n_total": 31,
       "months": 2,
-      "logloss_mean": 0.6095196734342958,
-      "drift_mean": -0.058544312223884766,
-      "roi_proxy_mean": 0.24727273786104728
+      "logloss_mean": 0.6103744259297789,
+      "drift_mean": -0.05782037444848361,
+      "roi_proxy_mean": 0.3137143333915356
     },
     "BetBoom RU Battle": {
       "n_total": 85,
       "months": 2,
-      "logloss_mean": 0.7210638460101317,
-      "drift_mean": 0.03500854521881848,
-      "roi_proxy_mean": -0.09424655208562675
+      "logloss_mean": 0.7215014688016105,
+      "drift_mean": 0.035134017949220664,
+      "roi_proxy_mean": -0.04732418697627305
     },
     "BetBoom Streamers Battle 10": {
       "n_total": 66,
       "months": 2,
       "logloss_mean": 0.6924566992229048,
-      "drift_mean": 0.016251853950504023,
+      "drift_mean": 0.017396495707263253,
       "roi_proxy_mean": 0.026690630195517914
     },
     "BetBoom Streamers Battle x Динамо 11": {
       "n_total": 72,
       "months": 2,
       "logloss_mean": 0.6929839539508085,
-      "drift_mean": 0.0030714278671384876,
+      "drift_mean": 0.003501849533176171,
       "roi_proxy_mean": 0.004136707569066589
     },
     "BetBoom Streamers Battle x Динамо 12": {
       "n_total": 75,
       "months": 1,
       "logloss_mean": 0.6958147277869977,
-      "drift_mean": 0.013104790123320997,
+      "drift_mean": 0.012088244992479624,
       "roi_proxy_mean": -0.04997141225887471
     },
     "Boss Battle": {
       "n_total": 541,
       "months": 4,
-      "logloss_mean": 0.6917851013920532,
-      "drift_mean": 0.0039279744599485964,
-      "roi_proxy_mean": 0.1158718549966646
+      "logloss_mean": 0.6917851034092195,
+      "drift_mean": 0.0042036656478346745,
+      "roi_proxy_mean": 0.1158718589283085
     },
     "CCT Dota 2 Season 2 Series 1": {
       "n_total": 55,
       "months": 1,
       "logloss_mean": 0.7060568004965996,
-      "drift_mean": 0.02974103518121085,
+      "drift_mean": 0.031348404456659984,
       "roi_proxy_mean": -0.15248259057158242
     },
     "CCT Dota 2 Season 2 Series 2": {
       "n_total": 55,
       "months": 2,
-      "logloss_mean": 0.6741320688466379,
-      "drift_mean": -0.0054293611752007235,
-      "roi_proxy_mean": -0.0015855583291872915
+      "logloss_mean": 0.6735535027231472,
+      "drift_mean": -0.005873591910666428,
+      "roi_proxy_mean": -0.0026709564932339445
     },
     "CCT Dota 2 Season 2 Series 3": {
       "n_total": 57,
       "months": 2,
-      "logloss_mean": 0.7097996628743943,
-      "drift_mean": 0.029096708449256867,
-      "roi_proxy_mean": -0.1331181508368918
+      "logloss_mean": 0.7092409211846284,
+      "drift_mean": 0.02830055985586334,
+      "roi_proxy_mean": -0.13412849184385192
     },
     "CCT Dota 2 Season 2 Series 4": {
       "n_total": 56,
       "months": 1,
-      "logloss_mean": 0.7165945172583011,
-      "drift_mean": 0.03152080080487263,
-      "roi_proxy_mean": 0.13234365675356094
+      "logloss_mean": 0.7157785434816551,
+      "drift_mean": 0.030005645275681503,
+      "roi_proxy_mean": 0.13378356528989097
     },
     "CCT Dota 2 Season 2 Series 5": {
       "n_total": 48,
       "months": 1,
-      "logloss_mean": 0.6791560588331067,
-      "drift_mean": -0.011203978527109748,
-      "roi_proxy_mean": -0.0003789346326919472
+      "logloss_mean": 0.6814732061556206,
+      "drift_mean": -0.0090582636870713,
+      "roi_proxy_mean": 0.007919645805060984
     },
     "CCT Dota 2 Season 2 Series 6": {
       "n_total": 61,
       "months": 2,
-      "logloss_mean": 0.6478623022736318,
-      "drift_mean": -0.03600185752120397,
-      "roi_proxy_mean": 0.12137597491352312
+      "logloss_mean": 0.6498933116047424,
+      "drift_mean": -0.0343132983648487,
+      "roi_proxy_mean": 0.1274182654836929
     },
     "CCT Dota 2 Season 2 South America Series 1": {
       "n_total": 50,
       "months": 1,
-      "logloss_mean": 0.721628775473207,
-      "drift_mean": 0.03126873811299058,
-      "roi_proxy_mean": -0.3145544213721779
+      "logloss_mean": 0.7236874424114618,
+      "drift_mean": 0.0331559725687699,
+      "roi_proxy_mean": -0.31449997160897747
     },
     "CCT Dota 2 Series 7": {
       "n_total": 85,
@@ -358,37 +358,37 @@
     "CIS Battle 3": {
       "n_total": 112,
       "months": 1,
-      "logloss_mean": 0.6909277701329397,
-      "drift_mean": 0.008217832469262998,
-      "roi_proxy_mean": 0.08965564949957895
+      "logloss_mean": 0.694522891472625,
+      "drift_mean": 0.010796408678106939,
+      "roi_proxy_mean": 0.05247041450828223
     },
     "CIS Battle Dota 2": {
       "n_total": 87,
       "months": 1,
-      "logloss_mean": 0.6656913376549203,
-      "drift_mean": -0.019382378798508237,
-      "roi_proxy_mean": -0.05100246103613945
+      "logloss_mean": 0.6656180964069386,
+      "drift_mean": -0.02015480179903506,
+      "roi_proxy_mean": -0.051858245934386774
     },
     "Campeonato NEXTLEVEL": {
       "n_total": 87,
       "months": 2,
-      "logloss_mean": 0.6939327917315868,
-      "drift_mean": 0.00979525308660538,
-      "roi_proxy_mean": -0.040952089876576274
+      "logloss_mean": 0.6940972178248641,
+      "drift_mean": 0.009359405435427834,
+      "roi_proxy_mean": -0.04070277851563737
     },
     "Clavision DOTA2 Masters 2025: Snow-Ruyi": {
       "n_total": 85,
       "months": 2,
-      "logloss_mean": 0.6701177949630173,
-      "drift_mean": -0.011630384680197985,
-      "roi_proxy_mean": 0.1220900017706802
+      "logloss_mean": 0.691883624988832,
+      "drift_mean": 0.009787609479250371,
+      "roi_proxy_mean": 0.021451221805564066
     },
     "DOTA2-Ticu梦幻联赛": {
       "n_total": 348,
       "months": 6,
-      "logloss_mean": 0.6947130053970642,
-      "drift_mean": 0.01457997066741509,
-      "roi_proxy_mean": 0.08754370604986601
+      "logloss_mean": 0.6949383813887392,
+      "drift_mean": 0.014848815202983161,
+      "roi_proxy_mean": 0.08210537070682626
     },
     "DogeLon Dota League": {
       "n_total": 4,
@@ -400,30 +400,30 @@
     "DreamLeague Division 2 Season 1": {
       "n_total": 170,
       "months": 1,
-      "logloss_mean": 0.7018835567216134,
-      "drift_mean": 0.01152351936139695,
-      "roi_proxy_mean": -0.05366881354429551
+      "logloss_mean": 0.7020349541457683,
+      "drift_mean": 0.011503484303076461,
+      "roi_proxy_mean": -0.023486473148808733
     },
     "DreamLeague Division 2 Season 2": {
       "n_total": 98,
       "months": 1,
-      "logloss_mean": 0.6729176811646225,
-      "drift_mean": -0.009792256499054242,
-      "roi_proxy_mean": 0.06829299095949869
+      "logloss_mean": 0.6760024791985131,
+      "drift_mean": -0.007724003596005002,
+      "roi_proxy_mean": 0.06116967165328333
     },
     "DreamLeague Division 2 Season 3": {
       "n_total": 89,
       "months": 1,
-      "logloss_mean": 0.6278036557933246,
-      "drift_mean": -0.043272951642580604,
-      "roi_proxy_mean": 0.0994324860342456
+      "logloss_mean": 0.6231017008662711,
+      "drift_mean": -0.04771314759035128,
+      "roi_proxy_mean": 0.1401809889182236
     },
     "DreamLeague Division 2 Season 4": {
       "n_total": 170,
       "months": 2,
-      "logloss_mean": 0.6889883581372194,
-      "drift_mean": 0.012463520579732231,
-      "roi_proxy_mean": 0.016372280448342595
+      "logloss_mean": 0.6927198586401411,
+      "drift_mean": 0.015320898994312703,
+      "roi_proxy_mean": 0.008923904114704813
     },
     "DreamLeague Season 25 powered by Intel": {
       "n_total": 196,
@@ -436,7 +436,7 @@
       "n_total": 202,
       "months": 2,
       "logloss_mean": 0.6795796396001693,
-      "drift_mean": 0.0036377308965816046,
+      "drift_mean": 0.003685474538426628,
       "roi_proxy_mean": -0.039320341939832124
     },
     "DreamLeague Season 26 Qualifiers": {
@@ -449,44 +449,44 @@
     "DreamLeague Season 27": {
       "n_total": 206,
       "months": 1,
-      "logloss_mean": 0.6839214848787488,
-      "drift_mean": -0.0007442180627250661,
-      "roi_proxy_mean": -0.06642571755218528
+      "logloss_mean": 0.6780177124746816,
+      "drift_mean": -0.006522319144265709,
+      "roi_proxy_mean": -0.0258771434685697
     },
     "DreamLeague Season 27 Qualifiers": {
       "n_total": 285,
       "months": 1,
-      "logloss_mean": 0.6989492099061629,
-      "drift_mean": 0.009484195099039416,
-      "roi_proxy_mean": -0.007401360532827193
+      "logloss_mean": 0.6969665894912025,
+      "drift_mean": 0.008533850498629758,
+      "roi_proxy_mean": 0.021787907004261323
     },
     "DreamLeague Season 28": {
       "n_total": 195,
       "months": 2,
-      "logloss_mean": 0.6621416147899943,
-      "drift_mean": -0.008565566041197934,
-      "roi_proxy_mean": 0.012299583099613005
+      "logloss_mean": 0.6638447120921577,
+      "drift_mean": -0.00658788241198349,
+      "roi_proxy_mean": 0.0035615956795020465
     },
     "DreamLeague Season 28 Qualifiers": {
       "n_total": 238,
       "months": 1,
-      "logloss_mean": 0.659355867563637,
-      "drift_mean": -0.010674207257565183,
-      "roi_proxy_mean": 0.17239170220970063
+      "logloss_mean": 0.6556390832418305,
+      "drift_mean": -0.01191703798880428,
+      "roi_proxy_mean": 0.15294611226648658
     },
     "DreamLeague Season 29": {
       "n_total": 185,
       "months": 1,
-      "logloss_mean": 0.6482888544888669,
-      "drift_mean": -0.029862449150934833,
-      "roi_proxy_mean": -0.030344430628206527
+      "logloss_mean": 0.6473459561968231,
+      "drift_mean": -0.0308130887165754,
+      "roi_proxy_mean": -0.030576149677066768
     },
     "DreamLeague Season 29 Qualifiers": {
       "n_total": 253,
       "months": 1,
-      "logloss_mean": 0.6634815322014753,
-      "drift_mean": -0.013014087402437369,
-      "roi_proxy_mean": 0.0619190657903669
+      "logloss_mean": 0.66271092543968,
+      "drift_mean": -0.014674379979784824,
+      "roi_proxy_mean": 0.08677758611552917
     },
     "E-sport SM 2025": {
       "n_total": 2,
@@ -499,50 +499,50 @@
       "n_total": 23,
       "months": 2,
       "logloss_mean": 0.6933998114113892,
-      "drift_mean": 0.01730182503623771,
+      "drift_mean": 0.018000681242954727,
       "roi_proxy_mean": -0.3916085995859263
     },
     "EPICENTER CUP - VERANO": {
       "n_total": 52,
       "months": 3,
-      "logloss_mean": 0.6840508093166394,
-      "drift_mean": 0.014762064192524472,
-      "roi_proxy_mean": 0.24668239887800406
+      "logloss_mean": 0.6840318809581819,
+      "drift_mean": 0.01590384144874422,
+      "roi_proxy_mean": 0.24663545480115873
     },
     "EPL Championship 2025-2026": {
       "n_total": 135,
       "months": 2,
-      "logloss_mean": 0.6822893152606686,
-      "drift_mean": 0.011755354365720571,
-      "roi_proxy_mean": 0.09364258405310202
+      "logloss_mean": 0.6829119656948451,
+      "drift_mean": 0.013786827651697644,
+      "roi_proxy_mean": 0.14424712103096862
     },
     "EPL World Series: America 2024-2025 Season": {
       "n_total": 170,
       "months": 5,
-      "logloss_mean": 0.6878716708891287,
-      "drift_mean": 0.007620973356292201,
+      "logloss_mean": 0.687962837238236,
+      "drift_mean": 0.008219832440058784,
       "roi_proxy_mean": 0.16953740192862676
     },
     "EPL World Series: Southeast Asia 2024-2025 Season": {
       "n_total": 605,
       "months": 10,
-      "logloss_mean": 0.6672333813402211,
-      "drift_mean": -0.01666933001945285,
-      "roi_proxy_mean": 0.03584519575361363
+      "logloss_mean": 0.6672484469274126,
+      "drift_mean": -0.016567074206429132,
+      "roi_proxy_mean": 0.03537084336065971
     },
     "ESL One Birmingham 2026": {
       "n_total": 142,
       "months": 1,
-      "logloss_mean": 0.6261294208260518,
-      "drift_mean": -0.03294082195668113,
-      "roi_proxy_mean": 0.13710554036968264
+      "logloss_mean": 0.6260248959534925,
+      "drift_mean": -0.03236669904748746,
+      "roi_proxy_mean": 0.13029589499161906
     },
     "ESL One Birmingham 2026 Qualifiers": {
       "n_total": 235,
       "months": 1,
-      "logloss_mean": 0.6638275425691634,
-      "drift_mean": -0.006202532252038706,
-      "roi_proxy_mean": 0.05993546791653793
+      "logloss_mean": 0.6599041391538796,
+      "drift_mean": -0.007651982076755216,
+      "roi_proxy_mean": 0.07728673548629614
     },
     "ESL One Raleigh 2025": {
       "n_total": 90,
@@ -554,37 +554,37 @@
     "ESL challenger China": {
       "n_total": 41,
       "months": 2,
-      "logloss_mean": 0.6446659005382833,
-      "drift_mean": -0.025517325397265648,
-      "roi_proxy_mean": 0.31646387774284823
+      "logloss_mean": 0.6488473404352119,
+      "drift_mean": -0.019185667706543032,
+      "roi_proxy_mean": 0.3235080774746883
     },
     "ESL challenger China powered By ACL": {
       "n_total": 45,
       "months": 2,
-      "logloss_mean": 0.6824282240923919,
-      "drift_mean": 0.004902401088370429,
-      "roi_proxy_mean": -0.029884063613883377
+      "logloss_mean": 0.6798015364435123,
+      "drift_mean": 0.0019347931167109373,
+      "roi_proxy_mean": -0.03372755586991802
     },
     "Esports World Cup 2025": {
       "n_total": 89,
       "months": 1,
-      "logloss_mean": 0.6847925125012939,
-      "drift_mean": 0.004509823655799772,
-      "roi_proxy_mean": -0.0953218446836824
+      "logloss_mean": 0.683240769611822,
+      "drift_mean": 0.0027650752904808673,
+      "roi_proxy_mean": -0.1427522273828135
     },
     "Esports World Cup 2025 Qualifiers": {
       "n_total": 205,
       "months": 1,
       "logloss_mean": 0.6722735321491435,
-      "drift_mean": -0.0040422331662451905,
+      "drift_mean": -0.0024348638907960574,
       "roi_proxy_mean": 0.11361853441783253
     },
     "Esports World Cup 2026": {
       "n_total": 72,
       "months": 1,
-      "logloss_mean": 0.6312885242729132,
-      "drift_mean": -0.029731118725608963,
-      "roi_proxy_mean": 0.03790677948368207
+      "logloss_mean": 0.6362771851960387,
+      "drift_mean": -0.028704707326306256,
+      "roi_proxy_mean": -0.015206062116573191
     },
     "Eternal DOTA League Season 1": {
       "n_total": 2,
@@ -597,28 +597,28 @@
       "n_total": 55,
       "months": 1,
       "logloss_mean": 0.6931471805599448,
-      "drift_mean": 0.008073464106516326,
+      "drift_mean": 0.0073742823539711955,
       "roi_proxy_mean": -0.2
     },
     "European Esports Championship 2025": {
       "n_total": 40,
       "months": 1,
-      "logloss_mean": 0.6931471805599446,
-      "drift_mean": 0.012864491714450477,
-      "roi_proxy_mean": 0.25
+      "logloss_mean": 0.6929806784633017,
+      "drift_mean": 0.012504984141960551,
+      "roi_proxy_mean": 0.2994003513807414
     },
     "European Pro League  2024-2025 Season": {
       "n_total": 804,
       "months": 9,
-      "logloss_mean": 0.6926060540932981,
-      "drift_mean": 0.0090272801412673,
-      "roi_proxy_mean": 0.0023081401163979115
+      "logloss_mean": 0.6919591762292786,
+      "drift_mean": 0.00842764330484644,
+      "roi_proxy_mean": -0.004804653706414925
     },
     "FB杯DOTA2精英联赛26赛季": {
       "n_total": 2,
       "months": 1,
       "logloss_mean": 0.6931471805599453,
-      "drift_mean": 0.03212753756142317,
+      "drift_mean": 0.028165288037600322,
       "roi_proxy_mean": -1.0
     },
     "FISSURE PLAYGROUND 1 - Dota": {
@@ -631,44 +631,44 @@
     "FISSURE PLAYGROUND 2": {
       "n_total": 124,
       "months": 2,
-      "logloss_mean": 0.689565519172798,
-      "drift_mean": 0.00013089709845320248,
-      "roi_proxy_mean": -0.12727837221770666
+      "logloss_mean": 0.6889189041561619,
+      "drift_mean": -0.000789381769412123,
+      "roi_proxy_mean": -0.18596891128873627
     },
     "FISSURE PLAYGROUND 2 - Closed Qualifiers - Americas": {
       "n_total": 35,
       "months": 2,
-      "logloss_mean": 0.7096442075973838,
-      "drift_mean": 0.020153620717314767,
-      "roi_proxy_mean": 0.03790385547594329
+      "logloss_mean": 0.7091776072649809,
+      "drift_mean": 0.02068490453383343,
+      "roi_proxy_mean": 0.038959013103710444
     },
     "FISSURE PLAYGROUND 2 - Closed Qualifiers - Americas (SA)": {
       "n_total": 3,
       "months": 1,
-      "logloss_mean": 0.6978704073341687,
-      "drift_mean": 0.007510369973952269,
+      "logloss_mean": 0.6978785406629545,
+      "drift_mean": 0.007347070820262647,
       "roi_proxy_mean": -1.0
     },
     "FISSURE PLAYGROUND 2 - Closed Qualifiers - China": {
       "n_total": 34,
       "months": 2,
-      "logloss_mean": 0.72669567872352,
-      "drift_mean": 0.037046394567230245,
-      "roi_proxy_mean": -0.3562815593364745
+      "logloss_mean": 0.700817260182353,
+      "drift_mean": 0.011952429544167534,
+      "roi_proxy_mean": -0.2427208149408867
     },
     "FISSURE PLAYGROUND 2 - Closed Qualifiers - EEU": {
       "n_total": 31,
       "months": 1,
-      "logloss_mean": 0.6708135596390311,
-      "drift_mean": -0.018651455168092412,
-      "roi_proxy_mean": -0.09862121340137486
+      "logloss_mean": 0.6690578063738113,
+      "drift_mean": -0.019374932618761442,
+      "roi_proxy_mean": 0.03907016507381581
     },
     "FISSURE PLAYGROUND 2 - Closed Qualifiers - WEU+EEU": {
       "n_total": 34,
       "months": 2,
-      "logloss_mean": 0.7015393805281933,
-      "drift_mean": 0.011995393142855608,
-      "roi_proxy_mean": -0.1747959803932646
+      "logloss_mean": 0.6996681599235721,
+      "drift_mean": 0.011050238797165338,
+      "roi_proxy_mean": -0.2343699078123387
     },
     "FISSURE Special": {
       "n_total": 59,
@@ -729,30 +729,30 @@
     "FISSURE Universe Episode 5": {
       "n_total": 116,
       "months": 2,
-      "logloss_mean": 0.6950003499619745,
-      "drift_mean": 0.017043850197410833,
-      "roi_proxy_mean": -0.007835469733497032
+      "logloss_mean": 0.6846760946732371,
+      "drift_mean": 0.006629747531986125,
+      "roi_proxy_mean": -0.008254729999983963
     },
     "FISSURE Universe Episode 6": {
       "n_total": 117,
       "months": 2,
-      "logloss_mean": 0.655474274956686,
-      "drift_mean": -0.027101555307990407,
-      "roi_proxy_mean": 0.012426720310961014
+      "logloss_mean": 0.6571313788891905,
+      "drift_mean": -0.02587972925727378,
+      "roi_proxy_mean": 0.005794874792300844
     },
     "FISSURE Universe Episode 7": {
       "n_total": 75,
       "months": 1,
-      "logloss_mean": 0.6968792467794153,
-      "drift_mean": 0.006519209419198813,
-      "roi_proxy_mean": -0.17694077981264714
+      "logloss_mean": 0.6976515077301305,
+      "drift_mean": 0.007120037887438646,
+      "roi_proxy_mean": -0.11955843307695849
     },
     "FISSURE Universe Episode 8": {
       "n_total": 96,
       "months": 2,
-      "logloss_mean": 0.6606782798941961,
-      "drift_mean": -0.009428104596828111,
-      "roi_proxy_mean": 0.10843547194905241
+      "logloss_mean": 0.6611282172831203,
+      "drift_mean": -0.006665519474409444,
+      "roi_proxy_mean": 0.05124351525465395
     },
     "FONBET MEDIA ELEAGUE DOTA2 2025": {
       "n_total": 16,
@@ -771,22 +771,22 @@
     "Games of the Future 2025 Abu Dhabi": {
       "n_total": 46,
       "months": 1,
-      "logloss_mean": 0.6905511322018674,
-      "drift_mean": 0.005885429260393482,
-      "roi_proxy_mean": -0.008122332850159156
+      "logloss_mean": 0.6907437208497939,
+      "drift_mean": 0.006203689230846576,
+      "roi_proxy_mean": 0.0744684822098757
     },
     "III Киберспортивный турнир Сбера по Dota 2": {
       "n_total": 3,
       "months": 1,
-      "logloss_mean": 0.7178148504611818,
-      "drift_mean": 0.03274113400775325,
-      "roi_proxy_mean": -0.3752698941683666
+      "logloss_mean": 0.7151509753754084,
+      "drift_mean": 0.029378077169434746,
+      "roi_proxy_mean": -0.37133419169761095
     },
     "INDIA PREDATOR LEAGUE 2026": {
       "n_total": 2,
       "months": 1,
       "logloss_mean": 0.6931471805599453,
-      "drift_mean": 0.0027871431997288365,
+      "drift_mean": 0.0026157107172534166,
       "roi_proxy_mean": 0.0
     },
     "Kwalifikacje do Narodowej Drużyny Esportu w Dota2": {
@@ -807,7 +807,7 @@
       "n_total": 3,
       "months": 1,
       "logloss_mean": 0.6876322225772972,
-      "drift_mean": 0.007349533731803026,
+      "drift_mean": 0.0071565282559560295,
       "roi_proxy_mean": 0.9890010020855771
     },
     "NITRO FRESH MASTERS": {
@@ -834,30 +834,30 @@
     "PGL Wallachia 2025 Season 5": {
       "n_total": 116,
       "months": 1,
-      "logloss_mean": 0.7108102808728893,
-      "drift_mean": 0.03449451555750061,
-      "roi_proxy_mean": -0.19079411554895748
+      "logloss_mean": 0.688421944581536,
+      "drift_mean": 0.013713548541596454,
+      "roi_proxy_mean": -0.09520892791489402
     },
     "PGL Wallachia 2025 Season 6": {
       "n_total": 118,
       "months": 1,
-      "logloss_mean": 0.6714045086961415,
-      "drift_mean": -0.01130542896753517,
-      "roi_proxy_mean": -0.049001335890167495
+      "logloss_mean": 0.6675541231384589,
+      "drift_mean": -0.016172359656059232,
+      "roi_proxy_mean": 0.06646064383248763
     },
     "PGL Wallachia 2026 Season 7": {
       "n_total": 124,
       "months": 1,
-      "logloss_mean": 0.6724014970266294,
-      "drift_mean": 0.013331254243896473,
-      "roi_proxy_mean": -0.017287220238348243
+      "logloss_mean": 0.6703450523823432,
+      "drift_mean": 0.01195345738136322,
+      "roi_proxy_mean": -0.03883049980262818
     },
     "PGL Wallachia 2026 Season 8": {
       "n_total": 119,
       "months": 1,
-      "logloss_mean": 0.7133816515104694,
-      "drift_mean": 0.036886031906556704,
-      "roi_proxy_mean": -0.1801618256532515
+      "logloss_mean": 0.711069490731989,
+      "drift_mean": 0.03368418531252415,
+      "roi_proxy_mean": -0.196419969288965
     },
     "PGL Wallachia Season #4 AMER Closed Qualifiers": {
       "n_total": 36,
@@ -897,86 +897,86 @@
     "PGL Wallachia Season #6 AMER Closed Qualifiers": {
       "n_total": 38,
       "months": 1,
-      "logloss_mean": 0.6853006836859471,
-      "drift_mean": -0.005059353674269351,
-      "roi_proxy_mean": 0.00017742673529562656
+      "logloss_mean": 0.6853030067430779,
+      "drift_mean": -0.005228463099614,
+      "roi_proxy_mean": 0.00017104052483617985
     },
     "PGL Wallachia Season #6 CN Closed Qualifiers": {
       "n_total": 13,
       "months": 1,
-      "logloss_mean": 0.6577986142428242,
-      "drift_mean": -0.032561423117392296,
-      "roi_proxy_mean": 0.11973835229736615
+      "logloss_mean": 0.6558653016050768,
+      "drift_mean": -0.034666168237615036,
+      "roi_proxy_mean": 0.10500255582284233
     },
     "PGL Wallachia Season #6 EEU Closed Qualifiers": {
       "n_total": 39,
       "months": 1,
-      "logloss_mean": 0.669352393669556,
-      "drift_mean": -0.021007643690660438,
-      "roi_proxy_mean": 0.0533517875048897
+      "logloss_mean": 0.6678870729565249,
+      "drift_mean": -0.02264439688616693,
+      "roi_proxy_mean": 0.15054669813119578
     },
     "PGL Wallachia Season #6 SEA Closed Qualifiers": {
       "n_total": 37,
       "months": 1,
-      "logloss_mean": 0.659271845851803,
-      "drift_mean": -0.03108819150841347,
-      "roi_proxy_mean": -0.052192763761728746
+      "logloss_mean": 0.6589580501898298,
+      "drift_mean": -0.03157341965286209,
+      "roi_proxy_mean": -0.05369562559910454
     },
     "PGL Wallachia Season #6 WEU Closed Qualifiers": {
       "n_total": 33,
       "months": 1,
-      "logloss_mean": 0.6794344498956904,
-      "drift_mean": -0.010925587464526099,
-      "roi_proxy_mean": -0.12407106794717052
+      "logloss_mean": 0.6752315229389827,
+      "drift_mean": -0.015299946903709172,
+      "roi_proxy_mean": -0.0027132395879986113
     },
     "PGL Wallachia Season #7 AMER Closed Qualifiers": {
       "n_total": 32,
       "months": 1,
-      "logloss_mean": 0.6251166612692352,
-      "drift_mean": -0.044913413551966985,
-      "roi_proxy_mean": 0.1489255160980108
+      "logloss_mean": 0.6215599067842511,
+      "drift_mean": -0.04599621444638369,
+      "roi_proxy_mean": 0.14275475684041872
     },
     "PGL Wallachia Season #7 Asia Closed Qualifiers": {
       "n_total": 39,
       "months": 1,
-      "logloss_mean": 0.691753450788709,
-      "drift_mean": 0.02172337596750684,
-      "roi_proxy_mean": -0.052038901316793514
+      "logloss_mean": 0.6919531820262449,
+      "drift_mean": 0.024397060795610104,
+      "roi_proxy_mean": -0.0032491033743426304
     },
     "PGL Wallachia Season #7 EEU Closed Qualifiers": {
       "n_total": 37,
       "months": 1,
-      "logloss_mean": 0.6948619536137639,
-      "drift_mean": 0.024831878792561768,
-      "roi_proxy_mean": -0.03229803316309334
+      "logloss_mean": 0.6795675925941586,
+      "drift_mean": 0.012011471363523762,
+      "roi_proxy_mean": 0.015811834646940703
     },
     "PGL Wallachia Season #7 WEU Closed Qualifiers": {
       "n_total": 34,
       "months": 1,
-      "logloss_mean": 0.7001751582313988,
-      "drift_mean": 0.030145083410196616,
-      "roi_proxy_mean": 0.01683870197682207
+      "logloss_mean": 0.7026723500713752,
+      "drift_mean": 0.03511622884074039,
+      "roi_proxy_mean": 0.009251214428756885
     },
     "Pakistan Dota Masters - Season 2": {
       "n_total": 59,
       "months": 2,
       "logloss_mean": 0.6925384025576927,
-      "drift_mean": 0.005160607452059486,
+      "drift_mean": 0.004659724276153272,
       "roi_proxy_mean": 0.3193009347083032
     },
     "Party To Play league": {
       "n_total": 400,
       "months": 17,
-      "logloss_mean": 0.6897571931654958,
-      "drift_mean": 0.010489981669972503,
-      "roi_proxy_mean": 0.11325559944655206
+      "logloss_mean": 0.6900624045463737,
+      "drift_mean": 0.010940159526787277,
+      "roi_proxy_mean": 0.11346593872816677
     },
     "Premier Series": {
       "n_total": 165,
       "months": 2,
-      "logloss_mean": 0.6668537441329923,
-      "drift_mean": -0.001510032954369911,
-      "roi_proxy_mean": 0.012262297721624313
+      "logloss_mean": 0.6704645328316269,
+      "drift_mean": 0.0019429589407882419,
+      "roi_proxy_mean": 0.010909782210090894
     },
     "Prime Series by TechHub.bg Season 1": {
       "n_total": 64,
@@ -996,148 +996,148 @@
       "n_total": 84,
       "months": 1,
       "logloss_mean": 0.6933154611199691,
-      "drift_mean": 0.013032772274474969,
+      "drift_mean": 0.012839766798627972,
       "roi_proxy_mean": -0.2858079548694624
     },
     "REDRAGON Battle Series DOTA2": {
       "n_total": 15,
       "months": 1,
-      "logloss_mean": 0.6938120034250433,
-      "drift_mean": 0.01110206576136663,
-      "roi_proxy_mean": -0.0883491777100069
+      "logloss_mean": 0.6938123403461642,
+      "drift_mean": 0.010085857551646149,
+      "roi_proxy_mean": -0.08834956709582169
     },
     "RES Unchained - A Blast Dota Slam IV Qualifier EU": {
       "n_total": 29,
       "months": 1,
-      "logloss_mean": 0.572520054471575,
-      "drift_mean": -0.11694496033554858,
-      "roi_proxy_mean": 0.3082977495189858
+      "logloss_mean": 0.5709569095409844,
+      "drift_mean": -0.11747582945158828,
+      "roi_proxy_mean": 0.30494717831729745
     },
     "RES Unchained - A Blast Dota Slam IV Qualifier SEA": {
       "n_total": 27,
       "months": 1,
-      "logloss_mean": 0.7150510475660712,
-      "drift_mean": 0.025586032758947663,
-      "roi_proxy_mean": -0.27302181543525034
+      "logloss_mean": 0.7150222641072799,
+      "drift_mean": 0.026589525114707135,
+      "roi_proxy_mean": -0.27313753036894173
     },
     "RES Unchained - A Blast Dota Slam V Qualifier EU": {
       "n_total": 29,
       "months": 1,
-      "logloss_mean": 0.6956693840143555,
-      "drift_mean": 0.005309346654139069,
-      "roi_proxy_mean": 0.13720911427482615
+      "logloss_mean": 0.6917580607994589,
+      "drift_mean": 0.0012265909567670263,
+      "roi_proxy_mean": 0.13017199905234833
     },
     "RES Unchained - A Blast Dota Slam V Qualifier SEA": {
       "n_total": 32,
       "months": 1,
-      "logloss_mean": 0.6927459447126001,
-      "drift_mean": 0.0023859073523836427,
-      "roi_proxy_mean": -0.1713599897337661
+      "logloss_mean": 0.691473143430273,
+      "drift_mean": 0.0009416735875811266,
+      "roi_proxy_mean": -0.1729285826581565
     },
     "RES Unchained - A Blast Dota Slam VI Qualifier EU": {
       "n_total": 15,
       "months": 1,
-      "logloss_mean": 0.7162982839563005,
-      "drift_mean": 0.046268209135098326,
-      "roi_proxy_mean": -0.2153824608392241
+      "logloss_mean": 0.7085746711008797,
+      "drift_mean": 0.04101854987024489,
+      "roi_proxy_mean": -0.06936240792936792
     },
     "RES Unchained - A Blast Dota Slam VI Qualifier SEA": {
       "n_total": 5,
       "months": 1,
-      "logloss_mean": 0.5185328927957306,
-      "drift_mean": -0.15149718202547158,
-      "roi_proxy_mean": 0.69025219410803
+      "logloss_mean": 0.5124800550086395,
+      "drift_mean": -0.15507606622199532,
+      "roi_proxy_mean": 0.6795220730589338
     },
     "RES Unchained - A Blast Dota Slam VII Qualifier EU": {
       "n_total": 15,
       "months": 1,
-      "logloss_mean": 0.6205275482422168,
-      "drift_mean": -0.055968071361695904,
-      "roi_proxy_mean": -0.008666408420175445
+      "logloss_mean": 0.6033862547461409,
+      "drift_mean": -0.07399905067332391,
+      "roi_proxy_mean": 0.00936031316209629
     },
     "RES Unchained - A Blast Dota Slam VII Qualifier SEA": {
       "n_total": 16,
       "months": 1,
-      "logloss_mean": 0.6650322469344564,
-      "drift_mean": -0.011463372669456295,
-      "roi_proxy_mean": 0.3238453352085877
+      "logloss_mean": 0.665826172037672,
+      "drift_mean": -0.011559133381792819,
+      "roi_proxy_mean": 0.32230382374517985
     },
     "Redragon Latam Series Dota2": {
       "n_total": 38,
       "months": 2,
-      "logloss_mean": 0.7011713548281593,
-      "drift_mean": 0.01443504890314582,
-      "roi_proxy_mean": 0.01616629325379637
+      "logloss_mean": 0.7011521968416489,
+      "drift_mean": 0.013844141916513035,
+      "roi_proxy_mean": 0.016115401338815574
     },
     "Road To EWC 2026 Regional Qualifiers": {
       "n_total": 206,
       "months": 2,
-      "logloss_mean": 0.6722677141555012,
-      "drift_mean": -0.005835300975805016,
-      "roi_proxy_mean": 0.05344846689627744
+      "logloss_mean": 0.6682409598018022,
+      "drift_mean": -0.010226937235307217,
+      "roi_proxy_mean": 0.030652993184340803
     },
     "Road To The International 2025 - Regional Qualifiers China": {
       "n_total": 31,
       "months": 1,
       "logloss_mean": 0.6315387299232963,
-      "drift_mean": -0.044777035392092435,
+      "drift_mean": -0.043169666116643295,
       "roi_proxy_mean": 0.15485863577568726
     },
     "Road To The International 2025 - Regional Qualifiers Eastern Europe": {
       "n_total": 44,
       "months": 1,
       "logloss_mean": 0.6521424010789549,
-      "drift_mean": -0.024173364236433792,
+      "drift_mean": -0.02256599496098466,
       "roi_proxy_mean": 0.1998186221183281
     },
     "Road To The International 2025 - Regional Qualifiers North America": {
       "n_total": 24,
       "months": 1,
       "logloss_mean": 0.6692003995617358,
-      "drift_mean": -0.0071153657536529025,
+      "drift_mean": -0.005507996478203769,
       "roi_proxy_mean": -0.11986892957953017
     },
     "Road To The International 2025 - Regional Qualifiers South America": {
       "n_total": 44,
       "months": 1,
       "logloss_mean": 0.6938214108913875,
-      "drift_mean": 0.017505645575998763,
+      "drift_mean": 0.019113014851447896,
       "roi_proxy_mean": -0.1630533295968539
     },
     "Road To The International 2025 - Regional Qualifiers Southeast Asia": {
       "n_total": 43,
       "months": 1,
       "logloss_mean": 0.6716294726286534,
-      "drift_mean": -0.004686292686735372,
+      "drift_mean": -0.0030789234112862385,
       "roi_proxy_mean": 0.2093558735829558
     },
     "Road To The International 2025 - Regional Qualifiers Western Europe": {
       "n_total": 39,
       "months": 1,
       "logloss_mean": 0.7023719114973165,
-      "drift_mean": 0.026056146181927753,
+      "drift_mean": 0.02766351545737689,
       "roi_proxy_mean": 0.029988198295604798
     },
     "Road to APAC Predator League 2026 : Indonesian Series": {
       "n_total": 11,
       "months": 2,
-      "logloss_mean": 0.6068630477549781,
-      "drift_mean": -0.078628744343804,
-      "roi_proxy_mean": -0.15084084873272066
+      "logloss_mean": 0.6052433689369595,
+      "drift_mean": -0.08095765460234904,
+      "roi_proxy_mean": -0.1545013181604829
     },
     "Road to ENC 2026 Regional Qualifiers": {
       "n_total": 245,
       "months": 2,
-      "logloss_mean": 0.6924253602918462,
-      "drift_mean": 0.019222644934564097,
-      "roi_proxy_mean": -0.03319100047843176
+      "logloss_mean": 0.6933703118885082,
+      "drift_mean": 0.018631884446772013,
+      "roi_proxy_mean": -0.07914150851317513
     },
     "SIVVIT League": {
       "n_total": 386,
       "months": 11,
-      "logloss_mean": 0.6927984113013567,
-      "drift_mean": 0.007984178115159113,
-      "roi_proxy_mean": 0.16347133648116755
+      "logloss_mean": 0.6926266678483062,
+      "drift_mean": 0.007882742221768069,
+      "roi_proxy_mean": 0.18422820413319144
     },
     "SLAM II": {
       "n_total": 43,
@@ -1156,72 +1156,72 @@
     "SLAM IV": {
       "n_total": 96,
       "months": 2,
-      "logloss_mean": 0.6705079755906235,
-      "drift_mean": -0.018656733692008643,
-      "roi_proxy_mean": -0.09806385987395333
+      "logloss_mean": 0.687247200657639,
+      "drift_mean": -0.002220989958775732,
+      "roi_proxy_mean": -0.058696440241938874
     },
     "SLAM V": {
       "n_total": 94,
       "months": 2,
-      "logloss_mean": 0.6499363843270539,
-      "drift_mean": -0.033044031513339456,
-      "roi_proxy_mean": 0.1378902217102461
+      "logloss_mean": 0.6510427979333157,
+      "drift_mean": -0.03279619693266601,
+      "roi_proxy_mean": 0.17034505379412812
     },
     "Snake Trophy": {
       "n_total": 431,
       "months": 9,
-      "logloss_mean": 0.694547419063443,
-      "drift_mean": 0.012689055278743594,
-      "roi_proxy_mean": -0.023766558240925613
+      "logloss_mean": 0.6944722398698387,
+      "drift_mean": 0.012588795185515676,
+      "roi_proxy_mean": -0.019936788415286306
     },
     "Snake Trophy 2": {
       "n_total": 62,
       "months": 1,
       "logloss_mean": 0.6728024515242135,
-      "drift_mean": -0.007480237321280669,
+      "drift_mean": -0.007673242797127666,
       "roi_proxy_mean": 0.08250089889303763
     },
     "The Flame League": {
       "n_total": 19,
       "months": 1,
       "logloss_mean": 0.6931471805599453,
-      "drift_mean": 0.012864491714451143,
+      "drift_mean": 0.012671486238604146,
       "roi_proxy_mean": 0.15789473684210525
     },
     "The International 2026 - Regional Qualifier China": {
       "n_total": 29,
       "months": 1,
-      "logloss_mean": 0.6629335747546543,
-      "drift_mean": -0.015142369546131795,
-      "roi_proxy_mean": 0.15163201793743694
+      "logloss_mean": 0.6656755717522251,
+      "drift_mean": -0.012965469657267525,
+      "roi_proxy_mean": 0.00612998007593577
     },
     "The International 2026 - Regional Qualifier Europe": {
       "n_total": 63,
       "months": 1,
-      "logloss_mean": 0.6315406483565361,
-      "drift_mean": -0.04653529594424999,
-      "roi_proxy_mean": 0.07583623786140335
+      "logloss_mean": 0.6489478312543528,
+      "drift_mean": -0.029693210155139812,
+      "roi_proxy_mean": 0.011958570598725071
     },
     "The International 2026 - Regional Qualifier North America": {
       "n_total": 13,
       "months": 1,
-      "logloss_mean": 0.562909699279606,
-      "drift_mean": -0.11516624502118011,
-      "roi_proxy_mean": 0.45762850406742156
+      "logloss_mean": 0.545437396925291,
+      "drift_mean": -0.13320364448420163,
+      "roi_proxy_mean": 0.40756020785805536
     },
     "The International 2026 - Regional Qualifier South America": {
       "n_total": 39,
       "months": 1,
-      "logloss_mean": 0.6988336451872466,
-      "drift_mean": 0.02075770088646045,
-      "roi_proxy_mean": 0.09080613082878126
+      "logloss_mean": 0.6989038846556026,
+      "drift_mean": 0.02026284324610994,
+      "roi_proxy_mean": 0.09011099261771663
     },
     "The International 2026 - Regional Qualifier Southeast Asia": {
       "n_total": 44,
       "months": 1,
-      "logloss_mean": 0.6627039303953685,
-      "drift_mean": -0.015372013905417647,
-      "roi_proxy_mean": 0.12880534289461407
+      "logloss_mean": 0.6616094368949637,
+      "drift_mean": -0.01703160451452901,
+      "roi_proxy_mean": 0.12357793547750016
     },
     "ULD Season 2 : Americas": {
       "n_total": 8,
@@ -1233,9 +1233,9 @@
     "Ultras Dota Pro League  2024-25": {
       "n_total": 4308,
       "months": 9,
-      "logloss_mean": 0.6706728093169994,
-      "drift_mean": -0.012504748991251712,
-      "roi_proxy_mean": -0.010183323137487295
+      "logloss_mean": 0.6709423309255814,
+      "drift_mean": -0.012070753176675175,
+      "roi_proxy_mean": -0.012428343103039342
     },
     "Universal League S2": {
       "n_total": 12,
@@ -1247,9 +1247,9 @@
     "WBT CYBER CLUB #1": {
       "n_total": 417,
       "months": 11,
-      "logloss_mean": 0.6871053378273304,
-      "drift_mean": 0.009106346654271345,
-      "roi_proxy_mean": 0.07897913514674078
+      "logloss_mean": 0.6905773543891276,
+      "drift_mean": 0.012290429255213984,
+      "roi_proxy_mean": 0.043391326306958355
     },
     "Всероссийская киберспортивная студенческая лига Сбера 2025": {
       "n_total": 3,
@@ -1261,9 +1261,9 @@
     "Кубок России Сбера по компьютерному спорту 2025": {
       "n_total": 9,
       "months": 1,
-      "logloss_mean": 0.6078351686821889,
-      "drift_mean": -0.07723854777123962,
-      "roi_proxy_mean": 0.17806846488314887
+      "logloss_mean": 0.6057349458575444,
+      "drift_mean": -0.08003795234842925,
+      "roi_proxy_mean": 0.174609844076093
     },
     "Кубок федерации Туркменистана": {
       "n_total": 18,
@@ -1275,43 +1275,43 @@
     "Открытые Киберспортивные Игры Сбера 2025": {
       "n_total": 10,
       "months": 1,
-      "logloss_mean": 0.6374162743473445,
-      "drift_mean": -0.047249428594129395,
-      "roi_proxy_mean": 0.04607636498215086
+      "logloss_mean": 0.6407554957876592,
+      "drift_mean": -0.04378453583128805,
+      "roi_proxy_mean": 0.05255078761412788
     },
     "Чемпионат России Сбера 2025": {
       "n_total": 10,
       "months": 1,
       "logloss_mean": 0.6295609992484559,
-      "drift_mean": -0.050721689597038266,
+      "drift_mean": -0.05091469507288526,
       "roi_proxy_mean": -0.11774951732670065
     },
     "上海市网络游戏行业协会杯第二届电竞赛": {
       "n_total": 33,
       "months": 2,
       "logloss_mean": 0.693306092878006,
-      "drift_mean": 0.01732892558858066,
+      "drift_mean": 0.01752375822802904,
       "roi_proxy_mean": -0.09111859119927773
     },
     "互联网联赛": {
       "n_total": 81,
       "months": 7,
-      "logloss_mean": 0.692073301992965,
-      "drift_mean": 0.005343274096417906,
-      "roi_proxy_mean": 0.15093500347339603
+      "logloss_mean": 0.6922567869509465,
+      "drift_mean": 0.0056112628891781015,
+      "roi_proxy_mean": 0.12713426750814888
     },
     "刀塔校运会": {
       "n_total": 47,
       "months": 3,
       "logloss_mean": 0.6940166949750318,
-      "drift_mean": 0.016696999010168325,
+      "drift_mean": 0.01683379639531293,
       "roi_proxy_mean": -0.10706841154639535
     },
     "肛宝联赛-老婆杯": {
       "n_total": 7,
       "months": 2,
       "logloss_mean": 0.695295506469452,
-      "drift_mean": 0.017165734069369134,
+      "drift_mean": 0.016998748271455248,
       "roi_proxy_mean": -0.14402589244352565
     }
   }
