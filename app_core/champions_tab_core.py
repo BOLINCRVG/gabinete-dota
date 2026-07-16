@@ -106,7 +106,7 @@ def render_champions_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(
         st,
         title="Campeões",
-        subtitle="Draft, winrate, matchups por posição e contexto por lane (100% data-driven).",
+        subtitle="Pool do confronto: o que cada time joga × meta do patch atual.",
     )
 
     team_games = ctx["team_games"]
@@ -133,6 +133,14 @@ def render_champions_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         csv_sig=csv_sig,
         load_player_rows_fn=load_player_rows_fn,
     )
+    if not (str(team_a or "").strip() and str(team_b or "").strip()):
+        st.caption("Selecione um confronto (Time 1 × Time 2) para ver o pool dos dois times.")
+
+    # Redesign 2026-07-16 (decisão dele): a aba vira SÓ o Pool do confronto.
+    # Força global de campeão é papel da aba Meta; o restante (filtros,
+    # colar draft, matchups por posição) foi retirado da UI — o código
+    # antigo abaixo fica inalcançável de propósito (barato de reviver).
+    return
 
     years, splits, leagues = collect_year_split_league_options(team_games)
     teams = []
