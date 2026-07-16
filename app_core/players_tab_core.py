@@ -145,9 +145,99 @@ def _build_trace_rows(out_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return trace_rows
 
 
+def _render_lineup_value_block(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    csv_sig: Any,
+    load_player_rows_fn: Any,
+    latest_lineup_names_fn: Any,
+    norm_pos_fn: Any,
+    fuzzy_match_one_fn: Any,
+) -> None:
+    """Manchete "quem joga hoje vale quanto" (redesign 2026-07-16): lineup
+    habitual dos dois times com percentil de desempenho POR FUNÇÃO —
+    independente de vitória (lição PandaSkill). Descritivo, n visível."""
+    ta = str(team_a or "").strip()
+    tb = str(team_b or "").strip()
+    if not ta or not tb:
+        return
+    try:
+        from app_core.players_value_core import (
+            build_player_role_scores,
+            lineup_value_view,
+        )
+
+        rows = load_player_rows_fn(csv_sig)
+        if rows is None or rows.empty:
+            return
+        year = None
+        try:
+            yr = pd.to_numeric(rows.get("year"), errors="coerce")
+            year = int(yr.max()) if yr.notna().any() else None
+        except Exception:
+            year = None
+        scores = build_player_role_scores(rows, year=year)
+        if scores.empty:
+            return
+        rows_year = rows
+        if year is not None and "year" in rows.columns:
+            rows_year = rows[pd.to_numeric(rows["year"], errors="coerce") == year]
+
+        with st.container(border=True):
+            render_tab_section(
+                st,
+                title=f"Quem joga hoje — {ta} × {tb}",
+                subtitle=(
+                    f"Lineup habitual + percentil de desempenho dentro da FUNÇÃO "
+                    f"({'temporada ' + str(year) if year else 'CSV inteiro'}; KLA, dano/min, CS/min, visão/min; "
+                    "independe de vitória — jogador bom em time ruim aparece)."
+                ),
+            )
+            c1, c2 = st.columns(2)
+            for col, tm in ((c1, ta), (c2, tb)):
+                with col:
+                    st.markdown(f"**{tm}**")
+                    try:
+                        lineup = latest_lineup_names_fn(df_in=rows_year, team_name=tm, norm_pos_fn=norm_pos_fn) or []
+                    except Exception:
+                        lineup = []
+                    lineup = [x for x in lineup if str(x).strip()]
+                    if not lineup:
+                        st.caption("Sem lineup recente no recorte.")
+                        continue
+                    v = lineup_value_view(lineup, scores, fuzzy_match_one_fn=fuzzy_match_one_fn)
+                    view = pd.DataFrame({
+                        "Função": v["pos"].replace("", "?"),
+                        "Player": v["player"],
+                        "Percentil": v["percentile"].map(
+                            lambda x: f"P{x:.0f}" if pd.notna(x) else "sem amostra"
+                        ),
+                        "J": v["games"].map(lambda n: int(n) if n else "-"),
+                    })
+                    st.dataframe(view, hide_index=True, use_container_width=True)
+                    med = v["percentile"].dropna()
+                    if not med.empty:
+                        st.caption(f"Mediana do lineup: **P{med.median():.0f}** ({len(med)}/5 com amostra)")
+    except Exception:
+        # bloco novo NUNCA derruba a aba
+        return
+
+
 def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     session_state = st.session_state
-    render_tab_hero(st, title="Players", subtitle="ML por lineup com fusão Team + Players e mercados individuais por linha.")
+    render_tab_hero(st, title="Players", subtitle="Quem joga hoje vale quanto — e o ML por lineup com fusão Team + Players.")
+    _render_lineup_value_block(
+        st=st,
+        team_a=ctx["teamA"],
+        team_b=ctx["teamB"],
+        csv_sig=ctx["csv_sig"],
+        load_player_rows_fn=ctx["load_player_rows_fn"],
+        latest_lineup_names_fn=ctx["latest_lineup_names_fn"],
+        norm_pos_fn=ctx["norm_pos_fn"],
+        fuzzy_match_one_fn=ctx["fuzzy_match_one_fn"],
+    )
 
     team_games = ctx["team_games"]
     Filters = ctx["Filters"]
