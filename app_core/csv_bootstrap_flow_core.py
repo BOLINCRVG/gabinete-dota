@@ -1358,7 +1358,10 @@ def csv_bootstrap_gate(
         core_mark_bootstrap_gate_completed(st.session_state, fp_key)
         return
     # Test harness bypass: evita prender AppTest na pré-tela e disparar manutenção pesada.
-    if bool(_gate_state.get("probe_skip", False)):
+    # GABINETE_E2E: idem, via ambiente — o E2E da suíte NUNCA roda manutenção
+    # real (fase 2 da campanha, 17/07: E2E mutou ml_artifact e matou um
+    # retreino dele no meio em 15-16/07; suíte tem que ser só-leitura).
+    if bool(_gate_state.get("probe_skip", False)) or str(os.environ.get("GABINETE_E2E", "")).strip() == "1":
         core_mark_bootstrap_gate_completed(st.session_state, fp_key)
         return
     force_once = bool(_gate_state.get("force_once", False))

@@ -79,13 +79,26 @@ def _run_flow(app_path: Path, hint_a: str, hint_b: str,
 
 class TestE2ESmokeLoL(unittest.TestCase):
     def test_boot_select_analyze(self):
-        status, payload = _run_flow(ROOT / "plays_app.py", "T1", "Gen")
+        # GABINETE_E2E=1: suíte SÓ-LEITURA (fase 2 da campanha) — o gate não
+        # dispara manutenção real (já mutou ml_artifact no meio da suíte e
+        # matou um retreino dele em 15-16/07); subprocessos ficam bloqueados.
+        def _sig(name: str):
+            p = ROOT / name
+            return (p.stat().st_size, p.stat().st_mtime) if p.exists() else None
+
+        before = {n: _sig(n) for n in ("ml_artifact.json", "params_fitted.json",
+                                       "players_artifact.json")}
+        status, payload = _run_flow(ROOT / "plays_app.py", "T1", "Gen",
+                                    extra_env={"GABINETE_E2E": "1"})
         if status == "SKIP":
             self.skipTest(payload)
         self.assertEqual(status, "OK", f"fluxo LoL quebrou: {payload}")
         tabs = payload.split(";")
         self.assertGreaterEqual(len(tabs), 7, f"poucas tabs: {tabs}")
         self.assertIn("Visão Geral", tabs)
+        after = {n: _sig(n) for n in before}
+        self.assertEqual(before, after,
+                         "E2E MUTOU artifacts do modelo — a suíte tem que ser só-leitura")
 
 
 class TestE2ESmokeLoLViewer(unittest.TestCase):
@@ -108,7 +121,13 @@ class TestE2ESmokeDota(unittest.TestCase):
     def test_boot_select_analyze(self):
         if not DOTA_APP.exists():
             self.skipTest("GabineteDOTA não está ao lado (máquina sem o app Dota)")
-        status, payload = _run_flow(DOTA_APP, "Spirit", "Falcons")
+        status, payload = _run_flow(DOTA_APP, "Spirit", "Falcons",
+                                    extra_env={"GABINETE_E2E": "1"})
+        if status == "EXC":
+            # a esteira P3 pode regenerar os CSVs do Dota bem no meio do boot
+            # (corrida vista 16/07): UMA repetição separa transitório de bug.
+            status, payload = _run_flow(DOTA_APP, "Spirit", "Falcons",
+                                        extra_env={"GABINETE_E2E": "1"})
         if status == "SKIP":
             self.skipTest(payload)
         self.assertEqual(status, "OK", f"fluxo Dota quebrou: {payload}")

@@ -59,6 +59,13 @@ def run_cmd(
             cmd, returncode=1, stdout="",
             stderr="[viewer] modo visualização: manutenção/retreino rodam no robô, não aqui.",
         )
+    # E2E da suíte: só-leitura absoluto (fase 2 da campanha) — nenhum treino
+    # real pode nascer de um teste.
+    if str(os.environ.get("GABINETE_E2E", "")).strip() == "1":
+        return subprocess.CompletedProcess(
+            cmd, returncode=1, stdout="",
+            stderr="[e2e] suíte é só-leitura: subprocesso de manutenção bloqueado.",
+        )
     _timeout = int(timeout_s or 0)
     if _timeout <= 0:
         _timeout = 1200

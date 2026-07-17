@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T07:29:18",
+  "generated_at": "2026-07-17T07:35:46",
   "matchup": {
     "season": "S15",
     "teamA": "Asia Spirit",
@@ -15,7 +15,7 @@
   },
   "engine": "mlcore_v2",
   "ml_trace": {
-    "generated_at": "2026-07-17T07:29:14",
+    "generated_at": "2026-07-17T07:35:42",
     "matchup": {
       "season": "S15",
       "teamA": "Asia Spirit",
@@ -23,7 +23,7 @@
       "bo": 1
     },
     "input_signature": {
-      "sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+      "sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -62,7 +62,7 @@
           "csv": {
             "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\CSV_DIARIO\\2026_Dota_match_data_oe_like.csv",
             "size": 1349845,
-            "mtime": 1784215061
+            "mtime": 1784284525
           },
           "artifact": {
             "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\ml_artifact.json",
@@ -228,7 +228,7 @@
       "status": "ok",
       "league_hint": "Road To EWC 2026 Regional Qualifiers",
       "changed_leagues": [],
-      "age_days": 0.6987744756597222,
+      "age_days": 0.7033082482060186,
       "shrink": 0.0,
       "p_in": 0.07491770117798649,
       "p_out": 0.07491770117798646,
@@ -1400,11 +1400,11 @@
   "players_trace": [],
   "feature_trace": [
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_shadow_state_alite_v1",
       "event": "shadow_compare",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.073762, \"pm_old\": 0.074918, \"ps_new\": 0.073762, \"ps_old\": 0.074918, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.073762, \"pm_old\": 0.074918, \"ps_new\": 0.073762, \"ps_old\": 0.074918, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1413,7 +1413,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": true,
         "reason": "state+uncertainty+recent_form",
         "p_map_old": 0.07491770117798649,
@@ -1467,11 +1467,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_shadow_state_areal_v1",
       "event": "shadow_compare",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.08526, \"pm_old\": 0.074918, \"ps_new\": 0.08526, \"ps_old\": 0.074918, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.08526, \"pm_old\": 0.074918, \"ps_new\": 0.08526, \"ps_old\": 0.074918, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1480,7 +1480,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": true,
         "reason": "team_state_artifact_mu_sigma",
         "p_map_old": 0.07491770117798649,
@@ -1619,11 +1619,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_league_rank_sos_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"p_rank\": null, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"p_rank\": null, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1632,7 +1632,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": false,
         "method": "league_rank_sos_h2h_quality_v2",
         "reason": "missing_identity",
@@ -1663,11 +1663,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_roster_continuity_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\", \"target_p\": null}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\", \"target_p\": null}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1676,7 +1676,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": false,
         "method": "roster_continuity_v2",
         "reason": "low_lineup_coverage",
@@ -1704,11 +1704,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_hier_calibration_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"bias_adj\": 2.2e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.1011, \"p_before\": 0.08526, \"scope\": \"class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1\", \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"bias_adj\": 2.2e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.1011, \"p_before\": 0.08526, \"scope\": \"class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1\", \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1717,7 +1717,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": true,
         "method": "hier_calibration_v3",
         "reason": "ok",
@@ -1737,11 +1737,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_series_bo_dplite_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"bo\": 1, \"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.074918, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"bo\": 1, \"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.074918, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1750,7 +1750,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": false,
         "method": "series_bo_v5_live",
         "reason": "bo1_noop",
@@ -1769,11 +1769,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T07:29:14",
+      "generated_at": "2026-07-17T07:35:42",
       "feature": "ml_layer_uncertainty_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.1271, \"pm_before\": 0.1011, \"sig\": \"747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820\"}",
+      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.1271, \"pm_before\": 0.1011, \"sig\": \"9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1782,7 +1782,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "747d0eb6b49849f8395028e1596fccee6b313e78cfed56ba3a6d762123884820",
+        "input_signature_sha256": "9a53f6a0632b6ff96e5396ce9c27acbe2fb60d549f6e7feebd6d9a87a4d7290e",
         "applied": true,
         "reason": "ok",
         "method": "layer_uncertainty_v2",
@@ -1854,7 +1854,7 @@
   ],
   "meta": {
     "app_version": "gabinete-2026.02.12",
-    "generated_at": "2026-07-17T07:29:18",
+    "generated_at": "2026-07-17T07:35:46",
     "season": "S15",
     "teams": {
       "teamA": "Asia Spirit",
