@@ -29,6 +29,18 @@ from app_core.schedule_state_core import (
     resolve_schedule_line_hc_team,
     save_schedule_games,
 )
+from app_core.stats_config import line_key_by_label
+
+# Exemplos históricos dos inputs de linha da Agenda, por line_key. Mercado novo
+# no registro sem entrada aqui aparece com o label do registro, sem exemplo.
+_LINE_INPUT_LABELS: Dict[str, str] = {
+    "lines_kills": "Kills (ex: 26.5, 27.5)",
+    "lines_towers": "Torres (ex: 10.5)",
+    "lines_dragons": "Dragões (ex: 4.5)",
+    "lines_barons": "Barões (ex: 0.5)",
+    "lines_inhib": "Inibidores (ex: 1.5)",
+    "lines_time": "Tempo (ex: 32, 32.5)",
+}
 
 
 def _safe_rerun() -> None:
@@ -116,16 +128,13 @@ def render_matchup_selection(
                             init_schedule_line_inputs(session_state, prefix, lines_saved, fields=tuple(fields))
 
                             st.markdown("**Mercados principais**")
-                            g1, g2, g3 = st.columns(3)
-                            with g1:
-                                st.text_input("Kills (ex: 26.5, 27.5)", key=prefix + "lines_kills")
-                                st.text_input("Torres (ex: 10.5)", key=prefix + "lines_towers")
-                            with g2:
-                                st.text_input("Dragões (ex: 4.5)", key=prefix + "lines_dragons")
-                                st.text_input("Barões (ex: 0.5)", key=prefix + "lines_barons")
-                            with g3:
-                                st.text_input("Inibidores (ex: 1.5)", key=prefix + "lines_inhib")
-                                st.text_input("Tempo (ex: 32, 32.5)", key=prefix + "lines_time")
+                            line_cols = st.columns(3)
+                            for idx, (market_label, line_key) in enumerate(line_key_by_label().items()):
+                                with line_cols[(idx // 2) % 3]:
+                                    st.text_input(
+                                        _LINE_INPUT_LABELS.get(line_key, market_label),
+                                        key=prefix + line_key,
+                                    )
 
                             with st.expander("Extras (opcional)", expanded=False):
                                 st.text_input(f"Total Kills {team_a_sel or 'Time 1'} (ex: 16.5)", key=prefix + "teamA_kills_line_text")

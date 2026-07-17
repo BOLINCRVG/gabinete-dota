@@ -3,14 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable, Dict, List, MutableMapping, Optional
 
+from app_core.stats_config import flow_line_keys
+
 
 _FLOW_LINE_KEYS = [
-    "lines_kills",
-    "lines_towers",
-    "lines_dragons",
-    "lines_barons",
-    "lines_inhib",
-    "lines_time",
+    *flow_line_keys(),
     "teamA_kills_line_text",
     "teamB_kills_line_text",
     "hc_kills_text",

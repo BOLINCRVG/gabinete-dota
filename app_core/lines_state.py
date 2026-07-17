@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from app_core.stats_config import flow_line_keys
+
+# Core (lines_kills...lines_time) deriva do registro; extras (kills por time,
+# handicaps, combos) são UI e ficam inline.
 LINE_FIELDS_DEFAULTS = {
-    "lines_kills": "",
-    "lines_towers": "",
-    "lines_dragons": "",
-    "lines_barons": "",
-    "lines_inhib": "",
-    "lines_time": "",
+    **{key: "" for key in flow_line_keys()},
     "teamA_kills_line_text": "",
     "teamB_kills_line_text": "",
     "hc_kills_text": "",

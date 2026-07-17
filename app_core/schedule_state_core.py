@@ -7,15 +7,11 @@ from pathlib import Path
 from typing import Any, MutableMapping
 
 from app_core.line_store import load_json_store, persist_json_store
+from app_core.stats_config import flow_line_keys
 
 
 _SCHEDULE_LINE_FIELDS = (
-    "lines_kills",
-    "lines_towers",
-    "lines_dragons",
-    "lines_barons",
-    "lines_inhib",
-    "lines_time",
+    *flow_line_keys(),
     "teamA_kills_line_text",
     "teamB_kills_line_text",
     "hc_kills_team",

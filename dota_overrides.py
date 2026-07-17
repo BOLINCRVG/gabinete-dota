@@ -65,6 +65,12 @@ def apply() -> None:
         "mv2_col": "mv2_total_megacreeps",
         "for_col": "megacreeps_for", "against_col": "megacreeps_against",
         "is_time": False,
+        # fase 3 do registro central (LoL 17/07): flow line keys derivam do
+        # registro. O slot do Megacreeps SEMPRE usou a chave histórica
+        # "lines_dragons" no session_state/stores salvos — manter preserva
+        # comportamento e dados byte-idênticos (gabinete_dota_app lê
+        # _line_texts["lines_dragons"]).
+        "line_key": "lines_dragons",
         # mercado binário (sim/não): linha fixa 0.5; V3 vira marcação ✓/✗ e o
         # Resumo cria a pick Sim/Não que compete no ranking (teto 1.72 etc.)
         "binary_market": True,

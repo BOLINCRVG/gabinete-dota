@@ -5,14 +5,11 @@ import json
 from pathlib import Path
 from typing import Any, Callable, Dict, Mapping, MutableMapping, Optional, Tuple
 
+from app_core.stats_config import flow_line_keys
+
 
 _LINE_KEYS = (
-    "lines_kills",
-    "lines_towers",
-    "lines_dragons",
-    "lines_barons",
-    "lines_inhib",
-    "lines_time",
+    *flow_line_keys(),
     "teamA_kills_line_text",
     "teamB_kills_line_text",
     "hc_kills_text",
@@ -125,12 +122,7 @@ def build_analysis_signature(
             str(totals_mode),
             str(ml_mode),
             str(map_mode_ui),
-            str(line_texts.get("lines_kills", "")),
-            str(line_texts.get("lines_towers", "")),
-            str(line_texts.get("lines_dragons", "")),
-            str(line_texts.get("lines_barons", "")),
-            str(line_texts.get("lines_inhib", "")),
-            str(line_texts.get("lines_time", "")),
+            *[str(line_texts.get(key, "")) for key in flow_line_keys()],
             str(line_texts.get("teamA_kills_line_text", "")),
             str(line_texts.get("teamB_kills_line_text", "")),
             str(line_texts.get("hc_kills_text", "")),
@@ -226,12 +218,7 @@ def build_consistency_analysis_signature(
             int(n_sims),
             str(totals_mode),
             str(map_mode_ui),
-            str(line_texts.get("lines_kills", "")),
-            str(line_texts.get("lines_towers", "")),
-            str(line_texts.get("lines_dragons", "")),
-            str(line_texts.get("lines_barons", "")),
-            str(line_texts.get("lines_inhib", "")),
-            str(line_texts.get("lines_time", "")),
+            *[str(line_texts.get(key, "")) for key in flow_line_keys()],
             str(line_texts.get("teamA_kills_line_text", "")),
             str(line_texts.get("teamB_kills_line_text", "")),
             str(line_texts.get("hc_kills_text", "")),

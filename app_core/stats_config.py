@@ -12,6 +12,8 @@ from typing import Any
 # Campos v3_* alimentam a Análise de Linha (V3): v3_label/v3_key (o V3 usa
 # "inibs", não "inhibitors"), mv2_col (total combinado calculado no augment),
 # for/against (colunas por lado; Tempo não tem) — ver v3_core_markets().
+# line_key = chave do texto de linha no session_state/flow ("lines_inhib" ≠
+# "lines_inhibitors": o sufixo histórico não segue o metric_key).
 STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
     "Kills": {
         "metric_key": "kills",
@@ -22,6 +24,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Kills > ",
         "v3_label": "Kills", "v3_key": "kills", "mv2_col": "mv2_total_kills",
         "for_col": "kills_for", "against_col": "kills_against", "is_time": False,
+        "line_key": "lines_kills",
     },
     "Torres": {
         "metric_key": "towers",
@@ -32,6 +35,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Towers > ",
         "v3_label": "Torres", "v3_key": "towers", "mv2_col": "mv2_total_towers",
         "for_col": "towers_for", "against_col": "towers_against", "is_time": False,
+        "line_key": "lines_towers",
     },
     "Dragões": {
         "metric_key": "dragons",
@@ -42,6 +46,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Dragons > ",
         "v3_label": "Dragões", "v3_key": "dragons", "mv2_col": "mv2_total_dragons",
         "for_col": "dragons_for", "against_col": "dragons_against", "is_time": False,
+        "line_key": "lines_dragons",
     },
     "Nashors": {
         "metric_key": "barons",
@@ -52,6 +57,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Nashors > ",
         "v3_label": "Barões", "v3_key": "barons", "mv2_col": "mv2_total_barons",
         "for_col": "barons_for", "against_col": "barons_against", "is_time": False,
+        "line_key": "lines_barons",
     },
     "Inibidores": {
         "metric_key": "inhibitors",
@@ -62,6 +68,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Inhib > ",
         "v3_label": "Inibidores", "v3_key": "inibs", "mv2_col": "mv2_total_inhibitors",
         "for_col": "inhibitors_for", "against_col": "inhibitors_against", "is_time": False,
+        "line_key": "lines_inhib",
     },
     "Tempo": {
         "metric_key": "time",
@@ -72,6 +79,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "pct_prefix": "% Game Time > ",
         "v3_label": "Tempo", "v3_key": "time", "mv2_col": "game_time_min",
         "for_col": None, "against_col": None, "is_time": True,
+        "line_key": "lines_time",
     },
 }
 
@@ -91,6 +99,25 @@ def default_lines_map() -> dict[str, list[float]]:
 def market_key_by_label() -> dict[str, str]:
     """{label -> metric_key}. Fonte do _MARKET_KEYS da Análise de Linha."""
     return {label: str(cfg["metric_key"]) for label, cfg in STATS_MARKET_CONFIG.items()}
+
+
+def _line_key_of(cfg: dict[str, Any]) -> str:
+    """line_key do mercado, com fallback "lines_<metric_key>" — mercados
+    injetados por override (ex.: Megacreeps do Dota) podem não trazer o campo."""
+    return str(cfg.get("line_key") or ("lines_" + str(cfg["metric_key"])))
+
+
+def flow_line_keys() -> tuple[str, ...]:
+    """Chaves de texto de linha dos mercados core, na ordem do registro
+    ("lines_kills", ..., "lines_time"). Fonte dos blocos core de
+    LINE_FIELDS_DEFAULTS, _FLOW_LINE_KEYS, _SCHEDULE_LINE_FIELDS e _LINE_KEYS
+    (fase 3 do registro central; equivalência em test_flow_line_keys_registry)."""
+    return tuple(_line_key_of(cfg) for cfg in STATS_MARKET_CONFIG.values())
+
+
+def line_key_by_label() -> dict[str, str]:
+    """{label -> line_key}. Fonte dos inputs de linha da Agenda."""
+    return {label: _line_key_of(cfg) for label, cfg in STATS_MARKET_CONFIG.items()}
 
 
 def v3_core_markets() -> list[dict[str, Any]]:
