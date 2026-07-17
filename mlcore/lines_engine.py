@@ -451,6 +451,34 @@ def apply_dc_blend(
         return totals
 
 
+# Calibração GLOBAL do sd do TEMPO (gate 2026-07-17, F5 da campanha):
+# std(z) dos resíduos prequenciais do V0 = 1.49/1.40/1.44 em 2024/25/26 — o sd
+# do tempo era ~40% pequeno demais, estável entre anos e NÃO por liga (o mapa
+# por liga bateu no cap em ~todas). Constante congelada em 2024+25 (n=16768),
+# eval CEGO 2026: Brier 0.23874→0.23810 (+0.00064 > barra 0.0005) — ACCEPT.
+# Torres foi REJECT (piora −0.0017: std(z)=0.44 mas formato não-normal) e
+# kills neutro (+0.0004, re-testável). Regenerar: tools/eval_totals_league_dispersion.py.
+TIME_SD_CALIBRATION = 1.4461
+
+
+def apply_time_sd_calibration(
+    totals: Dict[Metric, MatchupTotals],
+    *,
+    factor: float = TIME_SD_CALIBRATION,
+) -> Dict[Metric, MatchupTotals]:
+    """Escala o sd do mercado TEMPO pela calibração validada (só dispersão;
+    média e demais mercados intactos). Falha graciosa: sem tempo, no-op."""
+    try:
+        tot = totals.get("time")
+        if tot is None or tot.dist != "normal" or not math.isfinite(float(tot.sd)):
+            return totals
+        out = dict(totals)
+        out["time"] = MatchupTotals(mean=float(tot.mean), sd=float(tot.sd) * float(factor), dist=tot.dist)
+        return out
+    except Exception:
+        return totals
+
+
 def _norm_cdf(x: float, mu: float, sd: float) -> float:
     # standard normal CDF via erf
     if sd <= 0:
