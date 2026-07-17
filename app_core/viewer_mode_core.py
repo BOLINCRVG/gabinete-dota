@@ -155,9 +155,11 @@ def render_update_now_button(st: Any) -> None:
         ok, msg = dispatch_data_workflow(token=tok, repo=repo)
         if ok:
             st.session_state["_upd_now_last_ts"] = _time.time()
+            st.session_state["_button_watch_t0"] = _time.time()
             st.success(msg)
         else:
             st.error(msg)
+    _render_publish_watch(st)
 
 
 # --- Upload de CSV no site (pedido dele 16/07: "anexar o csv do meu pc") ---
@@ -272,10 +274,14 @@ def check_publish_progress(
     repo: str,
     since_iso: str,
     get_fn: Any = None,
+    include_data_run: bool = False,
 ) -> dict:
-    """Estado do dominó pós-publicação, direto do GitHub (para a tela de
-    acompanhamento — pedido dele 16/07: 'o site reiniciar sozinho é cruel')."""
-    out = {"upload_commit": False, "retrain": "aguardando", "model_commit": False}
+    """Estado do dominó pós-publicação/pós-botão, direto do GitHub (tela de
+    acompanhamento — pedidos dele 16-17/07: 'o site reiniciar sozinho é
+    cruel' e 'cliquei em atualizar e efetivamente não fez nada')."""
+    out = {"upload_commit": False, "csv_commit": False,
+           "data_run": "aguardando", "retrain": "aguardando",
+           "model_commit": False}
     try:
         if get_fn is None:
             import requests
@@ -291,51 +297,99 @@ def check_publish_progress(
                 msg = str(((c.get("commit") or {}).get("message")) or "")
                 if msg.startswith("Upload manual pelo site"):
                     out["upload_commit"] = True
+                if msg.startswith("Robô: CSV diário"):
+                    out["csv_commit"] = True
                 if msg.startswith("Robô: modelo atualizado"):
                     out["model_commit"] = True
-        runs = get_fn(
-            f"https://api.github.com/repos/{repo}/actions/workflows/retreino.yml/runs?per_page=1",
-            headers=hdr, timeout=20,
-        )
-        if int(getattr(runs, "status_code", 0)) == 200:
+
+        def _run_state(workflow: str) -> str:
+            runs = get_fn(
+                f"https://api.github.com/repos/{repo}/actions/workflows/{workflow}/runs?per_page=1",
+                headers=hdr, timeout=20,
+            )
+            if int(getattr(runs, "status_code", 0)) != 200:
+                return "aguardando"
             arr = (runs.json() or {}).get("workflow_runs") or []
-            if arr and str(arr[0].get("created_at", "")) >= since_iso:
-                status = str(arr[0].get("status"))
-                concl = str(arr[0].get("conclusion") or "")
-                if status == "completed":
-                    out["retrain"] = "ok" if concl == "success" else "falhou"
-                else:
-                    out["retrain"] = "rodando"
+            if not arr or str(arr[0].get("created_at", "")) < since_iso:
+                return "aguardando"
+            if str(arr[0].get("status")) == "completed":
+                return "ok" if str(arr[0].get("conclusion") or "") == "success" else "falhou"
+            return "rodando"
+
+        out["retrain"] = _run_state("retreino.yml")
+        if include_data_run:
+            out["data_run"] = _run_state("dados_diarios.yml")
     except Exception:
         pass
     return out
 
 
 def _render_publish_watch(st: Any) -> None:
-    """Checklist ao vivo do pós-publicação; expira em 12 min ou no fim."""
+    """Checklist ao vivo pós-upload (📤) e pós-botão (🔄); expira em 12 min.
+
+    No modo botão, o desfecho 'robô rodou e NÃO trouxe CSV' vira mensagem
+    honesta (cota do Drive ou OE sem novidade) — nunca mais silêncio."""
     import time as _time
     from datetime import datetime, timezone
 
+    mode = ""
     t0 = float(st.session_state.get("_upload_watch_t0", 0.0) or 0.0)
-    if not t0 or (_time.time() - t0) > 720:
+    if t0:
+        mode = "upload"
+    else:
+        t0 = float(st.session_state.get("_button_watch_t0", 0.0) or 0.0)
+        if t0:
+            mode = "botao"
+    if not mode or (_time.time() - t0) > 720:
         return
     tok, repo = _gh_dispatch_config()
     if not tok:
         return
     since_iso = datetime.fromtimestamp(t0 - 60, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    prog = check_publish_progress(token=tok, repo=repo, since_iso=since_iso)
+    prog = check_publish_progress(token=tok, repo=repo, since_iso=since_iso,
+                                  include_data_run=(mode == "botao"))
 
     def _ln(done: bool, doing: str, txt: str) -> str:
         return f"{'✅' if done else doing} {txt}"
 
-    lines = [
-        _ln(prog["upload_commit"], "⏳", "CSV publicado no repositório"),
-        _ln(prog["retrain"] == "ok",
-            "⚙️" if prog["retrain"] == "rodando" else ("❌" if prog["retrain"] == "falhou" else "⏳"),
-            f"Retreino do modelo na nuvem ({'~2-4 min' if prog['retrain'] in ('aguardando', 'rodando') else prog['retrain']})"),
-        _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
-    ]
-    done = prog["upload_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
+    def _stop() -> None:
+        st.session_state["_upload_watch_t0"] = 0.0
+        st.session_state["_button_watch_t0"] = 0.0
+
+    retrain_line = _ln(
+        prog["retrain"] == "ok",
+        "⚙️" if prog["retrain"] == "rodando" else ("❌" if prog["retrain"] == "falhou" else "⏳"),
+        f"Retreino do modelo na nuvem ({'~2-4 min' if prog['retrain'] in ('aguardando', 'rodando') else prog['retrain']})",
+    )
+    if mode == "upload":
+        lines = [
+            _ln(prog["upload_commit"], "⏳", "CSV publicado no repositório"),
+            retrain_line,
+            _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
+        ]
+        done = prog["upload_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
+        title = "**Acompanhamento da publicação:**"
+    else:
+        # botão: o robô pode terminar SEM trazer CSV (cota/sem novidade)
+        if prog["data_run"] == "ok" and not prog["csv_commit"]:
+            _stop()
+            st.warning(
+                "🔄 O robô rodou e **não trouxe CSV novo** — ou a cota do Google "
+                "Drive bloqueou (comum de dia), ou o Oracle's Elixir ainda não "
+                "publicou nada mais novo. **Caminho garantido: baixa o CSV no "
+                "navegador e usa o 📤 Enviar CSV novo aqui embaixo.**"
+            )
+            return
+        lines = [
+            _ln(prog["data_run"] == "ok",
+                "⚙️" if prog["data_run"] == "rodando" else ("❌" if prog["data_run"] == "falhou" else "⏳"),
+                "Robô buscando o CSV no Oracle's Elixir (~1-2 min)"),
+            _ln(prog["csv_commit"], "⏳", "CSV novo publicado"),
+            retrain_line,
+            _ln(prog["model_commit"], "⏳", "Modelo atualizado publicado"),
+        ]
+        done = prog["csv_commit"] and prog["retrain"] == "ok" and prog["model_commit"]
+        title = "**Acompanhamento da atualização:**"
     box = st.success if done else st.info
     tail = (
         "**Tudo pronto! Recarrega a página (F5)** — o selo lá de cima vai mostrar os dados novos."
@@ -343,9 +397,9 @@ def _render_publish_watch(st: Any) -> None:
         "O site vai piscar/reconectar sozinho no meio — é normal, não precisa fazer nada. "
         "Esta lista se atualiza a cada ~10s."
     )
-    box("\n\n".join(["**Acompanhamento da publicação:**", *lines, tail]))
+    box("\n\n".join([title, *lines, tail]))
     if done:
-        st.session_state["_upload_watch_t0"] = 0.0
+        _stop()
         return
     _time.sleep(10)
     try:
@@ -388,10 +442,14 @@ def render_csv_upload_panel(st: Any, csv_path: str) -> None:
                 import time as _time
 
                 st.session_state["_upload_watch_t0"] = _time.time()
-                st.success(msg2)
+                # rerun imediato: a tela de acompanhamento (rendida junto ao
+                # botão 🔄, acima) assume a narração a partir daqui
+                try:
+                    st.rerun()
+                except Exception:
+                    st.success(msg2)
             else:
                 st.error(f"{msg} → {msg2}")
-    _render_publish_watch(st)
 
 
 __all__ = [

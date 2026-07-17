@@ -227,6 +227,48 @@ class TestPublishProgress(unittest.TestCase):
                                    since_iso="x", get_fn=boom)
         self.assertEqual(p["retrain"], "aguardando")
 
+    def test_button_mode_detects_robot_without_csv(self):
+        """Bug dele 17/07: clicou 🔄, robô rodou (cota bloqueou) e a tela
+        ficou muda. Agora: data_run=ok + csv_commit=False = mensagem honesta."""
+        from app_core.viewer_mode_core import check_publish_progress
+
+        run_ok = {"status": "completed", "conclusion": "success",
+                  "created_at": "2026-07-17T10:05:00Z"}
+
+        def fake_get(url, **kw):
+            if "/commits?" in url:
+                return self._R(200, [])  # nenhum commit novo
+            return self._R(200, {"workflow_runs": [run_ok]})
+
+        p = check_publish_progress(token="t", repo="U/r",
+                                   since_iso="2026-07-17T10:00:00Z",
+                                   get_fn=fake_get, include_data_run=True)
+        self.assertEqual(p["data_run"], "ok")
+        self.assertFalse(p["csv_commit"])
+
+    def test_button_mode_full_cascade(self):
+        from app_core.viewer_mode_core import check_publish_progress
+
+        commits = [
+            {"commit": {"message": "Robô: modelo atualizado (incremental pós-CSV novo)"}},
+            {"commit": {"message": "Robô: CSV diário do Oracle's Elixir atualizado"}},
+        ]
+        run_ok = {"status": "completed", "conclusion": "success",
+                  "created_at": "2026-07-17T10:05:00Z"}
+
+        def fake_get(url, **kw):
+            if "/commits?" in url:
+                return self._R(200, commits)
+            return self._R(200, {"workflow_runs": [run_ok]})
+
+        p = check_publish_progress(token="t", repo="U/r",
+                                   since_iso="2026-07-17T10:00:00Z",
+                                   get_fn=fake_get, include_data_run=True)
+        self.assertTrue(p["csv_commit"])
+        self.assertTrue(p["model_commit"])
+        self.assertEqual(p["data_run"], "ok")
+        self.assertEqual(p["retrain"], "ok")
+
 
 if __name__ == "__main__":
     unittest.main()
