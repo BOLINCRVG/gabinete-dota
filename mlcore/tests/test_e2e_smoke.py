@@ -86,8 +86,12 @@ class TestE2ESmokeLoL(unittest.TestCase):
             p = ROOT / name
             return (p.stat().st_size, p.stat().st_mtime) if p.exists() else None
 
+        # user_schedule_store: agenda DELE — teste não reescreve dado de
+        # usuário (ml_trace_last fica de fora: é sink de diagnóstico,
+        # escrito por design a cada análise).
         before = {n: _sig(n) for n in ("ml_artifact.json", "params_fitted.json",
-                                       "players_artifact.json")}
+                                       "players_artifact.json",
+                                       "user_schedule_store.json")}
         status, payload = _run_flow(ROOT / "plays_app.py", "T1", "Gen",
                                     extra_env={"GABINETE_E2E": "1"})
         if status == "SKIP":

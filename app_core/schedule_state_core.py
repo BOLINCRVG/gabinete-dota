@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any, MutableMapping
 
@@ -66,6 +67,11 @@ def persist_schedule_runtime_state(
     """Serialize and write current schedule state (games, text, imports) to the JSON store."""
     target = _resolve_schedule_store_path(session_state, store_path)
     payload = _build_schedule_runtime_payload(session_state)
+    # Suíte só-leitura (fase 2, 17/07): em E2E a agenda vive só na sessão —
+    # teste NUNCA reescreve dado de usuário (auditoria pegou o boot podando
+    # e salvando a agenda real dele).
+    if str(os.environ.get("GABINETE_E2E", "")).strip() == "1":
+        return payload
     if target is not None:
         persist_json_store(target, payload)
     return payload
