@@ -15,6 +15,16 @@ class VisaoGeralRuntimeCoreTests(unittest.TestCase):
         self.assertIn("Microseg calibracao", text)
         self.assertIn("+3.0 pp", text)
 
+    def test_build_microseg_caption_never_crashes_on_bad_n(self):
+        """Bug de produção 18/07: n não-escalar (lista/dict, calibração
+        hierárquica) fazia int(n) derrubar a Visão Geral inteira. A caption
+        nunca pode quebrar — n vira soma (lista) ou 0 (não-numérico)."""
+        self.assertIn("n=35", build_microseg_caption(
+            {"applied": True, "key": "x", "n": [10, 20, 5], "bias": 0.0}))
+        for bad in ({}, None, "abc", [], object()):
+            txt = build_microseg_caption({"applied": True, "key": "x", "n": bad, "bias": 0.0})
+            self.assertIn("Microseg calibracao", txt)  # não levanta
+
     def test_resolve_shared_league_hint(self):
         self.assertEqual(resolve_shared_league_hint(ml_info={"blue": {"league": "LCK"}, "red": {"league": "LCK"}}), "LCK")
         self.assertEqual(resolve_shared_league_hint(ml_info={}, fit_league_hint="LPL"), "LPL")

@@ -13,11 +13,18 @@ def build_microseg_caption(info: dict[str, Any] | None) -> str:
         bias_pp = float(payload.get("bias", 0.0) or 0.0) * 100.0
     except Exception:
         bias_pp = 0.0
+    # n pode chegar não-escalar (ex.: lista de contagens por segmento numa
+    # calibração hierárquica) — nunca deixar a caption derrubar a Visão Geral.
+    n_raw = payload.get("n", 0) or 0
+    try:
+        n_val = int(sum(n_raw)) if isinstance(n_raw, (list, tuple)) else int(n_raw)
+    except (TypeError, ValueError):
+        n_val = 0
     return (
         f"Microseg calibracao: aplicada ({payload.get('key')}) | "
         f"fonte={payload.get('source', 'live')} | "
         f"bo={payload.get('bo', '-')} | fase={payload.get('phase', '-')} | "
-        f"n={int(payload.get('n', 0) or 0)} | ajuste={bias_pp:+.1f} pp"
+        f"n={n_val} | ajuste={bias_pp:+.1f} pp"
     )
 
 
