@@ -205,7 +205,7 @@ def compute_player_elo_global(
 
     for _gid, dt, teams in items:
         teams2 = sorted(teams, key=lambda x: len(x[1]), reverse=True)[:2]
-        (_ta, pa, sa), (_tb, pb, _sb) = teams2[0], teams2[1]
+        (_, pa, sa), (_, pb, _) = teams2[0], teams2[1]
 
         for pk in pa:
             _decay_player(pk, dt)

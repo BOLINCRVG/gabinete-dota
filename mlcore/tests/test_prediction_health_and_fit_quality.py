@@ -1,6 +1,5 @@
 """Tests for prediction_health_core.py and fit_quality_report_core.py."""
 
-import math
 import unittest
 from typing import Any, Dict
 

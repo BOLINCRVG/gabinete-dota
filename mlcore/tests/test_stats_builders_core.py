@@ -1,5 +1,4 @@
 """Tests for app_core/stats_builders_core.py — table builders and metric helpers."""
-import math
 import unittest
 
 import pandas as pd

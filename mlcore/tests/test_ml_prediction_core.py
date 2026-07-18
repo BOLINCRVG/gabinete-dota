@@ -8,7 +8,6 @@ without any Streamlit state or file I/O.
 import math
 import unittest
 from datetime import date
-from typing import Any, Dict, Optional
 
 from app_core.ml_prediction_core import (
     compute_ml_core_prediction,

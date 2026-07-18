@@ -5,7 +5,6 @@ import unittest
 
 from app_core.ui_stale_state_core import (
     context_signature,
-    get_last_signature,
     is_stale,
     mark_panel_refreshed,
     render_stale_banner_if_needed,

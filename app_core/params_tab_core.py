@@ -1262,17 +1262,6 @@ def render_params_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             "phase8_operations": core_normalize_governance_decision((_p8.get("decision") if isinstance(_p8, dict) else "")),
         }
         _gov_combo = core_combine_governance_decisions(_parts)
-        _dec_bt = str((_gov_combo.get("parts") or {}).get("stop_rules") or "unknown")
-        _dec_ar = str((_gov_combo.get("parts") or {}).get("anchors") or "unknown")
-        _dec_lrp = str((_gov_combo.get("parts") or {}).get("leakage_labels") or "unknown")
-        _dec_lgr = str((_gov_combo.get("parts") or {}).get("lacunas") or "unknown")
-        _dec_pr = str((_gov_combo.get("parts") or {}).get("prod_refresh") or "unknown")
-        _dec_p1 = str((_gov_combo.get("parts") or {}).get("phase1_data_contract") or "unknown")
-        _dec_p12 = str((_gov_combo.get("parts") or {}).get("phase12_roster_ab") or "unknown")
-        _dec_p4b = str((_gov_combo.get("parts") or {}).get("phase4b_marginal_tuning") or "unknown")
-        _dec_p6 = str((_gov_combo.get("parts") or {}).get("phase6_series_bo") or "unknown")
-        _dec_p7 = str((_gov_combo.get("parts") or {}).get("phase7_layer_uncertainty") or "unknown")
-        _dec_p8 = str((_gov_combo.get("parts") or {}).get("phase8_operations") or "unknown")
         _final = str(_gov_combo.get("final") or "unknown")
         _final_msg = str(_gov_combo.get("message") or "")
         if _final == "promote":
@@ -1289,7 +1278,6 @@ def render_params_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             if not _bt_rep:
                 st.error(f"Falha ao ler {_bt_report_path.name!s}")
             if isinstance(_bt_rep, dict) and _bt_rep:
-                _pdc = _bt_rep.get("promotion_decision") or {}
                 _global_bt = _bt_rep.get("global") or {}
                 _bt_banner = core_build_stop_rules_banner(_bt_rep)
                 _render_status_message(_bt_banner.get("message"), _bt_banner.get("message_type"))
@@ -1321,7 +1309,6 @@ def render_params_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                         )
 
                 _mon = _bt_rep.get("monitoring") or {}
-                _mon_global = _mon.get("global") or {}
                 _df_bands = pd.DataFrame(core_build_stop_rules_global_band_rows(_bt_rep))
                 if not _df_bands.empty:
                     st.markdown("##### Calibração por faixa (favorito do modelo, global)")
@@ -1453,8 +1440,6 @@ def render_params_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
                 _cov = _lgr.get("coverage") or {}
                 _cov_sum = _cov.get("summary") or {}
-                _art = _lgr.get("artifact_freshness") or {}
-                _art_sum = _art.get("summary") or {}
                 _k1, _k2, _k3, _k4 = st.columns(4)
                 with _k1:
                     st.metric("Ligas", value=str(int(_cov_sum.get("league_count") or 0)))

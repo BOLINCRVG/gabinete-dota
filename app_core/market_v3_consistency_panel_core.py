@@ -467,8 +467,8 @@ def render_v3_market_context_panel(
                 # sentido para marcação sim/não (pedido 2026-07-12).
                 if binary:
                     _legenda = (
-                        f"<span style='color:#22c55e;font-weight:700;'>✓</span> = aconteceu · "
-                        f"<span style='color:#ef4444;font-weight:700;'>✗</span> = não aconteceu"
+                        "<span style='color:#22c55e;font-weight:700;'>✓</span> = aconteceu · "
+                        "<span style='color:#ef4444;font-weight:700;'>✗</span> = não aconteceu"
                     )
                 else:
                     _legenda = (

@@ -2,12 +2,11 @@
 
 import math
 import unittest
-from typing import Any, Dict, List
+from typing import List
 
 from mlcore.fit_series_bo_core import (
     _build_gamma_rows,
     _eval_gamma,
-    _fit_gamma_on_rows,
     _series_prob,
     _split_rows_temporal,
     fit_series_gamma_oos,

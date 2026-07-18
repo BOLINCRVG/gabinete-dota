@@ -8,7 +8,6 @@ Covers:
 """
 from __future__ import annotations
 
-import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -20,7 +19,6 @@ from mlcore.live_ml.first_markets import (
     FIRST_FEATURE_COLS,
     FIRST_MARKETS,
     FirstMarketModel,
-    FirstMarketSample,
     build_first_market_features,
 )
 

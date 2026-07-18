@@ -1,13 +1,11 @@
 """Tests for ui_state_persistence_core."""
 from __future__ import annotations
 
-import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from app_core.ui_state_persistence_core import (
-    ALLOWED_KEYS,
     collect_session_snapshot,
     load_persisted_state,
     save_persisted_state,

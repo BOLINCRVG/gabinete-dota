@@ -6,7 +6,6 @@ from typing import Dict
 
 from mlcore.style_matchup_features_core import (
     STYLE_MATCHUP_B_MODEL_FEATURES,
-    STYLE_MATCHUP_TERM_WEIGHTS,
     build_style_matchup_b_model_features,
     should_apply_style_matchup_b_model_gate,
     _combine_mean,

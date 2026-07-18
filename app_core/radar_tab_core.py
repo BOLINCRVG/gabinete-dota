@@ -376,8 +376,6 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     )
 
     team_games = ctx["team_games"]
-    apply_filters_fn = ctx["apply_filters_fn"]
-    filters_cls = ctx["Filters"]
     csv_sig = ctx["csv_sig"]
     load_player_rows_fn = ctx["load_player_rows_fn"]
     format_num_fn = ctx["format_num_fn"]

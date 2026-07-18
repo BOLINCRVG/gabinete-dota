@@ -1,5 +1,4 @@
 """Tests for mlcore/team_artifact_game_quality.py — game quality signal helpers."""
-import math
 import unittest
 
 from mlcore.team_artifact_game_quality import (

@@ -6,8 +6,6 @@ behavior.
 """
 import unittest
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock
 
 from app_core.live_state_panel_ui_core import (
     _init_state,

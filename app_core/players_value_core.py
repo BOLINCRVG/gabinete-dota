@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-import numpy as np
 import pandas as pd
 
 MIN_GAMES_DEFAULT = 8

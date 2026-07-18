@@ -1,6 +1,5 @@
 """Tests for mlcore/fit_io_core.py — IO and serialization helpers."""
 import json
-import math
 import tempfile
 import unittest
 from datetime import datetime, timezone

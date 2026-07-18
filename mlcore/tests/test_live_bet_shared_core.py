@@ -9,7 +9,6 @@ from app_core.live_bet_shared_core import (
     parse_compact_draft_tokens,
     _profile_group,
     _market_resolution,
-    _profile_strength_text,
     _sample_band,
     _confidence_label,
     _chip_html,

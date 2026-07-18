@@ -2,7 +2,7 @@ import json
 import math
 import unittest
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from app_core.ml_orchestrator_core import run_ml_post_layers
 from app_core.ml_pre_pipeline_core import run_ml_pre_pipeline

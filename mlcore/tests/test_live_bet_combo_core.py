@@ -3,7 +3,6 @@ import unittest
 
 from app_core.live_bet_combo_core import (
     _combo_alignment_bonus,
-    _combo_market_supports,
     _combo_metric_mean,
     _market_call_from_combo_means,
     _weighted_combo_edge,

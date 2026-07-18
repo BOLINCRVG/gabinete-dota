@@ -1,5 +1,4 @@
 """Tests for app_core/pipeline_trace_core.py — append_pipeline_step."""
-import math
 import unittest
 
 from app_core.pipeline_trace_core import append_pipeline_step, _opt_float

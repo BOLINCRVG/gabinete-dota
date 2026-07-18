@@ -1,7 +1,6 @@
 """Tests for the contextual opponent profile (v3)."""
 from __future__ import annotations
 
-import math
 import unittest
 
 import pandas as pd

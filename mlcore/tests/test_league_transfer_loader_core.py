@@ -1,5 +1,4 @@
 """Tests for mlcore/league_transfer_loader_core.py — CSV loaders and inference helpers."""
-import io
 import os
 import tempfile
 import unittest

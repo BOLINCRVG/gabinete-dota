@@ -1,7 +1,7 @@
 """Tests for mlcore/retrain_check.py — pure helpers."""
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 from mlcore.retrain_check import CheckConfig, _parse_iso_dt, _resolve_csv_path

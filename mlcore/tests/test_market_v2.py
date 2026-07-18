@@ -3,12 +3,10 @@ from __future__ import annotations
 
 import math
 import unittest
-from typing import Any
 
 import pandas as pd
 
 from app_core.market_window_analysis_core import (
-    WINDOWS_DEFAULT,
     HighlightedSample,
     build_alert_lines,
     compute_window_stats,

@@ -1,12 +1,9 @@
 """Tests for app_core/live_models_status_core.py."""
-import json
 import tempfile
 import unittest
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from app_core.live_models_status_core import (
-    FreshnessStatus,
     assess_freshness,
     build_retrain_command,
     csv_signatures,

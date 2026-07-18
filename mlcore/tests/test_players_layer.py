@@ -1,5 +1,4 @@
 """Tests for mlcore/players_layer.py — norm_pos, PlayersArtifact, compute_delta_and_confidence."""
-import math
 import unittest
 from datetime import date
 
@@ -266,7 +265,6 @@ class TestREffectiveAtDecay(unittest.TestCase):
         # _transfer_scale returns 1.0 when moving to a weaker tier (T1→T2).
         # We verify this by calling _transfer_scale directly, since r_effective_at
         # also applies an interleague cross-macro scale that can reduce the rating.
-        from mlcore.players_layer import PlayersArtifact
         art = _art(transfer_alpha=0.7)
         # T1=priority 0, T2=priority 1 → d = 0-1 = -1 ≤ 0 → returns 1.0
         scale = art._transfer_scale(last_tier="T1", cur_tier="T2")

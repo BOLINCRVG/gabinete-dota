@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import unittest
-from typing import Any
 
 from app_core.ui_notify_core import notify, notify_caption, notify_exception
 

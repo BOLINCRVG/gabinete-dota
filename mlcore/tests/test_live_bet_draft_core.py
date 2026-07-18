@@ -1,6 +1,5 @@
 """Tests for app_core/live_bet_draft_core.py — pure draft resolution helpers."""
 import unittest
-from typing import Optional
 
 from app_core.live_bet_draft_core import _resolve_pick_names, resolve_compact_draft_sides
 

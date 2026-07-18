@@ -13,7 +13,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_streamlit_app_renders_main_controls(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -40,7 +40,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_players_and_champions_filter_keys_exist(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -78,7 +78,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_e2e_tab_focus_players_and_champions(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -108,7 +108,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_e2e_tab_focus_series(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -130,7 +130,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_e2e_tab_focus_live_bet(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -152,7 +152,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_e2e_functional_ml_map_used(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -191,7 +191,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_e2e_tab_switch_preserves_match_state(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 
@@ -238,7 +238,7 @@ class UISmokeTest(unittest.TestCase):
 
     def test_market_selector_state_persists_across_rerun(self):
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 

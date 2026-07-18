@@ -93,7 +93,10 @@ def render_schedule_agenda_expander(
             with cM5:
                 m_teamB = st.text_input("Time B (como você tem)", key="plays_manual_teamB", placeholder="Hanwha Life Esports")
             with cM6:
-                m_bo = st.selectbox("BO", [1, 3, 5], key="plays_manual_bo")
+                # widget renderiza o seletor; o valor não é lido (o BO dos
+                # jogos importados vem do default_bo acima) — herdado do bloco
+                # original do plays_app.
+                st.selectbox("BO", [1, 3, 5], key="plays_manual_bo")
 
             if st.button("Adicionar (vai pedir mapeamento se precisar)", width='stretch', key="plays_manual_add"):
                 # valida mínimo

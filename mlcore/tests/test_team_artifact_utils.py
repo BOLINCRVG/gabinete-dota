@@ -1,7 +1,5 @@
 """Tests for mlcore/team_artifact_utils.py — pure utility helpers."""
-import math
 import unittest
-from pathlib import Path
 
 from mlcore.team_artifact_utils import (
     _days_between_iso,

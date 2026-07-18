@@ -1,5 +1,4 @@
 """Tests for mlcore/team_artifact_normalize.py and mlcore/team_artifact_validate.py."""
-import math
 import unittest
 
 from mlcore.team_artifact_normalize import _norm_team_key, _norm_upper_key, _patch_key

@@ -1,9 +1,7 @@
 """Tests for online prediction tracking + calibration aggregation."""
 from __future__ import annotations
 
-import json
 import unittest
-from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from mlcore.online_tracking import (

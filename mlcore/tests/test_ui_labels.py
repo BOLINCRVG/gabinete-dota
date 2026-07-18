@@ -1,5 +1,4 @@
 """Tests for app_core/ui_labels.py — pure formatting helpers."""
-import math
 import unittest
 
 from app_core.ui_labels import (

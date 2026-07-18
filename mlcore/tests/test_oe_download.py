@@ -3,7 +3,6 @@
 1000% testado). O gdown é substituído por um dublê via sys.modules — nenhum
 teste toca rede ou o CSV real."""
 import importlib
-import os
 import sys
 import types
 import unittest

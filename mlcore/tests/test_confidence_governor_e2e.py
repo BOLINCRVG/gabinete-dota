@@ -9,9 +9,8 @@ Covers:
 - Disabled governor passes everything through unchanged
 """
 
-import math
 import unittest
-from typing import Any, Dict, MutableMapping
+from typing import Any, Dict
 
 from app_core.confidence_governor_core import (
     apply_confidence_governor,

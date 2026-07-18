@@ -1,15 +1,13 @@
 """Tests for mlcore/live_ml/ — state-to-win models for live predictions."""
-import math
 import unittest
 
 import numpy as np
 import pandas as pd
 
 from mlcore.live_ml import (
-    SNAPSHOT_MINUTES, LiveSnapshot, StateToWinModel, build_snapshot_features,
+    LiveSnapshot, StateToWinModel, build_snapshot_features,
 )
 from mlcore.live_ml.features import feature_names, _encode_tier
-from mlcore.live_ml.state_models import StateModelConfig
 
 
 def _make_snapshots(n: int = 200, minute: int = 15, seed: int = 0):

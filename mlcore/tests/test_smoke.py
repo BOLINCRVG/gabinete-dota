@@ -1,6 +1,5 @@
 import os
 import unittest
-import tempfile
 import math
 
 from mlcore.io_oracle import load_oracle_elixir_games

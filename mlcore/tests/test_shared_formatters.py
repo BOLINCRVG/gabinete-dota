@@ -1,4 +1,3 @@
-import math
 import unittest
 
 from app_core.shared_formatters import (

@@ -127,7 +127,6 @@ class TestCalibrationInRange(unittest.TestCase):
 
     def test_void_skipped(self):
         p = _settled("won", 0.65)
-        from dataclasses import replace
         void_pick = Pick(**{**p.to_dict(), "status": "void", "profit_units": 0.0})
         r = calibration_in_range([void_pick], p_center=0.65)
         self.assertEqual(r["n"], 0)

@@ -1,5 +1,4 @@
 """Tests for pure helper functions scattered across app_core UI modules."""
-import math
 import unittest
 
 from app_core.csv_prepare_ui_core import _csv_prepare_status_chip, _csv_prepare_status_icon

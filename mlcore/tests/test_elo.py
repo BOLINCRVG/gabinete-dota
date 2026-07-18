@@ -1,5 +1,4 @@
 """Tests for mlcore/elo.py — EloModel and EloParams."""
-import math
 import unittest
 
 import pandas as pd

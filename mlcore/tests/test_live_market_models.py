@@ -1,5 +1,4 @@
 """Tests for mlcore/live_ml/market_features.py and market_models.py."""
-import math
 import unittest
 
 import numpy as np

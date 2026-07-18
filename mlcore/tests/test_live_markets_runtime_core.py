@@ -7,7 +7,6 @@ from app_core.live_markets_runtime_core import (
     available_markets,
     clear_market_model_cache,
     is_live_market_models_enabled,
-    markets_dir_from_state,
     predict_market,
 )
 

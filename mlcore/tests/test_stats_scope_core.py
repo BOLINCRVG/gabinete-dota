@@ -1,7 +1,7 @@
 """Tests for app_core/stats_scope_core.py — scope resolution helpers."""
 import unittest
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Optional
 
 from app_core.stats_scope_core import _resolve_scope_filters, scope_label_from_meta
 

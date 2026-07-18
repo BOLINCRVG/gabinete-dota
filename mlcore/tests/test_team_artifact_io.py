@@ -47,7 +47,7 @@ class TestLoadTeamStateArtifact(unittest.TestCase):
 
 class TestSaveTeamStateArtifact(unittest.TestCase):
     def test_roundtrip(self):
-        import tempfile, os
+        import tempfile
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "sub" / "artifact.json"
             data = {"league": "LCK", "patch": "14.10", "score": 0.75}

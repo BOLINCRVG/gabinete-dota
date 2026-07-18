@@ -11,7 +11,6 @@ import pandas as pd
 
 from app_core.render_ctx_core import validate_render_ctx
 from app_core.team_logos_core import team_logo_html
-from app_core.ui_labels import min_to_mmss as _min_to_mmss
 
 
 def _vg_caption(st: Any) -> Callable[[str], None]:

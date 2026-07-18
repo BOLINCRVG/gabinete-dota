@@ -1,6 +1,4 @@
 """Tests for app_core/ml_monitoring_core.py — monitoring snapshot and history helpers."""
-import os
-import tempfile
 import unittest
 from datetime import datetime, timezone
 

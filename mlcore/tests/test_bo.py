@@ -1,5 +1,4 @@
 """Tests for mlcore/bo.py — BO series win probability."""
-import math
 import unittest
 
 from mlcore.bo import p_series_from_pmap, prob_win_series

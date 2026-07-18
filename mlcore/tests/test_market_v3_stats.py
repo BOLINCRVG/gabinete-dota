@@ -6,7 +6,6 @@ import unittest
 import pandas as pd
 
 from app_core.market_v3_analysis_core import (
-    StatsRow,
     build_kills_stats_table,
     _league_rank_for_team,
 )

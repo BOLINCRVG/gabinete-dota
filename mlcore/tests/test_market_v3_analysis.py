@@ -135,7 +135,7 @@ class TestAlerts(unittest.TestCase):
 
     def test_strong_over_signal_emits_alert(self):
         # Build a team with 5/5 over the line
-        from app_core.market_v3_analysis_core import WindowStats, MapStats, RecentGameRow
+        from app_core.market_v3_analysis_core import WindowStats
         ws = WindowStats(
             label="Últimos 5", n=5, hits_over=5, hits_under=0,
             over_pct=100.0, under_pct=0.0, mean=32.0, trend="up", trend_value=0.5,

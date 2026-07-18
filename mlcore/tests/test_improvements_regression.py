@@ -4,9 +4,7 @@ Each class targets one improvement so failures are immediately locatable.
 No external I/O; all test data is constructed inline.
 """
 
-import math
 import unittest
-from typing import Any, Dict
 
 from mlcore.utils import clip_prob
 

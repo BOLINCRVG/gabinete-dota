@@ -5,7 +5,6 @@ import unittest
 from dataclasses import dataclass
 
 from mlcore.ml_eval import (
-    HoldoutSplit,
     SampleBucket,
     acceptance_gate,
     bootstrap_ci,

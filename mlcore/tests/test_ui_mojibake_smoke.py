@@ -37,7 +37,7 @@ class UIMojibakeSmoke(unittest.TestCase):
 
     def _assert_clean_render(self, configure_state=None) -> None:
         try:
-            from streamlit.testing.v1 import AppTest  # type: ignore
+            from streamlit.testing.v1 import AppTest  # type: ignore  # noqa: F401 - probe de disponibilidade (guarda skipTest)
         except Exception:
             self.skipTest("streamlit.testing.v1 unavailable")
 

@@ -1,7 +1,6 @@
 """Tests for app_core/ml_probability_adjustments_core.py — probability adjustment fns."""
 import math
 import unittest
-from typing import Any, Dict
 
 from mlcore.utils import clip_prob
 from app_core.ml_probability_adjustments_core import (

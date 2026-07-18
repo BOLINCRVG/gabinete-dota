@@ -1,9 +1,7 @@
 """Tests for app_core/live_state_runtime_core.py."""
-import math
 import unittest
 from pathlib import Path
 
-import pandas as pd
 
 from app_core.live_state_runtime_core import (
     available_minutes,

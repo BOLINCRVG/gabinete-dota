@@ -2,10 +2,8 @@ import math
 import unittest
 
 from app_core.lineup_state import (
-    LINEUP_SETTINGS_DEFAULTS,
     ensure_lineup_runtime_state,
     get_lineup_loaded_key,
-    get_lineup_runtime_settings,
     lineup_key,
     norm_pos,
     norm_pos_ml,
