@@ -58,6 +58,84 @@ class TestDispatchWorkflow(unittest.TestCase):
         self.assertIn("ConnectionError", msg)
 
 
+class _FakeStWatch:
+    """Duble mínimo do st p/ o botão 🔄: grava o que foi renderizado."""
+
+    def __init__(self):
+        self.session_state = {}
+        self.captions = []
+        self.infos = []
+        self.successes = []
+        self.warnings = []
+        self.reran = False
+
+    def caption(self, text, **kw):
+        self.captions.append(str(text))
+
+    def info(self, text, **kw):
+        self.infos.append(str(text))
+
+    def success(self, text, **kw):
+        self.successes.append(str(text))
+
+    def warning(self, text, **kw):
+        self.warnings.append(str(text))
+
+    def error(self, text, **kw):
+        pass
+
+    def button(self, *a, **kw):
+        return False
+
+    def rerun(self):
+        self.reran = True
+
+
+class TestUpdateButtonCooldownKeepsWatch(unittest.TestCase):
+    """BUG 18/07 (report dele): no cooldown pós-clique, o return precoce
+    matava a tela de acompanhamento no re-render seguinte. O cooldown agora
+    TAMBÉM renderiza o watch (que expira sozinho em 12 min)."""
+
+    def test_cooldown_still_renders_watch(self):
+        import time as _t
+
+        from app_core import viewer_mode_core as vm
+
+        fake = _FakeStWatch()
+        now = _t.time()
+        fake.session_state["_upd_now_last_ts"] = now  # cooldown ativo
+        fake.session_state["_button_watch_t0"] = now  # acompanhamento ativo
+
+        prog = {"upload_commit": False, "csv_commit": False,
+                "data_run": "rodando", "retrain": "aguardando",
+                "model_commit": False}
+        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("tok", "X/y")), \
+                mock.patch.object(vm, "check_publish_progress", return_value=prog), \
+                mock.patch("time.sleep"):
+            vm.render_update_now_button(fake)
+
+        self.assertTrue(any("aguarda" in c for c in fake.captions), fake.captions)
+        self.assertTrue(
+            any("Acompanhamento da atualiza" in i for i in fake.infos),
+            f"watch sumiu no cooldown: infos={fake.infos} warnings={fake.warnings}",
+        )
+
+    def test_cooldown_without_watch_only_caption(self):
+        """Sem watch ativo (t0 zerado/expirado), o cooldown mostra só o caption."""
+        import time as _t
+
+        from app_core import viewer_mode_core as vm
+
+        fake = _FakeStWatch()
+        fake.session_state["_upd_now_last_ts"] = _t.time()
+
+        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("tok", "X/y")):
+            vm.render_update_now_button(fake)
+
+        self.assertTrue(any("aguarda" in c for c in fake.captions))
+        self.assertEqual(fake.infos, [])
+
+
 class TestCsvUpload(unittest.TestCase):
     def _csv_bytes(self, n_games, dmax):
         rows = ["gameid,date"]

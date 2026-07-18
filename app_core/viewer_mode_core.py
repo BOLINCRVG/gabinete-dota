@@ -149,6 +149,10 @@ def render_update_now_button(st: Any) -> None:
     remaining = int(_DISPATCH_COOLDOWN_S - (_time.time() - last))
     if remaining > 0:
         st.caption(f"🔄 Robô já acordado — aguarda {remaining}s para pedir de novo.")
+        # BUG 18/07 (report dele): o return sem o watch matava o acompanhamento
+        # no re-render seguinte — justamente durante o cooldown, a janela em
+        # que a narração mais importa. O watch expira sozinho (12 min).
+        _render_publish_watch(st)
         return
     if st.button("🔄 Atualizar dados agora", key="upd_now_btn",
                  help="Acorda o robô no GitHub: baixa o CSV novo do Oracle's Elixir e publica."):
