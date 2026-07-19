@@ -8,12 +8,25 @@ verbatim, comportamento idêntico. Valida com E2E + validação visual dele.
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path  # noqa: F401 - usado por blocos extraídos
 from typing import Any, Dict, List
 
 import pandas as pd
+
+def _norm_gate_decision(v: Any) -> str:
+    """Normaliza a decisão de um gate (promote/shadow_only/reject/unknown).
+    Movida da params_tab_core no refactor 19/07 — só as seções usam."""
+    s = str(v or "").strip().lower()
+    return s if s in {"promote", "shadow_only", "reject"} else "unknown"
+
+
+def _ui_key(k: str) -> str:
+    """Prefixo das chaves de widget da aba Parâmetros (idêntico ao da mãe:
+    os controles gravam em `ctl_<param>` e só aplicam no botão)."""
+    return f"ctl_{k}"
 
 
 def _render_governanca_ml(*, st, ctx) -> None:
@@ -463,3 +476,277 @@ def _render_governanca_ml(*, st, ctx) -> None:
                         st.error(f"Falha ao executar operação: {_err_txt}")
                     else:
                         st.error("Operação falhou. Veja o log abaixo.")
+
+
+def _render_manutencao_ml(*, st, ctx) -> None:
+    """Seção da aba Parâmetros extraída de render_params_tab (refactor
+    2026-07-19). Bloco movido VERBATIM; os nomes vêm do MESMO ctx."""
+    APP_ROOT = ctx.get("APP_ROOT")
+    _FIT_PARAMS_PATH = ctx.get("_FIT_PARAMS_PATH")
+    _ML_CONFIDENCE_BASELINE_PATH = ctx.get("_ML_CONFIDENCE_BASELINE_PATH")
+    _TEAM_STATE_ARTIFACT_PATH = ctx.get("_TEAM_STATE_ARTIFACT_PATH")
+    _artifact_sig = ctx.get("_artifact_sig")
+    _backup_file_if_exists = ctx.get("_backup_file_if_exists")
+    _build_training_csv_list = ctx.get("_build_training_csv_list")
+    _enrich_params_with_areal_prob_tuning = ctx.get("_enrich_params_with_areal_prob_tuning")
+    _enrich_params_with_ml_marginal_band_coeffs = ctx.get("_enrich_params_with_ml_marginal_band_coeffs")
+    _file_sig = ctx.get("_file_sig")
+    _fit_ml_params_run = ctx.get("_fit_ml_params_run")
+    _format_num = ctx.get("_format_num")
+    _generate_and_persist_ml_confidence_baseline = ctx.get("_generate_and_persist_ml_confidence_baseline")
+    _generate_and_persist_team_state_artifact = ctx.get("_generate_and_persist_team_state_artifact")
+    _load_artifact_cached = ctx.get("_load_artifact_cached")
+    _load_fitted_params_cached = ctx.get("_load_fitted_params_cached")
+    _load_ml_confidence_baseline_cached = ctx.get("_load_ml_confidence_baseline_cached")
+    _load_team_state_artifact_cached = ctx.get("_load_team_state_artifact_cached")
+    _ml_info = ctx.get("_ml_info")
+    _paths_for_ml = ctx.get("_paths_for_ml")
+    _read_json_file_safe = ctx.get("_read_json_file_safe")
+    _resolve_players_artifact_path = ctx.get("_resolve_players_artifact_path")
+    _run_layer_validation_cached = ctx.get("_run_layer_validation_cached")
+    _run_walkforward_cached = ctx.get("_run_walkforward_cached")
+    _wf_gate_multiplier = ctx.get("_wf_gate_multiplier")
+    artifact_path = ctx.get("artifact_path")
+    core_get_fit_scale_state = ctx.get("core_get_fit_scale_state")
+    core_get_lv_last_report = ctx.get("core_get_lv_last_report")
+    core_get_wf_last_report = ctx.get("core_get_wf_last_report")
+    core_get_wf_ml_corr_info = ctx.get("core_get_wf_ml_corr_info")
+    core_render_calibration_support_panels = ctx.get("core_render_calibration_support_panels")
+    core_render_fit_calibration_panel = ctx.get("core_render_fit_calibration_panel")
+    core_set_fit_base_scales = ctx.get("core_set_fit_base_scales")
+    core_set_lv_last_report = ctx.get("core_set_lv_last_report")
+    core_set_ml_confidence_baseline_last_report = ctx.get("core_set_ml_confidence_baseline_last_report")
+    core_set_quick_maint_last_log = ctx.get("core_set_quick_maint_last_log")
+    core_set_team_state_artifact_last_report = ctx.get("core_set_team_state_artifact_last_report")
+    core_set_wf_last_report = ctx.get("core_set_wf_last_report")
+
+    with st.expander("Manutenção do ML", expanded=False):
+        st.markdown("#### Walk-forward + Manutenção")
+        _daily_csv_m, _hist_csvs_m, _artifact_cfg_m = _paths_for_ml(APP_ROOT)
+        _csv_path_m = str(_daily_csv_m or "").strip()
+        _csv_sig_m = list(_file_sig(_csv_path_m)) if _csv_path_m and Path(_csv_path_m).exists() else ["", 0, 0]
+        _maint_state_path = APP_ROOT / "ops" / "maintenance_state.json"
+        _maint_state = _read_json_file_safe(_maint_state_path)
+        _last_csv_sig = list(_maint_state.get("csv_sig") or []) if isinstance(_maint_state, dict) else []
+        _csv_changed = bool(_csv_sig_m and (_csv_sig_m != _last_csv_sig))
+        _last_dec = _norm_gate_decision((_maint_state or {}).get("decision"))
+        _last_at = str((_maint_state or {}).get("last_run_at") or "-")
+        if _csv_changed:
+            st.warning("CSV novo detectado. Recomendado: Rodar manutenção completa (12 etapas).")
+        else:
+            st.caption(f"última manutenção: {_last_at} | decisão={_last_dec}.")
+
+        if st.button("Rodar manutenção completa (12 etapas)", key="ctl_run_full_maint_10", type="primary", width='stretch'):
+            if not _csv_path_m or (not Path(_csv_path_m).exists()):
+                st.error("CSV diário inválido/ausente para manutenção completa.")
+            else:
+                _phase12_speed = "fast"
+                _steps = [
+                    {
+                        "name": "Fase 1/12: Data contract",
+                        "cmd": [sys.executable, "tools/run_phase1_data_contract.py", "--timeout", "600"],
+                        "report": APP_ROOT / "phase1_data_contract_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 2/12: Roster continuidade (1.2)",
+                        "cmd": [sys.executable, "tools/eval_roster_continuity_phase12.py", "--speed", _phase12_speed, "--fit", "--write-params"],
+                        "report": APP_ROOT / "phase12_roster_continuity_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 3/12: A-real gate",
+                        "cmd": [sys.executable, "tools/run_phase2_areal_gate.py"],
+                        "report": APP_ROOT / "phase2_areal_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 4/12: A-real tuning (liga/patch)",
+                        "cmd": [sys.executable, "tools/run_phase2b_areal_tuning_gate.py", "--speed", "fast", "--write-params"],
+                        "report": APP_ROOT / "phase2b_areal_tuning_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 5/12: B-real gate",
+                        "cmd": [sys.executable, "tools/run_phase3_breal_gate.py"],
+                        "report": APP_ROOT / "phase3_breal_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 6/12: Rank-SOS gate",
+                        "cmd": [sys.executable, "tools/run_phase4_ranksos_gate.py"],
+                        "report": APP_ROOT / "phase4_ranksos_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 7/12: Marginal tuning (bandas top/core/edge)",
+                        "cmd": [
+                            sys.executable,
+                            "tools/run_phase4b_marginal_tuning_gate.py",
+                            "--speed",
+                            "fast",
+                            "--max-cases",
+                            "14",
+                            "--write-params",
+                        ],
+                        "report": APP_ROOT / "phase4b_marginal_tuning_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 8/12: Calibração hierárquica",
+                        "cmd": [sys.executable, "tools/run_phase5_hier_calibration_gate.py"],
+                        "report": APP_ROOT / "phase5_hier_calibration_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 9/12: Série BO",
+                        "cmd": [sys.executable, "tools/run_phase6_series_bo_gate.py"],
+                        "report": APP_ROOT / "phase6_series_bo_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 10/12: Incerteza por camada",
+                        "cmd": [sys.executable, "tools/run_phase7_layer_uncertainty_gate.py"],
+                        "report": APP_ROOT / "phase7_layer_uncertainty_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 11/12: Operação contínua",
+                        "cmd": [sys.executable, "tools/run_phase8_operations_gate.py", "--skip-runs"],
+                        "report": APP_ROOT / "phase8_operations_report.json",
+                        "key": "decision",
+                    },
+                    {
+                        "name": "Fase 12/12: Guardrail final",
+                        "cmd": [sys.executable, "tools/run_lacuna_guardrails.py", "--strict-phase-coverage", "--skip-runs"],
+                        "report": APP_ROOT / "lacuna_guardrail_report.json",
+                        "key": "decision",
+                    },
+                ]
+
+                _prog = st.progress(0)
+                _live = st.empty()
+                _rows: List[Dict[str, Any]] = []
+                _all_promote = True
+                _full_log_parts: List[str] = []
+
+                for _i, _stp in enumerate(_steps, start=1):
+                    _live.info(f"{_stp['name']} - executando...")
+                    _cp = subprocess.run(_stp["cmd"], cwd=str(APP_ROOT), capture_output=True, text=True)
+                    _rep = _read_json_file_safe(_stp["report"])
+                    _dec = _norm_gate_decision(_rep.get(_stp["key"]))
+                    _ok = (int(_cp.returncode) == 0) and (_dec == "promote")
+                    if not _ok:
+                        _all_promote = False
+                    _rows.append(
+                        {
+                            "Etapa": _stp["name"],
+                            "Status": ("OK" if _ok else "Falha"),
+                            "Decisão": _dec,
+                            "ReturnCode": int(_cp.returncode),
+                        }
+                    )
+                    _full_log_parts.append(
+                        f"[{_stp['name']}]\n"
+                        + str(_cp.stdout or "")
+                        + (("\n" + str(_cp.stderr)) if str(_cp.stderr or "").strip() else "")
+                    )
+                    _prog.progress(int((_i / len(_steps)) * 100))
+                    if _ok:
+                        _live.success(f"{_stp['name']} - concluída com êxito.")
+                    else:
+                        _live.error(f"{_stp['name']} - falhou (decisão={_dec}, rc={int(_cp.returncode)}).")
+
+                _action = "none"
+                if _all_promote:
+                    _tag = datetime.now().strftime("full_maint_%Y%m%d_%H%M%S")
+                    _cp_pr = subprocess.run(
+                        [sys.executable, "tools/promote_baseline.py", "--tag", _tag],
+                        cwd=str(APP_ROOT),
+                        capture_output=True,
+                        text=True,
+                    )
+                    if int(_cp_pr.returncode) == 0:
+                        _action = "promote_baseline"
+                        _full_log_parts.append("[promote_baseline]\n" + str(_cp_pr.stdout or ""))
+                    else:
+                        _action = "promote_failed"
+                        _all_promote = False
+                        _full_log_parts.append(
+                            "[promote_baseline]\n"
+                            + str(_cp_pr.stdout or "")
+                            + (("\n" + str(_cp_pr.stderr)) if str(_cp_pr.stderr or "").strip() else "")
+                        )
+
+                _state_payload = {
+                    "version": "maintenance_state_v1",
+                    "last_run_at": datetime.now().isoformat(timespec="seconds"),
+                    "csv_path": _csv_path_m,
+                    "csv_sig": _csv_sig_m,
+                    "decision": ("promote" if _all_promote else "shadow_only"),
+                    "action": _action,
+                    "steps": _rows,
+                }
+                try:
+                    _maint_state_path.parent.mkdir(parents=True, exist_ok=True)
+                    _maint_state_path.write_text(json.dumps(_state_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+                except (OSError, TypeError, ValueError):
+                    pass
+
+                core_set_quick_maint_last_log(st.session_state, "\n\n".join(_full_log_parts).strip())
+                st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
+                if _all_promote:
+                    st.success("Manutenção completa concluída com sucesso (10/10) e baseline promovido.")
+                else:
+                    st.error("Manutenção completa finalizou com pendências. Veja as etapas com falha e o log.")
+        core_render_calibration_support_panels(
+            session_state=st.session_state,
+            app_root=APP_ROOT,
+            artifact_path=str(artifact_path),
+            ml_info=(_ml_info if isinstance(_ml_info, dict) else {}),
+            ui_key_fn=_ui_key,
+            format_num_fn=_format_num,
+            paths_for_ml_fn=_paths_for_ml,
+            run_walkforward_cached_fn=_run_walkforward_cached,
+            wf_gate_multiplier_fn=_wf_gate_multiplier,
+            get_wf_last_report_fn=core_get_wf_last_report,
+            set_wf_last_report_fn=core_set_wf_last_report,
+            get_wf_ml_corr_info_fn=core_get_wf_ml_corr_info,
+            build_training_csv_list_fn=_build_training_csv_list,
+            resolve_players_artifact_path_fn=_resolve_players_artifact_path,
+            get_lv_last_report_fn=core_get_lv_last_report,
+            set_lv_last_report_fn=core_set_lv_last_report,
+            get_fit_scale_state_fn=core_get_fit_scale_state,
+            run_layer_validation_cached_fn=_run_layer_validation_cached,
+            load_fitted_params_cached_fn=_load_fitted_params_cached,
+            file_sig_fn=_file_sig,
+            fit_params_path=_FIT_PARAMS_PATH,
+            generate_and_persist_ml_confidence_baseline_fn=_generate_and_persist_ml_confidence_baseline,
+            ml_confidence_baseline_path=_ML_CONFIDENCE_BASELINE_PATH,
+            load_ml_confidence_baseline_cached_fn=_load_ml_confidence_baseline_cached,
+            set_ml_confidence_baseline_last_report_fn=core_set_ml_confidence_baseline_last_report,
+            generate_and_persist_team_state_artifact_fn=_generate_and_persist_team_state_artifact,
+            team_state_artifact_path=_TEAM_STATE_ARTIFACT_PATH,
+            load_team_state_artifact_cached_fn=_load_team_state_artifact_cached,
+            set_team_state_artifact_last_report_fn=core_set_team_state_artifact_last_report,
+        )
+
+        core_render_fit_calibration_panel(
+            session_state=st.session_state,
+            app_root=APP_ROOT,
+            artifact_path=str(artifact_path),
+            fit_params_path=_FIT_PARAMS_PATH,
+            ui_key_fn=_ui_key,
+            format_num_fn=_format_num,
+            load_fitted_params_cached_fn=_load_fitted_params_cached,
+            file_sig_fn=_file_sig,
+            get_fit_scale_state_fn=core_get_fit_scale_state,
+            paths_for_ml_fn=_paths_for_ml,
+            fit_ml_params_run_fn=_fit_ml_params_run,
+            enrich_areal_tuning_fn=_enrich_params_with_areal_prob_tuning,
+            enrich_marginal_tuning_fn=_enrich_params_with_ml_marginal_band_coeffs,
+            backup_file_if_exists_fn=_backup_file_if_exists,
+            set_fit_base_scales_fn=core_set_fit_base_scales,
+            load_artifact_fn=_load_artifact_cached,
+            artifact_sig_fn=_artifact_sig,
+        )
