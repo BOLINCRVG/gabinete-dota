@@ -2,7 +2,7 @@
   "artifact_sha256": "9695e08a799e3881ae835ce4ec7527e5226516edcd80e9fd45aaa6517c073b50",
   "players_artifact_sha256": "cc39a7a42fbfaf9c5b5418d0b3a0086b690bbe2d6ac1d2e93a2f097726a965a1",
   "csv_sha256": "bb6dfb5dbfcb5fb1fd6cb803c757eb114089e3b70cc3afad017f1f6863a9f8c3",
-  "generated_at": "2026-07-19T07:36:11",
+  "generated_at": "2026-07-19T14:36:25",
   "method": "team_vs_players_fused_current_settings",
   "matchups": [
     {
@@ -4490,7 +4490,7 @@
       "artifact_sha256": "9695e08a799e3881ae835ce4ec7527e5226516edcd80e9fd45aaa6517c073b50",
       "players_artifact_sha256": "cc39a7a42fbfaf9c5b5418d0b3a0086b690bbe2d6ac1d2e93a2f097726a965a1",
       "csv_sha256": "bb6dfb5dbfcb5fb1fd6cb803c757eb114089e3b70cc3afad017f1f6863a9f8c3",
-      "generated_at": "2026-07-19T07:36:11",
+      "generated_at": "2026-07-19T14:36:25",
       "method": "team_vs_players_fused_current_settings",
       "matchups": [
         {

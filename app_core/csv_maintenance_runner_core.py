@@ -251,7 +251,53 @@ def run_auto_maintenance_now(
     def _params_output_valid(path_like: str | Path) -> bool:
         return bool(core_params_output_valid_path(path_like))
 
+    def _params_deep_fit_info(path_like: str | Path) -> Dict[str, Any]:
+        """O params atual veio de um fit PROFUNDO? (settings_by_league populado).
+
+        Blindagem 2026-07-19 (pedido dele): a manutenção automática rodava um
+        fit RÁPIDO por cima do resultado de um fit profundo de ~11h, apagando a
+        segmentação por liga do players_context (17 ligas -> 0). Aqui só
+        DETECTAMOS; quem decide o que fazer é _guard_deep_params_before_fit.
+        """
+        try:
+            import json as _json
+            d = _json.loads(Path(path_like).read_text(encoding="utf-8-sig"))
+            pc = d.get("players_context_fit") or {}
+            ligas = pc.get("settings_by_league") or {}
+            return {"deep": bool(ligas), "n_ligas": len(ligas)}
+        except (OSError, ValueError, TypeError):
+            return {"deep": False, "n_ligas": 0}
+
+    def _guard_deep_params_before_fit(speed_profile: str) -> str:
+        """Backup + aviso ANTES de um fit rápido pisar num fit profundo.
+
+        Não bloqueia (o refit pode ser necessário quando o artifact muda), mas
+        o trabalho profundo nunca se perde: fica em ops/backups e o log diz
+        como restaurar."""
+        alvo = APP_ROOT / "params_fitted.json"
+        if str(speed_profile).strip().lower() != "fast":
+            return ""
+        info = _params_deep_fit_info(alvo)
+        if not info.get("deep"):
+            return ""
+        try:
+            import shutil as _shutil
+            import time as _time
+            bdir = APP_ROOT / "ops" / "backups"
+            bdir.mkdir(parents=True, exist_ok=True)
+            dest = bdir / f"params_fitted.deep_before_auto_fast_{_time.strftime('%Y%m%d_%H%M%S')}.json"
+            _shutil.copy2(alvo, dest)
+            return (f"AVISO: fit RAPIDO vai sobrescrever um fit PROFUNDO "
+                    f"({info['n_ligas']} ligas no players_context). Backup salvo em "
+                    f"ops/backups/{dest.name} — para restaurar, copie por cima de "
+                    f"params_fitted.json.")
+        except (OSError, TypeError, ValueError) as exc:
+            return f"AVISO: fit rapido sobre fit profundo e o backup FALHOU ({type(exc).__name__})."
+
     def _run_fit_params_once(csvs: List[str], *, speed_profile: str) -> Dict[str, Any]:
+        _guard_msg = _guard_deep_params_before_fit(speed_profile)
+        if _guard_msg:
+            logs.append(_guard_msg)
         _fit_runtime_paths = core_build_fit_params_runtime_paths(
             app_root=APP_ROOT,
             scope=("auto_fast" if str(speed_profile).strip().lower() == "fast" else "auto_full"),
