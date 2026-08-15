@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T08:06:26",
+  "generated_at": "2026-08-15T19:11:01",
   "matchup": {
     "season": "S15",
     "teamA": "Asia Spirit",
@@ -15,7 +15,7 @@
   },
   "engine": "mlcore_v2",
   "ml_trace": {
-    "generated_at": "2026-07-17T08:06:22",
+    "generated_at": "2026-08-15T19:10:55",
     "matchup": {
       "season": "S15",
       "teamA": "Asia Spirit",
@@ -23,7 +23,7 @@
       "bo": 1
     },
     "input_signature": {
-      "sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+      "sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -62,7 +62,7 @@
           "csv": {
             "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\CSV_DIARIO\\2026_Dota_match_data_oe_like.csv",
             "size": 1349845,
-            "mtime": 1784286151
+            "mtime": 1784457213
           },
           "artifact": {
             "path": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\ml_artifact.json",
@@ -93,8 +93,8 @@
       "p_team": 0.07354253165282587,
       "p_players": null,
       "p_fused": 0.07354253165282587,
-      "p_map_used": 0.12709970614910024,
-      "p_series_used": 0.12709970614910024
+      "p_map_used": 0.15491770117798642,
+      "p_series_used": 0.15491770117798642
     },
     "players_adjustment": {
       "enabled": false,
@@ -211,34 +211,34 @@
       "shrink": null,
       "cap_hi": null,
       "cap_applied": false,
-      "p_in": 0.12709970614910024,
-      "p_out": 0.12709970614910024,
+      "p_in": 0.15491770117798642,
+      "p_out": 0.15491770117798642,
       "governor": {
         "enabled": true,
         "limited": false,
         "requested_shrink_pp": 0.0,
         "applied_shrink_pp": 0.0,
-        "used_shrink_pp": 5.218200497111383,
-        "remaining_shrink_pp": 2.7817995028886173
+        "used_shrink_pp": 8.0,
+        "remaining_shrink_pp": 0.0
       }
     },
     "patch_meta_guard": {
       "enabled": true,
-      "applied": false,
-      "status": "ok",
+      "applied": true,
+      "status": "warn",
       "league_hint": "Road To EWC 2026 Regional Qualifiers",
       "changed_leagues": [],
-      "age_days": 0.7246047947222223,
-      "shrink": 0.0,
+      "age_days": 30.18608019732639,
+      "shrink": 0.08,
       "p_in": 0.07491770117798649,
-      "p_out": 0.07491770117798646,
+      "p_out": 0.10892428508374752,
       "governor": {
         "enabled": true,
         "limited": false,
-        "requested_shrink_pp": 0.0,
-        "applied_shrink_pp": 0.0,
-        "used_shrink_pp": 0.0,
-        "remaining_shrink_pp": 8.0
+        "requested_shrink_pp": 3.4006583905761048,
+        "applied_shrink_pp": 3.4006583905761048,
+        "used_shrink_pp": 3.4006583905761048,
+        "remaining_shrink_pp": 4.599341609423895
       }
     },
     "series_gamma": {
@@ -268,8 +268,8 @@
       "applied": false,
       "reason": "",
       "bo": 1,
-      "p_map": 0.12709970614910024,
-      "p_series_before": 0.12709970614910024,
+      "p_map": 0.15491770117798642,
+      "p_series_before": 0.15491770117798642,
       "p_series_after": null,
       "p_target": null,
       "diff_pp": null,
@@ -334,18 +334,18 @@
         {
           "stage": "patch_meta_guard",
           "before": 0.07491770117798649,
-          "after": 0.07491770117798649,
-          "applied": false,
+          "after": 0.10892428508374752,
+          "applied": true,
           "enabled": true,
-          "status": "ok",
+          "status": "warn",
           "league_hint": "Road To EWC 2026 Regional Qualifiers",
           "governor_limited": false,
-          "governor_applied_shrink_pp": 0.0
+          "governor_applied_shrink_pp": 3.4006583905761048
         },
         {
           "stage": "consistency_guard",
-          "before": 0.07491770117798649,
-          "after": 0.07491770117798649,
+          "before": 0.10892428508374752,
+          "after": 0.10892428508374752,
           "applied": false,
           "enabled": true,
           "triggered": false,
@@ -353,8 +353,8 @@
         },
         {
           "stage": "series_gamma",
-          "before": 0.07491770117798649,
-          "after": 0.07491770117798649,
+          "before": 0.10892428508374752,
+          "after": 0.10892428508374752,
           "applied": false,
           "enabled": true,
           "source": "",
@@ -362,38 +362,38 @@
         },
         {
           "stage": "state_areal_live_override",
-          "before": 0.07491770117798649,
-          "after": 0.08525970614910024,
+          "before": 0.10892428508374752,
+          "after": 0.12494604510080498,
           "applied": true,
           "enabled": true,
           "source": "shadow_state_areal",
           "governor_limited": false,
-          "governor_applied_shrink_pp": 1.034200497111378
+          "governor_applied_shrink_pp": 1.6021760017057503
         },
         {
           "stage": "hier_calibration_live",
-          "before": 0.08525970614910024,
-          "after": 0.10109970614910024,
+          "before": 0.12494604510080498,
+          "after": 0.14078604510080497,
           "applied": true,
           "enabled": true,
           "source": "hier_calibration_v3",
           "governor_limited": false,
-          "governor_applied_shrink_pp": 1.5840000000000032
+          "governor_applied_shrink_pp": 1.583999999999996
         },
         {
           "stage": "layer_uncertainty_live",
-          "before": 0.10109970614910024,
-          "after": 0.12709970614910024,
+          "before": 0.14078604510080497,
+          "after": 0.15491770117798642,
           "applied": true,
           "enabled": true,
           "source": "layer_uncertainty_v2",
-          "governor_limited": false,
-          "governor_applied_shrink_pp": 2.6000000000000014
+          "governor_limited": true,
+          "governor_applied_shrink_pp": 1.413165607718149
         },
         {
           "stage": "marginal_trust_guard",
-          "before": 0.12709970614910024,
-          "after": 0.12709970614910024,
+          "before": 0.15491770117798642,
+          "after": 0.15491770117798642,
           "applied": false,
           "enabled": false,
           "source": "marginal_trust_guard",
@@ -407,8 +407,8 @@
           "governor_applied_shrink_pp": 0.0
         }
       ],
-      "final_p_map": 0.12709970614910024,
-      "final_p_series": 0.12709970614910024
+      "final_p_map": 0.15491770117798642,
+      "final_p_series": 0.15491770117798642
     },
     "guards": {
       "consistency_guard_on": true,
@@ -421,8 +421,8 @@
       "confidence_governor_on": true,
       "confidence_governor_live_on": true,
       "patch_guard_on": true,
-      "patch_guard_applied": false,
-      "patch_guard_status": "ok",
+      "patch_guard_applied": true,
+      "patch_guard_status": "warn",
       "state_areal_live_on": true,
       "state_areal_live_applied": true,
       "state_alite_live_on": false,
@@ -452,20 +452,22 @@
       "max_total_shrink_pp_config": 8.0,
       "budget_runtime_pp": 8.0,
       "max_total_shrink_pp_state": 8.0,
-      "used_shrink_pp": 5.218200497111383,
-      "remaining_shrink_pp": 2.7817995028886173,
-      "limited_stages": [],
+      "used_shrink_pp": 8.0,
+      "remaining_shrink_pp": 0.0,
+      "limited_stages": [
+        "layer_uncertainty_live"
+      ],
       "applied_shrink_pp_by_stage": {
-        "patch_meta_guard": 0.0,
-        "state_areal_live_override": 1.034200497111378,
-        "hier_calibration_live": 1.5840000000000032,
-        "layer_uncertainty_live": 2.6000000000000014,
+        "patch_meta_guard": 3.4006583905761048,
+        "state_areal_live_override": 1.6021760017057503,
+        "hier_calibration_live": 1.583999999999996,
+        "layer_uncertainty_live": 1.413165607718149,
         "marginal_trust_guard": 0.0
       },
       "state": {
         "enabled": true,
         "max_total_shrink_pp": 8.0,
-        "used_shrink_pp": 5.218200497111383,
+        "used_shrink_pp": 8.0,
         "stages": [
           {
             "stage": "uncertainty_layer",
@@ -475,27 +477,27 @@
           },
           {
             "stage": "patch_meta_guard",
-            "requested_shrink_pp": 0.0,
-            "applied_shrink_pp": 0.0,
+            "requested_shrink_pp": 3.4006583905761048,
+            "applied_shrink_pp": 3.4006583905761048,
             "limited": false
           },
           {
             "stage": "state_areal_live_override",
-            "requested_shrink_pp": 1.034200497111378,
-            "applied_shrink_pp": 1.034200497111378,
+            "requested_shrink_pp": 1.6021760017057503,
+            "applied_shrink_pp": 1.6021760017057503,
             "limited": false
           },
           {
             "stage": "hier_calibration_live",
-            "requested_shrink_pp": 1.5840000000000032,
-            "applied_shrink_pp": 1.5840000000000032,
+            "requested_shrink_pp": 1.583999999999996,
+            "applied_shrink_pp": 1.583999999999996,
             "limited": false
           },
           {
             "stage": "layer_uncertainty_live",
             "requested_shrink_pp": 2.6000000000000014,
-            "applied_shrink_pp": 2.6000000000000014,
-            "limited": false
+            "applied_shrink_pp": 1.413165607718149,
+            "limited": true
           },
           {
             "stage": "marginal_trust_guard",
@@ -529,8 +531,8 @@
       "enabled": false,
       "applied": false,
       "reason": "disabled_by_flag",
-      "p_map_old": 0.07491770117798649,
-      "p_series_old": 0.07491770117798649,
+      "p_map_old": 0.10892428508374752,
+      "p_series_old": 0.10892428508374752,
       "p_map_new": null,
       "p_series_new": null,
       "diff_pp_map": null,
@@ -542,17 +544,17 @@
       "method": "state_shadow_alite_v1",
       "reason": "state+uncertainty+recent_form",
       "bo": 1,
-      "p_map_old": 0.07491770117798649,
-      "p_series_old": 0.07491770117798649,
-      "p_map_new": 0.07376202603330008,
-      "p_series_new": 0.07376202603330008,
-      "diff_pp_map": -0.11556751446864105,
-      "diff_pp_series": -0.11556751446864105,
+      "p_map_old": 0.10892428508374752,
+      "p_series_old": 0.10892428508374752,
+      "p_map_new": 0.09678963668109991,
+      "p_series_new": 0.09678963668109991,
+      "diff_pp_map": -1.2134648402647608,
+      "diff_pp_series": -1.2134648402647608,
       "weights": {
         "uncertainty": 0.18,
         "evidence": 0.3,
         "rd_conf": 0.31234111128642206,
-        "patch": 1.0,
+        "patch": 0.964,
         "consistency": 1.0,
         "floor": 0.2789410589410589,
         "final": 0.2789410589410589,
@@ -576,8 +578,8 @@
         "interregional": false,
         "unknown_macro": true,
         "roster_changed": false,
-        "patch_status": "ok",
-        "patch_shrink": 0.0,
+        "patch_status": "warn",
+        "patch_shrink": 0.08,
         "n_eff_uncertainty": 0.0,
         "prior_games_uncertainty": 22.0,
         "n_team_eff": 1.0,
@@ -592,17 +594,17 @@
       },
       "targets": {
         "p_struct": 0.07069953568693715,
-        "z_old": -2.5134925118384674,
+        "z_old": -2.10177639271857,
         "z_struct": -2.5759931086896906,
         "z_target": -2.5737010533668405,
-        "z_delta_to_target": -0.06020854152837307,
-        "z_new": -2.5302871461696888
+        "z_delta_to_target": -0.4719246606482703,
+        "z_new": -2.233415557300199
       },
       "odds": {
-        "teamA_map_old": 13.347980307407456,
-        "teamA_map_new": 13.557111345457717,
-        "teamA_series_old": 13.347980307407456,
-        "teamA_series_new": 13.557111345457717
+        "teamA_map_old": 9.180689129436471,
+        "teamA_map_new": 10.33168461304153,
+        "teamA_series_old": 9.180689129436471,
+        "teamA_series_new": 10.33168461304153
       }
     },
     "shadow_state_areal": {
@@ -611,12 +613,12 @@
       "method": "state_shadow_areal_v9",
       "reason": "team_state_artifact_mu_sigma",
       "bo": 1,
-      "p_map_old": 0.07491770117798649,
-      "p_series_old": 0.07491770117798649,
-      "p_map_new": 0.08525970614910024,
-      "p_series_new": 0.08525970614910024,
-      "diff_pp_map": 1.0342004971113747,
-      "diff_pp_series": 1.0342004971113747,
+      "p_map_old": 0.10892428508374752,
+      "p_series_old": 0.10892428508374752,
+      "p_map_new": 0.12494604510080498,
+      "p_series_new": 0.12494604510080498,
+      "diff_pp_map": 1.6021760017057463,
+      "diff_pp_series": 1.6021760017057463,
       "artifact_version": "team_state_artifact_v9",
       "artifact_meta": {
         "update_mode": "incremental_no_source_change_seed_reused",
@@ -697,7 +699,7 @@
         "state_conf": 0.1,
         "uncertainty": 0.2,
         "evidence": 0.25,
-        "patch": 1.0,
+        "patch": 0.964,
         "roster": 1.0,
         "league": 0.82,
         "interregional_state_damp": 0.82,
@@ -710,13 +712,13 @@
         "consistency": 1.0,
         "state_recency": 0.35,
         "model_precision": 0.44499999999999995,
-        "state_precision": 0.21149516625477738,
-        "state_precision_effective": 0.10469010729611482,
-        "disagree_penalty": 0.49500000000000005,
-        "precision_state_weight": 0.19045295868808293,
+        "state_precision": 0.20981847259034267,
+        "state_precision_effective": 0.11867095191374737,
+        "disagree_penalty": 0.5655886750517192,
+        "precision_state_weight": 0.21053231767725783,
         "floor": 0.16941176470588235,
         "floor_effective": 0.09348988235294119,
-        "final": 0.19045295868808293
+        "final": 0.21053231767725783
       },
       "state": {
         "blue": {
@@ -762,37 +764,37 @@
         "league_blue": "Road To EWC 2026 Regional Qualifiers",
         "league_red": "Party To Play league",
         "roster_changed": false,
-        "patch_status": "ok",
-        "patch_shrink": 0.0,
+        "patch_status": "warn",
+        "patch_shrink": 0.08,
         "n_team_eff": 0.0,
         "n_players_eff": 0.0,
         "n_eff_uncertainty": 0.0
       },
       "odds": {
-        "teamA_map_old": 13.347980307407456,
+        "teamA_map_old": 9.180689129436471,
         "teamA_map_state": 2.0909752011681912,
-        "teamA_map_new": 11.72886988668742,
-        "teamA_series_old": 13.347980307407456,
-        "teamA_series_new": 11.72886988668742
+        "teamA_map_new": 8.003454604691264,
+        "teamA_series_old": 9.180689129436471,
+        "teamA_series_new": 8.003454604691264
       }
     },
     "state_areal_live": {
       "enabled": true,
       "applied": true,
       "reason": "promoted_from_shadow_state_areal",
-      "p_map_before": 0.07491770117798649,
-      "p_series_before": 0.07491770117798649,
-      "p_map_after": 0.08525970614910024,
-      "p_series_after": 0.08525970614910024,
-      "diff_pp_map": 1.0342004971113747,
-      "diff_pp_series": 1.0342004971113747,
+      "p_map_before": 0.10892428508374752,
+      "p_series_before": 0.10892428508374752,
+      "p_map_after": 0.12494604510080498,
+      "p_series_after": 0.12494604510080498,
+      "diff_pp_map": 1.6021760017057463,
+      "diff_pp_series": 1.6021760017057463,
       "governor": {
         "enabled": true,
         "limited": false,
-        "requested_shrink_pp": 1.034200497111378,
-        "applied_shrink_pp": 1.034200497111378,
-        "used_shrink_pp": 1.034200497111378,
-        "remaining_shrink_pp": 6.965799502888622
+        "requested_shrink_pp": 1.6021760017057503,
+        "applied_shrink_pp": 1.6021760017057503,
+        "used_shrink_pp": 5.002834392281855,
+        "remaining_shrink_pp": 2.997165607718145
       },
       "qwl_trace": {
         "enabled": true,
@@ -851,8 +853,8 @@
       "enabled": false,
       "applied": false,
       "reason": "disabled_by_flag",
-      "p_map_before": 0.07491770117798649,
-      "p_series_before": 0.07491770117798649,
+      "p_map_before": 0.10892428508374752,
+      "p_series_before": 0.10892428508374752,
       "p_map_after": null,
       "p_series_after": null
     },
@@ -860,8 +862,8 @@
       "enabled": false,
       "applied": false,
       "reason": "disabled_by_flag",
-      "p_map_before": 0.08525970614910024,
-      "p_series_before": 0.08525970614910024,
+      "p_map_before": 0.12494604510080498,
+      "p_series_before": 0.12494604510080498,
       "p_map_after": null,
       "p_series_after": null
     },
@@ -870,7 +872,7 @@
       "applied": false,
       "reason": "missing_identity",
       "method": "league_rank_sos_h2h_quality_v2",
-      "p_before": 0.08525970614910024,
+      "p_before": 0.12494604510080498,
       "p_after": null,
       "diff_pp": null,
       "p_rank": null,
@@ -904,7 +906,7 @@
       "applied": false,
       "reason": "low_lineup_coverage",
       "method": "roster_continuity_v2",
-      "p_before": 0.08525970614910024,
+      "p_before": 0.12494604510080498,
       "p_after": null,
       "diff_pp": null,
       "weight": null,
@@ -941,13 +943,13 @@
       "applied": true,
       "reason": "ok",
       "method": "hier_calibration_v3",
-      "scope_used": "class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1",
-      "p_before": 0.08525970614910024,
-      "p_after": 0.10109970614910024,
-      "diff_pp": 1.5840000000000007,
-      "weight": 0.018,
-      "bias_raw": 0.14770130928084416,
-      "bias_adj": 2.2155196392126622e-05,
+      "scope_used": "class:inter_minor_minor|patch:warn|bo:1|po:0|inter:1",
+      "p_before": 0.12494604510080498,
+      "p_after": 0.14078604510080497,
+      "diff_pp": 1.5839999999999992,
+      "weight": 0.01584,
+      "bias_raw": 0.14836344586871925,
+      "bias_adj": 1.958397485467094e-05,
       "n_team_eff": 0.0,
       "n_players_eff": 0.0,
       "bo": 1,
@@ -955,7 +957,7 @@
       "interregional": true,
       "league_a": "ROAD TO EWC 2026 REGIONAL QUALIFIERS",
       "league_b": "PARTY TO PLAY LEAGUE",
-      "patch_status": "ok",
+      "patch_status": "warn",
       "interleague": {
         "macro_a": "OTHER",
         "macro_b": "OTHER",
@@ -987,13 +989,13 @@
         "tier_pair_support_ev": 0.0,
         "macro_pair_support_ev": 0.0,
         "inter_unc": 1.0,
-        "inter_shrink": 0.205,
+        "inter_shrink": 0.215,
         "inter_dir": 0.0,
         "inter_dir_raw": 0.0,
         "reliability_band": "low",
         "dir_cap": 0.00434,
         "dir_cap_before_transfer": 0.00434,
-        "inter_shrink_before_transfer": 0.205,
+        "inter_shrink_before_transfer": 0.215,
         "inter_dir_before_transfer": 0.0,
         "blend": null,
         "transfer_features": {
@@ -1038,9 +1040,9 @@
         }
       },
       "runtime_fine": {
-        "band": "extreme",
-        "z_abs_before": 1.8864440960542788,
-        "fine_shrink": 0.19,
+        "band": "high",
+        "z_abs_before": 1.5278968578044592,
+        "fine_shrink": 0.07,
         "z_hi": 1.1,
         "z_xhi": 1.7,
         "profile_used": "interregional",
@@ -1049,10 +1051,10 @@
         "inter_ev": 0.0
       },
       "hier": {
-        "segment_scope": "class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1",
-        "segment_bias": 0.005212520093829256,
-        "segment_bias_adj": 0.00015598667818310987,
-        "segment_n": 3600.0,
+        "segment_scope": "class:inter_minor_minor|patch:warn|bo:1|po:0|inter:1",
+        "segment_bias": 0.002690934927619432,
+        "segment_bias_adj": 5.3297128875708846e-05,
+        "segment_n": 2592.0,
         "league_bias": 0.0,
         "league_bias_adj": 0.0,
         "league_n": 0.0,
@@ -1060,14 +1062,14 @@
         "global_bias_adj": 0.15,
         "global_n": 20505.0,
         "weights": {
-          "segment": 43.08510638297873,
+          "segment": 30.51627906976745,
           "league": 0.0,
           "global": 2765.4898798134423
         },
         "stats": {
-          "segment_z": 0.5865375744082649,
+          "segment_z": 0.3882010357225666,
           "segment_q": 1.0,
-          "segment_sig_mult": 0.02992538644940127,
+          "segment_sig_mult": 0.019806175291967685,
           "segment_fdr_reject": false,
           "league_z": 0.0,
           "league_q": 1.0,
@@ -1090,7 +1092,7 @@
         "segment_class": "inter_minor_minor",
         "league_class_a": "minor",
         "league_class_b": "minor",
-        "patch_tag": "ok"
+        "patch_tag": "warn"
       },
       "league_resolution_source": "resolved",
       "league_resolution_parts": [
@@ -1100,16 +1102,16 @@
       "governor": {
         "enabled": true,
         "limited": false,
-        "requested_shrink_pp": 1.5840000000000032,
-        "applied_shrink_pp": 1.5840000000000032,
-        "used_shrink_pp": 2.6182004971113813,
-        "remaining_shrink_pp": 5.381799502888619
+        "requested_shrink_pp": 1.583999999999996,
+        "applied_shrink_pp": 1.583999999999996,
+        "used_shrink_pp": 6.586834392281851,
+        "remaining_shrink_pp": 1.413165607718149
       },
-      "p_map_before": 0.08525970614910024,
-      "p_map_after": 0.10109970614910024,
-      "p_series_before": 0.08525970614910024,
-      "p_series_after": 0.10109970614910024,
-      "diff_pp_series": 1.5840000000000007
+      "p_map_before": 0.12494604510080498,
+      "p_map_after": 0.14078604510080497,
+      "p_series_before": 0.12494604510080498,
+      "p_series_after": 0.14078604510080497,
+      "diff_pp_series": 1.5839999999999992
     },
     "series_bo_dplite_live": {
       "enabled": true,
@@ -1120,10 +1122,10 @@
       "same_league": false,
       "interregional": true,
       "playoffs": true,
-      "patch_status": "ok",
+      "patch_status": "warn",
       "league_hint": "ROAD TO EWC 2026 REGIONAL QUALIFIERS",
-      "p_map": 0.07491770117798649,
-      "p_before": 0.07491770117798649,
+      "p_map": 0.10892428508374752,
+      "p_before": 0.10892428508374752,
       "p_after": null,
       "diff_pp": null,
       "weight": null,
@@ -1144,8 +1146,8 @@
       "applied": false,
       "reason": "",
       "bo": 1,
-      "p_map": 0.12709970614910024,
-      "p_series_before": 0.12709970614910024,
+      "p_map": 0.15491770117798642,
+      "p_series_before": 0.15491770117798642,
       "p_series_after": null
     },
     "layer_uncertainty_live": {
@@ -1153,27 +1155,27 @@
       "applied": true,
       "reason": "ok",
       "method": "layer_uncertainty_v2",
-      "p_before": 0.10109970614910024,
-      "p_after": 0.12709970614910024,
-      "diff_pp": 2.5999999999999996,
-      "p_series_before": 0.10109970614910024,
-      "p_series_after": 0.12709970614910024,
+      "p_before": 0.14078604510080497,
+      "p_after": 0.15491770117798642,
+      "diff_pp": 1.413165607718145,
+      "p_series_before": 0.14078604510080497,
+      "p_series_after": 0.16678604510080497,
       "diff_pp_series": 2.5999999999999996,
       "bo": 1,
       "interregional": false,
       "playoffs": false,
-      "patch_status": "ok",
+      "patch_status": "warn",
       "evidence_score": 0.0,
-      "uncertainty_score": 0.6104042149860003,
-      "confidence_score": 0.3895957850139997,
-      "shrink_map": 0.27687935191764973,
-      "shrink_series": 0.2630353843217672,
+      "uncertainty_score": 0.6546678511445843,
+      "confidence_score": 0.34533214885541574,
+      "shrink_map": 0.29695733727918344,
+      "shrink_series": 0.2821094704152243,
       "cap_pp_map": 2.6,
       "cap_pp_series": 2.6,
       "components": {
         "Areal": {
           "applied": true,
-          "diff_pp_abs": 1.0342004971113747,
+          "diff_pp_abs": 1.6021760017057463,
           "reason": "promoted_from_shadow_state_areal",
           "method": ""
         },
@@ -1203,7 +1205,7 @@
         },
         "HierCal": {
           "applied": true,
-          "diff_pp_abs": 1.5840000000000007,
+          "diff_pp_abs": 1.5839999999999992,
           "reason": "ok",
           "method": "hier_calibration_v3"
         },
@@ -1223,8 +1225,8 @@
       "layer_scores": {
         "Areal": {
           "weight": 1.25,
-          "uncertainty": 0.3,
-          "confidence": 0.7
+          "uncertainty": 0.4,
+          "confidence": 0.6
         },
         "Alite": {
           "weight": 1.1,
@@ -1297,25 +1299,25 @@
       },
       "governor": {
         "enabled": true,
-        "limited": false,
+        "limited": true,
         "requested_shrink_pp": 2.6000000000000014,
-        "applied_shrink_pp": 2.6000000000000014,
-        "used_shrink_pp": 5.218200497111383,
-        "remaining_shrink_pp": 2.7817995028886173
+        "applied_shrink_pp": 1.413165607718149,
+        "used_shrink_pp": 8.0,
+        "remaining_shrink_pp": 0.0
       }
     },
     "meta_c_lite_live": {
       "enabled": false,
       "applied": false,
       "reason": "disabled_by_flag",
-      "p_map_before": 0.10109970614910024,
-      "p_series_before": 0.10109970614910024,
+      "p_map_before": 0.14078604510080497,
+      "p_series_before": 0.14078604510080497,
       "p_map_after": null,
       "p_series_after": null
     },
     "odds": {
-      "teamA_map": 7.867838803867126,
-      "teamB_map": 1.145606213039963
+      "teamA_map": 6.455040272325565,
+      "teamB_map": 1.183316703466551
     }
   },
   "resumo_markets_trace": [
@@ -1323,9 +1325,9 @@
       "mercado": "ML (Mapa)",
       "lado": "FALCONS PRIME",
       "linha": "-",
-      "odd_model": 1.145606213039963,
+      "odd_model": 1.183316703466551,
       "odd_hist": 1.5,
-      "odd_mix": 1.2990665890411461,
+      "odd_mix": 1.3229709731294508,
       "obs_mix": "",
       "calib_reason": "mix",
       "calib_source": "mix"
@@ -1400,11 +1402,11 @@
   "players_trace": [],
   "feature_trace": [
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_shadow_state_alite_v1",
       "event": "shadow_compare",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.073762, \"pm_old\": 0.074918, \"ps_new\": 0.073762, \"ps_old\": 0.074918, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.09679, \"pm_old\": 0.108924, \"ps_new\": 0.09679, \"ps_old\": 0.108924, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1413,20 +1415,20 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": true,
         "reason": "state+uncertainty+recent_form",
-        "p_map_old": 0.07491770117798649,
-        "p_map_new": 0.07376202603330008,
-        "p_series_old": 0.07491770117798649,
-        "p_series_new": 0.07376202603330008,
-        "diff_pp_map": -0.11556751446864105,
-        "diff_pp_series": -0.11556751446864105,
+        "p_map_old": 0.10892428508374752,
+        "p_map_new": 0.09678963668109991,
+        "p_series_old": 0.10892428508374752,
+        "p_series_new": 0.09678963668109991,
+        "diff_pp_map": -1.2134648402647608,
+        "diff_pp_series": -1.2134648402647608,
         "weights": {
           "uncertainty": 0.18,
           "evidence": 0.3,
           "rd_conf": 0.31234111128642206,
-          "patch": 1.0,
+          "patch": 0.964,
           "consistency": 1.0,
           "floor": 0.2789410589410589,
           "final": 0.2789410589410589,
@@ -1441,8 +1443,8 @@
           "interregional": false,
           "unknown_macro": true,
           "roster_changed": false,
-          "patch_status": "ok",
-          "patch_shrink": 0.0,
+          "patch_status": "warn",
+          "patch_shrink": 0.08,
           "n_eff_uncertainty": 0.0,
           "prior_games_uncertainty": 22.0,
           "n_team_eff": 1.0,
@@ -1467,11 +1469,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_shadow_state_areal_v1",
       "event": "shadow_compare",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.08526, \"pm_old\": 0.074918, \"ps_new\": 0.08526, \"ps_old\": 0.074918, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"pm_new\": 0.124946, \"pm_old\": 0.108924, \"ps_new\": 0.124946, \"ps_old\": 0.108924, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1480,20 +1482,20 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": true,
         "reason": "team_state_artifact_mu_sigma",
-        "p_map_old": 0.07491770117798649,
-        "p_map_new": 0.08525970614910024,
-        "p_series_old": 0.07491770117798649,
-        "p_series_new": 0.08525970614910024,
-        "diff_pp_map": 1.0342004971113747,
-        "diff_pp_series": 1.0342004971113747,
+        "p_map_old": 0.10892428508374752,
+        "p_map_new": 0.12494604510080498,
+        "p_series_old": 0.10892428508374752,
+        "p_series_new": 0.12494604510080498,
+        "diff_pp_map": 1.6021760017057463,
+        "diff_pp_series": 1.6021760017057463,
         "weights": {
           "state_conf": 0.1,
           "uncertainty": 0.2,
           "evidence": 0.25,
-          "patch": 1.0,
+          "patch": 0.964,
           "roster": 1.0,
           "league": 0.82,
           "interregional_state_damp": 0.82,
@@ -1506,13 +1508,13 @@
           "consistency": 1.0,
           "state_recency": 0.35,
           "model_precision": 0.44499999999999995,
-          "state_precision": 0.21149516625477738,
-          "state_precision_effective": 0.10469010729611482,
-          "disagree_penalty": 0.49500000000000005,
-          "precision_state_weight": 0.19045295868808293,
+          "state_precision": 0.20981847259034267,
+          "state_precision_effective": 0.11867095191374737,
+          "disagree_penalty": 0.5655886750517192,
+          "precision_state_weight": 0.21053231767725783,
           "floor": 0.16941176470588235,
           "floor_effective": 0.09348988235294119,
-          "final": 0.19045295868808293
+          "final": 0.21053231767725783
         },
         "inputs": {
           "team_blue": "Asia Spirit",
@@ -1522,8 +1524,8 @@
           "league_blue": "Road To EWC 2026 Regional Qualifiers",
           "league_red": "Party To Play league",
           "roster_changed": false,
-          "patch_status": "ok",
-          "patch_shrink": 0.0,
+          "patch_status": "warn",
+          "patch_shrink": 0.08,
           "n_team_eff": 0.0,
           "n_players_eff": 0.0,
           "n_eff_uncertainty": 0.0
@@ -1619,11 +1621,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_league_rank_sos_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"p_rank\": null, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.124946, \"p_rank\": null, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1632,11 +1634,11 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": false,
         "method": "league_rank_sos_h2h_quality_v2",
         "reason": "missing_identity",
-        "p_before": 0.08525970614910024,
+        "p_before": 0.12494604510080498,
         "p_after": null,
         "diff_pp": null,
         "p_rank": null,
@@ -1663,11 +1665,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_roster_continuity_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.08526, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\", \"target_p\": null}",
+      "dedupe_signature": "{\"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.124946, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\", \"target_p\": null}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1676,11 +1678,11 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": false,
         "method": "roster_continuity_v2",
         "reason": "low_lineup_coverage",
-        "p_before": 0.08525970614910024,
+        "p_before": 0.12494604510080498,
         "p_after": null,
         "diff_pp": null,
         "weight": null,
@@ -1704,11 +1706,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_hier_calibration_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"bias_adj\": 2.2e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.1011, \"p_before\": 0.08526, \"scope\": \"class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1\", \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"bias_adj\": 2e-05, \"eng\": \"mlcore_v2\", \"p_after\": 0.140786, \"p_before\": 0.124946, \"scope\": \"class:inter_minor_minor|patch:warn|bo:1|po:0|inter:1\", \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1717,17 +1719,17 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": true,
         "method": "hier_calibration_v3",
         "reason": "ok",
-        "scope_used": "class:inter_minor_minor|patch:ok|bo:1|po:0|inter:1",
-        "p_before": 0.08525970614910024,
-        "p_after": 0.10109970614910024,
-        "diff_pp": 1.5840000000000007,
-        "weight": 0.018,
-        "bias_raw": 0.14770130928084416,
-        "bias_adj": 2.2155196392126622e-05,
+        "scope_used": "class:inter_minor_minor|patch:warn|bo:1|po:0|inter:1",
+        "p_before": 0.12494604510080498,
+        "p_after": 0.14078604510080497,
+        "diff_pp": 1.5839999999999992,
+        "weight": 0.01584,
+        "bias_raw": 0.14836344586871925,
+        "bias_adj": 1.958397485467094e-05,
         "league_resolution_source": "resolved",
         "league_resolution_parts": [
           "ml_info.blue",
@@ -1737,11 +1739,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_series_bo_dplite_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"bo\": 1, \"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.074918, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"bo\": 1, \"eng\": \"mlcore_v2\", \"p_after\": null, \"p_before\": 0.108924, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1750,7 +1752,7 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": false,
         "method": "series_bo_v5_live",
         "reason": "bo1_noop",
@@ -1758,8 +1760,8 @@
         "same_league": false,
         "interregional": true,
         "playoffs": true,
-        "p_map": 0.07491770117798649,
-        "p_before": 0.07491770117798649,
+        "p_map": 0.10892428508374752,
+        "p_before": 0.10892428508374752,
         "p_after": null,
         "diff_pp": null,
         "weight": null,
@@ -1769,11 +1771,11 @@
       }
     },
     {
-      "generated_at": "2026-07-17T08:06:22",
+      "generated_at": "2026-08-15T19:10:55",
       "feature": "ml_layer_uncertainty_live_v1",
       "event": "live_apply",
       "enabled": true,
-      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.1271, \"pm_before\": 0.1011, \"sig\": \"054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc\"}",
+      "dedupe_signature": "{\"applied\": true, \"eng\": \"mlcore_v2\", \"pm_after\": 0.154918, \"pm_before\": 0.140786, \"sig\": \"d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57\"}",
       "payload": {
         "matchup": {
           "season": "S15",
@@ -1782,27 +1784,27 @@
           "bo": 1
         },
         "engine": "mlcore_v2",
-        "input_signature_sha256": "054311bfe07522a3fbac663f42c4f578fd50712b0eba71c9baf7bef81e5f4efc",
+        "input_signature_sha256": "d7c3c14b70dc39e6f136387bc1a90532e25e5cfc348ec9f825579582cbb11f57",
         "applied": true,
         "reason": "ok",
         "method": "layer_uncertainty_v2",
-        "p_before": 0.10109970614910024,
-        "p_after": 0.12709970614910024,
-        "diff_pp": 2.5999999999999996,
-        "p_series_before": 0.10109970614910024,
-        "p_series_after": 0.12709970614910024,
+        "p_before": 0.14078604510080497,
+        "p_after": 0.15491770117798642,
+        "diff_pp": 1.413165607718145,
+        "p_series_before": 0.14078604510080497,
+        "p_series_after": 0.16678604510080497,
         "diff_pp_series": 2.5999999999999996,
         "evidence_score": 0.0,
-        "uncertainty_score": 0.6104042149860003,
-        "confidence_score": 0.3895957850139997,
-        "shrink_map": 0.27687935191764973,
-        "shrink_series": 0.2630353843217672,
+        "uncertainty_score": 0.6546678511445843,
+        "confidence_score": 0.34533214885541574,
+        "shrink_map": 0.29695733727918344,
+        "shrink_series": 0.2821094704152243,
         "cap_pp_map": 2.6,
         "cap_pp_series": 2.6,
         "components": {
           "Areal": {
             "applied": true,
-            "diff_pp_abs": 1.0342004971113747,
+            "diff_pp_abs": 1.6021760017057463,
             "reason": "promoted_from_shadow_state_areal",
             "method": ""
           },
@@ -1832,7 +1834,7 @@
           },
           "HierCal": {
             "applied": true,
-            "diff_pp_abs": 1.5840000000000007,
+            "diff_pp_abs": 1.5839999999999992,
             "reason": "ok",
             "method": "hier_calibration_v3"
           },
@@ -1854,7 +1856,7 @@
   ],
   "meta": {
     "app_version": "gabinete-2026.02.12",
-    "generated_at": "2026-07-17T08:06:26",
+    "generated_at": "2026-08-15T19:11:01",
     "season": "S15",
     "teams": {
       "teamA": "Asia Spirit",

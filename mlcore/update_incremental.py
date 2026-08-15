@@ -375,9 +375,23 @@ def main() -> None:
             _apply_promotion_reset(art.model, team=blue, prev_tier=prev_bt, new_tier=bt)
             _apply_promotion_reset(art.model, team=red, prev_tier=prev_rt, new_tier=rt)
 
-            # Update team_meta in artifact meta to follow the current (domestic) league/tier.
-            team_meta[str(blue)] = {"league": str(bl), "tier": str(bt)}
-            team_meta[str(red)] = {"league": str(rl), "tier": str(rt)}
+            # Update team_meta: liga = a atual; TIER = o MELHOR já visto.
+            # BUG CRÍTICO corrigido 24/07 (mesma raiz do train_offline): gravar o
+            # tier do jogo atual fazia LCK -> KeSPA Cup (MINOR) -> LCK parecer
+            # "promoção" e zerar o histórico do time. Os 10 times da LCK ficaram
+            # com 2-14 jogos em vez de 300-500. Rebaixar o tier num torneio
+            # pontual não pode apagar o passado do time.
+            def _keep_best_tier(_team: str, _new_tier: str) -> str:
+                _prev = str((team_meta.get(_team) or {}).get("tier") or "")
+                if not _prev:
+                    return str(_new_tier)
+                try:
+                    return str(_new_tier) if tier_priority(str(_new_tier)) < tier_priority(_prev) else _prev
+                except (TypeError, ValueError):
+                    return str(_new_tier)
+
+            team_meta[str(blue)] = {"league": str(bl), "tier": _keep_best_tier(str(blue), bt)}
+            team_meta[str(red)] = {"league": str(rl), "tier": _keep_best_tier(str(red), rt)}
 
             # MOV (diff de kills) para o termo MOVDA — inerte quando o artefato
             # tem mov_lambda=0 (artefatos antigos) ou quando kills faltam.

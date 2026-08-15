@@ -17,6 +17,62 @@ from mlcore.team_artifact_normalize import _norm_team_key
 from mlcore.utils import sigmoid as _sigmoid
 
 
+def player_lines_opp_split(dfb: pd.DataFrame, players: list[str], team: str,
+                           opp_today: str) -> list[dict]:
+    """Por player do TIME: média de K/D/A no bucket de força do adversário
+    (forte/médio/fraco por win-rate no recorte), + o bucket do adversário de HOJE.
+    Resolve a dor: 'a linha bate mas só vs times fracos'. Puro/testável."""
+    cols = {"player", "team", "gameid", "kills", "deaths", "assists", "result"}
+    if dfb is None or dfb.empty or not cols.issubset(dfb.columns) or not players:
+        return []
+    # win-rate por time (1 linha por jogo)
+    g = dfb.drop_duplicates(subset=["gameid", "team"])
+    wr = g.groupby("team")["result"].apply(
+        lambda s: float(pd.to_numeric(s, errors="coerce").fillna(0).mean())).to_dict()
+    vals = sorted(wr.values())
+    lo = vals[len(vals) // 3] if vals else 0.4
+    hi = vals[2 * len(vals) // 3] if vals else 0.6
+
+    def bucket(w):
+        return "forte" if w >= hi else ("fraco" if w <= lo else "médio")
+
+    # adversário de cada (gameid, team)
+    opp = {}
+    for gid, grp in dfb.groupby("gameid"):
+        teams = list(dict.fromkeys(grp["team"].astype(str)))
+        if len(teams) == 2:
+            opp[(gid, teams[0])] = teams[1]
+            opp[(gid, teams[1])] = teams[0]
+    today_bucket = bucket(wr.get(str(opp_today), 0.5))
+
+    out = []
+    for p in players:
+        rows = dfb[dfb["player"].astype(str) == str(p)]
+        if rows.empty:
+            continue
+        acc = {"forte": [], "médio": [], "fraco": [], "geral": []}
+        for r in rows.itertuples(index=False):
+            o = opp.get((str(r.gameid), str(r.team)))
+            if o is None:
+                continue
+            b = bucket(wr.get(o, 0.5))
+            kda = (float(r.kills), float(r.deaths), float(r.assists))
+            acc[b].append(kda)
+            acc["geral"].append(kda)
+
+        def avg(lst, i):
+            return sum(x[i] for x in lst) / len(lst) if lst else float("nan")
+
+        out.append({
+            "player": str(p), "today_bucket": today_bucket,
+            "geral": {"k": avg(acc["geral"], 0), "d": avg(acc["geral"], 1),
+                      "a": avg(acc["geral"], 2), "n": len(acc["geral"])},
+            "hoje": {"k": avg(acc[today_bucket], 0), "d": avg(acc[today_bucket], 1),
+                     "a": avg(acc[today_bucket], 2), "n": len(acc[today_bucket])},
+        })
+    return out
+
+
 def _team_rows(dfb: pd.DataFrame, team: str) -> pd.DataFrame:
     """Linhas do time com match exato e fallback normalizado (grafias divergem
     entre o CSV de team-games e o de players)."""
@@ -223,6 +279,355 @@ def _render_lineup_value_block(
     except Exception:
         # bloco novo NUNCA derruba a aba
         return
+
+
+_LAB_POS = ["Top", "Jungle", "Mid", "Bot", "Support"]
+
+
+def _ratings_individuais(art_players_fn: Any, dfb: pd.DataFrame, nomes: list[str]) -> dict[str, float]:
+    """{nome do jogador -> rating INDIVIDUAL do players_artifact}.
+
+    Por que existe (achado 22/07): o rating desta aba é logit(vitórias/jogos), ou
+    seja, a taxa de vitória do TIME colada em cada jogador — todos do Gen.G davam
+    +1.070. Para simular troca de roster isso mente. O artefato de players tem o
+    rating individual de verdade (é o que o pipeline do ML usa); ele é indexado
+    por `playerid|||Posição`, então mapeamos nome -> playerid pelo CSV.
+
+    Devolve {} se o artefato não estiver disponível — quem chama cai no proxy e
+    avisa na tela (nunca fingimos precisão que não temos).
+    """
+    if not callable(art_players_fn) or dfb is None or getattr(dfb, "empty", True):
+        return {}
+    cols = getattr(dfb, "columns", [])
+    if "player" not in cols or "playerid" not in cols:
+        return {}
+    try:
+        art = art_players_fn()
+        players = getattr(art, "players", None) or {}
+        if not players:
+            return {}
+    except Exception:
+        return {}
+    alvo = {str(n).strip() for n in (nomes or []) if str(n).strip()}
+    if not alvo:
+        return {}
+    try:
+        sub = dfb[dfb["player"].astype(str).isin(alvo)]
+        pid_de = sub.dropna(subset=["playerid"]).groupby("player")["playerid"].last().to_dict()
+    except (KeyError, ValueError, TypeError):
+        return {}
+    # índice playerid -> r (a posição vem depois do '|||' na chave)
+    r_por_pid: dict[str, float] = {}
+    for chave, estado in players.items():
+        pid = str(chave).split("|||")[0]
+        r = getattr(estado, "r", None)
+        if pid and isinstance(r, (int, float)) and pid not in r_por_pid:
+            r_por_pid[pid] = float(r)
+    out: dict[str, float] = {}
+    for nome, pid in pid_de.items():
+        r = r_por_pid.get(str(pid))
+        if r is not None and math.isfinite(r):
+            out[str(nome)] = float(r)
+    return out
+
+
+def _render_roster_lab(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    dfb: pd.DataFrame,
+    by_player: pd.DataFrame,
+    norm_pos_fn: Any,
+    p_team_ref: float,
+    p_real: float,
+    n_team_eff: float,
+    n_players_eff: float,
+    fuse_kwargs: dict[str, Any],
+    fuse_probs_by_precision_fn: Any,
+    format_num_fn: Any,
+    odd_from_prob_fn: Any,
+    art_players_fn: Any = None,
+) -> None:
+    """Laboratório de escalação — "e se trocar alguém?" (pedido dele 22/07).
+
+    Desenho guiado por pesquisa (FanGraphs Lab / WhatIfSports / Versus Sports):
+    (a) pré-preenche com a escalação real e deixa editar; (b) a saída é
+    PROBABILIDADE DE VITÓRIA, não um delta solto; (c) mostra o fator
+    ENTROSAMENTO — a literatura de esports é enfática que troca recente é
+    amortecida no curto prazo (o time ainda não acertou a comunicação).
+    """
+    from app_core.lineup_runtime_core import build_lineup_name_choices
+
+    with st.expander("🧪 Laboratório de escalação — e se trocar alguém?", expanded=False):
+        st.caption(
+            "Monte uma escalação hipotética e veja o ML recalculado. Serve para "
+            "testar troca de roster de split ('e se o Zeus fosse para a HLE?') "
+            "antes de o time jogar com ela."
+        )
+        libera = st.checkbox(
+            "Permitir jogador de outro time (simular transferência)",
+            key="lab_pool_all",
+            help="Ligado, cada posição lista o pool inteiro da liga; os do próprio time vêm primeiro.",
+        )
+        cols = st.columns(2)
+        escolhas: dict[str, list[str]] = {}
+        trocas = 0
+        for col, tm in zip(cols, (team_a, team_b)):
+            with col:
+                st.markdown(f"**{tm}**")
+                ops, time_de = build_lineup_name_choices(
+                    df_pr=dfb, team_ui=tm, pos_canon=_LAB_POS,
+                    norm_pos_fn=norm_pos_fn, include_all_teams=bool(libera),
+                )
+                sel: list[str] = []
+                for pos in _LAB_POS:
+                    lista = list(ops.get(pos) or [])
+                    if not lista:
+                        continue
+                    key = f"lab_{tm}_{pos}"
+                    if st.session_state.get(key) not in lista:
+                        st.session_state[key] = lista[0]  # pré-preenche com o titular
+                    escolhido = st.selectbox(
+                        pos, lista, key=key,
+                        format_func=lambda n, _t=time_de: (
+                            f"{n} · {_t[n]}" if n in _t else str(n)
+                        ),
+                    )
+                    sel.append(escolhido)
+                    if escolhido != lista[0]:
+                        trocas += 1
+                escolhas[tm] = sel
+
+        sel_a, sel_b = escolhas.get(team_a) or [], escolhas.get(team_b) or []
+        if not sel_a or not sel_b:
+            st.info("Sem jogadores suficientes no recorte para simular.")
+            return
+
+        tr_a_sim, df_sa = _team_rating(by_player=by_player, players=sel_a, format_num_fn=format_num_fn)
+        tr_b_sim, df_sb = _team_rating(by_player=by_player, players=sel_b, format_num_fn=format_num_fn)
+
+        # FONTE DE VERDADE do rating (achado 22/07): o rating desta aba é
+        # logit(vitórias/jogos) = a taxa de vitória do TIME colada em cada
+        # jogador — todos do Gen.G davam +1.070, zero informação individual.
+        # Para simular troca de roster isso MENTE. Quando o artefato de players
+        # está disponível, usamos o rating INDIVIDUAL (o que o pipeline do ML
+        # usa de fato); só caímos no proxy se ele faltar, e avisamos na tela.
+        fonte_rating = "proxy (taxa de vitória do time)"
+        r_ind = _ratings_individuais(art_players_fn, dfb, sel_a + sel_b)
+        if r_ind:
+            ra = [r_ind[n] for n in sel_a if n in r_ind]
+            rb = [r_ind[n] for n in sel_b if n in r_ind]
+            if ra and rb:
+                tr_a_sim = float(sum(ra) / len(ra))
+                tr_b_sim = float(sum(rb) / len(rb))
+                fonte_rating = f"rating individual do modelo ({len(ra)+len(rb)}/10 jogadores)"
+
+        p_players_sim = _sigmoid(tr_a_sim - tr_b_sim)
+
+        # BUG CORRIGIDO (report dele 22/07: "troquei 3 jogadores e deu +0.0 pp").
+        # Eu usava o n_players_eff da escalação REAL. Quando ela está vazia
+        # ("nenhum player reconhecido"), esse peso é ZERO — e com peso zero a
+        # fusão ignora a camada de players, então trocar jogador não movia nada.
+        # A simulação agora calcula o PRÓPRIO peso, dos jogadores escolhidos.
+        def _games(dfx: pd.DataFrame) -> int:
+            if dfx is None or dfx.empty or "Games" not in dfx.columns:
+                return 0
+            return int(pd.to_numeric(dfx["Games"], errors="coerce").fillna(0).sum())
+
+        n_players_sim = float(min(_games(df_sa), _games(df_sb)))
+        if not (n_players_sim > 0.0):
+            n_players_sim = float(n_players_eff)
+        _kw_sim = dict(fuse_kwargs)
+        _kw_sim["coverage"] = float(max(0.0, min(1.0, n_players_sim / max(1.0, float(n_team_eff) + n_players_sim))))
+        fused_sim = fuse_probs_by_precision_fn(
+            p_team=p_team_ref, p_players=p_players_sim,
+            n_team=n_team_eff, n_players=n_players_sim, **_kw_sim,
+        )
+        p_sim = float(max(0.02, min(0.98, float(fused_sim.get("p_fused", p_team_ref)))))
+        dpp = 100.0 * (p_sim - float(p_real))
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric(f"ML real · {team_a}", f"{100.0*float(p_real):.1f}%")
+        m2.metric(f"ML simulado · {team_a}", f"{100.0*p_sim:.1f}%", f"{dpp:+.1f} pp")
+        m3.metric("Odd justa simulada", f"{odd_from_prob_fn(p_sim):.2f}")
+        # Transparência da fonte: sem isso, o número parece igual nos dois casos
+        # — e o proxy (taxa de vitória do time) NÃO distingue jogador.
+        if fonte_rating.startswith("rating individual"):
+            st.caption(f"Fonte do rating: **{fonte_rating}** — mede o jogador, não o time.")
+        else:
+            st.warning(
+                f"Fonte do rating: **{fonte_rating}**. Esse proxy dá o MESMO valor "
+                "para todos os jogadores de um time, então ele **não distingue** quem "
+                "entrou ou saiu. Trate a simulação como indicativa até o artefato de "
+                "players ficar disponível neste recorte."
+            )
+
+        if trocas <= 0:
+            st.caption("Escalação igual à titular — nada trocado ainda.")
+        else:
+            # Entrosamento: a literatura (e o próprio modelo, via continuidade de
+            # roster) diz que time recém-montado rende ABAIXO do papel no curto
+            # prazo. Avisamos em vez de vender o número como certeza.
+            st.warning(
+                f"**{trocas} troca(s)** em relação à escalação titular. "
+                "Na prática, elenco recém-montado costuma render **abaixo do papel** "
+                "no começo (entrosamento/comunicação) — o modelo trata isso inflando "
+                "a incerteza quando o roster muda de verdade. Leia este número como "
+                "**teto otimista** da escalação nova, não como previsão pronta."
+            )
+
+
+_PROP_STATS = (("kills", "Kills"), ("deaths", "Deaths"), ("assists", "Assists"))
+
+
+def _lineup_do_lab(st: Any, team: str, dfb: pd.DataFrame, norm_pos_fn: Any) -> list[tuple[str, str]]:
+    """[(rota, jogador)] lida do laboratório — trocou lá, muda aqui (pedido dele).
+
+    Cai na escalação habitual do recorte quando o lab ainda não foi tocado."""
+    from app_core.lineup_runtime_core import build_lineup_name_choices
+    ops, _ = build_lineup_name_choices(df_pr=dfb, team_ui=team, pos_canon=_LAB_POS,
+                                       norm_pos_fn=norm_pos_fn, include_all_teams=True)
+    out: list[tuple[str, str]] = []
+    for pos in _LAB_POS:
+        escolhido = str(st.session_state.get(f"lab_{team}_{pos}", "") or "")
+        if not escolhido:
+            lista = list(ops.get(pos) or [])
+            escolhido = lista[0] if lista else ""
+        if escolhido:
+            out.append((pos, escolhido))
+    return out
+
+
+def _taxas_kda(dfb: pd.DataFrame, nomes: list[str]) -> dict[str, dict[str, float]]:
+    """{jogador: {kills/deaths/assists: média por jogo}} no recorte."""
+    cols = [c for c, _ in _PROP_STATS]
+    if dfb is None or dfb.empty or "player" not in dfb.columns:
+        return {}
+    faltando = [c for c in cols if c not in dfb.columns]
+    if faltando:
+        return {}
+    sub = dfb[dfb["player"].astype(str).isin([str(n) for n in nomes])]
+    if sub.empty:
+        return {}
+    g = sub.groupby("player")[cols].mean()
+    return {str(k): {c: float(v[c]) for c in cols} for k, v in g.iterrows()}
+
+
+def _render_props_table(
+    *,
+    st: Any,
+    team_a: str,
+    team_b: str,
+    dfb: pd.DataFrame,
+    norm_pos_fn: Any,
+    mu_gap: float,
+    format_num_fn: Any,
+) -> None:
+    """Tabela de props dos 10 jogadores + resumo com filtro de atropelo.
+
+    Desenho escolhido por ele (22/07): TABELA ÚNICA de 10 linhas (Time A do TOP
+    ao SUP, depois Time B), colunas Kills/Deaths/Assists onde ele digita a linha
+    da casa; e um RESUMO que ESCONDE por padrão as linhas movidas pelo atropelo,
+    com botão para revelar.
+
+    O filtro não é opinião: o motor projeta em componentes separados, então
+    "quanto da projeção veio do massacre" (stomp_share) é um número.
+    """
+    from app_core.player_props_core import build_prop_row, separar_por_atropelo
+
+    cyan_section_header(st, "Props dos jogadores — linhas da casa vs modelo")
+    st.caption(
+        "Espelha a escalação do laboratório acima: trocou lá, muda aqui. Digite a "
+        "linha da casa em cada célula; a projeção, a probabilidade e a odd justa "
+        "aparecem do lado. O resumo no fim esconde as linhas que só batem por atropelo."
+    )
+
+    lineup = [(team_a, pos, pl) for pos, pl in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)]
+    lineup += [(team_b, pos, pl) for pos, pl in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)]
+    if not lineup:
+        st.info("Sem escalação identificada neste recorte.")
+        return
+    taxas = _taxas_kda(dfb, [pl for _, _, pl in lineup])
+    if not taxas:
+        st.info("Sem K/D/A por jogador neste recorte (o CSV precisa das colunas kills/deaths/assists).")
+        return
+
+    linhas_calc: list[dict] = []
+    cab = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
+    for c, t in zip(cab, ("Jogador", "Rota", "Kills", "Deaths", "Assists")):
+        c.markdown(f"<div style='font-size:0.78em;opacity:0.65;text-transform:uppercase;"
+                   f"letter-spacing:0.05em;'>{t}</div>", unsafe_allow_html=True)
+
+    for tm, pos, pl in lineup:
+        tx = taxas.get(str(pl)) or {}
+        # o gap entra com sinal: positivo p/ o time A, negativo p/ o B
+        gap_do_time = float(mu_gap) if tm == team_a else -float(mu_gap)
+        cols = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
+        cols[0].markdown(f"**{pl}**<br><span style='opacity:0.55;font-size:0.8em;'>{tm}</span>",
+                         unsafe_allow_html=True)
+        cols[1].markdown(f"<div style='padding-top:6px;'>{pos}</div>", unsafe_allow_html=True)
+        for i, (stat, rot) in enumerate(_PROP_STATS):
+            with cols[2 + i]:
+                key = f"prop_{tm}_{pos}_{stat}"
+                txt = st.text_input(rot, key=key, placeholder="linha", label_visibility="collapsed")
+                base = tx.get(stat)
+                if base is None:
+                    continue
+                try:
+                    line = float(str(txt).replace(",", ".").strip()) if str(txt).strip() else None
+                except ValueError:
+                    line = None
+                r = build_prop_row(player=pl, role=pos, team=tm, stat=stat,
+                                   line=(line if line is not None else base),
+                                   base_rate=base, mu_gap=gap_do_time)
+                if not r.get("ok"):
+                    continue
+                if line is not None:
+                    r["linha_informada"] = True
+                    linhas_calc.append(r)
+                    cor = "#22c55e" if r["p_over"] >= 0.55 else "#facc15" if r["p_over"] >= 0.45 else "#ef4444"
+                    selo = " ⚠" if r["movido_por_atropelo"] else ""
+                    st.markdown(
+                        f"<div style='font-size:0.82em;margin-top:-6px;'>"
+                        f"proj <b>{format_num_fn(r['proj'], 1)}</b> · "
+                        f"<span style='color:{cor};font-weight:700;'>{100*r['p_over']:.0f}%</span> · "
+                        f"odd {format_num_fn(r['odd_justa_over'], 2)}{selo}</div>",
+                        unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div style='font-size:0.78em;opacity:0.5;margin-top:-6px;'>"
+                                f"média {format_num_fn(base, 1)}</div>", unsafe_allow_html=True)
+
+    if not linhas_calc:
+        st.caption("Digite ao menos uma linha para o resumo aparecer.")
+        return
+
+    limpas, atropelo = separar_por_atropelo(linhas_calc)
+    limpas.sort(key=lambda r: -float(r.get("p_over") or 0.0))
+    cyan_section_header(st, "Resumo — melhores oportunidades")
+
+    def _tabela(rows: list[dict]) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "Jogador": r["player"], "Rota": r["role"], "Time": r["team"],
+            "Mercado": r["stat"].capitalize(), "Linha": format_num_fn(r["line"], 1),
+            "Projeção": format_num_fn(r["proj"], 1),
+            "P(Over)": f"{100*r['p_over']:.0f}%",
+            "Odd justa": format_num_fn(r["odd_justa_over"], 2),
+        } for r in rows])
+
+    if limpas:
+        st.dataframe(_tabela(limpas), width="stretch", hide_index=True)
+    else:
+        st.info("Nenhuma linha limpa — todas foram marcadas como movidas pelo atropelo.")
+
+    if atropelo:
+        st.warning(
+            f"**{len(atropelo)} linha(s) ocultada(s)** — nelas, a maior parte da projeção "
+            "vem do desequilíbrio do confronto, não do jogador. É o caso Gen.G × Pain: "
+            "batem (ou não) por causa do atropelo, e a casa já sabe disso."
+        )
+        if st.checkbox("Mostrar as linhas movidas pelo atropelo", key="props_show_stomp"):
+            st.dataframe(_tabela(atropelo), width="stretch", hide_index=True)
 
 
 def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
@@ -438,11 +843,9 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     games_b = int(pd.to_numeric(df_b.get("Games"), errors="coerce").fillna(0).sum()) if not df_b.empty else 0
     n_players_eff = float(min(games_a, games_b))
     n_team_eff = state_get_float_fn(session_state, "_ml_team_games_min", float("nan"))
-    fused = fuse_probs_by_precision_fn(
-        p_team=p_team_ref,
-        p_players=p_players_raw,
-        n_team=n_team_eff,
-        n_players=n_players_eff,
+    # Mesmos parâmetros de fusão usados no card real E no laboratório abaixo —
+    # se divergirem, a comparação "real vs simulado" vira mentira.
+    _fuse_kwargs = dict(
         team_scale=state_get_float_fn(session_state, "_fit_team_scale_used", state_get_float_fn(session_state, "_fit_team_scale", 1.0)),
         players_scale=state_get_float_fn(
             st.session_state,
@@ -452,6 +855,13 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         coverage=float(max(0.0, min(1.0, n_players_eff / max(1.0, n_team_eff + n_players_eff)))),
         transfer_signal=0.0,
         season_phase=("playoffs" if str(playoffs_opt).lower() in {"playoffs", "true", "1"} else "auto"),
+    )
+    fused = fuse_probs_by_precision_fn(
+        p_team=p_team_ref,
+        p_players=p_players_raw,
+        n_team=n_team_eff,
+        n_players=n_players_eff,
+        **_fuse_kwargs,
     )
     p_team_a = float(max(0.02, min(0.98, float(fused.get("p_fused", p_team_ref)))))
     w_players = float(fused.get("w_players", float("nan")))
@@ -464,6 +874,48 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         n_team_eff=n_team_eff, n_players_eff=n_players_eff,
         format_num_fn=format_num_fn, format_pct_fn=format_pct_fn,
     )
+
+    try:
+        _render_roster_lab(
+            st=st, team_a=team_a, team_b=team_b,
+            dfb=dfb, by_player=by_player, norm_pos_fn=norm_pos_fn,
+            p_team_ref=p_team_ref, p_real=p_team_a,
+            n_team_eff=n_team_eff, n_players_eff=n_players_eff,
+            fuse_kwargs=_fuse_kwargs,
+            fuse_probs_by_precision_fn=fuse_probs_by_precision_fn,
+            format_num_fn=format_num_fn, odd_from_prob_fn=odd_from_prob_fn,
+            art_players_fn=ctx.get("players_artifact_fn"),
+        )
+    except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _lab_exc:
+        # NUNCA derruba a aba — mas também NUNCA some calado (lição 22/07: erro
+        # engolido vira mistério). Mostra o motivo para dar p/ consertar.
+        st.warning(
+            f"Laboratório de escalação indisponível neste recorte "
+            f"({type(_lab_exc).__name__}: {_lab_exc}). O resto da aba segue normal."
+        )
+
+    try:
+        # gap de força entre os times, na mesma fonte do laboratório (rating
+        # individual quando disponível). É ele que dirige o filtro de atropelo.
+        _r_ind = _ratings_individuais(
+            ctx.get("players_artifact_fn"), dfb,
+            [p for _, p in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)]
+            + [p for _, p in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)],
+        )
+        _ra = [v for k, v in _r_ind.items()
+               if k in {p for _, p in _lineup_do_lab(st, team_a, dfb, norm_pos_fn)}]
+        _rb = [v for k, v in _r_ind.items()
+               if k in {p for _, p in _lineup_do_lab(st, team_b, dfb, norm_pos_fn)}]
+        _gap = (sum(_ra) / len(_ra) - sum(_rb) / len(_rb)) if (_ra and _rb) else 0.0
+        _render_props_table(
+            st=st, team_a=team_a, team_b=team_b, dfb=dfb,
+            norm_pos_fn=norm_pos_fn, mu_gap=float(_gap), format_num_fn=format_num_fn,
+        )
+    except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _props_exc:
+        st.warning(
+            f"Tabela de props indisponível neste recorte "
+            f"({type(_props_exc).__name__}: {_props_exc}). O resto da aba segue normal."
+        )
 
     with st.expander("Detalhe por jogador (ratings)", expanded=False):
         cta, ctb = st.columns(2)
@@ -480,279 +932,44 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             else:
                 st.dataframe(df_b, width="stretch", hide_index=True)
 
+    # ---- Linhas de player · ajuste por força do adversário (pedido dele 24/07) ----
+    # Dor: "a linha bate mas só vs times fracos (stomp)". Mostra a média K/D/A
+    # contra times do NÍVEL do adversário de hoje vs a média geral (inflada).
+    from html import escape as _escp
     st.divider()
-    render_tab_section(st, title="Mercados de players", subtitle="Defina linhas por lane e por jogador; a atualizacao so roda quando voce confirmar a analise.")
-    st.caption('Defina linhas por lane/jogador. Atualiza apenas ao clicar em "Analisar players".')
-
-    lane_rows = build_lane_rows_fn(resolved_a_view, resolved_b_view, ["top", "jng", "mid", "bot", "sup"])
-    ensure_player_line_input_state_fn(session_state, lanes=len(lane_rows))
-
-    with st.form("players_input_form", clear_on_submit=False):
-        col_a, col_b = st.columns(2)
-        with col_a:
-            st.text_area("Time A — players (5)", height=120, key="pl_txtA_input")
-        with col_b:
-            st.text_area("Time B — players (5)", height=120, key="pl_txtB_input")
-        submitted_top = st.form_submit_button("Analisar players", type="primary", key="pl_submit_top")
-        st.caption('As lanes e odds abaixo atualizam quando clicar em "Analisar players".')
-        st.markdown("##### Linhas individuais (10 jogadores)")
-        st.caption("Para cada jogador, informe linhas separadas por vírgula (ex.: 2.5,3.5). O cálculo é individual: passou ou não passou da linha.")
-        for idx, row in enumerate(lane_rows):
-            c0, c1, c2 = st.columns([1.1, 1.45, 1.45])
-            with c0:
-                st.markdown(f"**{row['Lane']}**  \nTime A: {row['A'] or '-'}  \nTime B: {row['B'] or '-'}")
-            with c1:
-                st.markdown(f"**{row['A'] or '-'}**")
-                st.text_input(f"Kills A ({row['Lane']})", key=f"pl_in_{idx}_kills_A")
-                st.text_input(f"Deaths A ({row['Lane']})", key=f"pl_in_{idx}_deaths_A")
-                st.text_input(f"Assists A ({row['Lane']})", key=f"pl_in_{idx}_assists_A")
-            with c2:
-                st.markdown(f"**{row['B'] or '-'}**")
-                st.text_input(f"Kills B ({row['Lane']})", key=f"pl_in_{idx}_kills_B")
-                st.text_input(f"Deaths B ({row['Lane']})", key=f"pl_in_{idx}_deaths_B")
-                st.text_input(f"Assists B ({row['Lane']})", key=f"pl_in_{idx}_assists_B")
-        submitted_bottom = st.form_submit_button("Analisar players", type="primary", key="pl_submit_bottom")
-        submitted_players = bool(submitted_top or submitted_bottom)
-
-    if submitted_players:
-        apply_players_submission_state_fn(session_state, lanes=len(lane_rows))
-        try:
-            st.rerun()
-        except Exception:
-            st.experimental_rerun()
-
-    if not any(str(x.get("A") or "").strip() or str(x.get("B") or "").strip() for x in lane_rows):
-        st.info("Informe players para abrir os mercados por lane.")
-        return
-
-    wf_m = state_get_float_fn(session_state, "resumo_mix_w_model", 40.0)
-    wf_h = state_get_float_fn(session_state, "resumo_mix_w_laplace", 40.0)
-    wf_s = state_get_float_fn(session_state, "resumo_mix_w_sc", 20.0)
-    min_h2h_players = max(1, state_get_int_fn(session_state, "resumo_min_sample_h2h", 3))
-    ff_players_shadow_trace = feature_flag_enabled_fn("ff_players_panels_shadow_trace", default=True)
-
-    med_rows = build_player_means_rows_fn(dfb=dfb, lane_rows=lane_rows, team_a=team_a, team_b=team_b, format_num_fn=format_num_fn)
-    if med_rows:
-        _subhead(st, "Médias por jogador")
-        st.caption("Base estatística usada no modelo de players por lane.")
-        dfm = pd.DataFrame(med_rows)
-        dfm = df_contract_view_fn(
-            dfm,
-            ["Lane", "Time", "Player", "Amostra", "Kills (media)", "Kills (sd)", "Deaths (media)", "Deaths (sd)", "Assists (media)", "Assists (sd)"],
-            context="Players > Médias",
-            fill_value="-",
-        )
-        st.dataframe(dfm, width="stretch", hide_index=True)
-        st.divider()
-
-    recent_rows = build_recent_player_stats_rows_fn(
-        dfb=dfb,
-        lane_rows=lane_rows,
-        team_a=team_a,
-        team_b=team_b,
-        format_num_fn=format_num_fn,
-        max_games_per_player=8,
+    render_tab_section(
+        st, title="Linhas de player · ajuste por adversário",
+        subtitle="Média K/D/A contra times do NÍVEL de hoje vs a média geral — pega linha inflada por stomp.",
     )
-    if recent_rows:
-        _subhead(st, "Stats recentes dos players")
-        st.caption("Últimos jogos por player/lane: campeão, resultado, KDA, KP%, duração e adversário.")
-        dfr = pd.DataFrame(recent_rows)
-        rows_before = len(dfr)
-        rf1, rf2, rf3, rf4 = st.columns(4)
-        with rf1:
-            rf_team_opts = ["Todos", *sorted([x for x in dfr["Time"].astype(str).unique().tolist() if str(x).strip()])]
-            _ensure_choice("pl_stats_filter_team", rf_team_opts, "Todos")
-            rf_team = st.selectbox("Stats - Time", rf_team_opts, key="pl_stats_filter_team")
-        with rf2:
-            rf_lane_opts = ["Todos", *sorted(dfr["Lane"].astype(str).unique().tolist())]
-            _ensure_choice("pl_stats_filter_lane", rf_lane_opts, "Todos")
-            rf_lane = st.selectbox("Stats - Lane", rf_lane_opts, key="pl_stats_filter_lane")
-        with rf3:
-            rf_player_opts = ["Todos", *sorted(dfr["Player"].astype(str).unique().tolist())]
-            _ensure_choice("pl_stats_filter_player", rf_player_opts, "Todos")
-            rf_player = st.selectbox("Stats - Player", rf_player_opts, key="pl_stats_filter_player")
-        with rf4:
-            rf_opp_opts = ["Todos", *sorted(dfr["Oponente"].astype(str).unique().tolist())]
-            _ensure_choice("pl_stats_filter_opp", rf_opp_opts, "Todos")
-            rf_opp = st.selectbox("Stats - Oponente", rf_opp_opts, key="pl_stats_filter_opp")
-        if rf_team != "Todos":
-            dfr = dfr[dfr["Time"].astype(str) == str(rf_team)].copy()
-        if rf_lane != "Todos":
-            dfr = dfr[dfr["Lane"].astype(str) == str(rf_lane)].copy()
-        if rf_player != "Todos":
-            dfr = dfr[dfr["Player"].astype(str) == str(rf_player)].copy()
-        if rf_opp != "Todos":
-            dfr = dfr[dfr["Oponente"].astype(str) == str(rf_opp)].copy()
-        append_players_recent_stats_panel_trace_fn(
-            append_feature_trace_fn=append_feature_trace_fn,
-            enabled=bool(ff_players_shadow_trace),
-            teamA=team_a,
-            teamB=team_b,
-            team_filter=rf_team,
-            lane_filter=rf_lane,
-            player_filter=rf_player,
-            opp_filter=rf_opp,
-            rows_before=rows_before,
-            rows_after=len(dfr),
-        )
-        dfr = df_contract_view_fn(
-            dfr,
-            ["Lane", "Time", "Player", "Campeão", "Resultado", "Tempo", "K/D/A", "KDA", "KP%", "Dano", "Oponente", "Data"],
-            context="Players > Stats recentes",
-            fill_value="-",
-        )
-        st.dataframe(dfr, width="stretch", hide_index=True)
-        st.divider()
+    st.caption("Números: **nível de hoje / geral**. Vermelho = geral inflada (cai contra o nível de hoje); verde = sobe.")
+    _pc = st.columns(2)
+    for _c, _team, _opp, _players in ((_pc[0], team_a, team_b, resolved_a_view),
+                                      (_pc[1], team_b, team_a, resolved_b_view)):
+        with _c:
+            _rows = player_lines_opp_split(dfb, list(_players), _team, _opp)
+            _lvl = _rows[0]["today_bucket"] if _rows else "?"
+            st.markdown(f"**{_escp(str(_team))}** · adv de hoje: nível **{_escp(_lvl)}**")
+            if not _rows:
+                st.caption("Sem players/jogos no recorte.")
+            for _r in _rows:
+                _h, _g = _r["hoje"], _r["geral"]
 
-    per_player_lines_by_idx = build_per_player_lines_by_idx_fn(
-        session_state=session_state,
-        lane_rows=lane_rows,
-        parse_lines_fn=parse_lines_fn,
-    )
-    out_rows, fair_rows = build_player_market_rows_fn(
-        dfb=dfb,
-        lane_rows=lane_rows,
-        per_player_lines_by_idx=per_player_lines_by_idx,
-        team_a=team_a,
-        team_b=team_b,
-        wf_m=float(wf_m),
-        wf_h=float(wf_h),
-        wf_s=float(wf_s),
-        odd_from_prob_fn=odd_from_prob_fn,
-        format_num_fn=format_num_fn,
-        format_pct_fn=format_pct1_fn,
-        max_odd=float(session_state.get("resumo_max_odd", 2.0) or 2.0),
-        require_model=False,
-        min_h2h_games=int(min_h2h_players),
-    )
-    if not out_rows:
-        st.info("Sem dados suficientes para montar mercados de players no recorte atual.")
-        return
+                def _fmt(k, h=_h, g=_g):
+                    hv, gv = h[k], g[k]
+                    hs = f"{hv:.1f}" if hv == hv else "-"
+                    gs = f"{gv:.1f}" if gv == gv else "-"
+                    cor = ""
+                    if h["n"] and g["n"] and hv == hv and gv == gv:
+                        if hv < gv * 0.85:
+                            cor = "#ef4444"
+                        elif hv > gv * 1.15:
+                            cor = "#22c55e"
+                    hb = f"<b style='color:{cor}'>{hs}</b>" if cor else f"<b>{hs}</b>"
+                    return f"{hb}<span style='opacity:.5'>/{gs}</span>"
 
-    if fair_rows:
-        _subhead(st, "Fair (Modelo) por jogador")
-        st.caption("Odds justas do modelo para cada jogador/linha em Kills, Deaths e Assists.")
-        dff = pd.DataFrame(fair_rows)
-        ff1, ff2, ff3 = st.columns(3)
-        with ff1:
-            ff_team_opts = ["Todos", team_a, team_b]
-            _ensure_choice("pl_fair_filter_team", ff_team_opts, "Todos")
-            ff_team = st.selectbox("Fair - Time", ff_team_opts, key="pl_fair_filter_team")
-        with ff2:
-            ff_lane_opts = ["Todos", *sorted(dff["Lane"].unique().tolist())]
-            _ensure_choice("pl_fair_filter_lane", ff_lane_opts, "Todos")
-            ff_lane = st.selectbox("Fair - Lane", ff_lane_opts, key="pl_fair_filter_lane")
-        with ff3:
-            ff_player_opts = ["Todos", *sorted(dff["Player"].unique().tolist())]
-            _ensure_choice("pl_fair_filter_player", ff_player_opts, "Todos")
-            ff_player = st.selectbox("Fair - Player", ff_player_opts, key="pl_fair_filter_player")
-        if ff_team != "Todos":
-            dff = dff[dff["Time"].astype(str) == str(ff_team)].copy()
-        if ff_lane != "Todos":
-            dff = dff[dff["Lane"].astype(str) == str(ff_lane)].copy()
-        if ff_player != "Todos":
-            dff = dff[dff["Player"].astype(str) == str(ff_player)].copy()
-        append_players_fair_panel_trace_fn(
-            append_feature_trace_fn=append_feature_trace_fn,
-            enabled=bool(ff_players_shadow_trace),
-            teamA=team_a,
-            teamB=team_b,
-            team_filter=ff_team,
-            lane_filter=ff_lane,
-            player_filter=ff_player,
-            rows_after=len(dff),
-            rows_total=len(fair_rows),
-        )
-        dff = df_contract_view_fn(
-            dff,
-            ["Lane", "Time", "Player", "Mercado", "Media", "SD", "Linha", "Acima (%)", "Odd Acima", "Abaixo (%)", "Odd Abaixo", "Amostra"],
-            context="Players > Fair",
-            fill_value="-",
-        )
-        st.dataframe(dff, width="stretch", hide_index=True)
-
-    st.divider()
-    _subhead(st, "Mercados de Players (Modelo/Hist/Mix)")
-    dfo = pd.DataFrame(out_rows)
-    if not dfo.empty:
-        st.caption(
-            f'H2H só entra no Odd Mix quando atingir a amostra mínima ({int(min_h2h_players)} jogos). '
-            'Se não atingir, confira "Obs Mix". Para "-" em odds (principalmente H2H), veja "Obs Odds".'
-        )
-    f1, f2, f3, f4 = st.columns(4)
-    with f1:
-        mkt_team_opts = ["Todos", team_a, team_b]
-        _ensure_choice("pl_mkt_filter_team", mkt_team_opts, "Todos")
-        team_filter = st.selectbox("Filtro Time", mkt_team_opts, key="pl_mkt_filter_team")
-    with f2:
-        mkt_lane_opts = ["Todos", *sorted(dfo["Lane"].unique().tolist())]
-        _ensure_choice("pl_mkt_filter_lane", mkt_lane_opts, "Todos")
-        lane_filter = st.selectbox("Filtro Lane", mkt_lane_opts, key="pl_mkt_filter_lane")
-    with f3:
-        mkt_market_opts = ["Todos", *sorted(dfo["Mercado"].unique().tolist())]
-        _ensure_choice("pl_mkt_filter_market", mkt_market_opts, "Todos")
-        market_filter = st.selectbox("Filtro Mercado", mkt_market_opts, key="pl_mkt_filter_market")
-    with f4:
-        mkt_player_opts = ["Todos", *sorted(dfo["Player"].unique().tolist())]
-        _ensure_choice("pl_mkt_filter_player", mkt_player_opts, "Todos")
-        player_filter = st.selectbox("Filtro Player", mkt_player_opts, key="pl_mkt_filter_player")
-    if team_filter != "Todos":
-        dfo = dfo[dfo["Team"].astype(str) == str(team_filter)].copy()
-    if lane_filter != "Todos":
-        dfo = dfo[dfo["Lane"].astype(str) == str(lane_filter)].copy()
-    if market_filter != "Todos":
-        dfo = dfo[dfo["Mercado"].astype(str) == str(market_filter)].copy()
-    if player_filter != "Todos":
-        dfo = dfo[dfo["Player"].astype(str) == str(player_filter)].copy()
-
-    append_players_markets_panel_trace_fn(
-        append_feature_trace_fn=append_feature_trace_fn,
-        enabled=bool(ff_players_shadow_trace),
-        teamA=team_a,
-        teamB=team_b,
-        team_filter=team_filter,
-        lane_filter=lane_filter,
-        market_filter=market_filter,
-        player_filter=player_filter,
-        rows_after=len(dfo),
-        rows_total=len(out_rows),
-        fair_rows_total=len(fair_rows),
-        min_h2h_games=int(min_h2h_players),
-    )
-    session_state["_ml_trace_players"] = _build_trace_rows(out_rows)
-    append_players_panels_bundle_trace_fn(
-        append_feature_trace_fn=append_feature_trace_fn,
-        enabled=bool(ff_players_shadow_trace),
-        teamA=team_a,
-        teamB=team_b,
-        recent_rows_total=len(recent_rows),
-        market_rows_total=len(out_rows),
-        fair_rows_total=len(fair_rows),
-    )
-    persist_combined_trace_file_fn()
-    player_cols = ["Lane", "Team", "Player", "Mercado", "Lado", "Linha", "Stats", "H2H", "Odd (Modelo)", "Odd (Hist)", "Odd (H2H)", "Odd (Mix)"]
-    if "Obs Odds" in dfo.columns and bool((dfo["Obs Odds"].astype(str).str.strip() != "").any()):
-        player_cols.append("Obs Odds")
-    player_cols.append("Obs Mix")
-    dfo = df_contract_view_fn(
-        dfo,
-        [c for c in player_cols if c not in {"Obs Odds"}],
-        optional_cols=["Obs Odds"],
-        context="Players > Mercados",
-        fill_value="-",
-    )
-    st.dataframe(dfo, width="stretch", hide_index=True)
-    with st.expander("Trace de calibração (Players)"):
-        trace_rows = session_state.get("_ml_trace_players", []) or []
-        if trace_rows:
-            st.dataframe(pd.DataFrame(trace_rows), width="stretch", hide_index=True)
-            st.download_button(
-                "Baixar trace (Players) JSON",
-                data=json.dumps(trace_rows, ensure_ascii=False, indent=2).encode("utf-8"),
-                file_name="ml_trace_players.json",
-                mime="application/json",
-                key="dl_trace_players_json",
-                on_click="ignore",
-            )
-        else:
-            st.caption("Sem trace nesta execução.")
+                st.markdown(
+                    f"<div style='font-size:.88em;margin:3px 0'><b>{_escp(str(_r['player']))}</b> "
+                    f"<span style='opacity:.5'>(n{_h['n']}/{_g['n']})</span><br>"
+                    f"K {_fmt('k')} · D {_fmt('d')} · A {_fmt('a')}</div>",
+                    unsafe_allow_html=True,
+                )

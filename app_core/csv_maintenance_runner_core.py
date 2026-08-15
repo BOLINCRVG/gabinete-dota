@@ -56,7 +56,7 @@ from app_core.runtime_session_state_core import (
 )
 from mlcore.utils import safe_float_or_none as _fnum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple
 import json
 import sys
 import threading
@@ -94,6 +94,29 @@ def collect_maintenance_status(
     if _wf_resolved:
         core_set_wf_last_report_at(st.session_state, _wf_resolved)
     return dict(out or {})
+
+def params_json_is_deep_fit(data: Any) -> Tuple[bool, int]:
+    """Um params_fitted (já parseado) veio de um fit PROFUNDO? -> (deep, n_ligas).
+
+    Profundo = tem players_context_fit.settings_by_league populado (segmentação
+    por liga que só o fit longo produz). Puro/testável — a leitura do arquivo
+    fica em quem chama."""
+    try:
+        pc = (data or {}).get("players_context_fit") or {}
+        ligas = pc.get("settings_by_league") or {}
+        return bool(ligas), len(ligas)
+    except (AttributeError, TypeError):
+        return False, 0
+
+
+def should_block_fast_over_deep(speed_profile: Any, params_is_deep: bool) -> bool:
+    """TRAVA (2026-07-21): um fit RÁPIDO nunca sobrescreve um fit PROFUNDO.
+
+    A causa raiz do incidente que se repetia. Só bloqueia quando o incoming é
+    'fast' E o params atual é profundo — full/manual passam; primeiro fit (sem
+    profundo) passa."""
+    return str(speed_profile or "").strip().lower() == "fast" and bool(params_is_deep)
+
 
 def run_auto_maintenance_now(
     csv_path_s: str,
@@ -262,24 +285,29 @@ def run_auto_maintenance_now(
         try:
             import json as _json
             d = _json.loads(Path(path_like).read_text(encoding="utf-8-sig"))
-            pc = d.get("players_context_fit") or {}
-            ligas = pc.get("settings_by_league") or {}
-            return {"deep": bool(ligas), "n_ligas": len(ligas)}
+            deep, n_ligas = params_json_is_deep_fit(d)
+            return {"deep": deep, "n_ligas": n_ligas}
         except (OSError, ValueError, TypeError):
             return {"deep": False, "n_ligas": 0}
 
-    def _guard_deep_params_before_fit(speed_profile: str) -> str:
-        """Backup + aviso ANTES de um fit rápido pisar num fit profundo.
+    def _guard_deep_params_before_fit(speed_profile: str) -> Tuple[bool, str]:
+        """TRAVA: um fit RÁPIDO nunca sobrescreve um fit PROFUNDO promovido.
 
-        Não bloqueia (o refit pode ser necessário quando o artifact muda), mas
-        o trabalho profundo nunca se perde: fica em ops/backups e o log diz
-        como restaurar."""
+        Evolução 2026-07-21 (pedido dele, causa raiz do incidente que se repetia):
+        antes só fazia backup e deixava o fit rápido pisar no profundo. Agora
+        BLOQUEIA — retorna (True, msg) e o fit rápido é pulado, mantendo o params
+        profundo intacto. Motivo: os params (calibração/tuning) NÃO ficam
+        obsoletos diariamente; os jogos novos entram pelo estado incremental
+        (WHR), não por re-fit. Um refit real, quando preciso, é FULL (ou manual).
+        O backup em ops/backups continua (rede dupla). Retorna (False, "") quando
+        não há o que proteger (fit não é fast, ou params atual não é profundo)."""
         alvo = APP_ROOT / "params_fitted.json"
         if str(speed_profile).strip().lower() != "fast":
-            return ""
+            return False, ""
         info = _params_deep_fit_info(alvo)
-        if not info.get("deep"):
-            return ""
+        if not should_block_fast_over_deep(speed_profile, bool(info.get("deep"))):
+            return False, ""
+        # Há um fit profundo promovido e o incoming é rápido -> PROTEGER.
         try:
             import shutil as _shutil
             import time as _time
@@ -287,17 +315,33 @@ def run_auto_maintenance_now(
             bdir.mkdir(parents=True, exist_ok=True)
             dest = bdir / f"params_fitted.deep_before_auto_fast_{_time.strftime('%Y%m%d_%H%M%S')}.json"
             _shutil.copy2(alvo, dest)
-            return (f"AVISO: fit RAPIDO vai sobrescrever um fit PROFUNDO "
-                    f"({info['n_ligas']} ligas no players_context). Backup salvo em "
-                    f"ops/backups/{dest.name} — para restaurar, copie por cima de "
-                    f"params_fitted.json.")
+            backup_note = f" Backup extra em ops/backups/{dest.name}."
         except (OSError, TypeError, ValueError) as exc:
-            return f"AVISO: fit rapido sobre fit profundo e o backup FALHOU ({type(exc).__name__})."
+            backup_note = f" (backup extra falhou: {type(exc).__name__})."
+        return True, (
+            f"PROTEGIDO: fit RAPIDO recusado para nao sobrescrever o fit PROFUNDO "
+            f"promovido ({info['n_ligas']} ligas no players_context). O params profundo "
+            f"foi mantido intacto — os jogos novos ja entram pelo estado incremental."
+            + backup_note
+        )
 
     def _run_fit_params_once(csvs: List[str], *, speed_profile: str) -> Dict[str, Any]:
-        _guard_msg = _guard_deep_params_before_fit(speed_profile)
+        _blocked, _guard_msg = _guard_deep_params_before_fit(speed_profile)
         if _guard_msg:
             logs.append(_guard_msg)
+        if _blocked:
+            # Fit rápido pulado: o fit profundo promovido permanece. Sucesso do
+            # ponto de vista de "params válidos" (nada quebrou; o deep fit vale).
+            return {
+                "cp": None,
+                "ok_rc": True,
+                "ok_out": _params_output_valid(APP_ROOT / "params_fitted.json"),
+                "ok": True,
+                "n_csv": len(csvs or []),
+                "speed": str(speed_profile),
+                "areal_fix": "",
+                "skipped_deep_protected": True,
+            }
         _fit_runtime_paths = core_build_fit_params_runtime_paths(
             app_root=APP_ROOT,
             scope=("auto_fast" if str(speed_profile).strip().lower() == "fast" else "auto_full"),

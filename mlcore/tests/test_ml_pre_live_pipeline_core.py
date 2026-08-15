@@ -2,7 +2,36 @@ import unittest
 
 import pandas as pd
 
-from app_core.ml_pre_live_pipeline_core import run_ml_pre_live_pipeline
+from app_core.ml_pre_live_pipeline_core import (
+    _elite_vs_weak_mismatch,
+    run_ml_pre_live_pipeline,
+)
+
+
+class TestEliteVsWeakMismatch(unittest.TestCase):
+    """Predicado compartilhado (extraído no refactor de 19/07): gatilho comum
+    do damping interregional em forma, híbrido e confidence-guard. Antes estava
+    inline 3x; agora é um só ponto e precisa de teste próprio."""
+
+    def _info(self, gap, strong, weak):
+        return {"strength_gap": gap, "stronger_band": strong, "weaker_band": weak}
+
+    def test_dispara_com_gap_grande_e_bandas_descasadas(self):
+        self.assertTrue(_elite_vs_weak_mismatch(self._info(0.20, "elite", "regional")))
+        self.assertTrue(_elite_vs_weak_mismatch(self._info(0.16, "major", "local")))
+
+    def test_nao_dispara_com_gap_pequeno(self):
+        self.assertFalse(_elite_vs_weak_mismatch(self._info(0.15, "elite", "local")))
+
+    def test_nao_dispara_se_banda_forte_nao_e_alta(self):
+        self.assertFalse(_elite_vs_weak_mismatch(self._info(0.30, "upper", "local")))
+
+    def test_nao_dispara_se_banda_fraca_nao_e_baixa(self):
+        self.assertFalse(_elite_vs_weak_mismatch(self._info(0.30, "elite", "major")))
+
+    def test_entrada_vazia_ou_invalida_nao_quebra(self):
+        for bad in ({}, None, {"strength_gap": "x"}):
+            self.assertFalse(_elite_vs_weak_mismatch(bad))
 
 
 def _clip_prob(p):

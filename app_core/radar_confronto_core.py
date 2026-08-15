@@ -279,11 +279,14 @@ ARCHETYPES = ("Poke", "Engage", "Scaling", "Split-push")
 # ~tudo caía em Scaling/Engage; com elas a distribuição fica 30/27/21/21.
 # Re-medir se o registro de campeões ou o meta mudarem muito.
 _ARCH_NORMS: dict[str, tuple[float, float]] = {
-    "poke": (3.40, 1.34), "siege": (2.94, 0.99), "engage": (5.05, 1.72),
-    "dive": (3.98, 1.41), "pick": (5.11, 1.89), "splitpush": (0.80, 0.52),
-    "skirmish": (3.49, 0.81), "early": (4.40, 1.67), "late": (9.30, 1.87),
-    "carry_scaling": (15.45, 2.40), "side_pressure": (2.57, 0.62),
-    "siege_pressure": (8.36, 1.91), "dive_threat": (10.46, 1.94),
+    # RE-MEDIDAS em 6000 comps reais (tools/recalibrar_arquetipos.py, 24/07) —
+    # agora inclui frontline/teamfight/mid, que faltavam e faziam o Engage errar.
+    "engage": (5.7575, 1.5507), "frontline": (5.0567, 2.0038), "teamfight": (10.3427, 1.5154),
+    "poke": (2.9065, 1.3114), "siege": (3.4789, 1.2166), "splitpush": (0.6507, 0.4373),
+    "skirmish": (3.1782, 1.0767), "dive": (3.2092, 1.4389), "pick": (4.1827, 1.6539),
+    "peel": (3.2907, 1.1801), "carry_scaling": (15.9197, 2.6097), "siege_pressure": (8.4513, 2.2196),
+    "side_pressure": (2.1561, 0.6176), "dive_threat": (10.2613, 2.0986), "tempo_pressure": (7.8053, 2.6871),
+    "early": (3.6924, 1.6284), "mid": (10.5382, 1.2808), "late": (9.8468, 1.7959),
 }
 
 
@@ -306,13 +309,17 @@ def classify_comp_archetype(profile: Mapping[str, Any]) -> tuple[str, dict[str, 
             return 0.0
         return (v - mean) / (std if std > 1e-9 else 1.0)
 
+    # RECALIBRADO 24/07 (com ele): a fórmula antiga classificava engage puro como
+    # SCALING. Correções: Engage = engage+frontline+teamfight (NÃO exige dive);
+    # Scaling desconta engage/frontline (comp de teamfight não cai aqui por
+    # padrão). Validado em comps conhecidas (tools/recalibrar_arquetipos.py, 7/8).
     scores = {
-        "Poke": z(styles, "poke") + 0.5 * z(styles, "siege") + 0.3 * z(macro, "siege_pressure"),
-        "Engage": z(styles, "engage") + 0.6 * z(styles, "dive") + 0.4 * z(styles, "pick")
-                  + 0.3 * z(macro, "dive_threat"),
-        "Scaling": z(windows, "late") + 0.6 * z(macro, "carry_scaling") - 0.5 * z(windows, "early"),
-        "Split-push": z(styles, "splitpush") + 0.6 * z(macro, "side_pressure")
-                      + 0.2 * z(styles, "skirmish"),
+        "Engage": z(styles, "engage") + 0.8 * z(styles, "frontline") + 0.7 * z(styles, "teamfight")
+                  + 0.3 * z(styles, "dive") + 0.2 * z(macro, "dive_threat"),
+        "Poke": z(styles, "poke") + 0.7 * z(styles, "siege") + 0.4 * z(macro, "siege_pressure"),
+        "Scaling": z(windows, "late") - 0.7 * z(windows, "early") + 0.5 * z(macro, "carry_scaling")
+                   - 0.6 * z(styles, "engage") - 0.4 * z(styles, "frontline"),
+        "Split-push": z(styles, "splitpush") + 0.7 * z(macro, "side_pressure") + 0.4 * z(styles, "skirmish"),
     }
     label = max(scores, key=lambda k: scores[k])
     return label, {k: round(v, 2) for k, v in scores.items()}
@@ -364,6 +371,53 @@ def team_style_history(
         label, _ = classify_comp_archetype(profile)
         try:
             win = int(pd.to_numeric(grp["result"], errors="coerce").fillna(0).max())
+        except (KeyError, TypeError, ValueError):
+            win = 0
+        out[label]["n"] += 1
+        out[label]["wins"] += 1 if win == 1 else 0
+    return out
+
+
+def team_vs_style_history(
+    *,
+    players_df: pd.DataFrame,
+    team: str,
+    registry: Mapping[str, Any] | None,
+    year: Optional[int] = None,
+) -> dict[str, dict[str, int]]:
+    """Espelho de team_style_history: como o time se saiu CONTRA cada estilo —
+    classifica a comp do OPONENTE em cada jogo e conta a vitória do TIME.
+    {arquétipo: {"wins": w, "n": n}}. Também sempre com o n na cara."""
+    from app_core.comp_archetype_core import build_comp_profile
+
+    out: dict[str, dict[str, int]] = {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
+    if players_df is None or players_df.empty:
+        return out
+    df = players_df
+    if not {"teamname", "champion", "gameid"}.issubset(df.columns):
+        return out
+    if year is not None and "year" in df.columns:
+        df = df[pd.to_numeric(df["year"], errors="coerce") == int(year)]
+    gids = set(df[df["teamname"].astype(str) == str(team)]["gameid"])
+    df = df[df["gameid"].isin(gids)]
+    for _gid, grp in df.groupby("gameid"):
+        team_rows = grp[grp["teamname"].astype(str) == str(team)]
+        opp_rows = grp[grp["teamname"].astype(str) != str(team)]
+        if team_rows.empty or opp_rows.empty:
+            continue
+        pos_map: dict[str, str] = {}
+        for row in opp_rows.itertuples(index=False):
+            pos = norm_position(getattr(row, "position", ""))
+            champ = str(getattr(row, "champion", "") or "").strip()
+            if pos and champ and pos not in pos_map:
+                pos_map[pos] = champ
+        if len(pos_map) < 5:
+            continue
+        picks = [pos_map[r] for r in ROLE_ORDER]
+        label, _ = classify_comp_archetype(
+            build_comp_profile(registry=registry, picks=picks, role_order=list(ROLE_ORDER)))
+        try:
+            win = int(pd.to_numeric(team_rows["result"], errors="coerce").fillna(0).max())
         except (KeyError, TypeError, ValueError):
             win = 0
         out[label]["n"] += 1

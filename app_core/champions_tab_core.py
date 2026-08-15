@@ -54,8 +54,8 @@ def _render_matchup_pool_block(
             meta_lu = st.session_state.get("_radar_meta_lu")
             if not (isinstance(meta_lu, tuple) and len(meta_lu) == 2 and meta_lu[0] == str(csv_sig)):
                 from app_core.champion_knowledge_core import load_champion_knowledge_registry
+                from app_core.champions_shared_core import _get_draft_rows
                 from app_core.meta_patch_core import meta_lookup_for_radar
-                from app_core.meta_tab_core import _get_draft_rows
 
                 meta_lu = (str(csv_sig), meta_lookup_for_radar(
                     _get_draft_rows(st.session_state, csv_sig),

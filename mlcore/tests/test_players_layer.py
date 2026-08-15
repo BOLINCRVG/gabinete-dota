@@ -7,11 +7,14 @@ from mlcore.players_layer import (
     PlayerState,
     POS_CANON,
     compute_delta_and_confidence,
+    fit_w_lineup,
     lineup_for_game,
     norm_pos,
     _interleague_pair_scale,
     _lane_weight_for,
     _league_weight_for,
+    _parse_pct,
+    _solve_linear_5x5,
 )
 
 
@@ -523,6 +526,87 @@ class TestArtifactSerialisation(unittest.TestCase):
         entry = d["players"]["Faker|||Mid"]
         self.assertIsInstance(entry["r"], float)
         self.assertIsInstance(entry["gp"], int)
+
+
+class TestSolveLinear5x5(unittest.TestCase):
+    """Eliminação gaussiana usada no fit dos pesos de lane."""
+
+    def test_identidade_devolve_o_proprio_b(self):
+        a = [[1.0 if i == j else 0.0 for j in range(5)] for i in range(5)]
+        b = [1.0, 2.0, 3.0, 4.0, 5.0]
+        self.assertEqual(_solve_linear_5x5(a, b), b)
+
+    def test_bate_com_numpy_em_sistema_aleatorio(self):
+        import numpy as np
+        rng = np.random.default_rng(20260719)
+        A = rng.uniform(-2, 2, (5, 5)) + np.eye(5) * 5.0  # bem condicionada
+        b = rng.uniform(-3, 3, 5)
+        esperado = np.linalg.solve(A, b)
+        obtido = _solve_linear_5x5(A.tolist(), b.tolist())
+        self.assertIsNotNone(obtido)
+        for o, e in zip(obtido, esperado):
+            self.assertAlmostEqual(o, float(e), places=9)
+
+    def test_matriz_singular_devolve_none_em_vez_de_lixo(self):
+        a = [[1.0, 2.0, 3.0, 4.0, 5.0]] * 5  # linhas iguais = singular
+        self.assertIsNone(_solve_linear_5x5(a, [1.0] * 5))
+
+    def test_pivoteamento_segura_zero_na_diagonal(self):
+        # a[0][0]=0 exige troca de linhas; sem pivoteamento seria divisão por 0
+        a = [[0.0, 1.0, 0.0, 0.0, 0.0],
+             [1.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 1.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 1.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 1.0]]
+        x = _solve_linear_5x5(a, [1.0, 2.0, 3.0, 4.0, 5.0])
+        self.assertEqual(x, [2.0, 1.0, 3.0, 4.0, 5.0])
+
+
+class TestFitWLineup(unittest.TestCase):
+    """Fit escalar (Newton) do peso do delta de lineup no logit."""
+
+    @staticmethod
+    def _dados(w_true: float, n: int = 400, seed: int = 3):
+        import numpy as np
+        from mlcore.players_layer import sigmoid
+        rng = np.random.default_rng(seed)
+        lb = rng.normal(0.0, 0.8, n)
+        d = rng.normal(0.0, 1.0, n)
+        y = (rng.uniform(size=n) < 1 / (1 + np.exp(-(lb + w_true * d)))).astype(int)
+        return list(y), list(lb), list(d)
+
+    def test_recupera_w_conhecido(self):
+        y, lb, d = self._dados(w_true=0.8)
+        w = fit_w_lineup(y=y, logit_base=lb, delta=d)
+        self.assertAlmostEqual(w, 0.8, delta=0.25)
+
+    def test_delta_sem_relacao_da_w_perto_de_zero(self):
+        y, lb, d = self._dados(w_true=0.0)
+        w = fit_w_lineup(y=y, logit_base=lb, delta=d)
+        self.assertAlmostEqual(w, 0.0, delta=0.15)
+
+    def test_l2_puxa_o_w_para_baixo(self):
+        y, lb, d = self._dados(w_true=1.0)
+        livre = fit_w_lineup(y=y, logit_base=lb, delta=d, l2=0.0)
+        preso = fit_w_lineup(y=y, logit_base=lb, delta=d, l2=100.0)
+        self.assertLess(abs(preso), abs(livre))
+
+    def test_entrada_invalida_devolve_zero(self):
+        self.assertEqual(fit_w_lineup(y=[], logit_base=[], delta=[]), 0.0)
+        self.assertEqual(fit_w_lineup(y=[1, 0], logit_base=[0.1], delta=[0.2, 0.3]), 0.0)
+
+
+class TestParsePct(unittest.TestCase):
+    def test_formatos_validos(self):
+        self.assertAlmostEqual(_parse_pct("28%"), 0.28)
+        self.assertAlmostEqual(_parse_pct("28"), 0.28)
+        self.assertAlmostEqual(_parse_pct(28), 0.28)
+
+    def test_invalido_vira_nan(self):
+        import math
+        self.assertTrue(math.isnan(_parse_pct("")))
+        self.assertTrue(math.isnan(_parse_pct(None)))
+        self.assertTrue(math.isnan(_parse_pct("abc")))
 
 
 if __name__ == "__main__":

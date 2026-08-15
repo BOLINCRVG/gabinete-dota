@@ -118,5 +118,36 @@ class OpponentProfileCoreTest(unittest.TestCase):
         self.assertEqual(describe_profile_signal(0.2, "kills", 2.0), "Mantém")
 
 
+class FriendlyConfigSingleSourceTests(unittest.TestCase):
+    """Passo 1 do mapa (21/07): FRIENDLY_MARKET_CONFIG deriva 100% do registro
+    central STATS_MARKET_CONFIG (antes Dragões/Barões eram literais à mão).
+    Trava a fonte única: mercado novo no registro flui aqui sozinho."""
+
+    def test_deriva_do_registro_central(self):
+        from app_core.opponent_profile_core import FRIENDLY_MARKET_CONFIG
+        from app_core.stats_config import STATS_MARKET_CONFIG
+        # mesmo nº de mercados; "Nashors" do registro vira "Barões" na tela
+        self.assertEqual(len(FRIENDLY_MARKET_CONFIG), len(STATS_MARKET_CONFIG))
+        self.assertIn("Barões", FRIENDLY_MARKET_CONFIG)
+        self.assertNotIn("Nashors", FRIENDLY_MARKET_CONFIG)
+
+    def test_campos_lidos_batem_com_o_registro(self):
+        from app_core.opponent_profile_core import FRIENDLY_MARKET_CONFIG
+        from app_core.stats_config import STATS_MARKET_CONFIG
+        rename = {"Nashors": "Barões"}
+        for label, cfg in STATS_MARKET_CONFIG.items():
+            friendly = FRIENDLY_MARKET_CONFIG[rename.get(label, label)]
+            # os consumidores leem só metric_key/combined_col
+            self.assertEqual(friendly["metric_key"], cfg["metric_key"])
+            self.assertEqual(friendly["combined_col"], cfg["combined_col"])
+
+    def test_ordem_dos_rotulos_preservada(self):
+        from app_core.opponent_profile_core import available_market_labels
+        self.assertEqual(
+            available_market_labels(),
+            ["Kills", "Torres", "Dragões", "Barões", "Inibidores", "Tempo"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

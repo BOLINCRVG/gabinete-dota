@@ -8,25 +8,15 @@ from app_core.championship_stats_core import STATS_MARKET_CONFIG
 from mlcore.utils import safe_float_or_none as _safe_float
 
 
-FRIENDLY_MARKET_CONFIG: dict[str, dict[str, str]] = {
-    "Kills": dict(STATS_MARKET_CONFIG["Kills"]),
-    "Torres": dict(STATS_MARKET_CONFIG["Torres"]),
-    "Dragões": {
-        "metric_key": "dragons",
-        "combined_col": "total_dragons",
-        "threshold_key": "sc_th_dragons",
-        "default_thresholds": "4.5,5.5",
-        "pct_prefix": "% Dragons > ",
-    },
-    "Barões": {
-        "metric_key": "barons",
-        "combined_col": "total_nashors",
-        "threshold_key": "sc_th_barons",
-        "default_thresholds": "1.5",
-        "pct_prefix": "% Nashors > ",
-    },
-    "Inibidores": dict(STATS_MARKET_CONFIG["Inibidores"]),
-    "Tempo": dict(STATS_MARKET_CONFIG["Tempo"]),
+# FONTE ÚNICA (passo 1 do mapa, 21/07): esta tela deriva 100% do registro
+# central STATS_MARKET_CONFIG. Antes, Dragões/Barões eram literais à mão que
+# repetiam o registro — mercado novo não fluía até editar aqui também. Agora,
+# adicionar/remover um mercado no registro reflete aqui sozinho. O único ajuste
+# é o rótulo histórico desta tela: "Nashors" do registro aparece como "Barões".
+_FRIENDLY_LABEL_RENAME = {"Nashors": "Barões"}
+FRIENDLY_MARKET_CONFIG: dict[str, dict[str, Any]] = {
+    _FRIENDLY_LABEL_RENAME.get(label, label): dict(cfg)
+    for label, cfg in STATS_MARKET_CONFIG.items()
 }
 
 PROFILE_BUCKET_ORDER = ["Muito Under", "Under", "Neutro", "Over", "Muito Over"]

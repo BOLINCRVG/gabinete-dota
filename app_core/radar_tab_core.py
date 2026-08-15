@@ -19,7 +19,11 @@ from typing import Any, Mapping, Optional
 
 import pandas as pd
 
-from app_core.champion_knowledge_core import load_champion_knowledge_registry
+from app_core.champions_shared_core import (  # noqa: F401  (re-export p/ uso interno)
+    _champ_icon_uri,
+    _get_draft_rows,
+    _get_registry,
+)
 from app_core.comp_archetype_core import build_comp_profile, compare_comp_profiles
 from app_core.live_between_maps_core import resolve_p_base
 from app_core.radar_confronto_core import (
@@ -35,6 +39,7 @@ from app_core.radar_confronto_core import (
     map_pattern_signals,
     player_champion_familiarity,
     team_style_history,
+    team_vs_style_history,
     towers_draft_delta,
     towers_draft_signal,
 )
@@ -54,14 +59,6 @@ def _norm_key(value: Any) -> str:
 # ----------------------------------------------------------------------------
 # Registro de campeões / opções por rota
 # ----------------------------------------------------------------------------
-
-def _get_registry(session_state: Any) -> Mapping[str, Any]:
-    reg = session_state.get("_radar_champ_registry")
-    if not isinstance(reg, dict) or not reg.get("champions"):
-        reg = load_champion_knowledge_registry()
-        session_state["_radar_champ_registry"] = reg
-    return reg
-
 
 def _role_champion_options(registry: Mapping[str, Any]) -> dict[str, list[str]]:
     """Por rota: campeões ordenados por presença observada na rota (mais comuns
@@ -216,32 +213,6 @@ def _signal_chip_html(sig: RadarSignal) -> str:
         f"<span style='color:{cor};font-weight:700;'>{sig.pct:.0f}%</span>"
         "</div>"
     )
-
-
-_ICON_DIR = None
-
-
-def _champ_icon_uri(champ_id: str) -> Optional[str]:
-    """Data-URI do ícone do campeão (champ_icons/<id>.png, cache em módulo)."""
-    global _ICON_DIR
-    if _ICON_DIR is None:
-        from pathlib import Path
-        _ICON_DIR = Path(__file__).resolve().parents[1] / "champ_icons"
-    cache = getattr(_champ_icon_uri, "_cache", None)
-    if cache is None:
-        cache = {}
-        _champ_icon_uri._cache = cache
-    cid = str(champ_id or "").strip()
-    if not cid:
-        return None
-    if cid not in cache:
-        p = _ICON_DIR / f"{cid}.png"
-        if p.exists():
-            import base64
-            cache[cid] = "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode("ascii")
-        else:
-            cache[cid] = None
-    return cache[cid]
 
 
 def _short_name(name: str) -> str:
@@ -466,6 +437,78 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     key=f"radar{_S}_line_{mk['key']}",
                 ))
 
+    # ------------------------- Veredito por mercado -------------------------
+    # Decisão primeiro (polimento 23/07): a resposta no topo, no golpe de vista.
+    # ML = força do time (confiável). Totais = motor de linhas de produção.
+    # Draft entra como ajuste PEQUENO (medido ~neutro no vencedor; só torres se move).
+    from html import escape as _esc
+    with st.container(border=True):
+        render_tab_section(
+            st, title="Veredito por mercado",
+            subtitle="A resposta no golpe de vista — odd justa (sem juice). Compare com a casa pra achar valor.",
+        )
+        # Vencedor: SÓ o número do pré (análise principal). Nunca o fallback cru
+        # do artefato (modelo de time só, sem players/achievements/camadas) — era
+        # o que fazia o Radar discordar do pré (achado por ele 24/07). Se os times
+        # não batem com a análise principal, avisa em vez de inventar.
+        p_base_v, _fonte_v = resolve_p_base(
+            session_state=session_state, team_a=team_a, team_b=team_b, artifact_path=artifact_path,
+        )
+        _v_do_pre = p_base_v is not None and str(_fonte_v or "").startswith("análise principal")
+        _tot: dict = {}
+        _pov = None
+        try:
+            from mlcore.lines_engine import (
+                build_profile as _bp, matchup_expected_totals as _met,
+                prob_over_from_total as _pov,
+            )
+            from mlcore.stats_teams import Filters as _Flt
+            _pA = _bp(team_games, team=team_a, filters=_Flt(), half_life_days=180.0)
+            _pB = _bp(team_games, team=team_b, filters=_Flt(), half_life_days=180.0)
+            _tot = _met(_pA, _pB)
+        except Exception:
+            _tot = {}
+
+        vcards = st.columns(5)
+        with vcards[0]:
+            if _v_do_pre:
+                st.markdown(
+                    "<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>Vencedor</div>"
+                    f"<div style='font-weight:700;font-size:.95em'>{_esc(_short_name(team_a))} "
+                    f"<span style='color:{_COR_A}'>{format_num_fn(1.0 / p_base_v, 2)}</span></div>"
+                    f"<div style='font-weight:700;font-size:.95em'>{_esc(_short_name(team_b))} "
+                    f"<span style='color:{_COR_B}'>{format_num_fn(1.0 / (1.0 - p_base_v), 2)}</span></div>"
+                    f"<div style='opacity:.5;font-size:.72em'>{100 * p_base_v:.0f}% / {100 * (1 - p_base_v):.0f}%</div>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    "<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>Vencedor</div>"
+                    "<div style='opacity:.75;font-size:.8em;line-height:1.25'>Analise estes times na aba "
+                    "<b>Plays</b> pro número completo — o pré aplica players + camadas que não recalculo aqui "
+                    "(pra não te mostrar um número mais pobre e divergente).</div>",
+                    unsafe_allow_html=True,
+                )
+        _tot_mkts = [m for m in RADAR_MARKETS if m["key"] in ("kills", "towers", "dragons", "time")]
+        for _i, _mk in enumerate(_tot_mkts, start=1):
+            _k = str(_mk["key"])
+            _ln = float(lines.get(_k, _mk["line"]))
+            with vcards[_i]:
+                _t = _tot.get(_k)
+                if _t is not None and _pov is not None and math.isfinite(float(_t.mean)):
+                    _po = float(_pov(_t, _ln))
+                    _lado = "Over" if _po >= 0.5 else "Under"
+                    _pl = _po if _po >= 0.5 else 1.0 - _po
+                    st.markdown(
+                        f"<div style='opacity:.55;font-size:.72em;text-transform:uppercase;letter-spacing:.04em;'>{_esc(str(_mk['label']))}</div>"
+                        f"<div style='font-size:1.35em;font-weight:700;line-height:1.1'>{float(_t.mean):.1f}</div>"
+                        f"<div style='opacity:.72;font-size:.8em'>{_lado} {_ln:g}: justa "
+                        f"<b>{format_num_fn(1.0 / max(1e-6, _pl), 2)}</b> ({100 * _pl:.0f}%)</div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.caption(f"{_mk['label']}: —")
+
     # ------------------------- Sinais (radar) -------------------------
     with st.container(border=True):
         render_tab_section(
@@ -487,18 +530,11 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 for sig in sigs:
                     st.markdown(_signal_chip_html(sig), unsafe_allow_html=True)
 
-        # Odd justa do ML (mesma fonte do entre-mapas: análise principal → artefato)
+        # p_base (força do time) só COMPUTADO aqui — a odd já aparece no Veredito
+        # acima; os blocos ao vivo (abaixo) reusam este p_base.
         p_base, fonte = resolve_p_base(
             session_state=session_state, team_a=team_a, team_b=team_b, artifact_path=artifact_path,
         )
-        if p_base is not None:
-            st.markdown(
-                f"**Odd justa (mapa)** · {team_a}: **{format_num_fn(1.0 / p_base, 2)}** "
-                f"({100.0 * p_base:.1f}%) · {team_b}: **{format_num_fn(1.0 / (1.0 - p_base), 2)}** "
-                f"({100.0 * (1.0 - p_base):.1f}%)  \n"
-                f"<span style='opacity:0.6;font-size:0.85em;'>fonte: {fonte}</span>",
-                unsafe_allow_html=True,
-            )
 
     # ------------------------- Draft -------------------------
     registry = _get_registry(session_state)
@@ -512,52 +548,17 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     roster_a = latest_roster(players_df=players_df, team=team_a) if players_df is not None else {}
     roster_b = latest_roster(players_df=players_df, team=team_b) if players_df is not None else {}
 
-    store = _series_store(session_state, team_a, team_b)
-
     with st.container(border=True):
         render_tab_section(
-            st, title="Draft do mapa",
-            subtitle="Clique nos bonecos na ordem do draft, ou cole os 10 nomes. Mapas salvos riscam o pool fearless.",
+            st, title="Draft",
+            subtitle="Clique nos bonecos na ordem do draft, ou cole os 10 nomes — refina o veredito acima.",
         )
-        cf1, cf2, cf3 = st.columns([1.2, 1, 2.2])
-        with cf1:
-            fearless = st.checkbox("Fearless", value=True, key=f"radar{_S}_fearless",
-                                   help="Campeões usados nos mapas anteriores da série ficam fora do pool.")
-        with cf2:
-            map_no = int(st.number_input("Mapa", 1, 5, step=1, key=f"radar{_S}_map_no"))
-        used = _fearless_used(store, map_no) if fearless else set()
-        with cf3:
-            saved_maps = sorted(int(k) for k in (store.get("maps") or {}) if str(k).isdigit())
-            if saved_maps:
-                st.caption(f"Série salva: mapa(s) {', '.join(str(m) for m in saved_maps)} · "
-                           f"{len(used)} campeões fora do pool deste mapa" if used else
-                           f"Série salva: mapa(s) {', '.join(str(m) for m in saved_maps)}")
-            if used:
-                st.caption("Fora (fearless): " + ", ".join(sorted(used)))
-
-        # Padrões por número do mapa (medidos; gate ACCEPT 2026-07-04 —
-        # dragões mapa-2 foi REJECT e por isso não aparece).
-        for pat in map_pattern_signals(map_no):
-            st.markdown(
-                "<div style='border-left:3px solid #f59e0b;background:rgba(245,158,11,0.08);"
-                "padding:5px 10px;border-radius:6px;margin:3px 0;font-size:0.88em;'>"
-                f"📐 {pat}</div>",
-                unsafe_allow_html=True,
-            )
-
-        pick_key = lambda side, role: f"radar_pick_{side}_{role}_m{map_no}"  # noqa: E731
-
-        # Chegou com a série andando? Pode selecionar o mapa 1, colar/salvar,
-        # depois o 2, ... — o pool fearless reconstrói igual. Os slots de um
-        # mapa JÁ SALVO pré-carregam do que foi salvo (pode editar e re-salvar).
-        saved_this_map = (store.get("maps") or {}).get(str(map_no)) or {}
-        for side in ("A", "B"):
-            saved_picks = list(saved_this_map.get(side) or [])
-            for i, role in enumerate(ROLE_ORDER):
-                key = pick_key(side, role)
-                if not str(session_state.get(key) or "") and i < len(saved_picks) and str(saved_picks[i]).strip():
-                    session_state[key] = str(saved_picks[i])
-        st.caption("Série já em andamento? Selecione o mapa 1, cole o draft e salve; repita até o mapa atual — o fearless reconstrói sozinho.")
+        # Fearless/série CORTADO (23/07, com ele): draft de um mapa só. O _S
+        # isola o draft por jogo (multi-jogo preservado); map_no fixo mantém as
+        # chaves de widget estáveis sem o apparato de série.
+        map_no = 1
+        used: set = set()
+        pick_key = lambda side, role: f"radar{_S}_pick_{side}_{role}"  # noqa: E731
 
         # Colagem única no esquema do usuário: 10 campeões (tab/espaço), os 5
         # PRIMEIROS são do time BLUE SIDE, na ordem TOP JNG MID ADC SUP.
@@ -719,7 +720,6 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
             if not (isinstance(meta_lu, tuple) and len(meta_lu) == 2 and meta_lu[0] == str(csv_sig)):
                 try:
                     from app_core.meta_patch_core import meta_lookup_for_radar
-                    from app_core.meta_tab_core import _get_draft_rows
                     meta_lu = (str(csv_sig), meta_lookup_for_radar(
                         _get_draft_rows(session_state, csv_sig), registry=registry))
                 except Exception:
@@ -750,39 +750,6 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
             for s in ("A", "B")
         }
 
-        bc1, bc2 = st.columns([1.4, 1])
-        with bc1:
-            if st.button(f"💾 Salvar mapa {map_no} na série (libera o fearless do próximo)",
-                         key=f"radar{_S}_save_map_{map_no}"):
-                store.setdefault("maps", {})[str(map_no)] = {"A": list(picks["A"]), "B": list(picks["B"])}
-                session_state["radar_series"] = store
-                _series_persist(store)
-                st.rerun()
-        with bc2:
-            if st.button("♻ Resetar série", key=f"radar{_S}_reset_series"):
-                fresh = {"matchup": f"{team_a}|{team_b}", "maps": {}}
-                session_state["radar_series"] = fresh
-                _series_persist(fresh)
-                st.rerun()
-
-        saved_map_nos = sorted(int(k) for k in (store.get("maps") or {}) if str(k).isdigit())
-        if saved_map_nos:
-            with st.expander(f"Mapas salvos da série ({len(saved_map_nos)})", expanded=False):
-                for m in saved_map_nos:
-                    drafts = (store.get("maps") or {}).get(str(m)) or {}
-                    da_txt = ", ".join(c for c in (drafts.get("A") or []) if str(c).strip()) or "—"
-                    db_txt = ", ".join(c for c in (drafts.get("B") or []) if str(c).strip()) or "—"
-                    mc1, mc2 = st.columns([5, 1])
-                    with mc1:
-                        st.markdown(f"**Mapa {m}** · {team_a}: {da_txt}  \n"
-                                    f"{'&nbsp;' * 14} {team_b}: {db_txt}", unsafe_allow_html=True)
-                    with mc2:
-                        if st.button("Remover", key=f"radar{_S}_rm_map_{m}"):
-                            (store.get("maps") or {}).pop(str(m), None)
-                            session_state["radar_series"] = store
-                            _series_persist(store)
-                            st.rerun()
-
     complete_a = all(str(c).strip() for c in picks["A"])
     complete_b = all(str(c).strip() for c in picks["B"])
     compare: Optional[Mapping[str, Any]] = None
@@ -803,37 +770,45 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
     else:
         st.info("Complete os 10 picks pra abrir a leitura do draft.")
 
-    # ---------------- Ao vivo (ex-Live-Bet, fundido aqui a pedido) ----------------
-    with st.container(border=True):
-        render_tab_section(
-            st, title="Entre mapas (série ao vivo)",
-            subtitle="Placar da série → odd justa do próximo mapa e de fechar a série.",
-        )
-        try:
-            from app_core.live_between_maps_core import render_between_maps_block
-            render_between_maps_block(
-                st=st, session_state=session_state, team_a=team_a, team_b=team_b,
-                artifact_path=artifact_path, format_num_fn=format_num_fn,
+    # ---------------- Ao vivo (entre-mapas + durante o mapa) ----------------
+    # Toggle (polimento 23/07): o ao vivo é OUTRO momento — escondido por padrão
+    # pra não alongar o pré-jogo; liga quando a série/mapa começa.
+    _show_live = st.toggle(
+        "Ao vivo — entre mapas · durante o mapa", value=False,
+        key=f"radar{_S}_show_live",
+        help="Placar da série e estado do mapa em andamento. Abre só quando o jogo começa.",
+    )
+    if _show_live:
+        with st.container(border=True):
+            render_tab_section(
+                st, title="Entre mapas (série ao vivo)",
+                subtitle="Placar da série → odd justa do próximo mapa e de fechar a série.",
             )
-        except Exception as _exc_lbm:
-            _notify(st, _exc_lbm, "Falha no bloco entre-mapas")
+            try:
+                from app_core.live_between_maps_core import render_between_maps_block
+                render_between_maps_block(
+                    st=st, session_state=session_state, team_a=team_a, team_b=team_b,
+                    artifact_path=artifact_path, format_num_fn=format_num_fn,
+                )
+            except Exception as _exc_lbm:
+                _notify(st, _exc_lbm, "Falha no bloco entre-mapas")
 
-    with st.container(border=True):
-        render_tab_section(
-            st, title="Durante o mapa (estado → vitória)",
-            subtitle="Ouro/torres/objetivos/tempo do mapa em andamento → P(vitória) calibrada.",
-        )
-        try:
-            from app_core.live_state_panel_ui_core import render_live_state_panel
-            render_live_state_panel(
-                st=st, session_state=session_state,
-                team_a=team_a, team_b=team_b,
-                p_map_pre=p_base, league=league_a,
-                comp_compare=compare,
-                format_num_fn=format_num_fn,
+        with st.container(border=True):
+            render_tab_section(
+                st, title="Durante o mapa (estado → vitória)",
+                subtitle="Ouro/torres/objetivos/tempo do mapa em andamento → P(vitória) calibrada.",
             )
-        except Exception as _exc_lsp:
-            _notify(st, _exc_lsp, "Falha na predição calibrada (durante o mapa)")
+            try:
+                from app_core.live_state_panel_ui_core import render_live_state_panel
+                render_live_state_panel(
+                    st=st, session_state=session_state,
+                    team_a=team_a, team_b=team_b,
+                    p_map_pre=p_base, league=league_a,
+                    comp_compare=compare,
+                    format_num_fn=format_num_fn,
+                )
+            except Exception as _exc_lsp:
+                _notify(st, _exc_lsp, "Falha na predição calibrada (durante o mapa)")
 
 
 def _notify(st: Any, exc: Exception, context: str) -> None:
@@ -920,6 +895,45 @@ def _render_draft_reading(
         lean_team, lean_label, lean_color = team_b, "LEVE VANTAGEM", _COR_B
     else:
         lean_team, lean_label, lean_color = "", "DRAFT EQUILIBRADO", "#9ca3af"
+
+    # ---- RESUMO do draft: 3 bandeiras honestas num lugar só (pedido dele 24/07) ----
+    # estilo · fora-do-meta · baixa-familiaridade. Suporte, não veredito — o peso
+    # de player/força já está no Vencedor; aqui é o que é NOTÁVEL no draft.
+    from html import escape as _esc2
+
+    def _draft_flags(picks, fam):
+        off = [(c, str((meta_map.get(c) or {}).get("tier") or ""))
+               for c in picks if str((meta_map.get(c) or {}).get("tier") or "") in ("C", "D")]
+        low = [(p, ch, g) for (p, ch, g) in fam if g < _FAMILIARITY_OK]
+        return off, low
+
+    with st.container(border=True):
+        render_tab_section(st, title="Resumo do draft",
+                           subtitle="O que esse draft tem de notável — suporte pra sua leitura, você decide.")
+        _rc = st.columns(2)
+        for _col, _team, _arch, _picks, _fam, _color in (
+            (_rc[0], team_a, arch_a, picks_a, fam_a, _COR_A),
+            (_rc[1], team_b, arch_b, picks_b, fam_b, _COR_B),
+        ):
+            with _col:
+                st.markdown(
+                    f"<b style='color:{_color}'>{_esc2(_short_name(_team))}</b> · "
+                    f"<b>{_esc2(str(_arch))}</b>", unsafe_allow_html=True)
+                _off, _low = _draft_flags(_picks, _fam)
+                if _off:
+                    st.markdown("<div style='font-size:.85em;margin:2px 0'>📉 <b>Fora do meta:</b> "
+                                + ", ".join(f"{_esc2(str(c))} ({t})" for c, t in _off) + "</div>",
+                                unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='font-size:.85em;opacity:.6;margin:2px 0'>✓ picks no meta</div>",
+                                unsafe_allow_html=True)
+                if _low:
+                    st.markdown("<div style='font-size:.85em;margin:2px 0'>⚠ <b>Baixa familiaridade:</b> "
+                                + ", ".join(f"{_esc2(str(p))} ({_esc2(str(ch))}, {g}j)" for p, ch, g in _low) + "</div>",
+                                unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='font-size:.85em;opacity:.6;margin:2px 0'>✓ times confortáveis nos picks</div>",
+                                unsafe_allow_html=True)
 
     with st.container(border=True):
         render_tab_section(st, title="Leitura do draft",
@@ -1016,41 +1030,62 @@ def _render_draft_reading(
         except Exception:
             pass
 
-    # ------------------------- Fit time×estilo -------------------------
+    # ------------------------- Fit time × estilo (suporte) -------------------------
+    from html import escape as _esc
     with st.container(border=True):
-        render_tab_section(st, title="Fit time × estilo",
-                           subtitle="Como cada time joga com o tipo de comp que draftou hoje (season atual).")
+        render_tab_section(
+            st, title="Fit time × estilo",
+            subtitle="Como cada time se sai COM o estilo que draftou hoje, e o adversário CONTRA ele. "
+                     "Amostra pequena — é suporte pra sua leitura, não veredito.",
+        )
+
+        def _style_hist(fn, tm):
+            ck = f"_radar_{fn.__name__}_{tm}_{year}_{str(csv_sig)}"
+            h = session_state.get(ck)
+            if not isinstance(h, dict):
+                h = fn(players_df=players_df, team=tm, registry=registry, year=year) \
+                    if players_df is not None else {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
+                session_state[ck] = h
+            return h
+
+        def _rec_txt(rec):
+            w, n = int(rec.get("wins", 0)), int(rec.get("n", 0))
+            if n == 0:
+                return "sem jogos", float("nan"), 0
+            return f"<b>{w}-{n - w}</b> ({100.0 * w / n:.0f}%, n={n})", 100.0 * w / n, n
+
         fit_cols = st.columns(2)
-        for col, team, arch, color in ((fit_cols[0], team_a, arch_a, _COR_A),
-                                       (fit_cols[1], team_b, arch_b, _COR_B)):
+        for col, team, opp, arch, color in (
+            (fit_cols[0], team_a, team_b, arch_a, _COR_A),
+            (fit_cols[1], team_b, team_a, arch_b, _COR_B),
+        ):
             with col:
                 st.markdown(_team_header_html(team, color), unsafe_allow_html=True)
-                cache_key = f"_radar_fit_{team}_{year}_{str(csv_sig)}"
-                hist = session_state.get(cache_key)
-                if not isinstance(hist, dict):
-                    hist = team_style_history(players_df=players_df, team=team,
-                                              registry=registry, year=year) \
-                        if players_df is not None else {a: {"wins": 0, "n": 0} for a in ARCHETYPES}
-                    session_state[cache_key] = hist
-                for label in ARCHETYPES:
-                    rec = hist.get(label) or {"wins": 0, "n": 0}
-                    wins, n = int(rec.get("wins", 0)), int(rec.get("n", 0))
-                    is_today = (label == arch)
-                    pct = (100.0 * wins / n) if n else float("nan")
-                    strong = n >= 5 and pd.notna(pct) and (pct >= 70.0 or pct <= 30.0)
-                    mark = "🎯 " if is_today else ""
-                    if n == 0:
-                        line = f"{mark}{label}: sem jogos"
+                st.markdown(
+                    "<div style='font-size:.75em;opacity:.6;text-transform:uppercase;letter-spacing:.04em;'>draftou</div>"
+                    f"<div style='font-size:1.4em;font-weight:800;color:{color};line-height:1.05'>{_esc(str(arch))}</div>",
+                    unsafe_allow_html=True,
+                )
+                wtxt, wpct, wn = _rec_txt(_style_hist(team_style_history, team).get(arch, {"wins": 0, "n": 0}))
+                vtxt, vpct, vn = _rec_txt(_style_hist(team_vs_style_history, opp).get(arch, {"wins": 0, "n": 0}))
+                st.markdown(
+                    f"<div style='margin-top:8px;font-size:.9em;'>{_esc(_short_name(team))} <span style='opacity:.6'>com {_esc(str(arch).lower())}:</span> {wtxt}</div>"
+                    f"<div style='font-size:.9em;'>{_esc(_short_name(opp))} <span style='opacity:.6'>contra {_esc(str(arch).lower())}:</span> {vtxt}</div>",
+                    unsafe_allow_html=True,
+                )
+                if wn >= 5 and vn >= 5:
+                    edge = (wpct - 50.0) + (50.0 - vpct)  # bom COM + adversário fraco CONTRA
+                    if edge >= 15:
+                        vtag, vcor = f"leitura de estilo favorece {_short_name(team)}", "#22c55e"
+                    elif edge <= -15:
+                        vtag, vcor = f"leitura de estilo favorece {_short_name(opp)}", "#ef4444"
                     else:
-                        line = f"{mark}{label}: <b>{wins}-{n - wins}</b> ({pct:.0f}%, n={n})"
-                    style = ""
-                    if is_today:
-                        style = f"border-left:3px solid {color};padding-left:8px;"
-                    if strong and is_today:
-                        cor = "#22c55e" if pct >= 70.0 else "#ef4444"
-                        line += f" <span style='color:{cor};font-weight:800;'>← sinal</span>"
-                    elif is_today and 0 < n < 5:
-                        line += " <span style='opacity:0.55;'>(amostra curta)</span>"
-                    st.markdown(f"<div style='{style}margin:3px 0;'>{line}</div>", unsafe_allow_html=True)
+                        vtag, vcor = "estilo equilibrado", "#9ca3af"
+                    st.markdown(
+                        f"<div style='margin-top:6px;font-weight:700;font-size:.9em;color:{vcor}'>→ {_esc(vtag)}</div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.caption("→ amostra pequena — sem leitura de vantagem confiável.")
 
     return compare

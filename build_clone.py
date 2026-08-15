@@ -28,13 +28,12 @@ PATCHES: list[tuple[str, str]] = [
     (
         "from __future__ import annotations",
         "from __future__ import annotations\n\n"
-        "# Portatil (2026-07-10): o usuario manda as pastas num .rar pro amigo —\n"
-        "# o repo do LoL e descoberto por vizinhanca (dota_paths), nunca por\n"
-        "# caminho absoluto com username.\n"
+        "# SEPARADO do LoL (2026-07-24, pedido dele): o Dota usa o app_core/mlcore\n"
+        "# DESTE repo — nao mais o do LoL via sys.path (ensure_lol_on_path saiu).\n"
+        "# Bug num projeto nao quebra o outro. Pra herdar melhorias do LoL, rode\n"
+        "# 'python build_clone.py' (ele chama o sync_vendor e recopia o motor).\n"
         "import sys as _dota_sys\n"
         "_dota_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))\n"
-        "from dota_paths import ensure_lol_on_path as _dota_lol_path\n"
-        "_dota_lol_path()\n"
         "import dota_overrides  # noqa: F401  Baroes->Roshans etc. ANTES de qualquer app_core derivar listas",
     ),
     # 2a. titulo da pagina
@@ -63,7 +62,7 @@ PATCHES: list[tuple[str, str]] = [
     #     proximas 36h (menos os que ja comecaram), resolvendo nomes por alias;
     #     desconhecidos vao pra previa de mapeamento no expander (minimizado).
     (
-        'with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):',
+        'core_ensure_schedule_alias_state(st.session_state)',
         '''import time as _dota_time
 if _dota_time.time() - float(st.session_state.get("dota_diaria_auto_ts", 0.0) or 0.0) > 900.0:
     st.session_state["dota_diaria_auto_ts"] = _dota_time.time()
@@ -235,7 +234,7 @@ if _dota_games_all and _dota_dates:
         _dota_set_pending(st.session_state, _payload)
         st.rerun()
 
-with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):''',
+core_ensure_schedule_alias_state(st.session_state)''',
     ),
     # 6. BO2 nos seletores de import do proprio plays_app (o principal vem de
     #    matchup_selection_core.BO_OPTIONS, sobrescrito em dota_overrides)

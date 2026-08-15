@@ -493,6 +493,147 @@ def _recenter_mu(st: TeamState, *, prior_mu: float, shrink: float) -> float:
     return float(prev - st.mu)
 
 
+def _resolve_scoped_param(
+    global_v: float,
+    by_league: Dict[str, float],
+    by_patch: Dict[str, float],
+    league_v: str,
+    patch_v: str,
+) -> float:
+    """Resolve um parâmetro global -> override por liga -> mistura por patch.
+
+    Extraído de build_team_state_artifact (era nested, 19/07 refactor guiado por
+    equivalence_check). Puro: liga sobrescreve o global; patch mistura 65/35 por
+    cima. Chamado ~10x com escopos diferentes (info_scale, quality_k, qwl_*)."""
+    out_v = float(global_v)
+    lgk = _norm_upper_key(league_v)
+    ptk = _norm_upper_key(patch_v)
+    if lgk and lgk in by_league:
+        out_v = float(by_league[lgk])
+    if ptk and ptk in by_patch:
+        out_v = float((0.65 * out_v) + (0.35 * float(by_patch[ptk])))
+    return float(out_v)
+
+
+def _glicko_lite_p_blue(*, mu_b: float, mu_r: float, sigma_b: float, sigma_r: float) -> Tuple[float, float, float, float]:
+    """Fatores Glicko-lite do jogo: retorna (g_b, g_r, denom, p_blue).
+
+    Extraído do loop de build_team_state_artifact (20/07, refactor supervisionado
+    guiado por equivalence_check). É o CORE de cada jogo — a probabilidade que
+    vira o erro que atualiza o estado. g_b/g_r encolhem a sensibilidade conforme
+    o adversário é incerto e ALIMENTAM a atualização de precisão/mu depois (por
+    isso são devolvidos, não só p_blue); denom normaliza pela variância conjunta."""
+    g_r = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sigma_r) ** 2) / (math.pi ** 2))))
+    g_b = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sigma_b) ** 2) / (math.pi ** 2))))
+    denom = float(max(1e-6, math.sqrt(1.0 + (float(sigma_b) ** 2) + (float(sigma_r) ** 2))))
+    p_blue = float(_sigmoid(((float(mu_b) - float(mu_r)) / denom) * ((g_b + g_r) * 0.5)))
+    return g_b, g_r, denom, p_blue
+
+
+def _effective_k(*, base_k: float, league: str, sigma_b: float, sigma_r: float, base_sigma: float) -> float:
+    """Taxa de aprendizado efetiva do jogo (quanto o resultado move o estado).
+
+    Extraído do loop. Ligas mais fortes movem mais (league_k_multiplier); alta
+    incerteza combinada também permite passos maiores (unc_mul). Limitado a
+    [0.04, 0.55]. Puro; equivalence_check prova 856 times idênticos."""
+    lm = float(_league_k_multiplier(league))
+    unc_mul = float(0.85 + 0.35 * min(1.0, (float(sigma_b) + float(sigma_r)) / max(1e-6, (2.0 * float(base_sigma)))))
+    return float(max(0.04, min(0.55, float(base_k) * lm * unc_mul)))
+
+
+def _resolve_effective_params(
+    specs: Dict[str, Tuple[float, Dict[str, float], Dict[str, float], Optional[float], Optional[float]]],
+    league: str,
+    patch_k: str,
+) -> Dict[str, float]:
+    """Resolve TODOS os params efetivos (por liga/patch) de um jogo de uma vez.
+
+    Extraído de build_team_state_artifact (era ~80 linhas de `x_eff =
+    clip(resolve(...))` repetidas no loop). Data-driven: cada spec é
+    (global, by_league, by_patch, lo, hi); lo=None -> sem clip. Puro; a rede
+    de equivalência (equivalence_check) prova mu/sigma idênticos em 856 times."""
+    out: Dict[str, float] = {}
+    for name, (global_v, by_league, by_patch, lo, hi) in specs.items():
+        v = _resolve_scoped_param(float(global_v), by_league, by_patch, league, patch_k)
+        if lo is not None and hi is not None:
+            v = _clip(v, float(lo), float(hi))
+        out[name] = float(v)
+    return out
+
+
+def _apply_patch_switch_recenter(
+    st: "TeamState",
+    *,
+    patch_switched: bool,
+    patch_mu_recenter: float,
+    patch_sigma_mult: float,
+    league_prior_mu: float,
+) -> Tuple[int, int]:
+    """Recentra o mu do time ao trocar de patch. Retorna (switches, recenters).
+
+    Extraído do loop de build (20/07, blocos stateful; equivalence_check prova
+    856 times). Muta `st` via _recenter_mu — a ramificação sai do build."""
+    if not bool(patch_switched):
+        return 0, 0
+    sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
+    if sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=sh)
+        return 1, 1
+    return 1, 0
+
+
+def _apply_league_switch_recenter(
+    st: "TeamState",
+    *,
+    league: str,
+    league_switch_mu_recenter: float,
+    league_prior_mu: float,
+) -> int:
+    """Recentra o mu ao time mudar de liga. Retorna o incremento do contador."""
+    if not (st.last_league and league and str(st.last_league).strip().upper() != str(league).strip().upper()):
+        return 0
+    sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
+    if sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=sh)
+        return 1
+    return 0
+
+
+def _apply_roster_recenter(
+    st: "TeamState",
+    cc: Optional[float],
+    *,
+    roster_mu_recenter: float,
+    roster_cont_hard_reset: float,
+    roster_hard_reset_extra_sigma: float,
+    max_sigma: float,
+    league_prior_mu: float,
+) -> Tuple[int, int, int, int]:
+    """Recentra mu / infla sigma conforme a mudança de roster (continuidade cc).
+
+    Retorna (events, events_with_change, hard_reset, mu_recenter). cc é a
+    continuidade do lineup (1.0 = igual). Muta `st`."""
+    if cc is None:
+        return 0, 0, 0, 0
+    if float(cc) >= 0.999:
+        return 1, 0, 0, 0
+    hard = 0
+    murec = 0
+    _miss = float(max(0.0, 1.0 - float(cc)))
+    _gp_mul = float(1.0 + min(0.35, float(max(0.0, _f(st.gp, 0.0))) / 80.0))
+    _ro_sh = float(_clip(float(roster_mu_recenter) * _miss * _gp_mul, 0.0, 0.80))
+    if float(cc) <= float(roster_cont_hard_reset):
+        _ro_sh = float(max(_ro_sh, _clip(float(roster_mu_recenter) + 0.20, 0.0, 0.85)))
+        _extra = float(max(0.0, float(roster_hard_reset_extra_sigma)))
+        if _extra > 0.0:
+            st.sigma = float(min(float(max_sigma), math.sqrt(float(st.sigma) ** 2 + _extra * _extra)))
+        hard = 1
+    if _ro_sh > 0.0:
+        _recenter_mu(st, prior_mu=float(league_prior_mu), shrink=_ro_sh)
+        murec = 1
+    return 1, 1, hard, murec
+
+
 def build_team_state_artifact(
     csv_paths: Iterable[str],
     *,
@@ -759,15 +900,18 @@ def build_team_state_artifact(
     map_qwl_opp_ctx_lg = _coerce_float_map(qwl_opponent_context_mix_by_league)
     map_qwl_opp_ctx_patch = _coerce_float_map(qwl_opponent_context_mix_by_patch)
 
-    def _resolve_param(global_v: float, by_league: Dict[str, float], by_patch: Dict[str, float], league_v: str, patch_v: str) -> float:
-        out_v = float(global_v)
-        lgk = _norm_upper_key(league_v)
-        ptk = _norm_upper_key(patch_v)
-        if lgk and lgk in by_league:
-            out_v = float(by_league[lgk])
-        if ptk and ptk in by_patch:
-            out_v = float((0.65 * out_v) + (0.35 * float(by_patch[ptk])))
-        return float(out_v)
+    # Specs dos params efetivos por jogo: nome -> (global, by_league, by_patch,
+    # lo, hi). lo/hi None = sem clip. Resolvido por _resolve_effective_params
+    # (mantém os MESMOS limites históricos por escopo).
+    _scoped_param_specs: Dict[str, Tuple[float, Dict[str, float], Dict[str, float], Optional[float], Optional[float]]] = {
+        "bayes_info_scale": (float(bayes_info_scale), map_bayes_lg, map_bayes_patch, None, None),
+        "quality_k_boost": (float(quality_k_boost), map_quality_lg, map_quality_patch, None, None),
+        "qwl_surplus_mix": (float(qwl_surplus_mix), map_qwl_mix_lg, map_qwl_mix_patch, 0.0, 1.0),
+        "qwl_throw_weight": (float(qwl_throw_weight), map_qwl_throw_lg, map_qwl_throw_patch, 0.60, 1.80),
+        "qwl_comeback_weight": (float(qwl_comeback_weight), map_qwl_comeback_lg, map_qwl_comeback_patch, 0.30, 1.20),
+        "qwl_phase_dynamic_strength": (float(qwl_phase_dynamic_strength), map_qwl_phase_dyn_lg, map_qwl_phase_dyn_patch, 0.0, 0.80),
+        "qwl_opponent_context_mix": (float(qwl_opponent_context_mix), map_qwl_opp_ctx_lg, map_qwl_opp_ctx_patch, 0.0, 1.0),
+    }
 
     # Incremental is only safe for append-only updates. If a new unseen game is older than the
     # seed max_date, rebuild from scratch to preserve chronological state updates.
@@ -901,89 +1045,14 @@ def build_team_state_artifact(
         league = str(r.league or "").strip()
         split = str(r.split or "").strip()
         playoffs = bool(r.playoffs) if getattr(r, "playoffs", None) is not None else None
-        bayes_info_scale_eff = float(
-            _resolve_param(
-                float(bayes_info_scale),
-                map_bayes_lg,
-                map_bayes_patch,
-                str(league),
-                str(patch_k),
-            )
-        )
-        quality_k_boost_eff = float(
-            _resolve_param(
-                float(quality_k_boost),
-                map_quality_lg,
-                map_quality_patch,
-                str(league),
-                str(patch_k),
-            )
-        )
-        qwl_surplus_mix_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_surplus_mix),
-                    map_qwl_mix_lg,
-                    map_qwl_mix_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                1.0,
-            )
-        )
-        qwl_throw_weight_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_throw_weight),
-                    map_qwl_throw_lg,
-                    map_qwl_throw_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.60,
-                1.80,
-            )
-        )
-        qwl_comeback_weight_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_comeback_weight),
-                    map_qwl_comeback_lg,
-                    map_qwl_comeback_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.30,
-                1.20,
-            )
-        )
-        qwl_phase_dynamic_strength_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_phase_dynamic_strength),
-                    map_qwl_phase_dyn_lg,
-                    map_qwl_phase_dyn_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                0.80,
-            )
-        )
-        qwl_opponent_context_mix_eff = float(
-            _clip(
-                _resolve_param(
-                    float(qwl_opponent_context_mix),
-                    map_qwl_opp_ctx_lg,
-                    map_qwl_opp_ctx_patch,
-                    str(league),
-                    str(patch_k),
-                ),
-                0.0,
-                1.0,
-            )
-        )
+        _eff = _resolve_effective_params(_scoped_param_specs, str(league), str(patch_k))
+        bayes_info_scale_eff = _eff["bayes_info_scale"]
+        quality_k_boost_eff = _eff["quality_k_boost"]
+        qwl_surplus_mix_eff = _eff["qwl_surplus_mix"]
+        qwl_throw_weight_eff = _eff["qwl_throw_weight"]
+        qwl_comeback_weight_eff = _eff["qwl_comeback_weight"]
+        qwl_phase_dynamic_strength_eff = _eff["qwl_phase_dynamic_strength"]
+        qwl_opponent_context_mix_eff = _eff["qwl_opponent_context_mix"]
 
         sb = _get_or_create_team(states, blue_name)
         sr = _get_or_create_team(states, red_name)
@@ -1008,62 +1077,48 @@ def build_team_state_artifact(
             patch_sigma_mult=float(patch_sigma_mult),
             max_sigma=float(max_sigma),
         )
-        if bool((reg_b or {}).get("patch_switched", False)):
-            patch_switches += 1
-            _patch_sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
-            if _patch_sh > 0.0:
-                _recenter_mu(sb, prior_mu=float(league_prior_mu), shrink=_patch_sh)
-                patch_mu_recenter_events += 1
-        if bool((reg_r or {}).get("patch_switched", False)):
-            patch_switches += 1
-            _patch_sh = float(_clip(float(patch_mu_recenter) * float(patch_sigma_mult), 0.0, 0.65))
-            if _patch_sh > 0.0:
-                _recenter_mu(sr, prior_mu=float(league_prior_mu), shrink=_patch_sh)
-                patch_mu_recenter_events += 1
+        for _st, _reg in ((sb, reg_b), (sr, reg_r)):
+            _ps, _pr = _apply_patch_switch_recenter(
+                _st,
+                patch_switched=bool((_reg or {}).get("patch_switched", False)),
+                patch_mu_recenter=float(patch_mu_recenter),
+                patch_sigma_mult=float(patch_sigma_mult),
+                league_prior_mu=float(league_prior_mu),
+            )
+            patch_switches += _ps
+            patch_mu_recenter_events += _pr
 
-        if sb.last_league and league and str(sb.last_league).strip().upper() != str(league).strip().upper():
-            _ls_sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
-            if _ls_sh > 0.0:
-                _recenter_mu(sb, prior_mu=float(league_prior_mu), shrink=_ls_sh)
-                league_switch_recenter_events += 1
-        if sr.last_league and league and str(sr.last_league).strip().upper() != str(league).strip().upper():
-            _ls_sh = float(_clip(float(league_switch_mu_recenter), 0.0, 0.55))
-            if _ls_sh > 0.0:
-                _recenter_mu(sr, prior_mu=float(league_prior_mu), shrink=_ls_sh)
-                league_switch_recenter_events += 1
+        for _st in (sb, sr):
+            league_switch_recenter_events += _apply_league_switch_recenter(
+                _st,
+                league=league,
+                league_switch_mu_recenter=float(league_switch_mu_recenter),
+                league_prior_mu=float(league_prior_mu),
+            )
 
         blue_lineup, red_lineup = lineup_by_game.get(gid, ({}, {}))
         ctb = _inflate_sigma_for_roster(sb, cur_lineup=blue_lineup, roster_sigma_bump=float(roster_sigma_bump), max_sigma=float(max_sigma))
         ctr = _inflate_sigma_for_roster(sr, cur_lineup=red_lineup, roster_sigma_bump=float(roster_sigma_bump), max_sigma=float(max_sigma))
         for _st, cc in ((sb, ctb), (sr, ctr)):
-            if cc is not None:
-                roster_events += 1
-                if float(cc) < 0.999:
-                    roster_events_with_change += 1
-                    _miss = float(max(0.0, 1.0 - float(cc)))
-                    _gp_mul = float(1.0 + min(0.35, float(max(0.0, _f(_st.gp, 0.0))) / 80.0))
-                    _ro_sh = float(_clip(float(roster_mu_recenter) * _miss * _gp_mul, 0.0, 0.80))
-                    if float(cc) <= float(roster_cont_hard_reset):
-                        _ro_sh = float(max(_ro_sh, _clip(float(roster_mu_recenter) + 0.20, 0.0, 0.85)))
-                        _extra = float(max(0.0, float(roster_hard_reset_extra_sigma)))
-                        if _extra > 0.0:
-                            _st.sigma = float(min(float(max_sigma), math.sqrt(float(_st.sigma) ** 2 + _extra * _extra)))
-                        roster_hard_reset_events += 1
-                    if _ro_sh > 0.0:
-                        _recenter_mu(_st, prior_mu=float(league_prior_mu), shrink=_ro_sh)
-                        roster_mu_recenter_events += 1
+            _re, _rewc, _rhard, _rmu = _apply_roster_recenter(
+                _st, cc,
+                roster_mu_recenter=float(roster_mu_recenter),
+                roster_cont_hard_reset=float(roster_cont_hard_reset),
+                roster_hard_reset_extra_sigma=float(roster_hard_reset_extra_sigma),
+                max_sigma=float(max_sigma),
+                league_prior_mu=float(league_prior_mu),
+            )
+            roster_events += _re
+            roster_events_with_change += _rewc
+            roster_hard_reset_events += _rhard
+            roster_mu_recenter_events += _rmu
 
         # Glicko-lite: opponent uncertainty modulates sensitivity.
-        g_r = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sr.sigma) ** 2) / (math.pi ** 2))))
-        g_b = float(1.0 / math.sqrt(1.0 + (3.0 * (float(sb.sigma) ** 2) / (math.pi ** 2))))
-        denom = float(max(1e-6, math.sqrt(1.0 + (float(sb.sigma) ** 2) + (float(sr.sigma) ** 2))))
-        p_blue = float(_sigmoid(((float(sb.mu) - float(sr.mu)) / denom) * ((g_b + g_r) * 0.5)))
+        g_b, g_r, denom, p_blue = _glicko_lite_p_blue(mu_b=float(sb.mu), mu_r=float(sr.mu), sigma_b=float(sb.sigma), sigma_r=float(sr.sigma))
         err = float(y - p_blue)
 
         # Stronger leagues move state a bit more; high uncertainty also allows larger moves.
-        lm = float(_league_k_multiplier(league))
-        unc_mul = float(0.85 + 0.35 * min(1.0, (float(sb.sigma) + float(sr.sigma)) / max(1e-6, (2.0 * float(base_sigma)))))
-        k_eff = float(max(0.04, min(0.55, float(base_k) * lm * unc_mul)))
+        k_eff = _effective_k(base_k=float(base_k), league=league, sigma_b=float(sb.sigma), sigma_r=float(sr.sigma), base_sigma=float(base_sigma))
         surprise = float(abs(err))
         q_blue, q_tempo_term, q_conversion_term, q_terms = _game_quality_blue(
             r,

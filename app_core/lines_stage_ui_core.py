@@ -22,17 +22,12 @@ from app_core.flow_runtime_core import (
 )
 from app_core.lines_parsing_core import parse_single_float
 from app_core.results_runtime_state_core import resolve_hc_kills_team
-from app_core.stats_config import line_key_by_label
+from app_core.stats_config import line_input_hints, line_key_by_label
 
-# Labels históricos da tela principal (diferem dos exemplos da Agenda).
-_LINE_INPUT_LABELS: Dict[str, str] = {
-    "lines_kills": "Kills (ex: 27.5, 30.5)",
-    "lines_towers": "Torres (ex: 11.5, 12.5)",
-    "lines_dragons": "Dragões (ex: 4.5, 5.5)",
-    "lines_barons": "Barões (ex: 1.5)",
-    "lines_inhib": "Inibidores (ex: 1.5)",
-    "lines_time": "Tempo (ex: 32, 32.5)",
-}
+# Labels históricos da tela principal (variante "main"; a Agenda usa exemplos
+# diferentes de propósito). Fonte única: STATS_MARKET_CONFIG.input_hint_main —
+# mercado novo herda o placeholder sozinho.
+_LINE_INPUT_LABELS: Dict[str, str] = line_input_hints("main")
 
 
 def render_lines_stage(

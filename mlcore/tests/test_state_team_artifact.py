@@ -7,9 +7,19 @@ from unittest.mock import patch
 
 import pandas as pd
 
+import math
+
 from mlcore.state_team_artifact import (
+    TeamState,
+    _apply_league_switch_recenter,
+    _apply_patch_switch_recenter,
+    _apply_roster_recenter,
     _days_between_iso,
+    _effective_k,
     _file_sig_info,
+    _glicko_lite_p_blue,
+    _resolve_effective_params,
+    _resolve_scoped_param,
     _safe_iso_date,
     _same_source_path_order,
     _team_state_from_dict,
@@ -17,6 +27,180 @@ from mlcore.state_team_artifact import (
     load_team_state_artifact,
     save_team_state_artifact,
 )
+
+
+class ApplyPatchSwitchRecenterTests(unittest.TestCase):
+    """Regra stateful extraída do loop (20/07, provada por equivalence_check):
+    ao trocar de patch, o mu é puxado para o prior da liga."""
+
+    def test_sem_troca_nao_faz_nada(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=False, patch_mu_recenter=0.11, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (0, 0))
+        self.assertEqual(st.mu, 1.0)
+
+    def test_troca_recentra_mu_para_o_prior(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=True, patch_mu_recenter=0.11, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (1, 1))
+        self.assertLess(st.mu, 1.0)  # puxou pra baixo (prior=0)
+        self.assertGreater(st.mu, 0.0)
+
+    def test_shrink_zero_conta_switch_mas_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        sw, rec = _apply_patch_switch_recenter(st, patch_switched=True, patch_mu_recenter=0.0, patch_sigma_mult=1.0, league_prior_mu=0.0)
+        self.assertEqual((sw, rec), (1, 0))
+        self.assertEqual(st.mu, 1.0)
+
+
+class ApplyLeagueSwitchRecenterTests(unittest.TestCase):
+    def test_mesma_liga_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="LCK")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 0)
+        self.assertEqual(st.mu, 1.0)
+
+    def test_troca_de_liga_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="LPL")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 1)
+        self.assertLess(st.mu, 1.0)
+
+    def test_sem_last_league_nao_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, last_league="")
+        inc = _apply_league_switch_recenter(st, league="LCK", league_switch_mu_recenter=0.12, league_prior_mu=0.0)
+        self.assertEqual(inc, 0)
+
+
+class ApplyRosterRecenterTests(unittest.TestCase):
+    _KW = dict(roster_mu_recenter=0.28, roster_cont_hard_reset=0.25,
+               roster_hard_reset_extra_sigma=0.18, max_sigma=2.25, league_prior_mu=0.0)
+
+    def test_cc_none_nao_conta(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        self.assertEqual(_apply_roster_recenter(st, None, **self._KW), (0, 0, 0, 0))
+
+    def test_roster_igual_conta_evento_sem_mudanca(self):
+        st = TeamState(team="A", key="a", mu=1.0)
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 1.0, **self._KW)
+        self.assertEqual((ev, ewc, hard, mu), (1, 0, 0, 0))
+        self.assertEqual(st.mu, 1.0)
+
+    def test_mudanca_parcial_recentra(self):
+        st = TeamState(team="A", key="a", mu=1.0, gp=40)
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 0.6, **self._KW)
+        self.assertEqual((ev, ewc, hard), (1, 1, 0))
+        self.assertEqual(mu, 1)
+        self.assertLess(st.mu, 1.0)
+
+    def test_troca_total_e_hard_reset(self):
+        # cc <= roster_cont_hard_reset (0.25) -> hard reset + infla sigma
+        st = TeamState(team="A", key="a", mu=1.0, sigma=1.0, gp=40)
+        sigma0 = st.sigma
+        ev, ewc, hard, mu = _apply_roster_recenter(st, 0.10, **self._KW)
+        self.assertEqual((ev, ewc, hard, mu), (1, 1, 1, 1))
+        self.assertGreater(st.sigma, sigma0)  # sigma inflado no hard reset
+
+
+class GlickoLitePBlueTests(unittest.TestCase):
+    """CORE de cada jogo (extraído do loop, 20/07, provado por equivalence_check):
+    P(blue) via diferença de mu atenuada pela incerteza. Retorna (g_b,g_r,denom,p)."""
+
+    def test_forcas_iguais_da_meio(self):
+        _, _, _, p = _glicko_lite_p_blue(mu_b=0.0, mu_r=0.0, sigma_b=0.5, sigma_r=0.5)
+        self.assertAlmostEqual(p, 0.5, places=9)
+
+    def test_mu_maior_favorece_blue(self):
+        _, _, _, p = _glicko_lite_p_blue(mu_b=1.0, mu_r=-1.0, sigma_b=0.5, sigma_r=0.5)
+        self.assertGreater(p, 0.5)
+
+    def test_simetria_troca_de_lado(self):
+        _, _, _, p_ab = _glicko_lite_p_blue(mu_b=0.6, mu_r=0.2, sigma_b=0.4, sigma_r=0.7)
+        _, _, _, p_ba = _glicko_lite_p_blue(mu_b=0.2, mu_r=0.6, sigma_b=0.7, sigma_r=0.4)
+        self.assertAlmostEqual(p_ab + p_ba, 1.0, places=9)
+
+    def test_g_factor_encolhe_com_sigma(self):
+        # adversário mais incerto (sigma alto) -> g menor -> favorito puxa menos
+        _, _, _, p_certo = _glicko_lite_p_blue(mu_b=1.0, mu_r=0.0, sigma_b=0.3, sigma_r=0.3)
+        _, _, _, p_incerto = _glicko_lite_p_blue(mu_b=1.0, mu_r=0.0, sigma_b=0.3, sigma_r=2.0)
+        self.assertLess(p_incerto, p_certo)
+
+    def test_valores_intermediarios_finitos(self):
+        g_b, g_r, denom, p = _glicko_lite_p_blue(mu_b=0.3, mu_r=-0.1, sigma_b=0.8, sigma_r=1.2)
+        for v in (g_b, g_r, denom, p):
+            self.assertTrue(math.isfinite(v))
+        self.assertGreater(denom, 1.0)  # sqrt(1 + sigmas^2)
+
+
+class EffectiveKTests(unittest.TestCase):
+    """Taxa de aprendizado por jogo (extraída do loop)."""
+
+    def test_dentro_dos_limites(self):
+        k = _effective_k(base_k=0.22, league="LCK", sigma_b=1.0, sigma_r=1.0, base_sigma=1.0)
+        self.assertGreaterEqual(k, 0.04)
+        self.assertLessEqual(k, 0.55)
+
+    def test_mais_incerteza_move_mais(self):
+        k_baixo = _effective_k(base_k=0.22, league="LCK", sigma_b=0.3, sigma_r=0.3, base_sigma=1.0)
+        k_alto = _effective_k(base_k=0.22, league="LCK", sigma_b=2.0, sigma_r=2.0, base_sigma=1.0)
+        self.assertGreater(k_alto, k_baixo)
+
+    def test_clip_no_teto(self):
+        # base_k absurdo é limitado a 0.55
+        k = _effective_k(base_k=99.0, league="LCK", sigma_b=1.0, sigma_r=1.0, base_sigma=1.0)
+        self.assertEqual(k, 0.55)
+
+    def test_clip_no_piso(self):
+        k = _effective_k(base_k=0.0, league="LCK", sigma_b=0.1, sigma_r=0.1, base_sigma=1.0)
+        self.assertEqual(k, 0.04)
+
+
+class ResolveScopedParamTests(unittest.TestCase):
+    """Helper extraído do build (19/07): global -> override liga -> mistura patch.
+    Antes era nested (intestável); a rede de equivalência provou 856 times iguais."""
+
+    def test_sem_override_devolve_global(self):
+        self.assertEqual(_resolve_scoped_param(1.0, {}, {}, "LCK", "14.1"), 1.0)
+
+    def test_liga_sobrescreve_global(self):
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {}, "LCK", "14.1")
+        self.assertEqual(v, 2.0)
+
+    def test_patch_mistura_65_35_por_cima(self):
+        # global 1.0 (sem liga), patch 3.0 -> 0.65*1 + 0.35*3 = 1.70
+        v = _resolve_scoped_param(1.0, {}, {"14.1": 3.0}, "LCK", "14.1")
+        self.assertAlmostEqual(v, 1.70, places=9)
+
+    def test_liga_e_patch_juntos(self):
+        # liga leva a base pra 2.0, depois patch mistura: 0.65*2 + 0.35*4 = 2.70
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {"14.1": 4.0}, "LCK", "14.1")
+        self.assertAlmostEqual(v, 2.70, places=9)
+
+    def test_chave_normaliza_maiuscula(self):
+        # a chave do map é casada via _norm_upper_key
+        v = _resolve_scoped_param(1.0, {"LCK": 2.0}, {}, "lck", "14.1")
+        self.assertEqual(v, 2.0)
+
+
+class ResolveEffectiveParamsTests(unittest.TestCase):
+    """Resolve todos os params efetivos de um jogo via specs (global,by_lg,by_pt,lo,hi)."""
+
+    def test_aplica_clip_quando_ha_limites(self):
+        specs = {"x": (5.0, {}, {}, 0.0, 1.0)}  # global 5 mas clip [0,1]
+        self.assertEqual(_resolve_effective_params(specs, "LCK", "14.1")["x"], 1.0)
+
+    def test_sem_limites_nao_clipa(self):
+        specs = {"x": (5.0, {}, {}, None, None)}
+        self.assertEqual(_resolve_effective_params(specs, "LCK", "14.1")["x"], 5.0)
+
+    def test_resolve_multiplos_de_uma_vez(self):
+        specs = {
+            "a": (1.0, {"LCK": 2.0}, {}, None, None),
+            "b": (0.5, {}, {"14.1": 0.9}, 0.0, 1.0),
+        }
+        out = _resolve_effective_params(specs, "LCK", "14.1")
+        self.assertEqual(out["a"], 2.0)
+        self.assertAlmostEqual(out["b"], 0.65 * 0.5 + 0.35 * 0.9, places=9)
 
 
 def _games_df(rows: list[tuple[str, str, str, str, int, str, str]]) -> pd.DataFrame:

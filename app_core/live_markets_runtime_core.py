@@ -49,8 +49,8 @@ def markets_dir_from_state(session_state: Mapping[str, Any] | None) -> Path:
 
 
 @lru_cache(maxsize=64)
-def _cached_load_market_model(markets_dir: str, market: str, minute: int) -> Optional[LiveMarketModel]:
-    """Lazy load with LRU cache. Returns None if model dir absent or load fails."""
+def _load_market_model_by_sig(markets_dir: str, market: str, minute: int, _mtime_ns: int) -> Optional[LiveMarketModel]:
+    """Load real, com o mtime do modelo na chave (via _cached_load_market_model)."""
     p = Path(str(markets_dir)) / str(market) / f"minute_{int(minute):02d}"
     if not p.exists():
         return None
@@ -60,8 +60,31 @@ def _cached_load_market_model(markets_dir: str, market: str, minute: int) -> Opt
         return None
 
 
+def _market_model_mtime_ns(markets_dir: str, market: str, minute: int) -> int:
+    """mtime do arquivo do modelo (0 se ausente) — entra na chave do cache."""
+    p = Path(str(markets_dir)) / str(market) / f"minute_{int(minute):02d}" / "lgb_model.txt"
+    try:
+        return int(p.stat().st_mtime_ns)
+    except OSError:
+        return 0
+
+
+def _cached_load_market_model(markets_dir: str, market: str, minute: int) -> Optional[LiveMarketModel]:
+    """Carrega o modelo com cache que se INVALIDA quando ele é retreinado.
+
+    Bug achado com ele (23/07): o cache era só (pasta, mercado, minuto), então
+    guardava o None de quando o modelo ainda NÃO existia — e o N/A persistia
+    após o retreino até reiniciar o app (F5 não limpa cache de módulo). Agora o
+    mtime do arquivo entra na chave: modelo reescrito -> chave nova -> recarrega
+    sozinho, sem reiniciar."""
+    return _load_market_model_by_sig(
+        str(markets_dir), str(market), int(minute),
+        _market_model_mtime_ns(markets_dir, market, minute),
+    )
+
+
 def clear_market_model_cache() -> None:
-    _cached_load_market_model.cache_clear()
+    _load_market_model_by_sig.cache_clear()
 
 
 def available_markets(markets_dir: str | Path = "live_models/markets") -> Dict[str, Tuple[int, ...]]:

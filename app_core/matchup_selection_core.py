@@ -29,18 +29,12 @@ from app_core.schedule_state_core import (
     resolve_schedule_line_hc_team,
     save_schedule_games,
 )
-from app_core.stats_config import line_key_by_label
+from app_core.stats_config import line_input_hints, line_key_by_label
 
-# Exemplos históricos dos inputs de linha da Agenda, por line_key. Mercado novo
-# no registro sem entrada aqui aparece com o label do registro, sem exemplo.
-_LINE_INPUT_LABELS: Dict[str, str] = {
-    "lines_kills": "Kills (ex: 26.5, 27.5)",
-    "lines_towers": "Torres (ex: 10.5)",
-    "lines_dragons": "Dragões (ex: 4.5)",
-    "lines_barons": "Barões (ex: 0.5)",
-    "lines_inhib": "Inibidores (ex: 1.5)",
-    "lines_time": "Tempo (ex: 32, 32.5)",
-}
+# Exemplos dos inputs de linha da Agenda (variante "agenda"; diverge da tela
+# principal de propósito). Fonte única: STATS_MARKET_CONFIG.input_hint_agenda —
+# mercado novo herda o placeholder sozinho.
+_LINE_INPUT_LABELS: Dict[str, str] = line_input_hints("agenda")
 
 
 def _safe_rerun() -> None:

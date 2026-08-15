@@ -5,6 +5,8 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, Mapping, MutableMapping, Tuple
 
+from app_core.stats_config import STATS_MARKET_CONFIG as _STATS_MARKET_CONFIG
+
 
 def _to_bool(v: Any, default: bool) -> bool:
     if isinstance(v, bool):
@@ -506,12 +508,8 @@ APP_STATE_DEFAULTS: Dict[str, Any] = {
     "sc_split": "",
     "sc_playoffs": "",
     "sc_map": "All maps",
-    "sc_th_kills": "23.5,25.5,27.5,29.5",
-    "sc_th_towers": "10.5,11.5,12.5",
-    "sc_th_dragons": "4.5,5.5",
-    "sc_th_barons": "1.5",
-    "sc_th_inhib": "1.5",
-    "sc_th_time": "",
+    # sc_th_* (limiares default por mercado) DERIVAM do registro central logo
+    # abaixo do dict — fonte única (passo 1 do mapa). Não escrever à mão aqui.
     "vg_stats_market": "Kills",
     "vg_stats_current_line": "",
     "vg_stats_custom_line": "",
@@ -534,6 +532,14 @@ APP_STATE_DEFAULTS: Dict[str, Any] = {
     "pl_txtA": "",
     "pl_txtB": "",
 }
+
+# Fonte única (passo 1 do mapa): os limiares default por mercado (sc_th_*)
+# derivam do registro central. Adicionar/remover um mercado lá reflete aqui
+# sozinho — não há mais cópia à mão. (ordem não importa: lookup por chave.)
+APP_STATE_DEFAULTS.update({
+    str(cfg["threshold_key"]): str(cfg["default_thresholds"])
+    for cfg in _STATS_MARKET_CONFIG.values()
+})
 
 APP_STATE_MIGRATIONS: Dict[str, str] = {
     "resumo_combo_use_missmatch": "resumo_combo_use_mismatch",

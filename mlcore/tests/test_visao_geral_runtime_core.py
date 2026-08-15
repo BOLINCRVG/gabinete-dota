@@ -16,14 +16,38 @@ class VisaoGeralRuntimeCoreTests(unittest.TestCase):
         self.assertIn("+3.0 pp", text)
 
     def test_build_microseg_caption_never_crashes_on_bad_n(self):
-        """Bug de produção 18/07: n não-escalar (lista/dict, calibração
-        hierárquica) fazia int(n) derrubar a Visão Geral inteira. A caption
-        nunca pode quebrar — n vira soma (lista) ou 0 (não-numérico)."""
+        """Bug de produção 18/07: um `n` que `int()` recusa derrubava a Visão
+        Geral inteira. A caption nunca pode quebrar, seja qual for o formato."""
         self.assertIn("n=35", build_microseg_caption(
             {"applied": True, "key": "x", "n": [10, 20, 5], "bias": 0.0}))
-        for bad in ({}, None, "abc", [], object()):
+        for bad in ({}, None, "abc", [], object(), {"a": 1}, (1, 2), b"xx"):
             txt = build_microseg_caption({"applied": True, "key": "x", "n": bad, "bias": 0.0})
             self.assertIn("Microseg calibracao", txt)  # não levanta
+
+    def test_caption_sobrevive_a_infinito_e_nan(self):
+        """REGRESSÃO do fix de 18/07: ele capturava só (TypeError, ValueError).
+        `int(inf)` levanta OverflowError — ou seja, o app AINDA caía por esse
+        caminho. Achado em 19/07 ao investigar a causa raiz."""
+        for bad in (float("inf"), float("-inf"), float("nan"), [float("inf"), 1]):
+            txt = build_microseg_caption({"applied": True, "key": "x", "n": bad, "bias": 0.0})
+            self.assertIn("n=0", txt, f"{bad} deveria virar 0, não derrubar")
+
+    def test_n_valido_continua_exato(self):
+        """A blindagem não pode falsificar o número quando ele é legítimo."""
+        for entrada, esperado in ((10, "n=10"), (10.9, "n=10"), ("42", "n=42"),
+                                  (0, "n=0"), (-5, "n=-5")):
+            txt = build_microseg_caption(
+                {"applied": True, "key": "x", "n": entrada, "bias": 0.0})
+            self.assertIn(esperado, txt)
+
+    def test_anomalia_de_n_fica_registrada_para_diagnostico(self):
+        """Como a causa raiz de 18/07 nunca foi provada, o formato inesperado
+        precisa ficar gravado — na próxima ocorrência vira teste real."""
+        from app_core.visao_geral_runtime_core import _MICROSEG_N_ANOMALIAS
+        _MICROSEG_N_ANOMALIAS.clear()
+        build_microseg_caption({"applied": True, "key": "x", "n": float("nan"), "bias": 0.0})
+        self.assertTrue(_MICROSEG_N_ANOMALIAS, "anomalia deveria ter sido registrada")
+        self.assertEqual(_MICROSEG_N_ANOMALIAS[0]["tipo"], "float")
 
     def test_resolve_shared_league_hint(self):
         self.assertEqual(resolve_shared_league_hint(ml_info={"blue": {"league": "LCK"}, "red": {"league": "LCK"}}), "LCK")

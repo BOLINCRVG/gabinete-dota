@@ -587,11 +587,15 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
     """
     try:
         from app_core.live_models_status_core import (
-            assess_freshness, is_retrain_running, launch_retrain_background,
-            retrain_status,
+            assess_freshness, is_retrain_running, is_training_capable_env,
+            launch_retrain_background, retrain_status,
         )
     except Exception:
         return
+
+    # Na Streamlit Cloud (1GB de RAM) o treino trava/é morto: os modelos vêm
+    # VERSIONADOS no git e o robô os mantém — a nuvem só carrega, nunca treina.
+    pode_treinar = is_training_capable_env()
 
     csv_paths_raw = session_state.get("_csv_paths_used") or []
     if not csv_paths_raw:
@@ -626,15 +630,63 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
     except Exception:
         running = False
 
+    # AUTO-RETREINO (22/07): se os modelos ao vivo estão velhos e ninguém está
+    # treinando, o app dispara SOZINHO em background (trava de 6h evita relançar
+    # a cada F5). É o que faz ele "não precisar mais saber do ao vivo".
+    auto_disparado = False
+    if not running and pode_treinar:
+        try:
+            from app_core.live_models_status_core import (
+                hours_since_auto_retrain, mark_auto_retrain_attempt, should_auto_retrain,
+            )
+            if should_auto_retrain(
+                state=str(state), running=running,
+                hours_since_attempt=hours_since_auto_retrain(models_dir),
+                min_cooldown_hours=6.0,
+            ):
+                cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
+                info = launch_retrain_background(val_cutoff=str(cutoff), save_models_dir=str(models_dir))
+                if info.get("ok"):
+                    mark_auto_retrain_attempt(models_dir)
+                    running = True
+                    auto_disparado = True
+        except Exception:
+            pass  # auto-retreino é conveniência; nunca derruba o painel
+
+    _fresh = str(state) == "fresh"
     cols = st.columns([2, 1, 1])
     with cols[0]:
-        if running:
-            st.info("Modelo em retreino em background. Atualize a página em alguns minutos.")
+        if auto_disparado:
+            st.warning(
+                "⏳ **Modelo ao vivo desatualizado — atualizando agora, favor não fechar o app.** "
+                "Leva alguns minutos; pode usar o resto normalmente e dar F5 de vez em quando — "
+                "os números aparecem quando terminar. Se fechar, **nada estraga**: ele continua "
+                "em background ou recomeça sozinho na próxima abertura (o modelo só é salvo quando "
+                "o treino termina inteiro)."
+            )
+        elif running and not _fresh:
+            st.info("Modelo em retreino em background (favor não fechar até terminar). "
+                    "Atualize a página em alguns minutos.")
+        elif running and _fresh:
+            # Já fresco + um processo rodando = retreino redundante finalizando.
+            # Não contradizer o 'atualizados' verde acima (report dele 22/07).
+            st.caption("Um retreino extra ainda finaliza em background — inofensivo; "
+                       "os números acima já estão atualizados, pode usar normal.")
         elif state in ("stale", "very_stale", "no_manifest", "no_models"):
-            st.caption("Clique em 'Retreinar agora' para regenerar os modelos com os dados mais recentes.")
+            if pode_treinar:
+                st.caption("Clique em 'Retreinar agora' para regenerar os modelos com os dados mais recentes.")
+            else:
+                # Na nuvem não dá pra treinar: o robô do GitHub Actions atualiza.
+                st.caption("Os modelos são atualizados automaticamente pelo robô — "
+                           "nada a fazer aqui, pode usar normal.")
 
     with cols[1]:
-        if not running and st.button("Retreinar agora", key=f"lb_live_retrain_btn{key_suffix}", help="Roda tools/run_phase6_live_gate.py em background"):
+        # Botão só quando faz sentido: nada rodando, modelos NÃO frescos, E o
+        # ambiente CONSEGUE treinar (na nuvem o treino trava, então nem aparece).
+        # Antes, o botão aparecia mesmo com modelo fresco e um clique disparava um
+        # retreino redundante (foi o que ele pegou: F5 pós-treino -> clicou -> 2º).
+        if pode_treinar and not running and not _fresh and st.button(
+            "Retreinar agora", key=f"lb_live_retrain_btn{key_suffix}", help="Roda tools/run_phase6_live_gate.py em background"):
             try:
                 cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
                 info = launch_retrain_background(

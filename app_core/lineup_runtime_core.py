@@ -139,19 +139,98 @@ def build_manual_lineup_choices(
     return out
 
 
+def _pos_order_by_relevance(sub: pd.DataFrame) -> list[str]:
+    """Jogadores de uma posição, mais relevantes primeiro (jogos, depois recência)."""
+    sub = sub.copy()
+    sub["player_key"] = sub["player_key"].astype(str).str.strip()
+    sub = sub[sub["player_key"] != ""]
+    if sub.empty:
+        return []
+    try:
+        freq = sub.groupby("player_key").agg(gp=("gameid", "nunique"), last=("date", "max")).reset_index()
+        freq = freq.sort_values(["gp", "last"], ascending=[False, False])
+        return freq["player_key"].astype(str).tolist()
+    except (KeyError, ValueError, TypeError):
+        return sorted(sub["player_key"].astype(str).unique().tolist())
+
+
+def build_lineup_name_choices(
+    *,
+    df_pr: pd.DataFrame | None,
+    team_ui: str,
+    pos_canon: list[str],
+    norm_pos_fn: Callable[[str], str],
+    include_all_teams: bool = False,
+) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Opções de escalação por posição, em NOME de jogador.
+
+    Irmã de build_ml_lineup_choices (que trabalha por player_key/id). A aba
+    Players casa jogador por NOME, então precisa desta forma. Mesma regra: os do
+    próprio time primeiro; com include_all_teams, o pool inteiro depois, e o
+    segundo retorno traz {nome -> time atual} para rotular quem veio de fora.
+    """
+    out: dict[str, list[str]] = {pos: [] for pos in pos_canon}
+    team_of: dict[str, str] = {}
+    if df_pr is None or df_pr.empty:
+        return out, team_of
+    d = df_pr.copy()
+    if "pos_ml" not in d.columns:
+        d["pos_ml"] = d.get("pos", "").apply(norm_pos_fn)
+    d["player_key"] = d.get("player", "").astype(str).str.strip()
+    d = d[d["player_key"] != ""]
+    if d.empty:
+        return out, team_of
+
+    do_time = d[d["team"].astype(str) == str(team_ui)]
+    for pos in pos_canon:
+        sub = do_time[do_time["pos_ml"].astype(str) == str(pos)]
+        out[pos] = _pos_order_by_relevance(sub) if len(sub) else []
+
+    if not bool(include_all_teams):
+        return out, team_of
+
+    fora = d[d["team"].astype(str) != str(team_ui)]
+    if fora.empty:
+        return out, team_of
+    try:
+        team_of = {str(k): str(v) for k, v in
+                   fora.sort_values("date").groupby("player_key")["team"].last().items()}
+    except (KeyError, ValueError, TypeError):
+        team_of = {}
+    for pos in pos_canon:
+        sub_f = fora[fora["pos_ml"].astype(str) == str(pos)]
+        if sub_f.empty:
+            continue
+        ja = set(out.get(pos) or [])
+        out[pos].extend([n for n in _pos_order_by_relevance(sub_f) if n not in ja])
+    return out, team_of
+
+
 def build_ml_lineup_choices(
     *,
     df_pr: pd.DataFrame | None,
     team_ui: str,
     pos_canon_ml: list[str],
     norm_pos_ml_fn: Callable[[str], str],
+    include_all_teams: bool = False,
 ) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Opções de lineup por posição.
+
+    include_all_teams=False (padrão): só quem já jogou NAQUELE time — o
+    comportamento histórico, intacto.
+    include_all_teams=True (pedido dele 22/07): libera o pool INTEIRO da
+    posição, para simular troca de roster entre splits ("e se o Zeus fosse
+    para a HLE?"). Os jogadores do próprio time vêm SEMPRE primeiro; os de
+    fora aparecem depois, com o time atual no rótulo (ex.: "Zeus · T1"), para
+    ficar claro de onde o jogador está sendo trazido. O rating é do JOGADOR,
+    então ele viaja junto na simulação.
+    """
     out = {pos: [] for pos in pos_canon_ml}
     disp: dict[str, str] = {}
     if df_pr is None or df_pr.empty:
         return out, disp
     d2 = df_pr[df_pr["team"].astype(str) == str(team_ui)].copy()
-    if d2.empty:
+    if d2.empty and not bool(include_all_teams):
         return out, disp
     if "player_key" not in d2.columns:
         d2["player_key"] = d2.get("playerid", "").astype(str).str.strip()
@@ -174,19 +253,46 @@ def build_ml_lineup_choices(
     except Exception:
         pass
     for pos in pos_canon_ml:
-        sub = d2[d2["pos_ml"].astype(str) == str(pos)].copy()
-        if sub.empty:
+        sub = d2[d2["pos_ml"].astype(str) == str(pos)].copy() if not d2.empty else d2
+        out[pos] = _pos_order_by_relevance(sub) if len(sub) else []
+
+    if not bool(include_all_teams):
+        return out, disp
+
+    # --- Pool de FORA do time (simulação de troca de roster) ---
+    dall = df_pr.copy()
+    if "player_key" not in dall.columns:
+        dall["player_key"] = dall.get("playerid", "").astype(str).str.strip()
+        dall.loc[dall["player_key"].astype(str).str.strip() == "", "player_key"] = \
+            dall.get("player", "").astype(str).str.strip()
+    if "pos_ml" not in dall.columns:
+        dall["pos_ml"] = dall.get("pos", "").apply(norm_pos_ml_fn)
+    fora = dall[dall["team"].astype(str) != str(team_ui)].copy()
+    if fora.empty:
+        return out, disp
+
+    # time ATUAL de cada jogador de fora (o mais recente) — vai no rótulo
+    try:
+        _last = fora.sort_values("date").groupby("player_key").agg(
+            _team=("team", "last"), _nome=("player", "last"))
+        team_of = {str(k): str(v) for k, v in _last["_team"].items()}
+        name_of = {str(k): str(v) for k, v in _last["_nome"].items()}
+    except (KeyError, ValueError, TypeError):
+        team_of, name_of = {}, {}
+
+    for pos in pos_canon_ml:
+        sub_f = fora[fora["pos_ml"].astype(str) == str(pos)]
+        if sub_f.empty:
             continue
-        sub["player_key"] = sub["player_key"].astype(str).str.strip()
-        sub = sub[sub["player_key"] != ""]
-        if sub.empty:
-            continue
-        try:
-            freq = sub.groupby("player_key").agg(gp=("gameid", "nunique"), last=("date", "max")).reset_index()
-            freq = freq.sort_values(["gp", "last"], ascending=[False, False])
-            out[pos] = freq["player_key"].astype(str).tolist()
-        except Exception:
-            out[pos] = sorted(sub["player_key"].astype(str).unique().tolist())
+        ja = set(out.get(pos) or [])
+        for pid in _pos_order_by_relevance(sub_f):
+            if pid in ja:
+                continue
+            out[pos].append(pid)
+            if pid not in disp:
+                _n = name_of.get(pid, pid)
+                _t = team_of.get(pid, "")
+                disp[pid] = f"{_n} · {_t}" if _t else str(_n)
     return out, disp
 
 

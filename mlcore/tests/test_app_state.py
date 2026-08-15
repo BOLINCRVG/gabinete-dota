@@ -71,6 +71,33 @@ class TestAppState(unittest.TestCase):
         self.assertEqual(sch["defaults"].get("resumo_max_odd"), APP_STATE_DEFAULTS.get("resumo_max_odd"))
 
 
+class ThresholdDefaultsSingleSourceTests(unittest.TestCase):
+    """Passo 1 do mapa (21/07): os limiares default sc_th_* em APP_STATE_DEFAULTS
+    DERIVAM do registro central (antes eram literais à mão, duplicata do
+    default_thresholds). Trava a fonte única: mudar um limiar no registro
+    reflete no estado sozinho."""
+
+    def test_sc_th_derivam_do_registro(self):
+        from app_core.app_state import APP_STATE_DEFAULTS
+        from app_core.stats_config import STATS_MARKET_CONFIG
+        for cfg in STATS_MARKET_CONFIG.values():
+            tk = str(cfg["threshold_key"])
+            self.assertEqual(APP_STATE_DEFAULTS.get(tk), str(cfg["default_thresholds"]),
+                             f"{tk} não bate com o registro")
+
+    def test_valores_historicos_preservados(self):
+        from app_core.app_state import APP_STATE_DEFAULTS
+        self.assertEqual(APP_STATE_DEFAULTS.get("sc_th_kills"), "23.5,25.5,27.5,29.5")
+        self.assertEqual(APP_STATE_DEFAULTS.get("sc_th_time"), "")
+
+    def test_nao_ha_sc_th_extra_nem_faltando(self):
+        from app_core.app_state import APP_STATE_DEFAULTS
+        from app_core.stats_config import STATS_MARKET_CONFIG
+        no_estado = {k for k in APP_STATE_DEFAULTS if k.startswith("sc_th_")}
+        no_registro = {str(cfg["threshold_key"]) for cfg in STATS_MARKET_CONFIG.values()}
+        self.assertEqual(no_estado, no_registro)
+
+
 if __name__ == "__main__":
     unittest.main()
 

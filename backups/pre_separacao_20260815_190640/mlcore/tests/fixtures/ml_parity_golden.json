@@ -1,0 +1,985 @@
+{
+  "schema_version": 1,
+  "tolerance": 1e-08,
+  "scenarios": [
+    {
+      "id": "lck_bo3_areal_breal_c_uncertainty_marginal",
+      "season": "2026",
+      "year_opt": "2026",
+      "split_opt": "S1",
+      "league": "LCK",
+      "teamA": "T1",
+      "teamB": "GEN",
+      "bo": 3,
+      "playoffs_opt": "0",
+      "p_map_raw": 0.5625,
+      "p_map_cal": 0.552,
+      "engine_out": {
+        "p_map_used": 0.56,
+        "p_series_used": 0.5895680000000001,
+        "diff_used": 12.0,
+        "delta_players": 0.08,
+        "delta_players_eff": 0.04,
+        "trace_p_map_team": 0.558,
+        "trace_p_map_players": 0.563,
+        "trace_p_map_fused": 0.5605,
+        "trace_n_team_eff": 22.0,
+        "trace_n_players_eff": 11.0,
+        "trace_fusion_info": {
+          "season_phase": "regular",
+          "coverage_eff": 0.78,
+          "w_team": 0.62,
+          "w_players": 0.38,
+          "reason": "fusion_ok"
+        },
+        "trace_uncertainty_info": {
+          "enabled": true,
+          "applied": true,
+          "n_eff": 22.0,
+          "prior_games": 20.0,
+          "raw_shrink": 0.22,
+          "shrink": 0.19,
+          "p_in": 0.56,
+          "p_out": 0.552
+        },
+        "_delta_mode": "saturado",
+        "_delta_cap": 1.8,
+        "_delta_slope": 2.2,
+        "lineup_mode": "ML players layer",
+        "match_league": "LCK",
+        "_elo_info": {
+          "p_cal": 0.55
+        },
+        "_p_pipe_prev": 0.56,
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.56,
+            "after": 0.552,
+            "applied": true
+          }
+        ]
+      },
+      "pre_live_out": {
+        "p_map_used": 0.552,
+        "p_series_used": 0.5748,
+        "diff_used": 13.0,
+        "delta_players": 0.08,
+        "trace_form_info": {
+          "applied": true,
+          "p_model": 0.552,
+          "p_form": 0.545,
+          "p_blended": 0.549,
+          "w_form": 0.22,
+          "n_a": 14,
+          "n_b": 13,
+          "wins_a": 8,
+          "wins_b": 6,
+          "reason": "season_window"
+        },
+        "trace_hybrid_info": {
+          "applied": true,
+          "enabled": true,
+          "p_model": 0.549,
+          "p_hybrid": 0.553,
+          "p_blended": 0.552,
+          "w_hybrid": 0.2,
+          "n_eff": 22.0,
+          "agree_to_model": 0.71,
+          "reason": "hybrid_ok"
+        },
+        "trace_conf_guard_info": {
+          "enabled": true,
+          "applied": false,
+          "n_ref": 22,
+          "min_games": 8,
+          "coverage": 0.92,
+          "shrink": 0.0,
+          "p_in": 0.552,
+          "p_out": 0.552
+        },
+        "trace_patch_guard_info": {
+          "enabled": true,
+          "applied": true,
+          "status": "refit_needed",
+          "league_hint": "LCK",
+          "changed_leagues": [
+            "LCK"
+          ],
+          "age_days": 2.0,
+          "shrink": 0.18,
+          "p_in": 0.556,
+          "p_out": 0.552
+        },
+        "trace_series_gamma_info": {
+          "enabled": true,
+          "applied": true,
+          "gamma": 1.06,
+          "source": "lck_bo3",
+          "bo": 3,
+          "p_base": 0.552,
+          "p_out": 0.5748
+        },
+        "trace_series_coherence_info": {
+          "enabled": true,
+          "applied": true,
+          "reason": "coherent",
+          "bo": 3,
+          "p_map": 0.552,
+          "p_series_before": 0.5748,
+          "p_series_after": 0.5748,
+          "p_target": 0.5748,
+          "diff_pp": 0.0,
+          "bounds": {
+            "lo": 0.49,
+            "hi": 0.66
+          }
+        },
+        "_guard_triggered": true,
+        "_guard_dpp": 6.4,
+        "_ff_ml_series_bo_dplite_live": true,
+        "trace_series_bo_dplite_live": {
+          "enabled": true,
+          "applied": true,
+          "method": "series_bo_v5_live",
+          "bo": 3,
+          "p_before": 0.5715,
+          "p_after": 0.5748,
+          "diff_pp": 0.33,
+          "weight": 0.18,
+          "cap_pp": 1.0,
+          "bias_raw": 0.01,
+          "bias_adj": 0.006
+        },
+        "_lineup_mode_sig": "ML players layer",
+        "_lineupA_sig": {
+          "Top": "T1.Top"
+        },
+        "_lineupB_sig": {
+          "Top": "GEN.Top"
+        },
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.56,
+            "after": 0.552,
+            "applied": true
+          },
+          {
+            "stage": "season_form_blend",
+            "before": 0.552,
+            "after": 0.549,
+            "applied": true
+          },
+          {
+            "stage": "hybrid_blend",
+            "before": 0.549,
+            "after": 0.552,
+            "applied": true
+          },
+          {
+            "stage": "series_bo_dplite_live",
+            "before": 0.5715,
+            "after": 0.5748,
+            "applied": true
+          },
+          {
+            "stage": "series_gamma",
+            "before": 0.5715,
+            "after": 0.5748,
+            "applied": true
+          },
+          {
+            "stage": "series_economic_coherence",
+            "before": 0.5748,
+            "after": 0.5748,
+            "applied": true
+          }
+        ]
+      },
+      "feature_flags": {
+        "ff_ml_state_areal_live": true,
+        "ff_ml_state_alite_live": false,
+        "ff_ml_style_b_lite_live": true,
+        "ff_ml_league_rank_sos_live": false,
+        "ff_ml_roster_continuity_live": false,
+        "ff_ml_hier_calibration_live": false,
+        "ff_ml_meta_c_lite_live": true,
+        "ff_ml_layer_uncertainty_live": true
+      },
+      "trace_shadow_state_alite": {
+        "enabled": true,
+        "applied": false,
+        "reason": "not_used",
+        "p_map_old": 0.552,
+        "p_map_new": null
+      },
+      "trace_shadow_state_areal": {
+        "enabled": true,
+        "applied": true,
+        "reason": "promote_areal",
+        "p_map_old": 0.552,
+        "p_map_new": 0.538,
+        "p_series_old": 0.5748,
+        "p_series_new": 0.5568902560000001,
+        "qwl_trace": {
+          "q_score": 0.74
+        }
+      },
+      "post_live_layers": [
+        {
+          "stage": "style_matchup_b_live",
+          "p_after": 0.5315,
+          "method": "style_model",
+          "reason": "style_edge"
+        },
+        {
+          "stage": "meta_blend_c_lite_live",
+          "p_after": 0.528,
+          "method": "meta_blend_c",
+          "reason": "meta_anchor"
+        },
+        {
+          "stage": "layer_uncertainty_live",
+          "p_after": 0.5235,
+          "method": "layer_uncertainty",
+          "reason": "live_shrink"
+        }
+      ],
+      "marginal": {
+        "enabled": true,
+        "applied": true,
+        "reason": "marginal_band_shrink",
+        "league": "LCK",
+        "tier": "T1",
+        "band": "thin",
+        "p_out": 0.52
+      },
+      "expected": {
+        "probabilities": {
+          "p_map_used": 0.52,
+          "p_series_used": 0.529984
+        },
+        "odds": {
+          "teamA_map": 1.923076923076923,
+          "teamB_map": 2.0833333333333335
+        },
+        "pipeline_order": [
+          "uncertainty_layer",
+          "season_form_blend",
+          "hybrid_blend",
+          "series_bo_dplite_live",
+          "series_gamma",
+          "series_economic_coherence",
+          "state_areal_live_override",
+          "style_matchup_b_live",
+          "meta_blend_c_lite_live",
+          "layer_uncertainty_live",
+          "marginal_trust_guard"
+        ],
+        "guards": {
+          "consistency_guard_triggered": true,
+          "patch_guard_applied": true,
+          "state_areal_live_applied": true,
+          "state_alite_live_applied": false,
+          "style_b_lite_live_applied": true,
+          "league_rank_sos_live_applied": false,
+          "roster_continuity_live_applied": false,
+          "hier_calibration_live_applied": false,
+          "meta_c_lite_live_applied": true,
+          "layer_uncertainty_live_applied": true,
+          "series_bo_dplite_live_applied": true,
+          "marginal_trust_guard_applied": true
+        },
+        "layers": {
+          "state_areal_live": {
+            "applied": true,
+            "p_map_after": 0.538
+          },
+          "state_alite_live": {
+            "applied": false,
+            "p_map_after": null
+          },
+          "style_b_lite_live": {
+            "applied": true,
+            "p_after": 0.5315
+          },
+          "league_rank_sos_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "roster_continuity_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "hier_calibration_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "meta_c_lite_live": {
+            "applied": true,
+            "p_after": 0.528
+          },
+          "layer_uncertainty_live": {
+            "applied": true,
+            "p_after": 0.5235
+          },
+          "series_bo_dplite_live": {
+            "applied": true,
+            "p_after": 0.5748
+          },
+          "marginal_trust_guard": {
+            "applied": true,
+            "p_out": 0.52
+          }
+        }
+      }
+    },
+    {
+      "id": "lta_bo5_alite_full_live_no_marginal",
+      "season": "2026",
+      "year_opt": "2026",
+      "split_opt": "S1",
+      "league": "LTA SOUTH",
+      "teamA": "PNG",
+      "teamB": "LOUD",
+      "bo": 5,
+      "playoffs_opt": "1",
+      "p_map_raw": 0.4695,
+      "p_map_cal": 0.472,
+      "engine_out": {
+        "p_map_used": 0.468,
+        "p_series_used": 0.44016363867340813,
+        "diff_used": -6.0,
+        "delta_players": -0.03,
+        "delta_players_eff": -0.015,
+        "trace_p_map_team": 0.47,
+        "trace_p_map_players": 0.466,
+        "trace_p_map_fused": 0.4685,
+        "trace_n_team_eff": 18.0,
+        "trace_n_players_eff": 9.0,
+        "trace_fusion_info": {
+          "season_phase": "playoffs",
+          "coverage_eff": 0.72,
+          "w_team": 0.58,
+          "w_players": 0.42,
+          "reason": "fusion_ok"
+        },
+        "trace_uncertainty_info": {
+          "enabled": true,
+          "applied": true,
+          "n_eff": 18.0,
+          "prior_games": 20.0,
+          "raw_shrink": 0.25,
+          "shrink": 0.21,
+          "p_in": 0.468,
+          "p_out": 0.472
+        },
+        "_delta_mode": "linear",
+        "_delta_cap": 1.5,
+        "_delta_slope": 1.9,
+        "lineup_mode": "ML players layer",
+        "match_league": "LTA SOUTH",
+        "_elo_info": {
+          "p_cal": 0.47
+        },
+        "_p_pipe_prev": 0.468,
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.468,
+            "after": 0.472,
+            "applied": true
+          }
+        ]
+      },
+      "pre_live_out": {
+        "p_map_used": 0.472,
+        "p_series_used": 0.44760965673779196,
+        "diff_used": -5.0,
+        "delta_players": -0.03,
+        "trace_form_info": {
+          "applied": true,
+          "p_model": 0.472,
+          "p_form": 0.481,
+          "p_blended": 0.476,
+          "w_form": 0.26,
+          "n_a": 12,
+          "n_b": 12,
+          "wins_a": 6,
+          "wins_b": 6,
+          "reason": "season_window"
+        },
+        "trace_hybrid_info": {
+          "applied": true,
+          "enabled": true,
+          "p_model": 0.476,
+          "p_hybrid": 0.471,
+          "p_blended": 0.472,
+          "w_hybrid": 0.24,
+          "n_eff": 18.0,
+          "agree_to_model": 0.64,
+          "reason": "hybrid_ok"
+        },
+        "trace_conf_guard_info": {
+          "enabled": true,
+          "applied": false,
+          "n_ref": 18,
+          "min_games": 8,
+          "coverage": 0.89,
+          "shrink": 0.0,
+          "p_in": 0.472,
+          "p_out": 0.472
+        },
+        "trace_patch_guard_info": {
+          "enabled": true,
+          "applied": false,
+          "status": "ok",
+          "league_hint": "LTA SOUTH",
+          "changed_leagues": [],
+          "age_days": 8.0,
+          "shrink": 0.0,
+          "p_in": 0.472,
+          "p_out": 0.472
+        },
+        "trace_series_gamma_info": {
+          "enabled": true,
+          "applied": true,
+          "gamma": 1.03,
+          "source": "lta_bo5",
+          "bo": 5,
+          "p_base": 0.472,
+          "p_out": 0.44760965673779196
+        },
+        "trace_series_coherence_info": {
+          "enabled": true,
+          "applied": true,
+          "reason": "coherent",
+          "bo": 5,
+          "p_map": 0.472,
+          "p_series_before": 0.44760965673779196,
+          "p_series_after": 0.44760965673779196,
+          "p_target": 0.44760965673779196,
+          "diff_pp": 0.0,
+          "bounds": {
+            "lo": 0.34,
+            "hi": 0.66
+          }
+        },
+        "_guard_triggered": false,
+        "_guard_dpp": 0.0,
+        "_ff_ml_series_bo_dplite_live": true,
+        "trace_series_bo_dplite_live": {
+          "enabled": true,
+          "applied": true,
+          "method": "series_bo_v5_live",
+          "bo": 5,
+          "p_before": 0.44760965673779196,
+          "p_after": 0.44760965673779196,
+          "diff_pp": 0.0,
+          "weight": 0.1,
+          "cap_pp": 1.2,
+          "bias_raw": 0.0,
+          "bias_adj": 0.0
+        },
+        "_lineup_mode_sig": "ML players layer",
+        "_lineupA_sig": {
+          "Top": "PNG.Top"
+        },
+        "_lineupB_sig": {
+          "Top": "LOUD.Top"
+        },
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.468,
+            "after": 0.472,
+            "applied": true
+          },
+          {
+            "stage": "season_form_blend",
+            "before": 0.472,
+            "after": 0.476,
+            "applied": true
+          },
+          {
+            "stage": "hybrid_blend",
+            "before": 0.476,
+            "after": 0.472,
+            "applied": true
+          },
+          {
+            "stage": "series_bo_dplite_live",
+            "before": 0.4565,
+            "after": 0.4565,
+            "applied": true
+          },
+          {
+            "stage": "series_gamma",
+            "before": 0.4565,
+            "after": 0.4565,
+            "applied": true
+          },
+          {
+            "stage": "series_economic_coherence",
+            "before": 0.4565,
+            "after": 0.4565,
+            "applied": true
+          }
+        ]
+      },
+      "feature_flags": {
+        "ff_ml_state_areal_live": false,
+        "ff_ml_state_alite_live": true,
+        "ff_ml_style_b_lite_live": true,
+        "ff_ml_league_rank_sos_live": true,
+        "ff_ml_roster_continuity_live": true,
+        "ff_ml_hier_calibration_live": true,
+        "ff_ml_meta_c_lite_live": true,
+        "ff_ml_layer_uncertainty_live": true
+      },
+      "trace_shadow_state_alite": {
+        "enabled": true,
+        "applied": true,
+        "reason": "promote_alite",
+        "p_map_old": 0.472,
+        "p_map_new": 0.478,
+        "p_series_old": 0.44760965673779196,
+        "p_series_new": 0.45880320907820793
+      },
+      "trace_shadow_state_areal": {
+        "enabled": true,
+        "applied": false,
+        "reason": "disabled_in_scenario"
+      },
+      "post_live_layers": [
+        {
+          "stage": "style_matchup_b_live",
+          "p_after": 0.484,
+          "method": "style_model",
+          "reason": "style_edge"
+        },
+        {
+          "stage": "league_rank_sos_live",
+          "p_after": 0.49,
+          "method": "league_rank_sos",
+          "reason": "sos_boost",
+          "p_rank": 0.4925,
+          "weight": 0.18
+        },
+        {
+          "stage": "roster_continuity_live",
+          "p_after": 0.496,
+          "method": "roster_continuity",
+          "reason": "continuity_up",
+          "target_p": 0.497,
+          "weight": 0.22
+        },
+        {
+          "stage": "hier_calibration_live",
+          "p_after": 0.5005,
+          "method": "hier_calibration",
+          "reason": "pair_bias_adj",
+          "scope_used": "pair",
+          "bias_adj": 0.002
+        },
+        {
+          "stage": "meta_blend_c_lite_live",
+          "p_after": 0.498,
+          "method": "meta_blend_c",
+          "reason": "anchor_pull"
+        },
+        {
+          "stage": "layer_uncertainty_live",
+          "p_after": 0.494,
+          "method": "layer_uncertainty",
+          "reason": "live_shrink"
+        }
+      ],
+      "marginal": {
+        "enabled": true,
+        "applied": false,
+        "reason": "not_marginal_band",
+        "league": "LTA SOUTH",
+        "tier": "T2",
+        "band": "wide"
+      },
+      "expected": {
+        "probabilities": {
+          "p_map_used": 0.494,
+          "p_series_used": 0.48875107995334394
+        },
+        "odds": {
+          "teamA_map": 2.0242914979757085,
+          "teamB_map": 1.976284584980237
+        },
+        "pipeline_order": [
+          "uncertainty_layer",
+          "season_form_blend",
+          "hybrid_blend",
+          "series_bo_dplite_live",
+          "series_gamma",
+          "series_economic_coherence",
+          "state_alite_live_override",
+          "style_matchup_b_live",
+          "league_rank_sos_live",
+          "roster_continuity_live",
+          "hier_calibration_live",
+          "meta_blend_c_lite_live",
+          "layer_uncertainty_live"
+        ],
+        "guards": {
+          "consistency_guard_triggered": false,
+          "patch_guard_applied": false,
+          "state_areal_live_applied": false,
+          "state_alite_live_applied": true,
+          "style_b_lite_live_applied": true,
+          "league_rank_sos_live_applied": true,
+          "roster_continuity_live_applied": true,
+          "hier_calibration_live_applied": true,
+          "meta_c_lite_live_applied": true,
+          "layer_uncertainty_live_applied": true,
+          "series_bo_dplite_live_applied": true,
+          "marginal_trust_guard_applied": false
+        },
+        "layers": {
+          "state_areal_live": {
+            "applied": false,
+            "p_map_after": null
+          },
+          "state_alite_live": {
+            "applied": true,
+            "p_map_after": 0.478
+          },
+          "style_b_lite_live": {
+            "applied": true,
+            "p_after": 0.484
+          },
+          "league_rank_sos_live": {
+            "applied": true,
+            "p_after": 0.49
+          },
+          "roster_continuity_live": {
+            "applied": true,
+            "p_after": 0.496
+          },
+          "hier_calibration_live": {
+            "applied": true,
+            "p_after": 0.5005
+          },
+          "meta_c_lite_live": {
+            "applied": true,
+            "p_after": 0.498
+          },
+          "layer_uncertainty_live": {
+            "applied": true,
+            "p_after": 0.494
+          },
+          "series_bo_dplite_live": {
+            "applied": true,
+            "p_after": 0.44760965673779196
+          },
+          "marginal_trust_guard": {
+            "applied": false,
+            "p_out": 0.494
+          }
+        }
+      }
+    },
+    {
+      "id": "inter_bo1_style_uncertainty_marginal",
+      "season": "2026",
+      "year_opt": "2026",
+      "split_opt": "S2",
+      "league": "INTER",
+      "teamA": "FNC",
+      "teamB": "C9",
+      "bo": 1,
+      "playoffs_opt": "0",
+      "p_map_raw": 0.612,
+      "p_map_cal": 0.615,
+      "engine_out": {
+        "p_map_used": 0.615,
+        "p_series_used": 0.615,
+        "diff_used": 4.0,
+        "delta_players": 0.01,
+        "delta_players_eff": 0.005,
+        "trace_p_map_team": 0.613,
+        "trace_p_map_players": 0.618,
+        "trace_p_map_fused": 0.615,
+        "trace_n_team_eff": 16.0,
+        "trace_n_players_eff": 8.0,
+        "trace_fusion_info": {
+          "season_phase": "regular",
+          "coverage_eff": 0.69,
+          "w_team": 0.6,
+          "w_players": 0.4,
+          "reason": "fusion_ok"
+        },
+        "trace_uncertainty_info": {
+          "enabled": true,
+          "applied": true,
+          "n_eff": 16.0,
+          "prior_games": 20.0,
+          "raw_shrink": 0.2,
+          "shrink": 0.16,
+          "p_in": 0.615,
+          "p_out": 0.615
+        },
+        "_delta_mode": "linear",
+        "_delta_cap": 1.2,
+        "_delta_slope": 1.5,
+        "lineup_mode": "ML players layer",
+        "match_league": "INTER",
+        "_elo_info": {
+          "p_cal": 0.61
+        },
+        "_p_pipe_prev": 0.615,
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.615,
+            "after": 0.615,
+            "applied": true
+          }
+        ]
+      },
+      "pre_live_out": {
+        "p_map_used": 0.615,
+        "p_series_used": 0.615,
+        "diff_used": 4.0,
+        "delta_players": 0.01,
+        "trace_form_info": {
+          "applied": true,
+          "p_model": 0.615,
+          "p_form": 0.606,
+          "p_blended": 0.611,
+          "w_form": 0.18,
+          "n_a": 10,
+          "n_b": 10,
+          "wins_a": 6,
+          "wins_b": 4,
+          "reason": "season_window"
+        },
+        "trace_hybrid_info": {
+          "applied": true,
+          "enabled": true,
+          "p_model": 0.611,
+          "p_hybrid": 0.617,
+          "p_blended": 0.615,
+          "w_hybrid": 0.2,
+          "n_eff": 16.0,
+          "agree_to_model": 0.58,
+          "reason": "hybrid_ok"
+        },
+        "trace_conf_guard_info": {
+          "enabled": true,
+          "applied": false,
+          "n_ref": 16,
+          "min_games": 8,
+          "coverage": 0.85,
+          "shrink": 0.0,
+          "p_in": 0.615,
+          "p_out": 0.615
+        },
+        "trace_patch_guard_info": {
+          "enabled": true,
+          "applied": false,
+          "status": "ok",
+          "league_hint": "INTER",
+          "changed_leagues": [],
+          "age_days": 6.0,
+          "shrink": 0.0,
+          "p_in": 0.615,
+          "p_out": 0.615
+        },
+        "trace_series_gamma_info": {
+          "enabled": true,
+          "applied": true,
+          "gamma": 1.0,
+          "source": "bo1",
+          "bo": 1,
+          "p_base": 0.615,
+          "p_out": 0.615
+        },
+        "trace_series_coherence_info": {
+          "enabled": true,
+          "applied": false,
+          "reason": "bo1_no_series",
+          "bo": 1,
+          "p_map": 0.615,
+          "p_series_before": 0.615,
+          "p_series_after": 0.615,
+          "p_target": 0.615,
+          "diff_pp": 0.0,
+          "bounds": {
+            "lo": 0.0,
+            "hi": 1.0
+          }
+        },
+        "_guard_triggered": false,
+        "_guard_dpp": 0.0,
+        "_ff_ml_series_bo_dplite_live": false,
+        "trace_series_bo_dplite_live": {
+          "enabled": false,
+          "applied": false,
+          "reason": "bo1",
+          "bo": 1,
+          "p_before": null,
+          "p_after": null
+        },
+        "_lineup_mode_sig": "ML players layer",
+        "_lineupA_sig": {
+          "Top": "FNC.Top"
+        },
+        "_lineupB_sig": {
+          "Top": "C9.Top"
+        },
+        "trace_pipeline_steps": [
+          {
+            "stage": "uncertainty_layer",
+            "before": 0.615,
+            "after": 0.615,
+            "applied": true
+          },
+          {
+            "stage": "season_form_blend",
+            "before": 0.615,
+            "after": 0.611,
+            "applied": true
+          },
+          {
+            "stage": "hybrid_blend",
+            "before": 0.611,
+            "after": 0.615,
+            "applied": true
+          },
+          {
+            "stage": "series_gamma",
+            "before": 0.615,
+            "after": 0.615,
+            "applied": true
+          }
+        ]
+      },
+      "feature_flags": {
+        "ff_ml_state_areal_live": false,
+        "ff_ml_state_alite_live": false,
+        "ff_ml_style_b_lite_live": true,
+        "ff_ml_league_rank_sos_live": false,
+        "ff_ml_roster_continuity_live": false,
+        "ff_ml_hier_calibration_live": false,
+        "ff_ml_meta_c_lite_live": false,
+        "ff_ml_layer_uncertainty_live": true
+      },
+      "trace_shadow_state_alite": {
+        "enabled": true,
+        "applied": false,
+        "reason": "disabled_by_flag"
+      },
+      "trace_shadow_state_areal": {
+        "enabled": true,
+        "applied": false,
+        "reason": "disabled_by_flag"
+      },
+      "post_live_layers": [
+        {
+          "stage": "style_matchup_b_live",
+          "p_after": 0.607,
+          "method": "style_model",
+          "reason": "style_pull"
+        },
+        {
+          "stage": "layer_uncertainty_live",
+          "p_after": 0.601,
+          "method": "layer_uncertainty",
+          "reason": "unc_shrink"
+        }
+      ],
+      "marginal": {
+        "enabled": true,
+        "applied": true,
+        "reason": "inter_marginal_cap",
+        "league": "INTER",
+        "tier": "INTER",
+        "band": "thin",
+        "p_out": 0.599
+      },
+      "expected": {
+        "probabilities": {
+          "p_map_used": 0.599,
+          "p_series_used": 0.599
+        },
+        "odds": {
+          "teamA_map": 1.669449081803005,
+          "teamB_map": 2.4937655860349124
+        },
+        "pipeline_order": [
+          "uncertainty_layer",
+          "season_form_blend",
+          "hybrid_blend",
+          "series_gamma",
+          "style_matchup_b_live",
+          "layer_uncertainty_live",
+          "marginal_trust_guard"
+        ],
+        "guards": {
+          "consistency_guard_triggered": false,
+          "patch_guard_applied": false,
+          "state_areal_live_applied": false,
+          "state_alite_live_applied": false,
+          "style_b_lite_live_applied": true,
+          "league_rank_sos_live_applied": false,
+          "roster_continuity_live_applied": false,
+          "hier_calibration_live_applied": false,
+          "meta_c_lite_live_applied": false,
+          "layer_uncertainty_live_applied": true,
+          "series_bo_dplite_live_applied": false,
+          "marginal_trust_guard_applied": true
+        },
+        "layers": {
+          "state_areal_live": {
+            "applied": false,
+            "p_map_after": null
+          },
+          "state_alite_live": {
+            "applied": false,
+            "p_map_after": null
+          },
+          "style_b_lite_live": {
+            "applied": true,
+            "p_after": 0.607
+          },
+          "league_rank_sos_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "roster_continuity_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "hier_calibration_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "meta_c_lite_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "layer_uncertainty_live": {
+            "applied": true,
+            "p_after": 0.601
+          },
+          "series_bo_dplite_live": {
+            "applied": false,
+            "p_after": null
+          },
+          "marginal_trust_guard": {
+            "applied": true,
+            "p_out": 0.599
+          }
+        }
+      }
+    }
+  ]
+}

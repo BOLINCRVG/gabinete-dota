@@ -207,5 +207,43 @@ class TestFlowLineKeysRegistry(unittest.TestCase):
         self.assertEqual(args[21:28], [""] * 7)
 
 
+class LineInputHintsTests(unittest.TestCase):
+    """Passo seguinte (2026-07-20): o TEXTO de placeholder dos inputs de linha
+    também migrou para STATS_MARKET_CONFIG (input_hint_main/agenda), zerando as
+    18 refs hardcoded (2 dicts em lines_stage_ui/matchup_selection + 6 no
+    plays_app). Trava os valores históricos exatos das DUAS variantes, que
+    divergem de propósito nos exemplos numéricos."""
+
+    def test_variante_main_reproduz_a_tela_principal(self):
+        from app_core.stats_config import line_input_hints
+        self.assertEqual(line_input_hints("main"), {
+            "lines_kills": "Kills (ex: 27.5, 30.5)",
+            "lines_towers": "Torres (ex: 11.5, 12.5)",
+            "lines_dragons": "Dragões (ex: 4.5, 5.5)",
+            "lines_barons": "Barões (ex: 1.5)",
+            "lines_inhib": "Inibidores (ex: 1.5)",
+            "lines_time": "Tempo (ex: 32, 32.5)",
+        })
+
+    def test_variante_agenda_reproduz_a_selecao(self):
+        from app_core.stats_config import line_input_hints
+        self.assertEqual(line_input_hints("agenda"), {
+            "lines_kills": "Kills (ex: 26.5, 27.5)",
+            "lines_towers": "Torres (ex: 10.5)",
+            "lines_dragons": "Dragões (ex: 4.5)",
+            "lines_barons": "Barões (ex: 0.5)",
+            "lines_inhib": "Inibidores (ex: 1.5)",
+            "lines_time": "Tempo (ex: 32, 32.5)",
+        })
+
+    def test_variante_desconhecida_cai_no_main(self):
+        from app_core.stats_config import line_input_hints
+        self.assertEqual(line_input_hints("qualquer"), line_input_hints("main"))
+
+    def test_chaves_batem_com_flow_line_keys(self):
+        from app_core.stats_config import flow_line_keys, line_input_hints
+        self.assertEqual(set(line_input_hints("main")), set(flow_line_keys()))
+
+
 if __name__ == "__main__":
     unittest.main()

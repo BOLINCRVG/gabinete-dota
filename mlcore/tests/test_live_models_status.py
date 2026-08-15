@@ -1,12 +1,14 @@
 """Tests for app_core/live_models_status_core.py."""
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from app_core.live_models_status_core import (
     assess_freshness,
     build_retrain_command,
     csv_signatures,
+    is_retrain_running,
     manifest_path,
     read_manifest,
     retrain_status,
@@ -140,6 +142,88 @@ class TestRetrainStatus(unittest.TestCase):
             self.assertIn("running", s)
             self.assertIn("log_exists", s)
             self.assertFalse(s["running"])
+
+
+class TestPidFantasmaSeAutoCura(unittest.TestCase):
+    """Bug recorrente achado com ele (23/07): o retreino detached escreve o
+    retrain.pid mas NAO o apaga ao morrer; o app confiava no arquivo e dizia
+    "em retreino" pra sempre. Agora is_retrain_running checa liveness e apaga o
+    pid morto sozinho -- nunca mais limpar na mao."""
+
+    def test_pid_morto_retorna_false_e_apaga_o_arquivo(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pid_file = Path(tmp) / "retrain.pid"
+            # PID que com certeza nao existe
+            pid_file.write_text("999999999", encoding="utf-8")
+            self.assertFalse(is_retrain_running(tmp))
+            self.assertFalse(pid_file.exists(), "pid morto deveria ter sido apagado")
+
+    def test_pid_ilegivel_retorna_false_e_apaga(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pid_file = Path(tmp) / "retrain.pid"
+            pid_file.write_text("nao_e_um_numero", encoding="utf-8")
+            self.assertFalse(is_retrain_running(tmp))
+            self.assertFalse(pid_file.exists())
+
+    def test_sem_pid_file_retorna_false(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertFalse(is_retrain_running(tmp))
+
+    def test_pid_vivo_retorna_true_e_mantem(self):
+        import os as _os
+        with tempfile.TemporaryDirectory() as tmp:
+            pid_file = Path(tmp) / "retrain.pid"
+            pid_file.write_text(str(_os.getpid()), encoding="utf-8")
+            # o proprio processo de teste esta vivo
+            self.assertTrue(is_retrain_running(tmp))
+            self.assertTrue(pid_file.exists(), "pid vivo NAO deve ser apagado")
+
+
+class TestAmbienteNuvem(unittest.TestCase):
+    """A nuvem (Streamlit Cloud, 1GB de RAM) nao pode treinar -> is_training_capable_env
+    False la, e o painel esconde retreino. Detecta por HOME=/home/appuser ou /mount/src."""
+
+    def test_windows_nunca_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "nt"):
+            self.assertFalse(m.is_streamlit_cloud())
+            self.assertTrue(m.is_training_capable_env())
+
+    def test_linux_home_appuser_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/home/appuser"}, clear=False):
+            self.assertTrue(m.is_streamlit_cloud())
+            self.assertFalse(m.is_training_capable_env())
+
+    def test_linux_mount_src_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/root"}, clear=False), \
+             unittest.mock.patch.object(m.os, "getcwd", return_value="/mount/src/gabinete-lol"):
+            self.assertTrue(m.is_streamlit_cloud())
+
+    def test_linux_comum_nao_e_nuvem(self):
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "posix"), \
+             unittest.mock.patch.dict(m.os.environ, {"HOME": "/home/bruno"}, clear=False), \
+             unittest.mock.patch.object(m.os, "getcwd", return_value="/home/bruno/proj"):
+            self.assertFalse(m.is_streamlit_cloud())
+            self.assertTrue(m.is_training_capable_env())
+
+
+class TestPidAliveMatchExato(unittest.TestCase):
+    """O match antigo era substring (str(pid) in stdout): 1844 casava com 18440
+    ou "1,844 K". Agora e comparacao exata da coluna PID."""
+
+    def test_pid_proprio_vivo(self):
+        import os as _os
+        from app_core.live_models_status_core import _pid_alive
+        self.assertTrue(_pid_alive(_os.getpid()))
+
+    def test_pid_inexistente_morto(self):
+        from app_core.live_models_status_core import _pid_alive
+        self.assertFalse(_pid_alive(999999999))
 
 
 if __name__ == "__main__":

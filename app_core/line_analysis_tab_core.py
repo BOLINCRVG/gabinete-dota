@@ -866,6 +866,67 @@ def _render_kills_line_content(
         league_label_b=(f"Liga · {xl_league_b}" if cross_league and xl_league_b else "Liga"),
     )
 
+    # ---------- First X: probabilidade AJUSTADA PELO CONFRONTO ----------
+    # O chip de ML abaixo cobre só kills/torres/dragões/tempo; os "primeiros
+    # objetivos" não tinham probabilidade de modelo — só taxa histórica.
+    # Aqui entra P(team_a pega o objetivo) ajustada pela diferença de força,
+    # e SÓ nos eventos DECIDIDOS (torre/baron): medido em 5.319 jogos OOS
+    # (+0.78% e +1.16% de Brier); nos eventos cedo (blood/dragão) o gap é
+    # ruído, então a taxa pura fica intacta. Ver first_x_gap_core.
+    if str(market_key) == "first_x" and str(metric_col or ""):
+        try:
+            from app_core.first_x_gap_core import (
+                adjust_first_x_prob,
+                first_x_gap_supported,
+                mu_gap_from_trace,
+            )
+            _s_evt = pd.to_numeric(df_a_context_all[metric_col], errors="coerce").dropna() \
+                if metric_col in getattr(df_a_context_all, "columns", []) else pd.Series(dtype=float)
+            if len(_s_evt) > 0:
+                _p_base = float(_s_evt.mean())
+                _gap = mu_gap_from_trace(session_state.get("_ml_trace_last"),
+                                         team=team_a, opponent=team_b)
+                _p_adj, _fx_info = adjust_first_x_prob(_p_base, event_col=metric_col, mu_gap=_gap)
+                _sup = first_x_gap_supported(metric_col)
+                _cyan_section_header(f"Quem pega primeiro — {team_a}")
+                if bool(_fx_info.get("applied")):
+                    _dpp = float(_fx_info.get("diff_pp") or 0.0)
+                    _cor = "#22c55e" if _p_adj >= 0.55 else "#facc15" if _p_adj >= 0.45 else "#ef4444"
+                    _nota = (f"ajuste de força vs {team_b}: {_dpp:+.1f} pp "
+                             f"(gap {float(_fx_info.get('mu_gap') or 0.0):+.2f})")
+                else:
+                    _cor, _nota = "#9ca3af", (
+                        "evento cedo: a força do time não prevê quem pega (medido ~neutro) — taxa pura"
+                        if not _sup else "sem gap disponível — taxa pura")
+                # Odd justa dos DOIS lados (pedido dele 22/07: "gerando uma odd,
+                # isso para todos os First X"). Justa = 1/p, sem margem.
+                _p_sim = float(min(max(_p_adj, 1e-6), 1.0 - 1e-6))
+                _odd_sim, _odd_nao = 1.0 / _p_sim, 1.0 / (1.0 - _p_sim)
+                st.markdown(
+                    f"<div style='display:flex;gap:24px;background:rgba(45,170,196,0.08);"
+                    f"border:1px solid rgba(45,170,196,0.3);border-radius:10px;"
+                    f"padding:14px 18px;margin-top:8px;align-items:center;flex-wrap:wrap;'>"
+                    f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;"
+                    f"letter-spacing:0.05em;'>Taxa histórica</div>"
+                    f"<div style='font-size:1.5em;font-weight:700;'>{100.0*_p_base:.1f}%</div></div>"
+                    f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;"
+                    f"letter-spacing:0.05em;'>P({escape(str(team_a))} pega)</div>"
+                    f"<div style='font-size:1.5em;font-weight:700;color:{_cor};'>"
+                    f"{100.0*_p_adj:.1f}%</div></div>"
+                    f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;"
+                    f"letter-spacing:0.05em;'>Odd justa · ✓ pega</div>"
+                    f"<div style='font-size:1.5em;font-weight:700;color:#22c55e;'>{_odd_sim:.2f}</div></div>"
+                    f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;"
+                    f"letter-spacing:0.05em;'>Odd justa · ✗ não pega</div>"
+                    f"<div style='font-size:1.5em;font-weight:700;color:#ef4444;'>{_odd_nao:.2f}</div></div>"
+                    f"<div style='opacity:0.7;font-size:0.85em;flex-basis:100%;'>{_nota}"
+                    f" · odd justa = 1/p, sem margem da casa</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+        except (KeyError, TypeError, ValueError, AttributeError, ImportError):
+            pass
+
     # ---------- ML predict chip ----------
     try:
         from app_core.live_markets_runtime_core import predict_market
@@ -993,13 +1054,19 @@ def _render_v3_kills_subpanel(
         )
         metric_col = first_x_opts[chosen_label]
         market_label = chosen_label  # update label for downstream rendering
-        # Override config for the helper
+        # Override config for the helper.
+        # binary_market=True (pedido dele 22/07): First X é marcação SIM/NÃO —
+        # "quem pegou primeiro". Reusa a máquina já pronta do binário (feita p/
+        # Megacreeps): ✓ verde / ✗ vermelho por jogo em vez de 0/1, legenda
+        # "aconteceu / não aconteceu", e some o editor de linha (a "linha 0.5"
+        # não significa nada num evento binário).
         market_cfg = {**market_cfg,
                        "metric_col": metric_col,
                        "metric_label": chosen_label,
                        "label": chosen_label,
                        "default_line": 0.5,
                        "for_col": None, "against_col": None,
+                       "binary_market": True,
                        "metric_decimals": 0}
 
     # --------- Map selector (shared across all lines for this market) ---------

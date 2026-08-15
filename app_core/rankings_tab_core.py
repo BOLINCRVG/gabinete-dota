@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from html import escape
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 import pandas as pd
 
@@ -23,16 +23,24 @@ def _render_rank_grid(
     metric_label: str,
     show_tier: bool = True,
     top_n: int = 200,
+    movement: Mapping[str, Any] | None = None,
+    games_by_team: Mapping[str, int] | None = None,
 ) -> None:
-    """Render a ranking as a cyan HTML grid: # | Time (badge) | Liga | [Tier] | <metric>.
+    """Render a ranking as a cyan HTML grid: # | Δ | Time (badge) | Liga | [Tier] | J | <metric>.
 
     Pre-sorted by the source; top-3 get medals. Scrollable for long lists.
+    movement (opcional): {chave_norm -> {mov, novo}} p/ a coluna de subida/queda.
+    games_by_team (opcional): {chave_norm -> jogos} p/ a coluna de confiança.
     """
     if df is None or df.empty:
         st.info("Sem dados para essa fonte/recorte. Troque a fonte acima ou ajuste o recorte.")
         return
+    from app_core.rank_movement_core import movement_badge_html
     d = df.head(int(top_n)).copy().reset_index(drop=True)
-    grid = "0.5fr 2.4fr 0.9fr" + (" 0.7fr" if show_tier else "") + " 1fr"
+    show_mov = bool(movement)
+    show_games = bool(games_by_team)
+    grid = ("0.5fr" + (" 0.6fr" if show_mov else "") + " 2.4fr 0.9fr"
+            + (" 0.7fr" if show_tier else "") + (" 0.6fr" if show_games else "") + " 1fr")
 
     def _num(v: Any) -> str:
         try:
@@ -42,35 +50,53 @@ def _render_rank_grid(
             return "—"
 
     tier_head = "<div style='text-align:center;opacity:0.7;'>Tier</div>" if show_tier else ""
+    mov_head = "<div style='text-align:center;opacity:0.7;' title='Subiu/caiu desde o último snapshot'>Δ</div>" if show_mov else ""
+    games_head = "<div style='text-align:center;opacity:0.7;' title='Jogos vistos — quanto maior, mais confiável o rating'>J</div>" if show_games else ""
     header = (
         f"<div style='display:grid;grid-template-columns:{grid};"
         "background:rgba(45,170,196,0.14);padding:7px 10px;font-weight:700;"
         "font-size:0.78em;text-transform:uppercase;letter-spacing:0.05em;opacity:0.9;"
         "position:sticky;top:0;'>"
         "<div style='text-align:center;'>#</div>"
+        f"{mov_head}"
         "<div>Time</div>"
         "<div style='text-align:center;opacity:0.7;'>Liga</div>"
         f"{tier_head}"
+        f"{games_head}"
         f"<div style='text-align:center;color:#2daac4;'>{escape(metric_label)}</div>"
         "</div>"
     )
+    mov_map = dict(movement or {})
+    gm = dict(games_by_team or {})
     rows = []
     for i, r in d.iterrows():
         bg = "rgba(255,255,255,0.02)" if (i % 2 == 0) else "rgba(255,255,255,0.045)"
         medal = ["🥇", "🥈", "🥉"][i] if i < 3 else str(i + 1)
         team = str(r.get("team", "") or "")
+        tk = _norm_team_key(team)
         league = escape(str(r.get("league", "") or "—"))
         tier_cell = (f"<div style='text-align:center;opacity:0.75;'>{escape(str(r.get('tier','') or '—'))}</div>"
                      if show_tier else "")
+        mov_cell = (f"<div style='text-align:center;font-size:0.9em;'>{movement_badge_html(mov_map.get(tk))}</div>"
+                    if show_mov else "")
+        if show_games:
+            _g = gm.get(tk)
+            _gtxt = str(int(_g)) if isinstance(_g, (int, float)) and _g == _g else "—"
+            _dim = "opacity:0.45;" if (isinstance(_g, (int, float)) and _g < 15) else "opacity:0.8;"
+            games_cell = f"<div style='text-align:center;{_dim}font-size:0.9em;'>{_gtxt}</div>"
+        else:
+            games_cell = ""
         val = _num(r.get(metric_col))
         rows.append(
             f"<div style='display:grid;grid-template-columns:{grid};align-items:center;"
             f"padding:5px 10px;background:{bg};border-bottom:1px solid rgba(255,255,255,0.04);'>"
             f"<div style='text-align:center;font-weight:700;opacity:0.85;'>{medal}</div>"
+            f"{mov_cell}"
             f"<div style='display:flex;align-items:center;gap:8px;'>{team_badge_html(team, size=24)}"
             f"<span style='font-weight:600;'>{escape(team)}</span></div>"
             f"<div style='text-align:center;opacity:0.8;'>{league}</div>"
             f"{tier_cell}"
+            f"{games_cell}"
             f"<div style='text-align:center;font-weight:700;color:#2daac4;'>{val}</div>"
             "</div>"
         )
@@ -295,6 +321,34 @@ def render_rankings_tab(
                 pass
         return out
 
+    # Movimento (↑/↓) e confiança (jogos vistos) — pesquisa 22/07: são o que
+    # torna a ranking viva. O movimento compara com um snapshot que só é
+    # reescrito quando fica velho (senão seria sempre zero). O snapshot vive ao
+    # lado do artefato. A confiança usa os jogos do team_games (já disponível),
+    # sem encanar o WHR nem misturar sistemas de rating.
+    _movement: Mapping[str, Any] | None = None
+    _games_by_team: Mapping[str, int] | None = None
+    try:
+        from app_core.rank_movement_core import (
+            compute_movement, load_snapshot, rank_map_from_df,
+            save_snapshot, snapshot_is_stale,
+        )
+        from pathlib import Path as _Path
+        _df_full = mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=0)
+        _cur = rank_map_from_df(_df_full)
+        if _cur:
+            _snap_path = _Path(str(artifact_path)).expanduser().with_name("rank_snapshot.json")
+            _snap = load_snapshot(_snap_path)
+            _movement = compute_movement(_cur, _snap)
+            if snapshot_is_stale(_snap, min_age_days=7.0):
+                save_snapshot(_snap_path, _cur)  # primeira base / atualização semanal
+        if team_games is not None and not team_games.empty and "team" in team_games.columns:
+            _gc = team_games.groupby(team_games["team"].apply(_norm_team_key))["gameid"].nunique() \
+                if "gameid" in team_games.columns else team_games["team"].apply(_norm_team_key).value_counts()
+            _games_by_team = {str(k): int(v) for k, v in _gc.items()}
+    except Exception:
+        _movement, _games_by_team = None, None  # nunca derruba a aba
+
     if rank_source == "v2":
         df_v2 = _apply_recorte(mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=int(max(int(top_n), 600))))
         if df_v2.empty:
@@ -304,6 +358,7 @@ def render_rankings_tab(
                 st, df_v2, format_num_fn=format_num_fn,
                 metric_col="total_strength", metric_label="Força",
                 show_tier=True, top_n=int(top_n),
+                movement=_movement, games_by_team=_games_by_team,
             )
             with st.expander("Ver colunas técnicas (breakdown do ML v2)", expanded=False):
                 st.caption("Decomposição da força: elo residual, força de liga/tier, base e boost por conquistas.")

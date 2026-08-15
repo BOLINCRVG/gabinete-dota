@@ -276,6 +276,15 @@ def _maybe_reset_on_promotion(
 
     This is a practical guardrail: teams that dominate weak leagues should not
     keep an extreme residual when entering a much stronger tier.
+
+    BUG CRÍTICO corrigido 24/07 (achado com ele): comparar com o tier ANTERIOR
+    fazia todo time de T1 que joga um torneio MINOR pontual perder o histórico ao
+    voltar. Ex.: LCK -> KeSPA Cup (MINOR) -> LCK era lido como "promoção" e zerava
+    tudo. Os 10 times da LCK ficaram com games_played 2-14 em vez de 300-500
+    (Gen.G: 5 resets, o último 2 dias antes do fim dos dados -> gp=2), destruindo
+    rating e previsões da liga inteira. Agora comparamos com o MELHOR tier que o
+    time já alcançou: voltar a um tier onde ele já esteve NÃO é promoção; subir
+    pela primeira vez (LCKC -> LCK de verdade) continua resetando.
     """
     t = str(team)
     nt = str(new_tier or "OTHER")
@@ -296,7 +305,13 @@ def _maybe_reset_on_promotion(
             # Guardrail-only path; keep training running even if one team metadata is malformed.
             return
 
-    last_tier[t] = nt
+    # Guarda o MELHOR tier já visto (menor priority), não o último: é o que
+    # distingue promoção real de ida-e-volta em torneio.
+    try:
+        if not ot or tier_priority(nt) < tier_priority(ot):
+            last_tier[t] = nt
+    except (TypeError, ValueError):
+        last_tier[t] = nt
 
 
 def _top_global_v04(model: EloModel, team_meta: Dict[str, Dict[str, str]], n: int = 20, tier_lock: bool = True) -> List[Tuple[str, int, str, str]]:

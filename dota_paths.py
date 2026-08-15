@@ -34,8 +34,16 @@ def lol_repo_path() -> Path:
 
 
 def ensure_lol_on_path() -> Path:
+    """Deixa o repo do LoL ALCANCAVEL, mas nunca na frente do Dota.
+
+    SEPARACAO 2026-07-24 (pedido dele): antes era insert(0, ...) e o app_core/
+    mlcore do LoL GANHAVA do proprio Dota — bug ou refactor no LoL quebrava o
+    Dota na hora (foi o que impediu a reorg de pastas do LoL). Agora vai pro FIM
+    do sys.path: o Dota usa sempre a copia DELE (sync_vendor/build_clone
+    atualizam quando VOCE quiser), e quem precisar de algo que so existe no LoL
+    ainda encontra."""
     repo = lol_repo_path()
     s = str(repo)
     if s not in sys.path:
-        sys.path.insert(0, s)
+        sys.path.append(s)
     return repo

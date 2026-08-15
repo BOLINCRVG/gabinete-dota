@@ -2,7 +2,62 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import math
 from typing import Any
+
+_log = logging.getLogger(__name__)
+
+# Evidência do incidente de 18/07 (Visão Geral caindo em produção). O `n` do
+# microseg chegou num formato que `int()` recusa, mas NUNCA descobrimos qual —
+# o fix original chutou "lista" na mensagem do commit sem prova, e a varredura
+# de 19/07 não achou `n` não-escalar em nenhum artefato nem no código gerador
+# (que sempre grava float). Como o caso é raro e depende do confronto, aqui
+# fica o registro: quando `n` não for um número finito, guarda-se o TIPO e o
+# repr truncado para a próxima ocorrência virar teste de regressão.
+_MICROSEG_N_ANOMALIAS: list[dict[str, Any]] = []
+
+
+def _coerce_microseg_n(n_raw: Any) -> int:
+    """Converte o `n` do microseg em inteiro SEM nunca levantar.
+
+    Cobre os 4 modos de falha reais de `int(x)`: TypeError (lista/dict/objeto),
+    ValueError (NaN, texto), OverflowError (infinito — o buraco que o fix de
+    18/07 deixou passar) e qualquer coisa exótica de terceiros (numpy & cia,
+    que não são list/tuple e por isso precisam do caminho genérico).
+    """
+    if isinstance(n_raw, bool) or n_raw is None:
+        return 0
+    if isinstance(n_raw, int):
+        return int(n_raw)
+    if isinstance(n_raw, float):
+        return int(n_raw) if math.isfinite(n_raw) else _anota(n_raw, "float nao finito")
+    if isinstance(n_raw, (str, bytes, bytearray)):
+        # texto é iterável, mas "42" vale 42 — jamais 4+2 (o teste pegou isso)
+        try:
+            return int(float(n_raw))
+        except (TypeError, ValueError, OverflowError):
+            return _anota(n_raw, "texto nao numerico")
+    try:
+        total = sum(float(x) for x in n_raw)          # sequências e arrays
+        return int(total) if math.isfinite(total) else _anota(n_raw, "soma nao finita")
+    except TypeError:
+        pass                                          # não é iterável
+    except (ValueError, OverflowError, ArithmeticError):
+        return _anota(n_raw, "iteravel com item invalido")
+    try:
+        return int(n_raw)                             # str numérica, Decimal...
+    except (TypeError, ValueError, OverflowError, ArithmeticError):
+        return _anota(n_raw, "nao conversivel")
+
+
+def _anota(n_raw: Any, motivo: str) -> int:
+    """Registra a anomalia (sem quebrar) para virar teste quando reaparecer."""
+    reg = {"tipo": type(n_raw).__name__, "motivo": motivo, "repr": repr(n_raw)[:120]}
+    if reg not in _MICROSEG_N_ANOMALIAS:
+        _MICROSEG_N_ANOMALIAS.append(reg)
+        _log.warning("microseg n inesperado: %s", reg)
+    return 0
 
 
 def build_microseg_caption(info: dict[str, Any] | None) -> str:
@@ -13,13 +68,7 @@ def build_microseg_caption(info: dict[str, Any] | None) -> str:
         bias_pp = float(payload.get("bias", 0.0) or 0.0) * 100.0
     except Exception:
         bias_pp = 0.0
-    # n pode chegar não-escalar (ex.: lista de contagens por segmento numa
-    # calibração hierárquica) — nunca deixar a caption derrubar a Visão Geral.
-    n_raw = payload.get("n", 0) or 0
-    try:
-        n_val = int(sum(n_raw)) if isinstance(n_raw, (list, tuple)) else int(n_raw)
-    except (TypeError, ValueError):
-        n_val = 0
+    n_val = _coerce_microseg_n(payload.get("n", 0))
     return (
         f"Microseg calibracao: aplicada ({payload.get('key')}) | "
         f"fonte={payload.get('source', 'live')} | "

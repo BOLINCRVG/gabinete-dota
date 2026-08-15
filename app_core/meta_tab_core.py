@@ -11,10 +11,14 @@ from typing import Any, Mapping
 
 import pandas as pd
 
+from app_core.champions_shared_core import (  # noqa: F401  (re-export p/ importadores)
+    _champ_icon_uri,
+    _get_draft_rows,
+    _get_registry,
+)
 from app_core.meta_patch_core import (
     TIER_COLORS,
     compute_meta_table,
-    load_draft_rows,
     patches_by_recency,
 )
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
@@ -23,17 +27,6 @@ from app_core.tab_ui_core import render_tab_hero, render_tab_section
 def _norm_key(value: Any) -> str:
     import re
     return re.sub(r"[^a-z0-9]+", "", str(value or "").casefold())
-
-
-def _get_draft_rows(session_state: Any, csv_sig: Any) -> pd.DataFrame:
-    key = ("_meta_draft_rows", str(csv_sig))
-    cached = session_state.get("_meta_draft_rows_cache")
-    if isinstance(cached, tuple) and len(cached) == 2 and cached[0] == key[1]:
-        return cached[1]
-    csv_path = csv_sig[0] if isinstance(csv_sig, (tuple, list)) else str(csv_sig)
-    df = load_draft_rows(str(csv_path))
-    session_state["_meta_draft_rows_cache"] = (key[1], df)
-    return df
 
 
 def _delta_html(delta: Any) -> str:
@@ -109,8 +102,7 @@ def render_meta_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     prev_txt = f" · comparando com {prev_patch}" if prev_patch else ""
     st.caption(f"Patch {patch} · {n_maps} mapas{prev_txt} · WR com shrink (k=20) — presença manda, WR complementa.")
 
-    # ícones (mesma pasta do grid do Radar)
-    from app_core.radar_tab_core import _champ_icon_uri, _get_registry
+    # ícones (mesma pasta do grid do Radar; helpers em champions_shared_core)
     registry = _get_registry(session_state)
     name2id = {str(e.get("name") or k): str(e.get("id") or "")
                for k, e in (registry.get("champions") or {}).items()}

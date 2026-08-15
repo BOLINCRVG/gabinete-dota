@@ -25,6 +25,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Kills", "v3_key": "kills", "mv2_col": "mv2_total_kills",
         "for_col": "kills_for", "against_col": "kills_against", "is_time": False,
         "line_key": "lines_kills",
+        "input_hint_main": "Kills (ex: 27.5, 30.5)", "input_hint_agenda": "Kills (ex: 26.5, 27.5)",
     },
     "Torres": {
         "metric_key": "towers",
@@ -36,6 +37,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Torres", "v3_key": "towers", "mv2_col": "mv2_total_towers",
         "for_col": "towers_for", "against_col": "towers_against", "is_time": False,
         "line_key": "lines_towers",
+        "input_hint_main": "Torres (ex: 11.5, 12.5)", "input_hint_agenda": "Torres (ex: 10.5)",
     },
     "Dragões": {
         "metric_key": "dragons",
@@ -47,6 +49,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Dragões", "v3_key": "dragons", "mv2_col": "mv2_total_dragons",
         "for_col": "dragons_for", "against_col": "dragons_against", "is_time": False,
         "line_key": "lines_dragons",
+        "input_hint_main": "Dragões (ex: 4.5, 5.5)", "input_hint_agenda": "Dragões (ex: 4.5)",
     },
     "Nashors": {
         "metric_key": "barons",
@@ -58,6 +61,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Barões", "v3_key": "barons", "mv2_col": "mv2_total_barons",
         "for_col": "barons_for", "against_col": "barons_against", "is_time": False,
         "line_key": "lines_barons",
+        "input_hint_main": "Barões (ex: 1.5)", "input_hint_agenda": "Barões (ex: 0.5)",
     },
     "Inibidores": {
         "metric_key": "inhibitors",
@@ -69,6 +73,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Inibidores", "v3_key": "inibs", "mv2_col": "mv2_total_inhibitors",
         "for_col": "inhibitors_for", "against_col": "inhibitors_against", "is_time": False,
         "line_key": "lines_inhib",
+        "input_hint_main": "Inibidores (ex: 1.5)", "input_hint_agenda": "Inibidores (ex: 1.5)",
     },
     "Tempo": {
         "metric_key": "time",
@@ -80,6 +85,7 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "v3_label": "Tempo", "v3_key": "time", "mv2_col": "game_time_min",
         "for_col": None, "against_col": None, "is_time": True,
         "line_key": "lines_time",
+        "input_hint_main": "Tempo (ex: 32, 32.5)", "input_hint_agenda": "Tempo (ex: 32, 32.5)",
     },
 }
 
@@ -118,6 +124,21 @@ def flow_line_keys() -> tuple[str, ...]:
 def line_key_by_label() -> dict[str, str]:
     """{label -> line_key}. Fonte dos inputs de linha da Agenda."""
     return {label: _line_key_of(cfg) for label, cfg in STATS_MARKET_CONFIG.items()}
+
+
+def line_input_hints(variant: str = "main") -> dict[str, str]:
+    """{line_key -> texto de placeholder} para os inputs de linha.
+
+    variant="main" (tela principal) e "agenda" (seleção de confronto) divergem
+    DE PROPÓSITO nos exemplos numéricos — por isso dois campos no registro. Um
+    mercado novo herda o hint pelo próprio registro (fonte única). Mercado sem
+    hint cai no v3_label. Equivalência em test_flow_line_keys_registry."""
+    field = "input_hint_agenda" if str(variant) == "agenda" else "input_hint_main"
+    out: dict[str, str] = {}
+    for cfg in STATS_MARKET_CONFIG.values():
+        txt = str(cfg.get(field) or cfg.get("input_hint_main") or cfg.get("v3_label") or "")
+        out[_line_key_of(cfg)] = txt
+    return out
 
 
 def v3_core_markets() -> list[dict[str, Any]]:

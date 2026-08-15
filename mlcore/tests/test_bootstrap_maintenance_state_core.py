@@ -7,6 +7,8 @@ from pathlib import Path
 
 from mlcore.tests._workspace_temp import workspace_tempdir
 from app_core.bootstrap_maintenance_state_core import (
+    _lock_busy_reason,
+    _stale_clear_decision,
     acquire_bootstrap_maint_lock,
     bootstrap_maint_state_finish,
     bootstrap_maint_state_start,
@@ -148,6 +150,94 @@ class BootstrapMaintenanceStateCoreTests(unittest.TestCase):
         snapshot2 = get_bootstrap_runtime_state(session_state)
         self.assertEqual(snapshot2["auto_maint_ran_fp"], "")
         self.assertEqual(snapshot2["active_run_id"], "")
+
+
+class LockBusyReasonTests(unittest.TestCase):
+    """Decisão PURA de 'lock ocupado' — extraída de acquire (19/07). É a
+    semântica de concorrência que causou o incidente do fit sobrescrito;
+    agora cada ramo tem teste próprio."""
+
+    _BASE = dict(
+        fp_key="fpX", lock_ts=1000.0, lock_fp="fpX", lock_pid="123",
+        lock_age=10.0, lock_pid_alive=True, same_owner=False,
+        state_fp="fpX", state_status="running", hb_age=2.0,
+        ttl=1800.0, same_fp_busy_s=180.0, hb_busy_s=180.0, other_fp_grace_s=45.0,
+    )
+
+    def _r(self, **over):
+        kw = dict(self._BASE); kw.update(over)
+        return _lock_busy_reason(**kw)
+
+    def test_sem_lock_nao_ocupado(self):
+        self.assertEqual(self._r(lock_ts=0.0, lock_fp=""), "")
+
+    def test_mesmo_dono_nunca_ocupado(self):
+        self.assertEqual(self._r(same_owner=True), "")
+
+    def test_outro_fp_dentro_do_grace_ocupado(self):
+        self.assertIn("lock_busy(fp=fpY", self._r(lock_fp="fpY", lock_age=10.0))
+
+    def test_outro_fp_passou_grace_mas_dentro_do_ttl_ocupado(self):
+        # passou grace (45s) mas < ttl e pid vivo -> busy pelo ramo do ttl
+        self.assertIn("lock_busy(fp=fpY", self._r(lock_fp="fpY", lock_age=100.0))
+
+    def test_outro_fp_passou_ttl_livre(self):
+        self.assertEqual(self._r(lock_fp="fpY", lock_age=2000.0), "")
+
+    def test_mesmo_fp_heartbeat_fresco_ocupado(self):
+        self.assertIn("lock_busy_same_fp", self._r(hb_age=2.0))
+
+    def test_mesmo_fp_heartbeat_velho_livre(self):
+        # running mas hb velho => stale => não ocupa (deixa readquirir)
+        self.assertEqual(self._r(hb_age=500.0, lock_age=500.0), "")
+
+    def test_mesmo_fp_sem_state_dentro_da_janela_ocupado(self):
+        self.assertIn("lock_busy_same_fp", self._r(state_status="", lock_age=10.0))
+
+    def test_pid_morto_nao_ocupa(self):
+        self.assertEqual(self._r(lock_pid_alive=False, state_status=""), "")
+
+
+class StaleClearDecisionTests(unittest.TestCase):
+    """Decisão PURA de 'pode limpar lock obsoleto' — extraída de cleanup.
+    Ordem de prioridade dos motivos preservada."""
+
+    def test_pid_morto_limpa(self):
+        ok, why = _stale_clear_decision(pid_alive=False, has_live_state=False,
+                                        lock_age=30.0, hb_age=0.0, stale_limit=180.0)
+        self.assertTrue(ok)
+        self.assertIn("pid_dead", why)
+
+    def test_pid_morto_recem_criado_nao_limpa(self):
+        # lock_age < 5s: proteção contra corrida de criação
+        ok, why = _stale_clear_decision(pid_alive=False, has_live_state=False,
+                                        lock_age=2.0, hb_age=0.0, stale_limit=180.0)
+        self.assertFalse(ok)
+
+    def test_sem_state_vivo_e_velho_limpa(self):
+        ok, why = _stale_clear_decision(pid_alive=True, has_live_state=False,
+                                        lock_age=300.0, hb_age=0.0, stale_limit=180.0)
+        self.assertTrue(ok)
+        self.assertIn("no_live_state", why)
+
+    def test_running_sem_heartbeat_limpa(self):
+        ok, why = _stale_clear_decision(pid_alive=True, has_live_state=True,
+                                        lock_age=200.0, hb_age=400.0, stale_limit=180.0)
+        self.assertTrue(ok)
+        self.assertIn("running_state_no_heartbeat", why)
+
+    def test_running_com_heartbeat_fresco_nao_limpa(self):
+        ok, why = _stale_clear_decision(pid_alive=True, has_live_state=True,
+                                        lock_age=200.0, hb_age=5.0, stale_limit=180.0)
+        self.assertFalse(ok)
+        self.assertEqual(why, "not_stale_enough")
+
+    def test_prioridade_pid_morto_vence(self):
+        # pid morto E sem state: o motivo reportado é o de pid morto (1º)
+        ok, why = _stale_clear_decision(pid_alive=False, has_live_state=False,
+                                        lock_age=300.0, hb_age=400.0, stale_limit=180.0)
+        self.assertTrue(ok)
+        self.assertIn("pid_dead", why)
 
 
 if __name__ == "__main__":

@@ -57,6 +57,12 @@ class TestNavPagesSmoke(unittest.TestCase):
         status, payload = _run_page("Meta")
         self.assertEqual(status, "OK", f"página Meta quebrou: {payload}")
 
+    def test_tecnico_page_renders(self) -> None:
+        # Fecha a última página do top-nav sem cobertura E2E (força-tarefa 23/07):
+        # endurece a rede pro refactor da espinha globals->ctx.
+        status, payload = _run_page("Tecnico")
+        self.assertEqual(status, "OK", f"página Tecnico quebrou: {payload}")
+
     def test_live_bet_nav_is_merged_into_radar(self) -> None:
         """Live-Bet foi fundida no Radar (2026-07): navegação antiga cai lá.
         Trava a semântica que torna o branch Live-Bet do plays_app inerte."""

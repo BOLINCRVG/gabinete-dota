@@ -123,6 +123,108 @@ def _league_class_from_baseline(bp: Dict[str, Any], by_league: Dict[str, Any], l
     return _infer_league_class_from_node(lg, node)
 
 
+def _node_n(node: Dict[str, Any]) -> float:
+    """Amostra efetiva de um nó de calibração (wf_n/lv_n/n_total/n, 1º > 0).
+
+    Extraído de apply_hier_calibration_live (era nested; 21/07, refactor guiado
+    por hiercal_golden). Puro."""
+    if not isinstance(node, dict):
+        return 0.0
+    for k in ("wf_n", "lv_n", "n_total", "n"):
+        v = _f(node.get(k))
+        if math.isfinite(v) and v > 0:
+            return float(v)
+    return 0.0
+
+
+def _node_se(node: Dict[str, Any], sigma0: float) -> float:
+    """Erro-padrão do viés do nó: score_se direto, ou de score_var, ou
+    sigma0/sqrt(n). Puro (extraído do nested)."""
+    if isinstance(node, dict):
+        se_v = _f(node.get("score_se"))
+        if math.isfinite(se_v) and se_v > 0.0:
+            return float(se_v)
+        var_v = _f(node.get("score_var"))
+        if math.isfinite(var_v) and var_v > 0.0:
+            return float(math.sqrt(max(1e-9, float(var_v))))
+    n_v = _node_n(node)
+    if n_v <= 0.0:
+        return float(max(0.8, float(sigma0)))
+    return float(max(1e-6, float(sigma0) / math.sqrt(max(1.0, float(n_v)))))
+
+
+def _sh(n: float, k: float) -> float:
+    """Fator de shrink por amostra: n/(n+k). Puro (extraído do nested)."""
+    nn = max(0.0, float(n))
+    return float(nn / (nn + max(1.0, float(k))))
+
+
+def _node_base_stats(node: Dict[str, Any], *, sigma0: float, fdr_q_alpha: float) -> Dict[str, float]:
+    """Estatísticas-base de um nó: viés, amostra, erro-padrão, z/p/q e rejeição
+    FDR. É a parte comum entre o nó hierárquico (_node_stats) e o par
+    interregional (_pair_stats), que antes duplicavam este cálculo.
+
+    Consolidado 21/07 (passo 1 do mapa, tirar duplicação). Puro."""
+    _bias = _f(node.get("score_bias"), 0.0) if isinstance(node, dict) else 0.0
+    _n = _node_n(node)
+    _se = _node_se(node, sigma0)
+    _var = float(max(1e-9, _se * _se))
+    _z_in = _f(node.get("score_z")) if isinstance(node, dict) else float("nan")
+    _z = float(_z_in if math.isfinite(_z_in) else (_bias / max(1e-9, _se)))
+    _p_in = _f(node.get("score_p")) if isinstance(node, dict) else float("nan")
+    _p = float(_p_in if math.isfinite(_p_in) else math.erfc(abs(_z) / math.sqrt(2.0)))
+    _q_in = _f(node.get("score_q")) if isinstance(node, dict) else float("nan")
+    _q = float(_q_in if math.isfinite(_q_in) else _p)
+    _fdr_reject = bool(node.get("fdr_reject", _q <= fdr_q_alpha)) if isinstance(node, dict) else bool(_q <= fdr_q_alpha)
+    return {
+        "bias": float(_bias),
+        "n": float(max(0.0, _n)),
+        "se": float(max(1e-6, _se)),
+        "var": float(max(1e-9, _var)),
+        "z": float(_z),
+        "p": float(max(0.0, min(1.0, _p))),
+        "q": float(max(0.0, min(1.0, _q))),
+        "fdr_reject": bool(_fdr_reject),
+    }
+
+
+def _node_stats(
+    node: Dict[str, Any],
+    *,
+    k_shrink: float,
+    sigma0: float,
+    z_gate: float,
+    fdr_q_alpha: float,
+) -> Dict[str, float]:
+    """Estatísticas de um nó: viés ajustado por significância (z/q gates) e peso
+    por inverso-da-variância × shrink. O CORE do peso hierárquico.
+
+    Base comum em _node_base_stats; aqui adiciona os multiplicadores de
+    significância e o peso. Puro; hiercal_golden prova a saída idêntica."""
+    base = _node_base_stats(node, sigma0=sigma0, fdr_q_alpha=fdr_q_alpha)
+    _bias, _n, _var = base["bias"], base["n"], base["var"]
+    _z, _q, _fdr_reject = base["z"], base["q"], base["fdr_reject"]
+    _z_mult = float(max(0.0, min(1.0, abs(_z) / max(1e-9, z_gate))))
+    _q_mult = 1.0
+    if _q > fdr_q_alpha:
+        _q_mult = float(max(0.05, min(1.0, fdr_q_alpha / max(1e-9, _q))))
+    if not _fdr_reject:
+        _q_mult = float(min(_q_mult, 0.75))
+    _sig_mult = float(max(0.0, min(1.0, _z_mult * _q_mult)))
+    _bias_adj = float(_bias * _sig_mult)
+    _ev = float(_sh(_n, k_shrink))
+    _w = float((1.0 / max(1e-9, _var)) * _ev * max(0.05, _sig_mult))
+    return {
+        **base,
+        "bias_adj": float(_bias_adj),
+        "z_mult": float(_z_mult),
+        "q_mult": float(_q_mult),
+        "sig_mult": float(_sig_mult),
+        "ev": float(_ev),
+        "weight": float(_w),
+    }
+
+
 def apply_hier_calibration_live(
     *,
     p_map_in: Any,
@@ -202,28 +304,6 @@ def apply_hier_calibration_live(
         out["reason"] = "missing_baseline"
         return out
 
-    def _node_n(node: Dict[str, Any]) -> float:
-        if not isinstance(node, dict):
-            return 0.0
-        for k in ("wf_n", "lv_n", "n_total", "n"):
-            v = _f(node.get(k))
-            if math.isfinite(v) and v > 0:
-                return float(v)
-        return 0.0
-
-    def _node_se(node: Dict[str, Any], sigma0: float) -> float:
-        if isinstance(node, dict):
-            se_v = _f(node.get("score_se"))
-            if math.isfinite(se_v) and se_v > 0.0:
-                return float(se_v)
-            var_v = _f(node.get("score_var"))
-            if math.isfinite(var_v) and var_v > 0.0:
-                return float(math.sqrt(max(1e-9, float(var_v))))
-        n_v = _node_n(node)
-        if n_v <= 0.0:
-            return float(max(0.8, float(sigma0)))
-        return float(max(1e-6, float(sigma0) / math.sqrt(max(1.0, float(n_v)))))
-
     seg_table = bp.get("by_segment") if isinstance(bp.get("by_segment"), dict) else {}
     if not seg_table:
         # Optional alternative format:
@@ -281,58 +361,20 @@ def apply_hier_calibration_live(
     same_z_gate = max(0.80, min(4.00, _f(th.get("same_z_gate"), _f(th.get("inter_z_gate"), 1.96))))
     same_fdr_q_alpha = max(0.01, min(0.30, _f(th.get("same_fdr_q_alpha"), _f(th.get("inter_fdr_q_alpha"), 0.10))))
 
-    def _sh(n: float, k: float) -> float:
-        nn = max(0.0, float(n))
-        return float(nn / (nn + max(1.0, float(k))))
+    def _node_stats_same(node: Dict[str, Any], *, k_shrink: float) -> Dict[str, float]:
+        # thin closure: fixa os thresholds same_* do escopo atual no helper puro.
+        return _node_stats(node, k_shrink=k_shrink, sigma0=same_sigma0,
+                           z_gate=same_z_gate, fdr_q_alpha=same_fdr_q_alpha)
 
-    def _node_stats(node: Dict[str, Any], *, k_shrink: float) -> Dict[str, float]:
-        _bias = _f(node.get("score_bias"), 0.0) if isinstance(node, dict) else 0.0
-        _n = _node_n(node)
-        _se = _node_se(node, same_sigma0)
-        _var = float(max(1e-9, _se * _se))
-        _z_in = _f(node.get("score_z")) if isinstance(node, dict) else float("nan")
-        _z = float(_z_in if math.isfinite(_z_in) else (_bias / max(1e-9, _se)))
-        _p_in = _f(node.get("score_p")) if isinstance(node, dict) else float("nan")
-        _p = float(_p_in if math.isfinite(_p_in) else math.erfc(abs(_z) / math.sqrt(2.0)))
-        _q_in = _f(node.get("score_q")) if isinstance(node, dict) else float("nan")
-        _q = float(_q_in if math.isfinite(_q_in) else _p)
-        _fdr_reject = bool(node.get("fdr_reject", _q <= same_fdr_q_alpha)) if isinstance(node, dict) else bool(_q <= same_fdr_q_alpha)
-        _z_mult = float(max(0.0, min(1.0, abs(_z) / max(1e-9, same_z_gate))))
-        _q_mult = 1.0
-        if _q > same_fdr_q_alpha:
-            _q_mult = float(max(0.05, min(1.0, same_fdr_q_alpha / max(1e-9, _q))))
-        if not _fdr_reject:
-            _q_mult = float(min(_q_mult, 0.75))
-        _sig_mult = float(max(0.0, min(1.0, _z_mult * _q_mult)))
-        _bias_adj = float(_bias * _sig_mult)
-        _ev = float(_sh(_n, k_shrink))
-        _w = float((1.0 / max(1e-9, _var)) * _ev * max(0.05, _sig_mult))
-        return {
-            "bias": float(_bias),
-            "bias_adj": float(_bias_adj),
-            "n": float(max(0.0, _n)),
-            "se": float(max(1e-6, _se)),
-            "var": float(max(1e-9, _var)),
-            "z": float(_z),
-            "p": float(max(0.0, min(1.0, _p))),
-            "q": float(max(0.0, min(1.0, _q))),
-            "fdr_reject": bool(_fdr_reject),
-            "z_mult": float(_z_mult),
-            "q_mult": float(_q_mult),
-            "sig_mult": float(_sig_mult),
-            "ev": float(_ev),
-            "weight": float(_w),
-        }
-
-    seg_st = _node_stats(seg_node, k_shrink=seg_shrink_k) if isinstance(seg_node, dict) and seg_node else {
+    seg_st = _node_stats_same(seg_node, k_shrink=seg_shrink_k) if isinstance(seg_node, dict) and seg_node else {
         "bias": 0.0, "bias_adj": 0.0, "n": 0.0, "se": same_sigma0, "var": max(1e-9, same_sigma0 * same_sigma0),
         "z": 0.0, "p": 1.0, "q": 1.0, "fdr_reject": False, "z_mult": 0.0, "q_mult": 1.0, "sig_mult": 0.0, "ev": 0.0, "weight": 0.0
     }
-    lg_st = _node_stats(lg_node, k_shrink=league_shrink_k) if isinstance(lg_node, dict) and lg_node else {
+    lg_st = _node_stats_same(lg_node, k_shrink=league_shrink_k) if isinstance(lg_node, dict) and lg_node else {
         "bias": 0.0, "bias_adj": 0.0, "n": 0.0, "se": same_sigma0, "var": max(1e-9, same_sigma0 * same_sigma0),
         "z": 0.0, "p": 1.0, "q": 1.0, "fdr_reject": False, "z_mult": 0.0, "q_mult": 1.0, "sig_mult": 0.0, "ev": 0.0, "weight": 0.0
     }
-    gl_st = _node_stats(global_node, k_shrink=global_shrink_k) if isinstance(global_node, dict) and global_node else {
+    gl_st = _node_stats_same(global_node, k_shrink=global_shrink_k) if isinstance(global_node, dict) and global_node else {
         "bias": 0.0, "bias_adj": 0.0, "n": 0.0, "se": same_sigma0, "var": max(1e-9, same_sigma0 * same_sigma0),
         "z": 0.0, "p": 1.0, "q": 1.0, "fdr_reject": False, "z_mult": 0.0, "q_mult": 1.0, "sig_mult": 0.0, "ev": 0.0, "weight": 0.0
     }
@@ -477,27 +519,8 @@ def apply_hier_calibration_live(
         fdr_q_alpha = max(0.01, min(0.30, _f(th.get("inter_fdr_q_alpha"), 0.10)))
 
         def _pair_stats(node: Dict[str, Any]) -> Dict[str, Any]:
-            _bias = _f(node.get("score_bias"), 0.0) if isinstance(node, dict) else 0.0
-            _n = _node_n(node)
-            _se = _node_se(node, inter_sigma0)
-            _var = float(max(1e-9, _se * _se))
-            _z_in = _f(node.get("score_z")) if isinstance(node, dict) else float("nan")
-            _z = float(_z_in if math.isfinite(_z_in) else (_bias / max(1e-9, _se)))
-            _p_in = _f(node.get("score_p")) if isinstance(node, dict) else float("nan")
-            _p = float(_p_in if math.isfinite(_p_in) else math.erfc(abs(_z) / math.sqrt(2.0)))
-            _q_in = _f(node.get("score_q")) if isinstance(node, dict) else float("nan")
-            _q = float(_q_in if math.isfinite(_q_in) else _p)
-            _fdr_reject = bool(node.get("fdr_reject", _q <= fdr_q_alpha)) if isinstance(node, dict) else bool(_q <= fdr_q_alpha)
-            return {
-                "bias": float(_bias),
-                "n": float(max(0.0, _n)),
-                "se": float(max(1e-6, _se)),
-                "var": float(max(1e-9, _var)),
-                "z": float(_z),
-                "p": float(max(0.0, min(1.0, _p))),
-                "q": float(max(0.0, min(1.0, _q))),
-                "fdr_reject": bool(_fdr_reject),
-            }
+            # mesma base do nó hierárquico, com o sigma0 interregional.
+            return _node_base_stats(node, sigma0=inter_sigma0, fdr_q_alpha=fdr_q_alpha)
 
         pair_node_lg, pair_scope_lg = _pick_pair_node(lg_pair_keys)
         pair_node_tier, pair_scope_tier = _pick_pair_node(tier_pair_keys)

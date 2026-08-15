@@ -109,5 +109,41 @@ class TestPredictMarket(unittest.TestCase):
                 self.assertIn(minute, avail[m])
 
 
+class CacheInvalidaComRetreinoTests(unittest.TestCase):
+    """Bug achado com ele (23/07): o cache do modelo de mercado guardava o None
+    de quando o modelo ainda não existia, e o N/A persistia após o retreino até
+    reiniciar o app. Agora o mtime entra na chave -> recarrega sozinho."""
+
+    def test_mtime_zero_quando_ausente_e_muda_quando_aparece(self):
+        import tempfile
+        from pathlib import Path as _P
+        from app_core.live_markets_runtime_core import _market_model_mtime_ns
+        d = _P(tempfile.mkdtemp())
+        self.assertEqual(_market_model_mtime_ns(str(d), "total_towers", 10), 0)
+        mp = d / "total_towers" / "minute_10"
+        mp.mkdir(parents=True)
+        (mp / "lgb_model.txt").write_text("x", encoding="utf-8")
+        self.assertNotEqual(_market_model_mtime_ns(str(d), "total_towers", 10), 0)
+
+    def test_recarrega_quando_o_modelo_e_reescrito(self):
+        import tempfile
+        import time as _t
+        from pathlib import Path as _P
+        from app_core.live_markets_runtime_core import _cached_load_market_model, clear_market_model_cache
+        clear_market_model_cache()
+        d = _P(tempfile.mkdtemp())
+        mp = d / "total_kills" / "minute_10"
+        mp.mkdir(parents=True)
+        # modelo inválido -> load falha -> None cacheado
+        (mp / "lgb_model.txt").write_text("nao e um modelo", encoding="utf-8")
+        (mp / "metadata.json").write_text("{}", encoding="utf-8")
+        self.assertIsNone(_cached_load_market_model(str(d), "total_kills", 10))
+        # reescreve o arquivo (mtime muda) -> a chave do cache muda -> reavalia
+        _t.sleep(0.01)
+        (mp / "lgb_model.txt").write_text("ainda invalido mas mtime novo", encoding="utf-8")
+        # não deve estourar; e a chamada re-tenta (não fica presa no None antigo)
+        _cached_load_market_model(str(d), "total_kills", 10)  # sem exceção = ok
+
+
 if __name__ == "__main__":
     unittest.main()

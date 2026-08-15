@@ -246,6 +246,28 @@ def bootstrap_maint_state_finish(
     write_bootstrap_maint_state(state_path, out)
 
 
+def _stale_clear_decision(
+    *,
+    pid_alive: bool,
+    has_live_state: bool,
+    lock_age: float,
+    hb_age: float,
+    stale_limit: float,
+) -> Tuple[bool, str]:
+    """Decisão PURA: o lock obsoleto pode ser limpo? Retorna (pode, motivo).
+
+    Extraída de cleanup_stale_bootstrap_maint_lock. Ordem de prioridade dos
+    motivos preservada (pid morto > sem state vivo > running sem heartbeat).
+    Pura para poder testar cada ramo sem I/O; golden end-to-end prova igual."""
+    if not pid_alive and lock_age >= 5.0:
+        return True, f"pid_dead(age_s={lock_age:.1f})"
+    if (not has_live_state) and lock_age >= stale_limit:
+        return True, f"no_live_state(age_s={lock_age:.1f})"
+    if has_live_state and hb_age > stale_limit and lock_age > max(10.0, stale_limit / 3.0):
+        return True, f"running_state_no_heartbeat(hb_age_s={hb_age:.1f})"
+    return False, "not_stale_enough"
+
+
 def cleanup_stale_bootstrap_maint_lock(
     *,
     lock_path: str | Path,
@@ -280,18 +302,10 @@ def cleanup_stale_bootstrap_maint_lock(
         step_name = str((state.get("current") or {}).get("step") or "-")
         return False, f"active_run(step={step_name}, hb_age_s={hb_age:.1f})"
 
-    can_clear = False
-    reason = "not_stale_enough"
-    if not pid_alive and lock_age >= 5.0:
-        can_clear = True
-        reason = f"pid_dead(age_s={lock_age:.1f})"
-    elif (not has_live_state) and lock_age >= stale_limit:
-        can_clear = True
-        reason = f"no_live_state(age_s={lock_age:.1f})"
-    elif has_live_state and hb_age > stale_limit and lock_age > max(10.0, stale_limit / 3.0):
-        can_clear = True
-        reason = f"running_state_no_heartbeat(hb_age_s={hb_age:.1f})"
-
+    can_clear, reason = _stale_clear_decision(
+        pid_alive=pid_alive, has_live_state=has_live_state,
+        lock_age=lock_age, hb_age=hb_age, stale_limit=stale_limit,
+    )
     if not can_clear:
         return False, reason
 
@@ -412,6 +426,43 @@ def clear_bootstrap_auto_maint_run_state(session_state: MutableMapping[str, Any]
     session_state["_csv_bootstrap_active_run_id"] = ""
 
 
+def _lock_busy_reason(
+    *,
+    fp_key: str,
+    lock_ts: float,
+    lock_fp: str,
+    lock_pid: str,
+    lock_age: float,
+    lock_pid_alive: bool,
+    same_owner: bool,
+    state_fp: str,
+    state_status: str,
+    hb_age: float,
+    ttl: float,
+    same_fp_busy_s: float,
+    hb_busy_s: float,
+    other_fp_grace_s: float,
+) -> str:
+    """Decisão PURA: o lock está ocupado? Retorna a mensagem de 'busy' ou "".
+
+    Extraída de acquire_bootstrap_maint_lock (era inline, CC alto). É a
+    SEMÂNTICA de concorrência do lock — separada aqui só para poder testá-la
+    exaustivamente sem I/O. Nenhuma regra mudou; o golden end-to-end prova.
+    """
+    if lock_ts > 0.0 and lock_fp and (not same_owner) and lock_fp != str(fp_key) and lock_age < other_fp_grace_s:
+        return f"lock_busy(fp={lock_fp}, pid={lock_pid}, age_s={lock_age:.1f})"
+    if lock_ts > 0.0 and lock_fp and bool(lock_pid_alive) and (not same_owner):
+        if (state_fp == lock_fp) and (state_status == "running") and (hb_age < hb_busy_s):
+            return f"lock_busy_same_fp(pid={lock_pid}, age_s={lock_age:.1f}, hb_s={hb_age:.1f})"
+        if lock_fp == str(fp_key):
+            hb_stale_running = bool((state_fp == lock_fp) and (state_status == "running") and (hb_age >= hb_busy_s))
+            if (not hb_stale_running) and (lock_age < same_fp_busy_s):
+                return f"lock_busy_same_fp(pid={lock_pid}, age_s={lock_age:.1f})"
+        elif lock_age < ttl:
+            return f"lock_busy(fp={lock_fp}, pid={lock_pid}, age_s={lock_age:.1f})"
+    return ""
+
+
 def acquire_bootstrap_maint_lock(
     *,
     lock_path: str | Path,
@@ -455,17 +506,14 @@ def acquire_bootstrap_maint_lock(
     same_fp_busy_s = float(min(ttl, max(30.0, float(stale_s))))
     hb_busy_s = float(max(15.0, min(same_fp_busy_s, float(stale_s))))
     other_fp_grace_s = float(min(ttl, 45.0))
-    if lock_ts > 0.0 and lock_fp and (not same_owner) and lock_fp != str(fp_key) and lock_age < other_fp_grace_s:
-        return False, f"lock_busy(fp={lock_fp}, pid={lock_pid}, age_s={lock_age:.1f})"
-    if lock_ts > 0.0 and lock_fp and bool(lock_pid_alive) and (not same_owner):
-        if (state_fp == lock_fp) and (state_status == "running") and (hb_age < hb_busy_s):
-            return False, f"lock_busy_same_fp(pid={lock_pid}, age_s={lock_age:.1f}, hb_s={hb_age:.1f})"
-        if lock_fp == str(fp_key):
-            hb_stale_running = bool((state_fp == lock_fp) and (state_status == "running") and (hb_age >= hb_busy_s))
-            if (not hb_stale_running) and (lock_age < same_fp_busy_s):
-                return False, f"lock_busy_same_fp(pid={lock_pid}, age_s={lock_age:.1f})"
-        elif lock_age < ttl:
-            return False, f"lock_busy(fp={lock_fp}, pid={lock_pid}, age_s={lock_age:.1f})"
+    busy = _lock_busy_reason(
+        fp_key=str(fp_key), lock_ts=lock_ts, lock_fp=lock_fp, lock_pid=lock_pid,
+        lock_age=lock_age, lock_pid_alive=lock_pid_alive, same_owner=same_owner,
+        state_fp=state_fp, state_status=state_status, hb_age=hb_age, ttl=ttl,
+        same_fp_busy_s=same_fp_busy_s, hb_busy_s=hb_busy_s, other_fp_grace_s=other_fp_grace_s,
+    )
+    if busy:
+        return False, busy
 
     payload = {
         "fp_key": str(fp_key),
