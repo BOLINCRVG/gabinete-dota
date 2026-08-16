@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 
 from dota_core import app_dir, csv_path
+from eval_whr_dota import PRO_TIERS  # universo do produto: professional + premium (TI)
 from opendota_client import get_league_matches, get_leagues, get_match, get_pro_matches
 
 
@@ -394,7 +395,7 @@ def _seen_match_ids(existing: pd.DataFrame) -> Set[int]:
 
 
 def professional_league_ids() -> Set[int]:
-    leagues = get_leagues("professional")
+    leagues = get_leagues(PRO_TIERS)
     out: Set[int] = set()
     for row in leagues:
         try:
@@ -491,7 +492,7 @@ def sync_recent_pro_matches(path: Optional[Path] = None, limit: int = 100, backf
     league_sweep_candidates = 0
     league_sweep_added = 0
     if professional_only and league_sweep and (time.monotonic() - _start) < max_seconds:
-        leagues = get_leagues("professional")
+        leagues = get_leagues(PRO_TIERS)
         leagues = [row for row in leagues if int((row or {}).get("leagueid") or 0) > 0]
         leagues = sorted(leagues, key=lambda row: int((row or {}).get("leagueid") or 0), reverse=True)
         league_limit = 25 if int(limit) <= 50 else 50
@@ -577,7 +578,7 @@ def sync_professional_leagues(
     existing = load_existing_csv(target)
     seen_matches = _seen_match_ids(existing)
     existing_health = csv_health_report(target, df=existing)
-    leagues = get_leagues("professional")
+    leagues = get_leagues(PRO_TIERS)
     leagues = [row for row in leagues if int((row or {}).get("leagueid") or 0) > 0]
     leagues = sorted(leagues, key=lambda row: int((row or {}).get("leagueid") or 0), reverse=True)
     if league_limit:

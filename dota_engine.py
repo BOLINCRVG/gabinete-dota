@@ -24,7 +24,7 @@ from dota_paths import ensure_lol_on_path
 LOL_REPO = ensure_lol_on_path()
 
 from mlcore.whr_core import WHRFitter  # noqa: E402
-from eval_whr_dota import SideTracker, load_matches  # noqa: E402
+from eval_whr_dota import PRO_TIERS, SideTracker, is_pro_tier, load_matches  # noqa: E402
 from eval_totals_dota import Decayed, PairedDelta, shrink  # noqa: E402
 
 W2_STAR = 40.0  # re-tune ano-cego 09/07 na base 44k (20-60 ~empatados; 40 otimo)
@@ -107,7 +107,7 @@ class DotaEngine:
             a, b = str(r.tid), str(r.oid)
             day = int(r.day)
             eng.fitter.add_game(a, b, int(r.win), day)
-            is_prof = r.tier == "professional"
+            is_prof = str(r.tier).strip().lower() in PRO_TIERS
             kills = float(r.teamkills) + float(r.oppkills)
             dur = float(r.duration) / 60.0
             if is_prof and math.isfinite(kills) and math.isfinite(dur):
@@ -282,7 +282,7 @@ class DotaEngine:
         professional do time (ou do H2H, se opp_id dado). Base das janelas
         Ano/L10/L5/H2H da Analise de Linha."""
         m = self.matches
-        mask = (m["tier"] == "professional") & ((m["tid"] == team_id) | (m["oid"] == team_id))
+        mask = is_pro_tier(m["tier"]) & ((m["tid"] == team_id) | (m["oid"] == team_id))
         if opp_id is not None:
             mask = ((m["tid"] == team_id) & (m["oid"] == opp_id)) | \
                    ((m["tid"] == opp_id) & (m["oid"] == team_id))
@@ -299,7 +299,7 @@ class DotaEngine:
     def team_recent(self, team_id: int, n: int = 10) -> pd.DataFrame:
         m = self.matches
         sub = m[((m["tid"] == team_id) | (m["oid"] == team_id))
-                & (m["tier"] == "professional")].sort_values("ord_key", ascending=False).head(n)
+                & is_pro_tier(m["tier"])].sort_values("ord_key", ascending=False).head(n)
         rows = []
         for r in sub.itertuples(index=False):
             we = int(r.tid) == int(team_id)

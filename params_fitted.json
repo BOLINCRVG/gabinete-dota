@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T17:42:52+00:00",
+  "generated_at": "2026-08-16T13:58:40+00:00",
   "artifact": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\ml_artifact.json",
   "players_artifact": "C:\\Users\\steam\\Desktop\\GabineteDOTA\\players_artifact.json",
   "csvs": [
@@ -1404,7 +1404,7 @@
   "series_gamma_by_macro": {},
   "series_bo_dplite_tuning": {
     "version": "series_bo_dplite_tuning_v2",
-    "generated_at": "2026-07-16T17:36:03+00:00",
+    "generated_at": "2026-08-16T13:51:45+00:00",
     "speed_profile": "fast",
     "meta": {
       "rows_total": 307,

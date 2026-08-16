@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -128,8 +128,15 @@ def get_pro_matches(limit: int = 100) -> list:
     return data[:max(1, int(limit))]
 
 
-def get_leagues(tier: Optional[str] = None) -> list:
-    cache_key = tier or "__all__"
+def get_leagues(tier: Optional[str] | Iterable[str] = None) -> list:
+    """Ligas da OpenDota. `tier` aceita um tier ou VARIOS ("professional",
+    ("professional","premium")) — o universo do produto sao os dois de cima e
+    passar so um deixava o TI (premium) de fora da varredura."""
+    if tier is None or isinstance(tier, str):
+        wanted = {str(tier).strip().lower()} if tier else set()
+    else:
+        wanted = {str(t).strip().lower() for t in tier if str(t).strip()}
+    cache_key = ",".join(sorted(wanted)) if wanted else "__all__"
     entry = _leagues_cache.get(cache_key)
     if entry and (time.time() - entry["ts"]) < _LEAGUES_CACHE_TTL:
         return entry["data"]
@@ -140,9 +147,8 @@ def get_leagues(tier: Optional[str] = None) -> list:
 
     _leagues_cache["__all__"] = {"data": raw, "ts": time.time()}
 
-    if tier:
-        wanted = str(tier).strip().lower()
-        filtered = [r for r in raw if str((r or {}).get("tier") or "").strip().lower() == wanted]
+    if wanted:
+        filtered = [r for r in raw if str((r or {}).get("tier") or "").strip().lower() in wanted]
         _leagues_cache[cache_key] = {"data": filtered, "ts": time.time()}
         return filtered
 

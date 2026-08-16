@@ -339,6 +339,15 @@ def _top_global_v04(model: EloModel, team_meta: Dict[str, Dict[str, str]], n: in
 # ---------------------------------------------------------------------
 
 def main() -> None:
+    # Dota tem time com nome em chines/cirilico. No Windows o console e cp1252 e
+    # o print do ranking final estourava UnicodeEncodeError — o artifact JA estava
+    # salvo, mas o processo saia com erro e qualquer wrapper (robo, atualizador)
+    # lia isso como "treino falhou". Visto em 16/08/2026 no gate do TI.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError, ValueError):
+        pass
     ap = argparse.ArgumentParser(description="Train ML core artifact from OracleElixir CSV (offline).")
     ap.add_argument("--csv", required=True, action="append", help="Path to OracleElixir match_data CSV. Can be passed multiple times.")
     ap.add_argument("--out", default="ml_artifact.json", help="Output artifact path (json)")

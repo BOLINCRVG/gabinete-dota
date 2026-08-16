@@ -39,13 +39,52 @@ SIDE_MIN_EFF = 50.0
 SIDE_MAX_OFFSET = 0.4  # natural (logit); 0.4 ~ 60/40
 
 
+# A OpenDota classifica liga em premium > professional > amateur. O TI e marcado
+# como PREMIUM: ate 16/08/2026 o universo do produto era so "professional", e o
+# torneio inteiro ficava FORA do modelo (TI 2025 144 partidas + TI 2026 109, este
+# em andamento). Era o maior evento do ano invisivel pro modelo. Universo = os
+# dois tiers de cima; amateur/excluded seguem fora.
+PRO_TIERS = ("professional", "premium")
+
+# O cache de tiers e uma foto: sem prazo de validade, liga NOVA fica "sem_tier" e
+# some do universo calada (visto em 16/08: BLAST Slam VI China Qualifier e ESL
+# challenger China caidos assim). Revalida por semana, com queda-pro-cache se a
+# API falhar — dado velho e melhor que erro.
+TIERS_CACHE_MAX_AGE_DAYS = 7.0
+
+
+def is_pro_tier(s: pd.Series) -> pd.Series:
+    """Mascara: a linha esta no universo profissional do produto?"""
+    return s.astype(str).str.strip().str.lower().isin(PRO_TIERS)
+
+
+def _fetch_tiers_df() -> pd.DataFrame:
+    from opendota_client import get_leagues
+    return pd.DataFrame(get_leagues()).rename(columns={"leagueid": "league_id"})[["league_id", "tier"]]
+
+
 def load_tiers() -> dict[int, str]:
+    df = None
+    stale = True
     if TIERS_CACHE.exists():
-        df = pd.read_csv(TIERS_CACHE)
-    else:
-        from opendota_client import get_leagues
-        df = pd.DataFrame(get_leagues()).rename(columns={"leagueid": "league_id"})[["league_id", "tier"]]
-        df.to_csv(TIERS_CACHE, index=False)
+        try:
+            age_days = (time.time() - TIERS_CACHE.stat().st_mtime) / 86400.0
+            stale = age_days > TIERS_CACHE_MAX_AGE_DAYS
+        except OSError:
+            stale = True
+        try:
+            df = pd.read_csv(TIERS_CACHE)
+        except (OSError, ValueError):
+            df = None
+    if df is None or stale:
+        try:
+            fresh = _fetch_tiers_df()
+            if not fresh.empty:
+                fresh.to_csv(TIERS_CACHE, index=False)
+                df = fresh
+        except Exception:
+            if df is None:
+                raise
     out = {}
     for r in df.itertuples(index=False):
         try:

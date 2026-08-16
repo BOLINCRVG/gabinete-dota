@@ -20,7 +20,7 @@ from dota_core import csv_path
 from opendota_client import get_match
 from opendota_sync import _merge_rows, csv_health_report, load_existing_csv, match_to_rows
 
-from eval_whr_dota import load_tiers
+from eval_whr_dota import is_pro_tier, load_tiers
 
 
 def pending_match_ids(df: pd.DataFrame) -> List[int]:
@@ -35,7 +35,7 @@ def pending_match_ids(df: pd.DataFrame) -> List[int]:
     m = df.drop_duplicates("match_id").copy()
     m["league_id"] = pd.to_numeric(m["league_id"], errors="coerce").fillna(0).astype(int)
     m["tier"] = m["league_id"].map(tiers).fillna("sem_tier")
-    prof = m["tier"] == "professional"
+    prof = is_pro_tier(m["tier"])
     so_indice = m.get("source_mode").astype(str) == "opendota_list"
     has_obj = m.get("has_objectives").astype(str).str.strip().str.lower().isin(["true", "1"])
     if "firsts_pass" in m.columns:

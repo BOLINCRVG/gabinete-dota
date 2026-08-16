@@ -11,7 +11,9 @@ em cima de dados de Dota. Mapa de mercados DECIDIDO pelo usuario:
   side        <- radiant=Blue / dire=Red (a vantagem Radiant vira "blue side")
 
 Regras de qualidade:
-- SO tier professional (T1/T2 — universo do produto; excluded fica no motor WHR).
+- SO tier professional + premium (universo do produto; excluded fica no motor WHR).
+  PREMIUM E O TI: ate 16/08/2026 o filtro pegava so "professional" e o
+  International inteiro ficava fora do modelo. Ver PRO_TIERS em eval_whr_dota.
 - Partidas sem objetivos baixados: towers/barons/inhibitors = NaN (NUNCA 0).
 - game = numero do mapa na serie, inferido por (dia, par de times) via start_time.
 
@@ -28,7 +30,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from eval_whr_dota import load_matches  # noqa: E402
+from eval_whr_dota import is_pro_tier, load_matches  # noqa: E402
 
 OUT_DIR = HERE / "CSV_DOTA"
 
@@ -49,7 +51,7 @@ def build_oe_like() -> pd.DataFrame:
             m = m2
         elif n_new == n_prev:
             break
-    m = m[m["tier"] == "professional"].copy()
+    m = m[is_pro_tier(m["tier"])].copy()
     m = m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)
 
     # numero do mapa na serie (mesma inferencia validada nos estudos M1/M2)
