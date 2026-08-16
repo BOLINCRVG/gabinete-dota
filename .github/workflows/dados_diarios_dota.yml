@@ -1,0 +1,89 @@
+# Robô DIÁRIO do Gabinete Dota (24/07): busca as partidas novas na OpenDota,
+# regenera os CSVs e retreina o modelo — sozinho, todo dia.
+#
+# Por que existe: sem ele o modelo envelhece calado. Medido em 16/08 o Dota
+# estava com dados de 09/07 (38 dias parado) porque o sync só rodava à mão no
+# PC. A OpenDota é API de verdade (ao contrário do Oracle's Elixir do LoL, cuja
+# quota do Google Drive bloqueia download automático) — aqui dá pra automatizar.
+#
+# A nuvem (Streamlit) NUNCA treina: ela só puxa do git o que este robô commitar.
+name: Dados diários (OpenDota)
+
+on:
+  schedule:
+    - cron: "40 10 * * *"   # ~07:40 BRT
+    - cron: "40 22 * * *"   # ~19:40 BRT (2ª janela: se a cota travar de manhã)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dados-diarios-dota
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependências
+        run: pip install --quiet -r requirements.txt
+
+      - name: Sync OpenDota (partidas novas + backfill)
+        env:
+          # Opcional: sem a chave o script usa o tier grátis (foi assim em 16/08,
+          # levou 15 min). Com a chave, mais cota. Configure em Settings >
+          # Secrets and variables > Actions, se quiser.
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: python daily_sync.py
+
+      - name: Regenerar CSVs no schema OracleElixir-like
+        run: python dota_adapter.py
+
+      - name: Retreinar o modelo
+        run: |
+          python -m mlcore.train_offline \
+            --out ml_artifact.json \
+            --holdout-days 30 \
+            --csv CSV_HISTORICO/2025_Dota_match_data_oe_like.csv \
+            --csv CSV_DIARIO/2026_Dota_match_data_oe_like.csv
+
+      - name: Guarda — o artifact carrega e prevê? (nunca publicar quebrado)
+        run: |
+          python - <<'PY'
+          import sys
+          from mlcore.artifact import MLArtifact
+          art = MLArtifact.load_json("ml_artifact.json")
+          r = getattr(art.model, "ratings", {}) or {}
+          if len(r) < 100:
+              print(f"GUARDA FALHOU: só {len(r)} times no artifact"); sys.exit(1)
+          teams = list(r)[:2]
+          p = float(art.model.p_blue(teams[0], teams[1]))
+          if not (0.0 < p < 1.0):
+              print(f"GUARDA FALHOU: p_blue inválido ({p})"); sys.exit(1)
+          print(f"guarda ok: {len(r)} times, p_blue={p:.3f}")
+          PY
+
+      - name: Commitar dados e modelo
+        run: |
+          git config user.name "Robo Gabinete Dota"
+          git config user.email "robo@gabinete.local"
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json
+          if git diff --cached --quiet; then
+            echo "nada novo hoje — sem commit"
+          else
+            git commit -m "Robô: dados e modelo do Dota atualizados"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrência) — rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
