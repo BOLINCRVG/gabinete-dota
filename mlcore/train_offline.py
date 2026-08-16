@@ -371,6 +371,14 @@ def main() -> None:
              "predicao: assim o calibrador reabsorve a parte global e sobra o efeito direcionado.",
     )
     ap.add_argument(
+        "--apply-holdout", action="store_true",
+        help="Depois de calibrar, aplica os jogos do holdout aos RATINGS. Sem isto o modelo "
+             "publicado fica --holdout-days dias atrasado de forma permanente quando a esteira "
+             "retreina todo dia (bug do Dota, 16/08/2026: metade do field do TI aparecia como "
+             "'time desconhecido' so porque os jogos deles eram posteriores ao corte). Nao "
+             "contamina a calibracao: o Platt e amostrado prequencialmente ANTES desta etapa.",
+    )
+    ap.add_argument(
         "--unc-n-prior", type=float, default=50.0,
         help="Jogos para um time contar como 'conhecido' no fator de incerteza (u=n0/(n0+n)). "
              "50 vem do degrau medido no TI 2026. So tem efeito com --unc-scale-c > 0.",
@@ -603,6 +611,31 @@ def main() -> None:
         _sweeps = whr.full_sweeps(sweeps=12, tol_elo=0.5, iters=1)
         print(f"[train_offline] WHR fit: {_n_fit} jogos, convergiu em {_sweeps} varreduras finais; "
               f"{len(whr_preq_y)} predições prequenciais p/ calibração.")
+
+        # DEFASAGEM DO HOLDOUT (achado 16/08/2026): os ratings so viam ate o
+        # corte, ou seja, o modelo publicado ficava --holdout-days DIAS ATRASADO
+        # de forma PERMANENTE quando a esteira retreina todo dia (caso do Dota).
+        # Medido: Iron Wing tinha 16 jogos em 2026 e games_played=0, porque todos
+        # eram posteriores ao corte; no TI isso virava metade do torneio "time
+        # desconhecido". E o meta gravava data_max_date = fim de TUDO, entao o
+        # update_incremental achava que estava em dia e nao aplicava nada.
+        # Aqui os jogos do holdout entram nos ratings DEPOIS da coleta
+        # prequencial — o Platt ja foi amostrado fora da amostra, nao contamina.
+        if bool(getattr(args, "apply_holdout", False)) and len(test_df) > 0:
+            _test_fit = _augment_games_with_home_meta(
+                test_df, domestic_by_year=domestic_by_year,
+                team_meta_latest=team_meta_latest,
+            ).sort_values(["date", "gameid"]).reset_index(drop=True)
+            _n_tail = 0
+            for r in _test_fit.itertuples(index=False):
+                whr.add_game(str(r.blue), str(r.red), int(r.blue_win),
+                             int(r.date.toordinal()),
+                             blue_league=str(r.blue_league), red_league=str(r.red_league))
+                whr.refresh_pair(str(r.blue), str(r.red), iters=2)
+                _n_tail += 1
+            whr.full_sweeps(sweeps=8, tol_elo=0.5, iters=1)
+            print(f"[train_offline] holdout aplicado aos ratings: +{_n_tail} jogos "
+                  f"(o modelo conhece ate data_max_date, nao so ate o corte).")
 
         # Injeta no EloModel (mesmo formato de artefato/runtime). Os ratings
         # vão COMPLETOS (prior de liga já embutido pelo 1º ponto do WHR) e
