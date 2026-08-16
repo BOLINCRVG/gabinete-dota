@@ -22,6 +22,32 @@ def _p_from_diff_points(diff_points: float, scale_points: float) -> float:
         return 0.5
 
 
+def uncertainty_scale_mult(n_blue: float, n_red: float, c: float, n_prior: float) -> float:
+    """Quanto a escala do Elo deve inflar pela incerteza dos dois times (g(RD) do
+    Glicko). 1.0 = sem efeito. Ver EloParams.unc_scale_c."""
+    c = float(c or 0.0)
+    n0 = float(n_prior or 0.0)
+    if c <= 0.0 or n0 <= 0.0:
+        return 1.0
+    ub = n0 / (n0 + max(0.0, float(n_blue)))
+    ur = n0 / (n0 + max(0.0, float(n_red)))
+    return float(math.sqrt(1.0 + c * (ub + ur)))
+
+
+def flatten_p_by_uncertainty(p: float, n_blue: float, n_red: float,
+                             c: float, n_prior: float) -> float:
+    """Achata uma probabilidade JA PRONTA pelo mesmo fator de incerteza.
+
+    Existe porque o core WHR fita o Platt nas probabilidades do proprio WHR, nao
+    nas do EloModel: sem aplicar o achatamento tambem ali, o calibrador nao veria
+    o efeito e a parte global viraria vies em vez de ser reabsorvida."""
+    m = uncertainty_scale_mult(n_blue, n_red, c, n_prior)
+    if m == 1.0:
+        return float(p)
+    q = min(max(float(p), 1e-9), 1.0 - 1e-9)
+    return float(1.0 / (1.0 + 10.0 ** (-math.log10(q / (1.0 - q)) / m)))
+
+
 @dataclass
 class EloParams:
     # Team residual Elo update magnitude
@@ -55,6 +81,21 @@ class EloParams:
     # 0.0 disables priors; >0.0 enforces stronger inter-league hierarchy.
     tier_prior_weight: float = 0.20
     league_prior_weight: float = 0.10
+
+    # INCERTEZA -> PROBABILIDADE MAIS CHATA (forma do Glicko; achado 16/08/2026).
+    # O residual ja encolhe o RATING de quem tem poucos jogos (n/(n+alpha)), mas a
+    # PROBABILIDADE continuava confiante: time novo (rating ~0) contra um top vira
+    # "o top ganha facil". Medido no TI 2026: quando o mais fraco tem <50 jogos o
+    # logloss e 0.984 (PIOR que moeda) contra 0.657 quando o modelo conhece os dois.
+    # Aqui a escala do Elo e inflada pela incerteza dos DOIS lados, que e o
+    # g(RD) do Glicko: menos jogo -> curva mais achatada -> p mais perto de 50%.
+    # 0.0 = desligado e identico ao comportamento legado (default seguro).
+    unc_scale_c: float = 0.0
+    # Quantos jogos um time precisa para ser considerado "conhecido":
+    # u = unc_n_prior/(unc_n_prior + n). NAO reusa o alpha de proposito — no
+    # core WHR (default desde 07/07) alpha e zerado para reproduzir o protocolo
+    # validado, e amarrar a incerteza nele deixava esta camada morta.
+    unc_n_prior: float = 50.0
     # Hard safety caps to avoid disconnected-league drift dominating probabilities.
     league_strength_cap_abs: float = 45.0
     # Multipliers by tier to avoid weaker ecosystems drifting too far.
@@ -352,7 +393,19 @@ class EloModel:
         sb = self.base_strength(blue, league=blue_league, tier=blue_tier, apply_rank_caps=False)
         sr = self.base_strength(red, league=red_league, tier=red_tier, apply_rank_caps=False)
         diff = float(sb - sr + float(self.side_adv_points))
-        return _p_from_diff_points(diff, float(self.params.scale_points))
+        return _p_from_diff_points(diff, self._scale_for(blue, red))
+
+    def _scale_for(self, blue: str, red: str) -> float:
+        """Escala do Elo inflada pela incerteza dos dois times (ver unc_scale_c).
+
+        u = n0/(n0+n) e "o quanto eu NAO sei" do time: 1 sem jogo nenhum, ~0 com
+        muito jogo. Escala maior => curva mais achatada => p mais perto de 50%
+        quando o modelo nao tem base pra cravar."""
+        return float(self.params.scale_points) * uncertainty_scale_mult(
+            self.n_games(blue), self.n_games(red),
+            getattr(self.params, "unc_scale_c", 0.0),
+            getattr(self.params, "unc_n_prior", 50.0),
+        )
 
     # ------------------ training ------------------
     def update(
@@ -588,6 +641,8 @@ class EloModel:
                 "rank_caps_min_teams": int(self.params.rank_caps_min_teams),
                 "tier_prior_weight": float(self.params.tier_prior_weight),
                 "league_prior_weight": float(self.params.league_prior_weight),
+                "unc_scale_c": float(self.params.unc_scale_c),
+                "unc_n_prior": float(self.params.unc_n_prior),
                 "league_strength_cap_abs": float(self.params.league_strength_cap_abs),
                 "league_strength_cap_mult_t1": float(self.params.league_strength_cap_mult_t1),
                 "league_strength_cap_mult_t2": float(self.params.league_strength_cap_mult_t2),
@@ -647,6 +702,8 @@ class EloModel:
             rank_caps_min_teams=int(p.get("rank_caps_min_teams", 20)),
             tier_prior_weight=float(p.get("tier_prior_weight", 0.20)),
             league_prior_weight=float(p.get("league_prior_weight", 0.10)),
+            unc_scale_c=float(p.get("unc_scale_c", 0.0)),
+            unc_n_prior=float(p.get("unc_n_prior", 50.0)),
             league_strength_cap_abs=float(p.get("league_strength_cap_abs", 45.0)),
             league_strength_cap_mult_t1=float(p.get("league_strength_cap_mult_t1", 1.00)),
             league_strength_cap_mult_t2=float(p.get("league_strength_cap_mult_t2", 0.70)),
