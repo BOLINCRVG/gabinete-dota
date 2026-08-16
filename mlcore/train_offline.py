@@ -842,6 +842,19 @@ def main() -> None:
         "data_min_date": data_min_dt.date().isoformat() if pd.notna(data_min_dt) else None,
         "data_max_date": data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None,
         "cutoff_date": cutoff_dt.date().isoformat() if cutoff_dt is not None and pd.notna(cutoff_dt) else None,
+        # ATE ONDE OS RATINGS FORAM DE VERDADE (16/08/2026). data_max_date grava o
+        # fim de TODOS os dados, mas o fit so ve ate o corte do holdout — a menos
+        # que --apply-holdout esteja ligado. Com os dois iguais, o modelo esta em
+        # dia; diferentes, a distancia entre eles E a defasagem do modelo.
+        # Quem consome: update_incremental (para saber o que ainda falta aplicar)
+        # e o detector de defasagem, que antes eram enganados pelo data_max_date.
+        "ratings_max_date": (
+            data_max_dt.date().isoformat()
+            if bool(getattr(args, "apply_holdout", False)) and pd.notna(data_max_dt)
+            else (cutoff_dt.date().isoformat()
+                  if cutoff_dt is not None and pd.notna(cutoff_dt)
+                  else (data_max_dt.date().isoformat() if pd.notna(data_max_dt) else None))
+        ),
         "n_games_total": len(games),
         "n_games_train": len(train_df),
         "n_games_holdout": len(test_df),

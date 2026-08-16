@@ -55,6 +55,17 @@ jobs:
             --csv CSV_HISTORICO/2025_Dota_match_data_oe_like.csv \
             --csv CSV_DIARIO/2026_Dota_match_data_oe_like.csv
 
+      # O train_offline ajusta os ratings só até o corte do holdout. Como esta
+      # esteira retreina do ZERO todo dia, sem este passo o modelo publicado
+      # ficaria PERMANENTEMENTE 30 dias atrasado (achado 16/08/2026: Iron Wing
+      # tinha 16 jogos em 2026 e games_played=0). O robô do LoL nunca sofreu
+      # disso porque lá o passo diário é justamente o incremental.
+      - name: Aplicar os jogos recentes (fechar a defasagem do holdout)
+        run: |
+          python -m mlcore.update_incremental \
+            --artifact ml_artifact.json \
+            --csv CSV_DIARIO/2026_Dota_match_data_oe_like.csv
+
       - name: Guarda — o artifact carrega e prevê? (nunca publicar quebrado)
         run: |
           python - <<'PY'

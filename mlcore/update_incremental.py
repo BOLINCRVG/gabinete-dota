@@ -258,9 +258,15 @@ def main() -> None:
 
     art = MLArtifact.load_json(str(art_path))
 
-    # Determine last processed date (prefer data_max_date)
-    data_max = _parse_dt((art.meta or {}).get("data_max_date"))
-    trained_at = _parse_dt((art.meta or {}).get("trained_at"))
+    # Ate onde os RATINGS realmente foram. Preferimos ratings_max_date porque
+    # data_max_date grava o fim de TODOS os dados, incluindo o holdout que o
+    # treino NAO aplicou aos ratings (achado 16/08/2026). Enquanto so existia
+    # data_max_date este script respondia "0 jogos novos" com o modelo 30 dias
+    # atrasado — Iron Wing tinha 16 jogos em 2026 e games_played=0.
+    # Artefato antigo nao tem a chave nova: cai em data_max_date, igual a antes.
+    _meta = art.meta or {}
+    data_max = _parse_dt(_meta.get("ratings_max_date")) or _parse_dt(_meta.get("data_max_date"))
+    trained_at = _parse_dt(_meta.get("trained_at"))
     if data_max is None:
         data_max = trained_at or datetime.fromtimestamp(art_path.stat().st_mtime, tz=timezone.utc)
     if data_max.tzinfo is None:
@@ -474,6 +480,9 @@ def main() -> None:
     meta["trained_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     meta["data_min_date"] = pd.to_datetime(games["date"]).min().date().isoformat()
     meta["data_max_date"] = pd.to_datetime(games["date"]).max().date().isoformat()
+    # O incremental aplica TODO jogo novo direto nos ratings — nao tem holdout —
+    # entao aqui os dois carimbos coincidem: o modelo esta mesmo em dia.
+    meta["ratings_max_date"] = meta["data_max_date"]
     meta["n_games_total"] = len(games)
     # Persist updated team_meta (league/tier) back to the artifact meta.
     # If the artifact didn't have meta.team_meta (older artifacts), fall back to model.team_meta.
