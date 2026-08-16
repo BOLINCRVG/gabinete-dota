@@ -30,7 +30,12 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from eval_whr_dota import is_pro_tier, load_matches  # noqa: E402
+from eval_whr_dota import (  # noqa: E402
+    canonical_team_names,
+    is_pro_tier,
+    load_matches,
+    roster_identity_map,
+)
 
 OUT_DIR = HERE / "CSV_DOTA"
 
@@ -53,6 +58,34 @@ def build_oe_like() -> pd.DataFrame:
             break
     m = m[is_pro_tier(m["tier"])].copy()
     m = m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)
+
+    # IDENTIDADE = team_id, nao o nome (ver canonical_team_names). O modelo chaveia
+    # pelo teamname do CSV, entao o conserto e escrever o nome canonico aqui: a
+    # historia de quem trocou de nome se junta e os nomes genericos que varios
+    # times dividem se separam. Sem isto o BetBoom aparecia com 78 jogos em vez de
+    # 520 e "Shinigami Gaming" somava 19 times num rating so.
+    # Camada 2: ids diferentes que sao o MESMO elenco viram um so (org que se
+    # re-registra ganha id novo). Iron Wing, que aparecia com ZERO jogos no
+    # modelo, e a Tundra Esports: elenco identico. Desligavel por variavel de
+    # ambiente para o gate poder medir uma camada de cada vez.
+    import os as _os
+    _rep = {}
+    if _os.environ.get("DOTA_ROSTER_IDENTITY", "1") != "0":
+        try:
+            _rep = roster_identity_map(m)
+        except (OSError, ValueError, KeyError):
+            _rep = {}
+    # DOTA_TEAM_IDENTITY=0 volta ao comportamento antigo (nome cru como chave).
+    # So existe para o gate poder medir cada camada isolada — em producao fica ON.
+    _canon = ({} if _os.environ.get("DOTA_TEAM_IDENTITY", "1") == "0"
+              else canonical_team_names(m))
+
+    def _nome(i: int, bruto: str) -> str:
+        i = int(i)
+        return _canon.get(_rep.get(i, i), _canon.get(i, str(bruto)))
+
+    m["teamname"] = [_nome(i, n) for i, n in zip(m["tid"], m["teamname"])]
+    m["opp_teamname"] = [_nome(i, n) for i, n in zip(m["oid"], m["opp_teamname"])]
 
     # numero do mapa na serie (mesma inferencia validada nos estudos M1/M2)
     m["date_key"] = m["dt"].dt.date

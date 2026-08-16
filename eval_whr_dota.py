@@ -18,6 +18,7 @@ Uso: python eval_whr_dota.py
 """
 from __future__ import annotations
 
+import json
 import math
 import sys
 import time
@@ -92,6 +93,197 @@ def load_tiers() -> dict[int, str]:
         except Exception:
             continue
     return out
+
+
+def canonical_team_names(m: pd.DataFrame) -> dict[int, str]:
+    """team_id -> nome canonico. A IDENTIDADE do time e o team_id, nao o nome.
+
+    Achado 16/08/2026, no universo que alimenta o modelo (professional+premium):
+      - 85 team_id tem MAIS DE UM nome (a org trocou de nome). Sem unificar, a
+        historia se parte e um time de ponta vira "desconhecido":
+        BB=BB Team=BetBoom Team=BoomBoys sao 520 jogos que o modelo via como 78;
+        PARIVISION=PVISION=TEAM VISION sao 409 que ele via como 50. Tem ate caso
+        de so a caixa mudar (Business Club) e de homoglifo cirilico (EYE Gaming).
+      - 155 NOMES sao reusados por varios team_id — nome generico/placeholder
+        (Elite Eclipse 32 ids, Dominion 31, Shinigami Gaming 19). Sem separar, o
+        modelo soma 19 times diferentes num rating so.
+    Chavear por team_id conserta os dois lados de uma vez.
+
+    Canonico = o nome MAIS RECENTE daquele id (a tela mostra como o time se chama
+    hoje). Quando dois ids terminam com o mesmo nome, o de mais jogos fica com o
+    nome limpo e os outros recebem sufixo — senao a colisao desfaria a separacao.
+
+    NOTA para quem mexer: o canonico muda quando a org se renomeia, entao a chave
+    do modelo muda junto. Isso e seguro porque a esteira do Dota regenera o CSV
+    inteiro e retreina todo dia; num fluxo incremental seria preciso um mapa de
+    apelidos persistente.
+    """
+    ultimo: dict[tuple[int, str], float] = {}
+    jogos: dict[int, int] = {}
+    for id_col, nome_col in (("tid", "teamname"), ("oid", "opp_teamname")):
+        sub = m[[id_col, nome_col, "ord_key"]].dropna()
+        for r in sub.itertuples(index=False):
+            i = int(r[0])
+            n = str(r[1]).strip()
+            if i <= 0 or not n:
+                continue
+            jogos[i] = jogos.get(i, 0) + 1
+            k = (i, n)
+            t = float(r[2])
+            if t > ultimo.get(k, float("-inf")):
+                ultimo[k] = t
+
+    melhor: dict[int, tuple[float, str]] = {}
+    for (i, n), t in ultimo.items():
+        if t > melhor.get(i, (float("-inf"), ""))[0]:
+            melhor[i] = (t, n)
+    canon = {i: v[1] for i, v in melhor.items()}
+
+    donos: dict[str, list[int]] = {}
+    for i, n in canon.items():
+        donos.setdefault(n, []).append(i)
+    for n, ids in donos.items():
+        if len(ids) < 2:
+            continue
+        for i in sorted(ids, key=lambda x: -jogos.get(x, 0))[1:]:
+            canon[i] = f"{n} #{i}"
+    return canon
+
+
+ROSTER_MIN_COMUM = 5      # elenco IDENTICO; com 4 entravam erros (HEROIC+LGD Gaming)
+ROSTER_ULTIMOS_N = 20     # "elenco recente" = titulares dos ultimos N jogos do id
+ROSTER_FOLGA_DIAS = 21    # sobreposicao tolerada entre as janelas de atividade
+
+
+def _rosters_por_team_id(caminho: Path) -> dict[int, list[tuple[float, frozenset[int]]]]:
+    """team_id -> [(instante, contas do time naquele jogo)], cronologico."""
+    por_id: dict[int, list[tuple[float, frozenset[int]]]] = {}
+    try:
+        fh = open(caminho, encoding="utf-8")
+    except OSError:
+        return por_id
+    with fh:
+        for line in fh:
+            try:
+                d = json.loads(line)
+            except ValueError:
+                continue
+            st = float(d.get("start_time") or 0)
+            jog = d.get("players") or []
+            for tid_raw, is_rad in ((d.get("radiant_team_id"), True),
+                                    (d.get("dire_team_id"), False)):
+                try:
+                    tid = int(tid_raw or 0)
+                except (TypeError, ValueError):
+                    continue
+                if tid <= 0:
+                    continue
+                accs = {int(p["account_id"]) for p in jog
+                        if p.get("account_id") and (p.get("isRadiant") is is_rad)}
+                if accs:
+                    por_id.setdefault(tid, []).append((st, frozenset(accs)))
+    for v in por_id.values():
+        v.sort()
+    return por_id
+
+
+def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None) -> dict[int, int]:
+    """team_id -> team_id REPRESENTANTE, unindo ids que sao o mesmo elenco.
+
+    CAMADA 2 da identidade (16/08/2026). A camada 1 (team_id) conserta rebrand,
+    mas quando a organizacao se RE-REGISTRA ela ganha id novo e a historia parte
+    de novo. Medido: Iron Wing (40 jogos, e o time do TI que aparecia com ZERO no
+    modelo) e a Tundra Esports (478) — elenco identico. HULIGANI (31) e L1GA TEAM
+    (358). Nigma Galaxy tem duas encarnacoes com janelas contiguas.
+
+    Tres guardas, todos aprendidos medindo:
+      1) elenco IDENTICO (5 de 5). Com 4 entravam erros reais — HEROIC + LGD
+         Gaming dividiam 4 contas e sao organizacoes diferentes.
+      2) sem atividade simultanea: dois ids que jogam na mesma janela nao podem
+         ser o mesmo time (poderiam ate se enfrentar).
+      3) transitividade nao atropela o guarda 2: se A~B e A~C mas B e C jogavam
+         ao mesmo tempo, a uniao para — senao o encadeamento junta rivais.
+    """
+    if raw_path is None:
+        raw_path = Path(__file__).with_name("raw_matches.jsonl")
+
+    jogos: dict[int, int] = {}
+    janela: dict[int, list[float]] = {}
+    for r in m.itertuples(index=False):
+        for i in (int(getattr(r, "tid", 0)), int(getattr(r, "oid", 0))):
+            if i <= 0:
+                continue
+            jogos[i] = jogos.get(i, 0) + 1
+            k = float(r.ord_key)
+            w = janela.get(i)
+            janela[i] = [min(w[0], k), max(w[1], k)] if w else [k, k]
+
+    recente: dict[int, set[int]] = {}
+    for i, lst in _rosters_por_team_id(raw_path).items():
+        if i not in jogos:
+            continue
+        cont: dict[int, int] = {}
+        for _, s in lst[-ROSTER_ULTIMOS_N:]:
+            for a in s:
+                cont[a] = cont.get(a, 0) + 1
+        recente[i] = {a for a, _ in sorted(cont.items(), key=lambda kv: -kv[1])[:5]}
+
+    folga = ROSTER_FOLGA_DIAS * 86400.0
+
+    def simultaneos(a: int, b: int) -> bool:
+        wa, wb = janela.get(a), janela.get(b)
+        if not wa or not wb:
+            return True
+        return (min(wa[1], wb[1]) - max(wa[0], wb[0])) > folga
+
+    por_jog: dict[int, set[int]] = {}
+    for i, s in recente.items():
+        for a in s:
+            por_jog.setdefault(a, set()).add(i)
+
+    pares: set[tuple[int, int]] = set()
+    for ids in por_jog.values():
+        if len(ids) < 2 or len(ids) > 12:   # conta em 13+ ids = stand-in/ruido
+            continue
+        ids_l = sorted(ids)
+        for x in range(len(ids_l)):
+            for y in range(x + 1, len(ids_l)):
+                pares.add((ids_l[x], ids_l[y]))
+
+    cand = []
+    for a, b in pares:
+        if len(recente.get(a, ()) & recente.get(b, ())) < ROSTER_MIN_COMUM:
+            continue
+        if simultaneos(a, b):
+            continue
+        cand.append((jogos.get(a, 0) + jogos.get(b, 0), a, b))
+    cand.sort(reverse=True)   # une primeiro o que tem mais historia em jogo
+
+    grupo: dict[int, set[int]] = {}
+    pai: dict[int, int] = {}
+
+    def raiz(i: int) -> int:
+        return pai.get(i, i)
+
+    for _, a, b in cand:
+        ra, rb = raiz(a), raiz(b)
+        if ra == rb:
+            continue
+        ga = grupo.get(ra, {ra})
+        gb = grupo.get(rb, {rb})
+        # guarda 3: nenhuma dupla entre os grupos pode ser simultanea
+        if any(simultaneos(x, y) for x in ga for y in gb):
+            continue
+        novo = ga | gb
+        # representante = o id com mais jogos (carrega a historia maior)
+        rep = max(novo, key=lambda i: jogos.get(i, 0))
+        for i in novo:
+            pai[i] = rep
+        grupo[rep] = novo
+        for i in (ra, rb):
+            if i != rep:
+                grupo.pop(i, None)
+    return {i: raiz(i) for i in jogos}
 
 
 def load_matches() -> pd.DataFrame:
