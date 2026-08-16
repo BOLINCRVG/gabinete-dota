@@ -10,20 +10,13 @@ __pycache__/
 *.pyc
 !mlcore/_recovered/*.pyc
 
-# dados (regeneraveis via esteira/adapter)
-data.csv
+# DADOS E MODELO SAO VERSIONADOS (app-online 24/07, mesma decisao do LoL):
+# o app roda na Streamlit Community Cloud, que so puxa do git e NAO consegue
+# treinar (1GB de RAM). Sem os dados/artefatos no repo a nuvem sobe vazia — foi
+# exatamente o que aconteceu com o LoL (painel em N/A por semanas). ~42 MB, cabe
+# folgado. Quem atualiza e o robo/PC; a nuvem so carrega (modo viewer).
 data.pre_*.csv
-CSV_DIARIO/
-CSV_HISTORICO/
-CSV_DOTA/
 raw_matches.jsonl
-league_tiers.csv
-
-# artefatos de modelo (regeneraveis via train_offline/fit_ml_params)
-ml_artifact.json
-players_artifact.json
-params_fitted.json
-team_state_artifact.json
 
 # estado de maquina / caches / relatorios de runtime
 csv_bootstrap_*.json
