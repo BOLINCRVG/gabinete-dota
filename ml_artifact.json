@@ -14605,7 +14605,7 @@
     "b": 0.07388531017446935
   },
   "meta": {
-    "trained_at": "2026-08-18T23:05:03+00:00",
+    "trained_at": "2026-08-19T11:08:42+00:00",
     "data_min_date": "2026-01-03",
     "data_max_date": "2026-08-16",
     "cutoff_date": "2026-07-17",
@@ -24789,7 +24789,7 @@
       ]
     },
     "incremental": {
-      "last_run_at": "2026-08-18T23:05:03+00:00",
+      "last_run_at": "2026-08-19T11:08:42+00:00",
       "added_games": 419,
       "csv_used": [
         "CSV_DIARIO/2026_Dota_match_data_oe_like.csv"
@@ -24803,7 +24803,7 @@
       "players_artifact": "players_artifact.json",
       "new_games": 419,
       "games_used": 0,
-      "updated_at": "2026-08-18T23:05:03Z"
+      "updated_at": "2026-08-19T11:08:42Z"
     }
   }
 }
