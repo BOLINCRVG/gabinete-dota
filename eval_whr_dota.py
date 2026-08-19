@@ -95,7 +95,8 @@ def load_tiers() -> dict[int, str]:
     return out
 
 
-def canonical_team_names(m: pd.DataFrame) -> dict[int, str]:
+def canonical_team_names(m: pd.DataFrame,
+                         rep_por_id: dict[int, int] | None = None) -> dict[int, str]:
     """team_id -> nome canonico. A IDENTIDADE do time e o team_id, nao o nome.
 
     Achado 16/08/2026, no universo que alimenta o modelo (professional+premium):
@@ -139,14 +140,40 @@ def canonical_team_names(m: pd.DataFrame) -> dict[int, str]:
             melhor[i] = (t, n)
     canon = {i: v[1] for i, v in melhor.items()}
 
-    donos: dict[str, list[int]] = {}
+    # NOME DO GRUPO = o mais RECENTE do grupo inteiro, nao o do id representante.
+    # Bug visto por ele em 16/08/2026 olhando a casa de apostas: o time do TI
+    # aparecia como "Tundra Esports" (nome do id antigo, que tinha mais jogos e
+    # por isso virou representante) enquanto a OpenDota e o proprio app diziam
+    # "Iron Wing". Quem manda e o nome ATUAL — e a API confirma: o id 10150413
+    # se chama "Iron Wing" (tag IW) e tem exatamente o elenco da Tundra.
+    if rep_por_id:
+        recente_do_grupo: dict[int, tuple[float, str]] = {}
+        for i, (t, n) in melhor.items():
+            r = rep_por_id.get(i, i)
+            if t > recente_do_grupo.get(r, (float("-inf"), ""))[0]:
+                recente_do_grupo[r] = (t, n)
+        for i in list(canon):
+            r = rep_por_id.get(i, i)
+            if r in recente_do_grupo:
+                canon[i] = recente_do_grupo[r][1]
+
+    # Colisao e por GRUPO, nunca por id: depois da unificacao acima todos os ids
+    # do mesmo time dividem o nome de proposito, e tratar isso como colisao
+    # colocaria sufixo e DESFARIA a uniao (Iron Wing e Tundra voltariam a ser dois).
+    def _grupo(i: int) -> int:
+        return (rep_por_id or {}).get(i, i)
+
+    donos: dict[str, set[int]] = {}
     for i, n in canon.items():
-        donos.setdefault(n, []).append(i)
-    for n, ids in donos.items():
-        if len(ids) < 2:
+        donos.setdefault(n, set()).add(_grupo(i))
+    for n, grupos in donos.items():
+        if len(grupos) < 2:
             continue
-        for i in sorted(ids, key=lambda x: -jogos.get(x, 0))[1:]:
-            canon[i] = f"{n} #{i}"
+        jogos_do_grupo = {g: sum(jogos.get(i, 0) for i in canon if _grupo(i) == g)
+                          for g in grupos}
+        for g in sorted(grupos, key=lambda x: -jogos_do_grupo.get(x, 0))[1:]:
+            for i in [k for k in canon if _grupo(k) == g]:
+                canon[i] = f"{n} #{g}"
     return canon
 
 
@@ -301,7 +328,46 @@ def load_matches() -> pd.DataFrame:
     tiers = load_tiers()
     m["tier"] = m["league_id"].map(tiers).fillna("sem_tier")
     m["day"] = m["dt"].dt.date.map(lambda d: d.toordinal())
-    return m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)
+    m = m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)
+    return _aplicar_identidade(m)
+
+
+_IDENT_CACHE: dict[tuple, dict[int, str]] = {}
+
+
+def _aplicar_identidade(m: pd.DataFrame) -> pd.DataFrame:
+    """Reescreve teamname/opp_teamname com a identidade canonica do time.
+
+    AQUI e nao no dota_adapter (conserto 16/08/2026): aplicar so no adaptador
+    deixava o CSV do modelo dizendo "Tundra Esports" enquanto o motor do app
+    (dota_engine, que le direto daqui) dizia "Iron Wing" — dois nomes para o mesmo
+    time em duas telas, e o modelo chaveado por um deles. Fazendo no load_matches,
+    TODO consumidor ve a mesma identidade.
+
+    DOTA_TEAM_IDENTITY=0 volta ao nome cru (escape hatch e uso do gate).
+    """
+    import os
+    if os.environ.get("DOTA_TEAM_IDENTITY", "1") == "0" or m.empty:
+        return m
+    chave = (len(m), int(m["match_id"].iloc[-1]) if "match_id" in m.columns else 0)
+    canon = _IDENT_CACHE.get(chave)
+    if canon is None:
+        rep = {}
+        if os.environ.get("DOTA_ROSTER_IDENTITY", "1") != "0":
+            try:
+                rep = roster_identity_map(m)
+            except (OSError, ValueError, KeyError):
+                rep = {}
+        canon = canonical_team_names(m, rep)
+        canon = {i: canon.get(rep.get(i, i), canon.get(i, "")) for i in canon}
+        _IDENT_CACHE.clear()          # so a leitura corrente interessa
+        _IDENT_CACHE[chave] = canon
+    out = m.copy()
+    out["teamname"] = [canon.get(int(i), str(n)) or str(n)
+                       for i, n in zip(out["tid"], out["teamname"])]
+    out["opp_teamname"] = [canon.get(int(i), str(n)) or str(n)
+                           for i, n in zip(out["oid"], out["opp_teamname"])]
+    return out
 
 
 class SideTracker:
