@@ -96,7 +96,8 @@ def load_tiers() -> dict[int, str]:
 
 
 def canonical_team_names(m: pd.DataFrame,
-                         rep_por_id: dict[int, int] | None = None) -> dict[int, str]:
+                         rep_por_id: dict[int, int] | None = None,
+                         api_names: dict[int, str] | None = None) -> dict[int, str]:
     """team_id -> nome canonico. A IDENTIDADE do time e o team_id, nao o nome.
 
     Achado 16/08/2026, no universo que alimenta o modelo (professional+premium):
@@ -163,6 +164,23 @@ def canonical_team_names(m: pd.DataFrame,
     def _grupo(i: int) -> int:
         return (rep_por_id or {}).get(i, i)
 
+    # NOME PELA API vence o derivado das partidas: e o nome de HOJE, enquanto o
+    # das partidas so muda quando o time volta a jogar. Aplicado ao grupo inteiro
+    # a partir do id ATIVO (o aposentado ainda devolve o nome antigo).
+    if api_names:
+        melhor_api: dict[int, tuple[float, str]] = {}
+        for i, (t, _n) in melhor.items():
+            nm = str(api_names.get(i) or "").strip()
+            if not nm:
+                continue
+            r = (rep_por_id or {}).get(i, i)
+            if t > melhor_api.get(r, (float("-inf"), ""))[0]:
+                melhor_api[r] = (t, nm)
+        for i in list(canon):
+            r = (rep_por_id or {}).get(i, i)
+            if r in melhor_api:
+                canon[i] = melhor_api[r][1]
+
     donos: dict[str, set[int]] = {}
     for i, n in canon.items():
         donos.setdefault(n, set()).add(_grupo(i))
@@ -175,6 +193,77 @@ def canonical_team_names(m: pd.DataFrame,
             for i in [k for k in canon if _grupo(k) == g]:
                 canon[i] = f"{n} #{g}"
     return canon
+
+
+# ---------------------------------------------------------------------
+# IDENTIDADE PELA API (ideia dele, 16/08/2026)
+# ---------------------------------------------------------------------
+# A OpenDota responde direto duas coisas que eu vinha DEDUZINDO dos jogos:
+#   /teams/{id}          -> o nome ATUAL do time
+#   /teams/{id}/players  -> is_current_team_member = o elenco de HOJE
+# Isso e melhor que inferir do ultimo jogo, que fica velho ate o time jogar.
+#
+# Duas restricoes medidas antes de desenhar:
+#  - id APOSENTADO devolve elenco parcial (a Tundra antiga volta com 2 de 5),
+#    entao a API vale para o lado ATIVO do vinculo; o historico continua vindo
+#    das partidas.
+#  - sao 2415 ids no universo, mas so 245 jogaram nos ultimos 90 dias. Consultar
+#    so os ativos cabe folgado na cota (a lista inteira nao caberia).
+TEAM_API_CACHE = Path(__file__).with_name("team_api_cache.json")
+TEAM_API_MAX_AGE_DAYS = 7.0
+API_JANELA_ATIVOS_DIAS = 90
+
+
+def _api_team_fetch(tid: int) -> dict | None:
+    from opendota_client import _request
+    t = _request(f"teams/{tid}")
+    if not isinstance(t, dict):
+        return None
+    pl = _request(f"teams/{tid}/players")
+    atuais = [int(p["account_id"]) for p in (pl or [])
+              if isinstance(p, dict) and p.get("is_current_team_member") and p.get("account_id")]         if isinstance(pl, list) else []
+    return {"name": str(t.get("name") or "").strip(), "roster": sorted(atuais)}
+
+
+def team_api_info(ids: set[int], *, permitir_rede: bool = True) -> dict[int, dict]:
+    """{team_id: {"name":..., "roster":[account_id]}} para os ids pedidos.
+
+    Cache em disco com validade de 7 dias. Se a rede falhar, devolve o que tem —
+    identidade com dado velho e melhor que identidade nenhuma, e o chamador tem
+    a inferencia por partidas como rede de seguranca.
+    """
+    cache: dict[str, dict] = {}
+    if TEAM_API_CACHE.exists():
+        try:
+            velho = float(time.time() - TEAM_API_CACHE.stat().st_mtime) / 86400.0
+            cache = json.loads(TEAM_API_CACHE.read_text(encoding="utf-8"))
+            if velho > TEAM_API_MAX_AGE_DAYS:
+                cache = {}          # foto vencida: refaz
+        except (OSError, ValueError):
+            cache = {}
+    faltando = [i for i in sorted(ids) if str(i) not in cache]
+    if faltando and permitir_rede:
+        for i in faltando:
+            try:
+                d = _api_team_fetch(int(i))
+            except Exception:
+                d = None
+            if d is not None:
+                cache[str(i)] = d
+        try:
+            TEAM_API_CACHE.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+        except OSError:
+            pass
+    return {int(k): v for k, v in cache.items() if int(k) in ids}
+
+
+def ids_ativos(m: pd.DataFrame, dias: int = API_JANELA_ATIVOS_DIAS) -> set[int]:
+    """Quem jogou na janela recente — o unico recorte que vale consultar."""
+    if m.empty or "ord_key" not in m.columns:
+        return set()
+    corte = float(m["ord_key"].max()) - dias * 86400.0
+    rec = m[m["ord_key"] >= corte]
+    return {int(i) for i in set(rec["tid"]) | set(rec["oid"]) if int(i) > 0}
 
 
 ROSTER_MIN_COMUM = 5      # elenco IDENTICO; com 4 entravam erros (HEROIC+LGD Gaming)
@@ -214,7 +303,8 @@ def _rosters_por_team_id(caminho: Path) -> dict[int, list[tuple[float, frozenset
     return por_id
 
 
-def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None) -> dict[int, int]:
+def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
+                        api_rosters: dict[int, list[int]] | None = None) -> dict[int, int]:
     """team_id -> team_id REPRESENTANTE, unindo ids que sao o mesmo elenco.
 
     CAMADA 2 da identidade (16/08/2026). A camada 1 (team_id) conserta rebrand,
@@ -245,6 +335,10 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None) -> dic
             w = janela.get(i)
             janela[i] = [min(w[0], k), max(w[1], k)] if w else [k, k]
 
+    # ELENCO ATUAL PELA API tem prioridade sobre o inferido: ele diz quem joga
+    # HOJE, enquanto a inferencia olha os ultimos 20 jogos e envelhece junto com
+    # o time. Vale so para o lado ATIVO — id aposentado devolve elenco parcial.
+    api = api_rosters or {}
     recente: dict[int, set[int]] = {}
     for i, lst in _rosters_por_team_id(raw_path).items():
         if i not in jogos:
@@ -253,7 +347,11 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None) -> dic
         for _, s in lst[-ROSTER_ULTIMOS_N:]:
             for a in s:
                 cont[a] = cont.get(a, 0) + 1
-        recente[i] = {a for a, _ in sorted(cont.items(), key=lambda kv: -kv[1])[:5]}
+        do_api = api.get(i)
+        if do_api and len(do_api) == 5:
+            recente[i] = set(do_api)          # a API sabe melhor
+        else:
+            recente[i] = {a for a, _ in sorted(cont.items(), key=lambda kv: -kv[1])[:5]}
 
     folga = ROSTER_FOLGA_DIAS * 86400.0
 
@@ -352,13 +450,25 @@ def _aplicar_identidade(m: pd.DataFrame) -> pd.DataFrame:
     chave = (len(m), int(m["match_id"].iloc[-1]) if "match_id" in m.columns else 0)
     canon = _IDENT_CACHE.get(chave)
     if canon is None:
+        # A API responde nome e elenco ATUAIS; consulta so os ~245 ids que
+        # jogaram nos ultimos 90 dias (o universo tem 2415 e nao caberia na cota).
+        # DOTA_IDENTITY_API=0 desliga a rede e cai na inferencia por partidas.
+        api_nomes: dict[int, str] = {}
+        api_elencos: dict[int, list[int]] = {}
+        if os.environ.get("DOTA_IDENTITY_API", "1") != "0":
+            try:
+                info = team_api_info(ids_ativos(m))
+                api_nomes = {i: d.get("name", "") for i, d in info.items() if d.get("name")}
+                api_elencos = {i: d.get("roster", []) for i, d in info.items() if d.get("roster")}
+            except Exception:
+                api_nomes, api_elencos = {}, {}
         rep = {}
         if os.environ.get("DOTA_ROSTER_IDENTITY", "1") != "0":
             try:
-                rep = roster_identity_map(m)
+                rep = roster_identity_map(m, api_rosters=api_elencos)
             except (OSError, ValueError, KeyError):
                 rep = {}
-        canon = canonical_team_names(m, rep)
+        canon = canonical_team_names(m, rep, api_names=api_nomes)
         canon = {i: canon.get(rep.get(i, i), canon.get(i, "")) for i in canon}
         _IDENT_CACHE.clear()          # so a leitura corrente interessa
         _IDENT_CACHE[chave] = canon
