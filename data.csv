@@ -1,4 +1,16 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+8957890399,2026-08-21T17:26:56.000Z,2026,The International 2026,10136357,Nigma Galaxy,9823272,Team Yandex,radiant,3672,0,23,38,2,11,0,4,0,6,19719.0,1787333216.0,True,33.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8957890399,2026-08-21T17:26:56.000Z,2026,The International 2026,9823272,Team Yandex,10136357,Nigma Galaxy,dire,3672,1,38,23,11,2,4,0,6,0,19719.0,1787333216.0,True,33.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8957749452,2026-08-21T16:10:10.000Z,2026,The International 2026,10136357,Nigma Galaxy,9823272,Team Yandex,radiant,2688,0,14,52,3,10,0,2,0,6,19719.0,1787328610.0,True,31.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+8957749452,2026-08-21T16:10:10.000Z,2026,The International 2026,9823272,Team Yandex,10136357,Nigma Galaxy,dire,2688,1,52,14,10,3,2,0,6,0,19719.0,1787328610.0,True,31.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+8957527957,2026-08-21T14:12:01.000Z,2026,The International 2026,10136357,Nigma Galaxy,9823272,Team Yandex,dire,4493,1,42,45,9,7,2,2,6,2,19719.0,1787321521.0,True,40.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8957527957,2026-08-21T14:12:01.000Z,2026,The International 2026,9823272,Team Yandex,10136357,Nigma Galaxy,radiant,4493,0,45,42,7,9,2,2,2,6,19719.0,1787321521.0,True,40.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8957364447,2026-08-21T12:34:27.000Z,2026,The International 2026,9572001,TEAM VISION,7119388,Team Spirit,dire,2813,1,37,12,7,3,2,0,4,0,19719.0,1787315667.0,True,23.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8957364447,2026-08-21T12:34:27.000Z,2026,The International 2026,7119388,Team Spirit,9572001,TEAM VISION,radiant,2813,0,12,37,3,7,0,2,0,4,19719.0,1787315667.0,True,23.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8957272720,2026-08-21T11:35:11.000Z,2026,The International 2026,9572001,TEAM VISION,7119388,Team Spirit,dire,1714,0,8,29,2,3,0,0,0,0,19719.0,1787312111.0,True,11.0,ok,,opendota_api,0.0,1.0,,1.0
+8957272720,2026-08-21T11:35:11.000Z,2026,The International 2026,7119388,Team Spirit,9572001,TEAM VISION,radiant,1714,1,29,8,3,2,0,0,0,0,19719.0,1787312111.0,True,11.0,ok,,opendota_api,1.0,0.0,,1.0
+8957180942,2026-08-21T10:20:07.000Z,2026,The International 2026,9572001,TEAM VISION,7119388,Team Spirit,radiant,2570,1,28,20,11,3,2,0,6,0,19719.0,1787307607.0,True,28.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8957180942,2026-08-21T10:20:07.000Z,2026,The International 2026,7119388,Team Spirit,9572001,TEAM VISION,dire,2570,0,20,28,3,11,0,2,0,6,19719.0,1787307607.0,True,28.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 8957086928,2026-08-21T08:52:43.000Z,2026,The International 2026,9247354,Team Falcons,2163,Team Liquid,radiant,2533,0,21,39,3,9,0,2,0,5,19719.0,1787302363.0,True,26.0,ok,,opendota_api,0.0,1.0,0.0,1.0
 8957086928,2026-08-21T08:52:43.000Z,2026,The International 2026,2163,Team Liquid,9247354,Team Falcons,dire,2533,1,39,21,9,3,2,0,5,0,19719.0,1787302363.0,True,26.0,ok,,opendota_api,1.0,0.0,1.0,1.0
 8957013760,2026-08-21T07:45:40.000Z,2026,The International 2026,9247354,Team Falcons,2163,Team Liquid,radiant,2057,0,11,40,2,7,0,1,0,2,19719.0,1787298340.0,True,18.0,ok,,opendota_api,1.0,1.0,0.0,1.0
