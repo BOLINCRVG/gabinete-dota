@@ -44,6 +44,16 @@ jobs:
           OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
         run: python daily_sync.py
 
+      # FOTOS POR MINUTO para a aba "Durante o mapa (estado -> vitoria)", que
+      # NUNCA funcionou no Dota por falta desse dado (achado 16/08/2026). Sao
+      # ~23 mil partidas contra cota de ~2k/dia: colhe um pedaco por rodada,
+      # e retomavel, e em ~2 semanas a base fica completa sozinha.
+      # continue-on-error: cota estourada nao pode derrubar o resto da esteira.
+      - name: Coletar serie por minuto (um pedaco por rodada)
+        continue-on-error: true
+        timeout-minutes: 25
+        run: python opendota_timeline_sync.py --budget-seconds 1200 --max-matches 1500
+
       - name: Regenerar CSVs no schema OracleElixir-like
         run: python dota_adapter.py
 
@@ -86,7 +96,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"
           else

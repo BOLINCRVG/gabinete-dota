@@ -70,6 +70,26 @@ def build_oe_like() -> pd.DataFrame:
         vals = pd.to_numeric(m[col], errors="coerce")
         return vals.where(has_obj, np.nan)
 
+    # FOTOS POR MINUTO (16/08/2026): sem elas a aba "Durante o mapa" nao tem o que
+    # consumir — era um dos dois motivos de ela nunca ter funcionado no Dota.
+    # Colhidas por opendota_timeline_sync.py, gravadas com os MESMOS nomes que o
+    # mlcore/live_ml espera. LEFT join: partida ainda nao coletada fica com NaN
+    # (nunca zero — zero significaria "ninguem tinha ouro", que e mentira).
+    _snap = None
+    _snap_path = HERE / "timeline_snapshots.csv"
+    if _snap_path.exists():
+        try:
+            _snap = pd.read_csv(_snap_path, low_memory=False)
+            _snap["match_id"] = pd.to_numeric(_snap["match_id"], errors="coerce")
+            _snap = _snap.dropna(subset=["match_id"]).drop_duplicates("match_id", keep="last")
+            _snap["match_id"] = _snap["match_id"].astype("int64")
+            _snap = _snap.set_index("match_id")
+        except (OSError, ValueError, KeyError):
+            _snap = None
+
+    _MIN = (10, 15, 20, 25)
+    _CAMPOS = ("goldat", "xpat", "csat", "killsat", "deathsat", "assistsat")
+
     rows = []
     for persp in ("radiant", "dire"):
         is_r = persp == "radiant"
@@ -118,6 +138,19 @@ def build_oe_like() -> pd.DataFrame:
                            if is_r else 1.0 - pd.to_numeric(m.get("first_roshan"), errors="coerce")),
             "firstdragon": np.nan,
         })
+
+        # Radiant e o lado "Blue": para a perspectiva dire, o proprio time e o
+        # `opp_` do store e vice-versa. Trocar aqui evita duplicar o dado no CSV.
+        if _snap is not None:
+            _idx = m["match_id"].astype("int64")
+            for _t in _MIN:
+                for _c in _CAMPOS:
+                    _meu, _dele = f"{_c}{_t}", f"opp_{_c}{_t}"
+                    _origem_meu = _meu if is_r else _dele
+                    _origem_dele = _dele if is_r else _meu
+                    for _destino, _origem in ((_meu, _origem_meu), (_dele, _origem_dele)):
+                        r[_destino] = (_idx.map(_snap[_origem]).to_numpy()
+                                       if _origem in _snap.columns else np.nan)
         rows.append(r)
 
     out = pd.concat(rows, ignore_index=True)
