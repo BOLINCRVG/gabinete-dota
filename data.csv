@@ -1,4 +1,16 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+8964616524,2026-08-25T10:05:00.000Z,2026,EPL Masters 2026,10232231,Klim Sani4,10225911,Summer Bear,dire,1493,1,39,8,7,1,1,0,2,0,19944.0,1787652300.0,True,18.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8964616524,2026-08-25T10:05:00.000Z,2026,EPL Masters 2026,10225911,Summer Bear,10232231,Klim Sani4,radiant,1493,0,8,39,1,7,0,1,0,2,19944.0,1787652300.0,True,18.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8964574076,2026-08-25T09:37:07.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,10164236,PuckChamp,radiant,1695,0,7,22,3,9,0,1,0,6,19944.0,1787650627.0,True,26.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+8964574076,2026-08-25T09:37:07.000Z,2026,EPL Masters 2026,10164236,PuckChamp,5014799,Nemiga Gaming,dire,1695,1,22,7,9,3,1,0,6,0,19944.0,1787650627.0,True,26.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+8964480771,2026-08-25T08:18:22.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,10164236,PuckChamp,radiant,2968,1,37,23,8,3,1,1,2,0,19944.0,1787645902.0,True,28.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+8964480771,2026-08-25T08:18:22.000Z,2026,EPL Masters 2026,10164236,PuckChamp,5014799,Nemiga Gaming,dire,2968,0,23,37,3,8,1,1,0,2,19944.0,1787645902.0,True,28.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+8964471270,2026-08-25T08:10:13.000Z,2026,EPL Masters 2026,10232231,Klim Sani4,10182865,Syntax,radiant,1102,1,19,2,5,0,0,0,0,0,19944.0,1787645413.0,True,10.0,ok,,opendota_api,1.0,1.0,,1.0
+8964471270,2026-08-25T08:10:13.000Z,2026,EPL Masters 2026,10182865,Syntax,10232231,Klim Sani4,dire,1102,0,2,19,0,5,0,0,0,0,19944.0,1787645413.0,True,10.0,ok,,opendota_api,0.0,0.0,,1.0
+8964414486,2026-08-25T07:19:15.000Z,2026,EPL Masters 2026,10232231,Klim Sani4,10232570,Team Syntax,dire,1402,1,37,4,6,0,0,0,0,0,19944.0,1787642355.0,True,10.0,ok,,opendota_api,1.0,1.0,,1.0
+8964414486,2026-08-25T07:19:15.000Z,2026,EPL Masters 2026,10232570,Team Syntax,10232231,Klim Sani4,radiant,1402,0,4,37,0,6,0,0,0,0,19944.0,1787642355.0,True,10.0,ok,,opendota_api,0.0,0.0,,1.0
+8964399842,2026-08-25T07:08:25.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,10164236,PuckChamp,radiant,2676,0,28,38,3,9,0,2,0,6,19944.0,1787641705.0,True,30.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+8964399842,2026-08-25T07:08:25.000Z,2026,EPL Masters 2026,10164236,PuckChamp,5014799,Nemiga Gaming,dire,2676,1,38,28,9,3,2,0,6,0,19944.0,1787641705.0,True,30.0,ok,,opendota_api,1.0,0.0,1.0,1.0
 8963790789,2026-08-24T20:05:41.000Z,2026,EPL Masters 2026,10225542,DYNASTY,10207497,FTS,dire,3078,1,26,28,8,9,1,2,2,2,19944.0,1787601941.0,True,37.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 8963790789,2026-08-24T20:05:41.000Z,2026,EPL Masters 2026,10207497,FTS,10225542,DYNASTY,radiant,3078,0,28,26,9,8,2,1,2,2,19944.0,1787601941.0,True,37.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8963649188,2026-08-24T19:00:18.000Z,2026,EPL Masters 2026,10225542,DYNASTY,10207497,FTS,radiant,2347,1,30,4,8,4,1,1,4,0,19944.0,1787598018.0,True,28.0,ok,,opendota_api,1.0,1.0,1.0,1.0
