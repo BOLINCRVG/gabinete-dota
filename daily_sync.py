@@ -11,6 +11,14 @@ Zero acao do usuario. Se a cota acabar, amanha continua de onde parou.
 from __future__ import annotations
 
 import sys
+
+# Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro
+# vem no fim, depois do trabalho todo feito. Ver tools/find_silent_failures.py.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
 import time
 import traceback
 from datetime import datetime

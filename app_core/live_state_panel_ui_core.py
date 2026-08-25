@@ -634,6 +634,7 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
     # treinando, o app dispara SOZINHO em background (trava de 6h evita relançar
     # a cada F5). É o que faz ele "não precisar mais saber do ao vivo".
     auto_disparado = False
+    auto_falhou = ""
     if not running and pode_treinar:
         try:
             from app_core.live_models_status_core import (
@@ -646,16 +647,29 @@ def _render_freshness_banner(*, st: Any, session_state: MutableMapping[str, Any]
             ):
                 cutoff = session_state.get("_live_models_val_cutoff", "2026-03-31")
                 info = launch_retrain_background(val_cutoff=str(cutoff), save_models_dir=str(models_dir))
+                mark_auto_retrain_attempt(models_dir)   # marca a TENTATIVA (respeita o cooldown mesmo falhando)
                 if info.get("ok"):
-                    mark_auto_retrain_attempt(models_dir)
                     running = True
                     auto_disparado = True
-        except Exception:
-            pass  # auto-retreino é conveniência; nunca derruba o painel
+                else:
+                    # NAO engolir: era assim que o Dota ficava sem NENHUM modelo ao
+                    # vivo — o app tentava todo dia, falhava, gravava o carimbo e
+                    # seguia. Quem olhasse o last_auto_retrain.txt via a data de hoje
+                    # e concluia que estava tudo certo (achado 16/08/2026).
+                    auto_falhou = str(info.get("error") or "motivo desconhecido")
+        except Exception as _exc_auto:
+            # a conveniencia nunca derruba o painel, mas tambem nao some calada
+            auto_falhou = f"{type(_exc_auto).__name__}: {_exc_auto}"
 
     _fresh = str(state) == "fresh"
     cols = st.columns([2, 1, 1])
     with cols[0]:
+        if auto_falhou:
+            st.error(
+                "🚨 **O retreino automático do modelo ao vivo FALHOU** — "
+                f"{auto_falhou}. A aba de estado ao vivo fica sem modelo até isso "
+                "ser resolvido; o número dela não deve ser usado."
+            )
         if auto_disparado:
             st.warning(
                 "⏳ **Modelo ao vivo desatualizado — atualizando agora, favor não fechar o app.** "

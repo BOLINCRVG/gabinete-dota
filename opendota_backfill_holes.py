@@ -19,6 +19,16 @@ Uso (do proprio diretorio):
 """
 from __future__ import annotations
 
+import sys
+
+# Console cp1252 no Windows derruba print com acento — e este script e rodado
+# A MAO no PC dele (o robo roda em Linux/UTF-8 e nunca ve o problema).
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 import argparse
 import time
 from typing import Dict, List, Optional

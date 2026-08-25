@@ -21,6 +21,14 @@ from __future__ import annotations
 import json
 import math
 import sys
+
+# Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro
+# vem no fim, depois do trabalho todo feito. Ver tools/find_silent_failures.py.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
 import time
 from pathlib import Path
 
