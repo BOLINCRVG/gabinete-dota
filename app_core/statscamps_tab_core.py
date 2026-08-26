@@ -399,7 +399,14 @@ def render_statscamps_tab(
     from app_core.stats_config import STATS_MARKET_CONFIG as _SMC
 
     def _th(txt: Any, market: str) -> list:
-        base = parse_lines_fn(str(_SMC[market]["default_thresholds"]))
+        # .get, nao [] (26/08/2026): o dota_overrides troca "Dragões" por
+        # "Megacreeps" no registro, e esta aba pedia a chave literal — a aba
+        # inteira estourava com KeyError desde 10/07 e ninguem viu, porque os
+        # testes de UI de la nem chegavam a rodar (procuravam plays_app.py).
+        # Mercado ausente = so as linhas digitadas, coluna vazia. E o que ele
+        # decidiu pro Dota: "dragoes fica na UI (vazio) ate mandar tirar".
+        cfg = _SMC.get(market)
+        base = parse_lines_fn(str(cfg["default_thresholds"])) if cfg else []
         return sorted(set(list(base) + list(parse_lines_fn(txt))))
 
     th_k = _th(th_kills, "Kills")
