@@ -94,7 +94,7 @@ def main() -> int:
         p_pre[(str(gid), "Red")] = 1.0 - p
 
     print(f"linhas-time: {len(tr)} | partidas com previsao pre-jogo: {len(p_pre)//2}\n")
-    print(f"{'minuto':>7}{'n treino':>10}{'n val':>8}{'pre-jogo':>11}{'estado':>10}{'ganho':>10}  veredito")
+    print(f"{'minuto':>7}{'n treino':>10}{'n teste':>8}{'pre-jogo':>11}{'estado':>10}{'ganho':>10}{'ECE':>8}{'acerto':>8}  veredito")
 
     salvos, resumo = 0, []
     for minuto in SNAPSHOT_MINUTES:
@@ -105,22 +105,51 @@ def main() -> int:
             print(f"{minuto:>7}{len(snaps):>10}{'-':>8}{'-':>11}{'-':>10}{'-':>10}  amostra pequena")
             resumo.append({"minuto": minuto, "n": len(snaps), "veredito": "amostra pequena"})
             continue
-        corte = int(len(snaps) * (1.0 - float(args.val_frac)))
-        treino, val = snaps[:corte], snaps[corte:]
+        # TRES particoes, nao duas (corrigido 26/08/2026). O fit() usa o
+        # segundo conjunto para early stopping E para ajustar o Platt
+        # (state_models.py: cal_snapshots = val_snapshots). Medir o gate nesse
+        # mesmo conjunto era o modelo se avaliando na propria calibracao —
+        # logloss, ECE e acerto saiam otimistas, e o "salva/rejeita" saia com
+        # eles. O TESTE agora e cego: nunca viu treino nem calibracao.
+        n = len(snaps)
+        c1 = int(n * (1.0 - 2.0 * float(args.val_frac)))
+        c2 = int(n * (1.0 - float(args.val_frac)))
+        treino, calib, teste = snaps[:c1], snaps[c1:c2], snaps[c2:]
+        if len(teste) < 100 or len(calib) < 100:
+            print(f"{minuto:>7}{n:>10}{'-':>8}{'-':>11}{'-':>10}{'-':>10}  amostra pequena")
+            resumo.append({"minuto": minuto, "n": n, "veredito": "amostra pequena"})
+            continue
 
-        m = StateToWinModel(minute=minuto).fit(treino, val)
-        ys = [int(s.y) for s in val]
-        p_estado = list(m.predict_proba(val))
-        p_base = [float(s.p_pre) for s in val]
+        m = StateToWinModel(minute=minuto).fit(treino, calib)
+        ys = [int(s.y) for s in teste]
+        p_estado = list(m.predict_proba(teste))
+        p_base = [float(s.p_pre) for s in teste]
         ll_base, ll_est = _ll(p_base, ys), _ll(p_estado, ys)
+        # ECE: logloss baixo NAO garante honestidade do numero. Um modelo que
+        # diz 85% quando acerta 70% mostra valor onde nao ha — e e nesse numero
+        # que ele aposta. A regua do LoL reporta ECE 0.015 na live; sem medir
+        # aqui, o Dota so tinha metade da historia.
+        _b = {}
+        for _p, _y in zip(p_estado, ys):
+            _b.setdefault(min(9, int(float(_p) * 10)), []).append((float(_p), int(_y)))
+        ece = sum((len(v) / len(ys)) * abs(sum(q for q, _ in v) / len(v)
+                                           - sum(w for _, w in v) / len(v)) for v in _b.values())
+        acerto = sum(1 for _p, _y in zip(p_estado, ys) if (_p >= 0.5) == (_y == 1)) / len(ys)
         ganho = ll_base - ll_est
         ok = ganho > GATE
-        print(f"{minuto:>7}{len(treino):>10}{len(val):>8}{ll_base:>11.4f}{ll_est:>10.4f}"
-              f"{ganho:>+10.4f}  {'SALVA' if ok else 'REJEITADO'}")
-        resumo.append({"minuto": minuto, "n_treino": len(treino), "n_val": len(val),
+        print(f"{minuto:>7}{len(treino):>10}{len(teste):>8}{ll_base:>11.4f}{ll_est:>10.4f}"
+              f"{ganho:>+10.4f}{ece:>8.3f}{acerto:>8.1%}  {'SALVA' if ok else 'REJEITADO'}")
+        resumo.append({"minuto": minuto, "n_treino": len(treino),
+                       "n_calib": len(calib), "n_teste": len(teste),
                        "ll_pre_jogo": round(ll_base, 4), "ll_estado": round(ll_est, 4),
-                       "ganho": round(ganho, 4), "salvo": bool(ok)})
+                       "ganho": round(ganho, 4), "ece": round(float(ece), 4),
+                       "acerto": round(float(acerto), 4), "salvo": bool(ok)})
         if ok:
+            # REFIT PARA O DEPLOY: o veredito ja saiu do teste cego, entao o
+            # modelo que vai PRO AR pode usar tudo. Com ~3 mil fotos, treinar em
+            # 60% e jogar 40% fora custa acuracia real no ao vivo — e o numero
+            # publicado continua sendo o do teste cego, que e o honesto.
+            m = StateToWinModel(minute=minuto).fit(treino + calib, teste)
             destino = HERE / str(args.save_models_dir) / f"minute_{minuto:02d}"
             destino.parent.mkdir(parents=True, exist_ok=True)
             m.save(destino)

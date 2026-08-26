@@ -140,7 +140,7 @@ def main() -> int:
     print(f"=== RÉGUA DO DOTA — season {season} ===")
     print(f"NOTA GERAL: {geral['nota']}   [logloss {geral['logloss']}, "
           f"acerto {geral['acuracia']:.1%}, ECE {geral['ece']}, n={geral['n']}]")
-    print(f"  (moeda = 5.0 · elite = 9.5 · mesma régua do LoL)\n")
+    print("  (moeda = 5.0 · elite = 9.5 · mesma régua do LoL)\n")
     print(f"{'segmento':<34}{'n':>6}{'nota':>7}{'logloss':>10}{'acerto':>8}{'ECE':>7}")
     for nome, blk in (("confronto entre times rodados", conhecidos),
                       (f"algum lado com <{CONHECIDO_MIN} jogos", novatos)):
@@ -175,14 +175,50 @@ def main() -> int:
     print("\nleitura: nota alta = torneio previsível (dá pra extrair edge);")
     print("         ECE alto (>0.10) = o % do modelo NÃO é honesto ali, EV não vale.")
 
+    # ===== AO VIVO =====================================================
+    # O LoL tem tools/live_scorecard.py; aqui a live e so o state->win (o Dota
+    # nao tem first-markets nem player-props), entao ela mora nesta mesma regua
+    # em vez de ganhar um arquivo so pra ela.
+    vivo = None
+    _f6 = HERE / "FASE6_LIVE_DOTA.json"
+    if _f6.exists():
+        try:
+            _d = json.loads(_f6.read_text(encoding="utf-8"))
+            mins = [m for m in _d.get("minutos", []) if m.get("salvo")]
+        except (OSError, ValueError):
+            mins = []
+        if mins:
+            _ll = sum(float(m["ll_estado"]) for m in mins) / len(mins)
+            _pre = sum(float(m["ll_pre_jogo"]) for m in mins) / len(mins)
+            _ece = [float(m["ece"]) for m in mins if m.get("ece") is not None]
+            vivo = {"nota": round(grade_from_logloss(_ll), 2),
+                    "logloss": round(_ll, 4), "logloss_pre_jogo": round(_pre, 4),
+                    "ganho": round(_pre - _ll, 4),
+                    "ece": round(sum(_ece) / len(_ece), 4) if _ece else None,
+                    "minutos": len(mins)}
+            print()
+            print("=== AO VIVO (estado do mapa -> vitoria) ===")
+            print(f"{'minuto':>7}{'pre-jogo':>11}{'estado':>10}{'ganho':>9}{'ECE':>8}{'nota':>7}")
+            for m in mins:
+                print(f"{int(m['minuto']):>7}{float(m['ll_pre_jogo']):>11.4f}"
+                      f"{float(m['ll_estado']):>10.4f}{float(m['ganho']):>+9.4f}"
+                      f"{float(m.get('ece', float('nan'))):>8.3f}"
+                      f"{grade_from_logloss(float(m['ll_estado'])):>7.2f}")
+            print(f"MEDIA: ganho {vivo['ganho']:+.4f} sobre o pre-jogo, ECE {vivo['ece']}")
+            print("  o LoL, na mesma regua: ganho +0.1570, ECE 0.015.")
+            if vivo["ece"] and vivo["ece"] > 0.025:
+                print("  ECE ACIMA do LoL: o % ao vivo daqui e menos honesto — trate")
+                print("  o numero como direcao, nao como preco. Melhora sozinho")
+                print("  conforme o coletor de fotos por minuto acumula partidas.")
+
     ev = HERE / "evidence"
     ev.mkdir(exist_ok=True)
     (ev / "dota_scorecard.json").write_text(json.dumps({
         "season": season, "geral": geral,
         "conhecidos": conhecidos, "pouco_conhecidos": novatos,
-        "torneios": tor,
+        "torneios": tor, "ao_vivo": vivo,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\n[salvo] evidence/dota_scorecard.json")
+    print("\n[salvo] evidence/dota_scorecard.json")
     return 0
 
 
