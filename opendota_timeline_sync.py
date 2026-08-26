@@ -47,12 +47,20 @@ MINUTOS = (10, 15, 20, 25)
 CAMPOS = ("goldat", "xpat", "csat", "killsat", "deathsat", "assistsat")
 
 
+# DRAFT (25/08/2026): vem DE GRACA na mesma chamada que ja fazemos. A literatura
+# e consistente em que draft sozinho preve 63-76% e que SINERGIA e COUNTER valem
+# mais que taxa de vitoria individual do heroi. O modelo do Dota nao tem heroi
+# nenhum hoje (o adaptador grava champion vazio), entao e uma dimensao inteira
+# faltando. Colher agora evita refazer 23 mil chamadas depois.
+COLS_DRAFT = ("herois_radiant", "herois_dire", "bans_radiant", "bans_dire")
+
+
 def colunas() -> list[str]:
     out = ["match_id"]
     for t in MINUTOS:
         for c in CAMPOS:
             out += [f"{c}{t}", f"opp_{c}{t}"]
-    return out
+    return out + list(COLS_DRAFT)
 
 
 def _soma_ate(series_por_jogador: list[list], t: int) -> float:
@@ -92,6 +100,21 @@ def extrair(d: dict) -> dict | None:
         return None
     dur = float(d.get("duration") or 0)
     linha: dict = {"match_id": int(d.get("match_id") or 0)}
+
+    # Draft final vem de players[].hero_id (SEMPRE presente). picks_bans traz a
+    # ordem e os banimentos, mas falta em modo sem capitaes / partida nao parseada
+    # — por isso o draft nao depende dele.
+    linha["herois_radiant"] = ",".join(str(p.get("hero_id") or 0) for p in rad)
+    linha["herois_dire"] = ",".join(str(p.get("hero_id") or 0) for p in dire)
+    pb = d.get("picks_bans") or []
+    if isinstance(pb, list) and pb:
+        for lado, chave in ((0, "bans_radiant"), (1, "bans_dire")):
+            linha[chave] = ",".join(
+                str(x.get("hero_id") or 0) for x in pb
+                if isinstance(x, dict) and not x.get("is_pick") and x.get("team") == lado)
+    else:
+        linha["bans_radiant"] = ""
+        linha["bans_dire"] = ""
     for t in MINUTOS:
         # partida que acabou antes do minuto t nao tem foto valida ali
         if dur < t * 60:
@@ -137,7 +160,16 @@ def main() -> int:
     feitos: set[int] = set()
     if STORE.exists():
         try:
-            feitos = {int(x) for x in pd.read_csv(STORE, usecols=["match_id"])["match_id"].dropna()}
+            _st = pd.read_csv(STORE, low_memory=False)
+            # linha colhida ANTES do draft entrar (25/08) precisa ser refeita: so
+            # conta como pronta quem ja tem os herois. Sem isto, as ~2 mil
+            # primeiras ficariam para sempre sem essa dimensao.
+            if "herois_radiant" in _st.columns:
+                _ok = _st["herois_radiant"].astype(str).str.strip().ne("").fillna(False)
+                _st = _st[_ok]
+            else:
+                _st = _st.iloc[0:0]
+            feitos = {int(x) for x in _st["match_id"].dropna()}
         except (OSError, ValueError, KeyError):
             feitos = set()
     faltam = [x for x in alvo if x not in feitos]
@@ -170,8 +202,8 @@ def main() -> int:
     if novas:
         df = pd.DataFrame(novas).reindex(columns=colunas())
         if STORE.exists():
-            df = pd.concat([pd.read_csv(STORE), df], ignore_index=True)
-            df = df.drop_duplicates("match_id", keep="last")
+            df = pd.concat([pd.read_csv(STORE, low_memory=False), df], ignore_index=True)
+            df = df.drop_duplicates("match_id", keep="last")   # a nova (com draft) vence
         tmp = STORE.with_suffix(".csv.tmp")
         df.to_csv(tmp, index=False)
         os.replace(tmp, STORE)
