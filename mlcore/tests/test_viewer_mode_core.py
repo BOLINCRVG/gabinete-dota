@@ -19,7 +19,11 @@ class TestViewerFlag(unittest.TestCase):
     def test_env_flag_controls_mode(self):
         with mock.patch.dict(os.environ, {"GABINETE_VIEWER": "1"}):
             self.assertTrue(is_viewer_mode())
-        with mock.patch.dict(os.environ, {"GABINETE_VIEWER": ""}):
+        # "0" e nao "" (26/08/2026): vazio significa "nao setado" e cai no
+        # secrets.toml, entao este teste dependia de o dev NAO ter o secret —
+        # no repo do Dota ele existe e o teste falhava sem nada estar errado.
+        # "0" testa o contrato de verdade: a env manda nos dois sentidos.
+        with mock.patch.dict(os.environ, {"GABINETE_VIEWER": "0"}):
             self.assertFalse(is_viewer_mode())
 
     def test_truthy_variants(self):

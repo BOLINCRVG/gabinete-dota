@@ -20,6 +20,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DOTA_APP = ROOT.parent / "GabineteDOTA" / "gabinete_dota_app.py"
+# A entrada do app tem nome diferente em cada repo (plays_app.py no LoL,
+# gabinete_dota_app.py no Dota). Resolver aqui mantem ESTE arquivo igual
+# nos dois — com o caminho fixo, o fluxo E2E nem comecava no Dota.
+from app_core.streamlit_apptest_core import resolve_app_file  # noqa: E402
+
+APP = resolve_app_file(ROOT / "plays_app.py")
 
 _DRIVER = r"""
 import sys
@@ -92,7 +98,7 @@ class TestE2ESmokeLoL(unittest.TestCase):
         before = {n: _sig(n) for n in ("ml_artifact.json", "params_fitted.json",
                                        "players_artifact.json",
                                        "user_schedule_store.json")}
-        status, payload = _run_flow(ROOT / "plays_app.py", "T1", "Gen",
+        status, payload = _run_flow(APP, "T1", "Gen",
                                     extra_env={"GABINETE_E2E": "1"})
         if status == "SKIP":
             self.skipTest(payload)
@@ -110,7 +116,7 @@ class TestE2ESmokeLoLViewer(unittest.TestCase):
         """Modo visualização (nuvem): sem gate de manutenção, boot direto,
         abas renderizam. É o modo do Streamlit Community Cloud."""
         status, payload = _run_flow(
-            ROOT / "plays_app.py", "T1", "Gen",
+            APP, "T1", "Gen",
             extra_env={"GABINETE_VIEWER": "1"},
         )
         if status == "SKIP":
