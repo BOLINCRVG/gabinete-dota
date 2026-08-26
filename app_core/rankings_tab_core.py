@@ -465,6 +465,15 @@ def render_rankings_tab(
             return
 
         st.dataframe(elo_df.head(50), width="stretch", height=520)
+
+        try:
+            from pathlib import Path as _P
+
+            from app_core.nota_liga_core import render_nota_liga_table as _nl_table
+
+            _nl_table(st=st, root=_P(__file__).resolve().parents[1], pd=pd)
+        except (ImportError, OSError, TypeError, ValueError, KeyError):
+            pass
         if "league" not in elo_df.columns or elo_df["league"].astype(str).str.len().sum() <= 0:
             return
 

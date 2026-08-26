@@ -218,7 +218,16 @@ def main() -> int:
         "conhecidos": conhecidos, "pouco_conhecidos": novatos,
         "torneios": tor, "ao_vivo": vivo,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
-    print("\n[salvo] evidence/dota_scorecard.json")
+    # MESMO schema do evidence/nota_por_liga.json do LoL, de proposito: assim o
+    # app_core/nota_liga_core.py roda aqui VERBATIM, sem fork. Se um dia o
+    # schema mudar la, muda aqui junto.
+    (ev / "nota_por_liga.json").write_text(json.dumps({
+        "season": season, "nota_geral": geral.get("nota"), "min_n": int(args.min_n),
+        "ligas": [{"liga": b["torneio"], "tier": "", "n": b["n"], "nota": b["nota"],
+                   "logloss": b["logloss"], "acuracia": b["acuracia"], "ece": b["ece"]}
+                  for b in tor],
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("\n[salvo] evidence/dota_scorecard.json + evidence/nota_por_liga.json")
     return 0
 
 

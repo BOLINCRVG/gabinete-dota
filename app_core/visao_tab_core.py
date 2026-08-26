@@ -261,6 +261,19 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         league_a=locals().get("_lgA", ""),
         league_b=locals().get("_lgB", ""),
     )
+    # Como o modelo se sai NESTE torneio (previsibilidade + honestidade do %).
+    # No Dota isso pesa mais que no LoL: os piores torneios batem ECE 0.19/0.25,
+    # ou seja, o % da tela nao e preco ali.
+    try:
+        from pathlib import Path as _P
+
+        from app_core.nota_liga_core import render_nota_liga_badge as _nl_badge
+
+        _nl_badge(st=st, root=_P(__file__).resolve().parents[1],
+                  league=str(_lg_hint or ""), box=_box_contexto)
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
     _conf_baseline = {}
     try:
         if _ML_CONFIDENCE_BASELINE_PATH.exists():

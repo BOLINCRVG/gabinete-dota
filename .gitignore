@@ -30,6 +30,7 @@ evidence/*
 # existia. Logs e _tmp_tests continuam de fora.
 !evidence/dota_scorecard.json
 !evidence/dota_totals_scorecard.json
+!evidence/nota_por_liga.json
 .gabinete_settings.json
 user_team_aliases.json
 user_schedule_store.json
