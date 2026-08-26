@@ -36,8 +36,18 @@ Distribuicao nao e o problema: roshans e SUB-disperso (var/media 0.74) e
 barracas SUPER-disperso (1.27) — nenhuma familia fixa serve aos dois, e a
 calibracao, que cobriria ambos, nao pagou. O problema e SINAL: a correlacao
 entre media prevista e total real e 0.12 em towers e 0.13 em barracas.
-Proximo ataque plausivel (nao medido): prever objetivos a partir da duracao
-esperada e do p_win, em vez da media for/against.
+  - prever o total pela DURACAO esperada (--via-duracao): REJECT em kills
+    (-0.0355), ~neutro no resto. Melhor caso inhibitors +0.0010.
+
+ONDE O TETO REALMENTE ESTA (medido, e o achado que importa daqui):
+os objetivos sao quase FUNCAO DA DURACAO. Correlacao com a duracao REAL:
+    roshans 0.87 | torres 0.80 | barracas 0.55 | kills 0.45
+Ou seja, nao falta sinal nesses mercados — falta prever a DURACAO. O motor
+preve duracao com corr 0.21, e por isso o ataque via duracao nasce morto:
+a duracao prevista quase nao varia, entao o total previsto quase nao varia.
+Se um dia alguem quiser mexer nos totais do Dota, o alvo unico e
+PREVER A DURACAO DA PARTIDA. Um numero melhor ali levanta tres mercados
+de uma vez. Enquanto isso nao existir, so kills presta.
 
 Uso: python dota_totals_scorecard.py [--season 2026] [--min-jogos 8] [--calibrar]
 """
@@ -61,7 +71,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from mlcore.lines_engine import (  # noqa: E402
-    Filters, build_profile, matchup_expected_totals, prob_over_from_total)
+    Filters, MatchupTotals, build_profile, matchup_expected_totals,
+    prob_over_from_total)
 from mlcore.stats_teams import build_team_games  # noqa: E402
 from mlcore.calibration import fit_platt_from_raw_probs  # noqa: E402
 
@@ -87,6 +98,8 @@ def main() -> int:
     ap.add_argument("--season", type=int, default=None)
     ap.add_argument("--min-jogos", type=int, default=8,
                     help="jogos anteriores minimos por time para arriscar previsao")
+    ap.add_argument("--via-duracao", action="store_true",
+                    help="mede prever o total pela DURACAO esperada (ajuste em 2025, cego na alvo)")
     ap.add_argument("--calibrar", action="store_true",
                     help="mede se calibrar a probabilidade (Platt em 2025, cego em 2026) melhora")
     ap.add_argument("--out", default="evidence/dota_totals_scorecard.json")
@@ -117,7 +130,8 @@ def main() -> int:
     anos = pd.to_numeric(d["year"], errors="coerce")
     # GATE DA CALIBRACAO: replay tambem nas seasons ANTERIORES, so para AJUSTAR
     # o Platt. A season alvo continua CEGA — o calibrador nunca ve 2026.
-    alvo = d[(anos <= season) & (d["side"] == "Blue")] if args.calibrar else         d[(anos == season) & (d["side"] == "Blue")]
+    _passado = bool(args.calibrar or args.via_duracao)
+    alvo = d[(anos <= season) & (d["side"] == "Blue")] if _passado else         d[(anos == season) & (d["side"] == "Blue")]
     alvo_ano = pd.to_numeric(alvo["year"], errors="coerce").to_numpy()
     print(f"replay prequencial | season {season} | {len(alvo)} partidas\n")
 
@@ -144,6 +158,9 @@ def main() -> int:
     # "distribuicao errada" (corr boa, probabilidade ruim).
     mus: dict[str, list[tuple[float, float]]] = {m[0]: [] for m in MERCADOS}
     treino: dict[str, list[tuple[float, int]]] = {m[0]: [] for m in MERCADOS}
+    # (duracao prevista, total real) — para o ataque VIA DURACAO
+    dur_tr: dict[str, list[tuple[float, float]]] = {m[0]: [] for m in MERCADOS}
+    dur_ev: dict[str, list[tuple[float, float, float]]] = {m[0]: [] for m in MERCADOS}
     vistos = 0
     for _i, row in enumerate(alvo.itertuples(index=False)):
         gid = str(row.gameid)
@@ -159,6 +176,8 @@ def main() -> int:
             continue
         tot = matchup_expected_totals(pa, pb)
         vistos += 1
+        _tt = tot.get("time")
+        _mu_time = float(getattr(_tt, "mean", float("nan"))) if _tt else float("nan")
         for metrica, linha, col in MERCADOS:
             t = tot.get(metrica)
             if t is None:
@@ -172,6 +191,11 @@ def main() -> int:
                     mus[metrica].append((float(t.mean), float(y)))
                 else:
                     treino[metrica].append(par)
+                if _mu_time == _mu_time:
+                    if int(alvo_ano[_i]) == season:
+                        dur_ev[metrica].append((_mu_time, float(y), float(p)))
+                    else:
+                        dur_tr[metrica].append((_mu_time, float(y)))
 
     print(f"{'mercado':<14}{'linha':>7}{'n':>7}{'Brier':>9}{'acerto':>9}{'over real':>11}{'over prev':>11}{'nota':>7}{'vs base':>9}{'corr':>7}")
     saida = []
@@ -197,6 +221,49 @@ def main() -> int:
         print(f"{metrica:<14}{linha:>7.1f}{len(v):>7}{br:>9.4f}{ac:>9.1%}"
               f"{saida[-1]['over_real']:>11.1%}{saida[-1]['over_previsto']:>11.1%}"
               f"{saida[-1]['nota']:>7.2f}{saida[-1]['ganho_base']:>+9.4f}{saida[-1]['corr']:>7.2f}")
+
+    if args.via_duracao:
+        # OS OBJETIVOS SAO QUASE FUNCAO DA DURACAO — medido nesta base: torres
+        # 0.80, roshans 0.87, barracas 0.55, kills 0.45 de correlacao com a
+        # duracao REAL. Ou seja, o motor nao falha nesses mercados por falta de
+        # sinal; falha porque preve mal a duracao (corr 0.21). Aqui: prever o
+        # total A PARTIR da duracao esperada bate a media for/against? Reta
+        # ajustada nas seasons anteriores, aplicada CEGA na alvo, sd = residuo.
+        import statistics as _st
+        print()
+        print("GATE VIA DURACAO (reta ajustada nas seasons anteriores, cega na alvo)")
+        print(f"{'mercado':<14}{'brier V0':>10}{'brier DUR':>11}{'brier BL':>10}"
+              f"{'difDUR':>9}{'difBL':>9}  veredito")
+        for metrica, linha, _col in MERCADOS:
+            tr, ev = dur_tr[metrica], dur_ev[metrica]
+            if len(tr) < 500 or len(ev) < 100:
+                print(f"{metrica:<14}   amostra pequena")
+                continue
+            xs = [a for a, _b in tr]
+            mx, my = _st.fmean(xs), _st.fmean([b for _a, b in tr])
+            sxx = sum((x - mx) ** 2 for x in xs)
+            if sxx <= 1e-9:
+                print(f"{metrica:<14}   duracao prevista constante")
+                continue
+            b1 = sum((x - mx) * (y - my) for x, y in tr) / sxx
+            b0 = my - b1 * mx
+            sd = max(_st.pstdev([y - (b0 + b1 * x) for x, y in tr]), 1e-6)
+            b_v0 = b_du = b_bl = 0.0
+            for x, y, q in ev:
+                alvo_y = 1.0 if y > linha else 0.0
+                pdur = prob_over_from_total(
+                    MatchupTotals(mean=float(b0 + b1 * x), sd=float(sd), dist="normal"),
+                    float(linha))
+                b_v0 += (q - alvo_y) ** 2
+                b_du += (pdur - alvo_y) ** 2
+                b_bl += (0.5 * (pdur + q) - alvo_y) ** 2
+            n_ev = len(ev)
+            b_v0, b_du, b_bl = b_v0 / n_ev, b_du / n_ev, b_bl / n_ev
+            g_du, g_bl = b_v0 - b_du, b_v0 - b_bl
+            melhor = max(g_du, g_bl)
+            vd = "ACCEPT" if melhor >= 0.002 else ("REJECT" if melhor <= -0.002 else "~neutro")
+            print(f"{metrica:<14}{b_v0:>10.4f}{b_du:>11.4f}{b_bl:>10.4f}"
+                  f"{g_du:>+9.4f}{g_bl:>+9.4f}  {vd}")
 
     if args.calibrar:
         print()

@@ -1400,6 +1400,17 @@ def render_line_analysis_tab(
         eyebrow="Scout",
     )
 
+    # Em que mercado o numero desta aba presta (medido 26/08/2026 — ate entao
+    # ela servia cinco mercados sem ninguem saber se algum prestava).
+    try:
+        from pathlib import Path as _P
+
+        from app_core.nota_mercados_core import render_confianca_mercados as _conf_mkt
+
+        _conf_mkt(st=st, root=_P(__file__).resolve().parents[1])
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+
     # v3 is the only supported view now. v2/Clássica foram aposentados.
     _render_v3_view(
         st=st, team_games=team_games, Filters=Filters,

@@ -92,11 +92,19 @@ jobs:
           print(f"guarda ok: {len(r)} times, p_blue={p:.3f}")
           PY
 
+      # A tela mostra a nota/ECE do torneio antes de ele apostar. Sem regenerar
+      # aqui, esse aviso congela no dia em que foi gerado a mao e vira mentira
+      # com cara de medicao. continue-on-error: a nota nao pode derrubar a
+      # esteira de dados.
+      - name: Recalcular a nota por torneio (o aviso da tela)
+        continue-on-error: true
+        run: python dota_scorecard.py
+
       - name: Commitar dados e modelo
         run: |
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv evidence
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"
           else
