@@ -23,7 +23,13 @@ csv_bootstrap_*.json
 opendota_sync_state.json
 sync_daily.log
 ops/
-evidence/
+evidence/*
+# As NOTAS sao o registro do projeto e o app le algumas delas. Ignorar a
+# pasta inteira era heranca do clone — e ja tivemos esse bug uma vez, com
+# live_models gitignored: na Streamlit Cloud o arquivo simplesmente nao
+# existia. Logs e _tmp_tests continuam de fora.
+!evidence/dota_scorecard.json
+!evidence/dota_totals_scorecard.json
 .gabinete_settings.json
 user_team_aliases.json
 user_schedule_store.json

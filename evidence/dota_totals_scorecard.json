@@ -1,0 +1,70 @@
+{
+ "season": 2026,
+ "mercados": [
+  {
+   "mercado": "kills",
+   "linha": 56.5,
+   "n": 3010,
+   "brier": 0.2043,
+   "acerto": 0.698,
+   "nota": 8.16,
+   "brier_base": 0.2182,
+   "ganho_base": 0.0139,
+   "corr": 0.315,
+   "over_real": 0.322,
+   "over_previsto": 0.342
+  },
+  {
+   "mercado": "towers",
+   "linha": 12.5,
+   "n": 2772,
+   "brier": 0.246,
+   "acerto": 0.556,
+   "nota": 5.33,
+   "brier_base": 0.2466,
+   "ganho_base": 0.0007,
+   "corr": 0.125,
+   "over_real": 0.442,
+   "over_previsto": 0.468
+  },
+  {
+   "mercado": "barons",
+   "linha": 2.5,
+   "n": 3009,
+   "brier": 0.2142,
+   "acerto": 0.679,
+   "nota": 7.49,
+   "brier_base": 0.218,
+   "ganho_base": 0.0038,
+   "corr": 0.215,
+   "over_real": 0.321,
+   "over_previsto": 0.347
+  },
+  {
+   "mercado": "inhibitors",
+   "linha": 4.5,
+   "n": 3009,
+   "brier": 0.2515,
+   "acerto": 0.505,
+   "nota": 4.96,
+   "brier_base": 0.25,
+   "ganho_base": -0.0015,
+   "corr": 0.131,
+   "over_real": 0.494,
+   "over_previsto": 0.423
+  },
+  {
+   "mercado": "time",
+   "linha": 35.0,
+   "n": 3010,
+   "brier": 0.217,
+   "acerto": 0.669,
+   "nota": 7.3,
+   "brier_base": 0.2224,
+   "ganho_base": 0.0054,
+   "corr": 0.209,
+   "over_real": 0.666,
+   "over_previsto": 0.712
+  }
+ ]
+}
