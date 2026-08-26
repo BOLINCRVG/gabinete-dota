@@ -23,7 +23,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-# Abaixo disto o motor nao esta batendo a taxa-base de forma util.
+# Cortes na MESMA barra que o projeto usa nos gates: +0.002 e o minimo para
+# um ganho contar (ACCEPT), entao abaixo disso o mercado e "nao presta"; 0.005
+# (2.5x a barra) e onde da pra confiar no numero.
 _GANHO_BOM = 0.005
 _GANHO_FRACO = 0.002
 
