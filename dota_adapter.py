@@ -90,6 +90,17 @@ def build_oe_like() -> pd.DataFrame:
     _MIN = (10, 15, 20, 25)
     _CAMPOS = ("goldat", "xpat", "csat", "killsat", "deathsat", "assistsat")
 
+    import os as _os2
+    # MEDIDO E REPROVADO em 25/08/2026 -> default DESLIGADO. Agrupar torneios em
+    # circuitos (para a forca de liga acumular evidencia, como a Riot faz com
+    # janela de 3 anos) deu -0.00107 no gate do TI: marginalmente PIOR, dentro do
+    # ruido. O codigo fica porque a medicao vale; ligar so com DOTA_CIRCUITOS=1.
+    _usar_circuito = _os2.environ.get("DOTA_CIRCUITOS", "0") != "0"
+    if _usar_circuito:
+        from dota_circuitos import circuito_de as _circ
+    else:
+        _circ = str
+
     rows = []
     for persp in ("radiant", "dire"):
         is_r = persp == "radiant"
@@ -97,9 +108,16 @@ def build_oe_like() -> pd.DataFrame:
         r = pd.DataFrame({
             "gameid": "DOTA_" + m["match_id"].astype(str),
             "date": m["dt"].dt.strftime("%Y-%m-%d %H:%M:%S"),
-            "league": m["league"].astype(str),
+            # CIRCUITO como chave de liga (25/08/2026): no Dota "liga" e um torneio
+            # de duas semanas — 183 deles, 73% com menos de 100 partidas. Cada um
+            # estimava a propria forca do zero. Agrupado, a DreamLeague usa 8
+            # edicoes em vez de 1. O nome ORIGINAL vai para `split`, que estava
+            # vazio, para as reguas seguirem medindo evento a evento.
+            # DOTA_CIRCUITOS=0 volta ao torneio como chave (usado pelo gate).
+            "league": (m["league"].astype(str).map(_circ) if _usar_circuito
+                       else m["league"].astype(str)),
             "year": m["year"].astype(int),
-            "split": "",
+            "split": m["league"].astype(str),
             "playoffs": 0,
             "patch": "",
             "game": m["game"].astype(int),
