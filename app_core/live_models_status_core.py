@@ -271,6 +271,16 @@ def build_retrain_command(
     envelhecendo pra sempre. Agora usa o orquestrador, que também atualiza o
     manifest de frescor no fim.
     """
+    # No Dota o orquestrador do LoL nao existe (o clone nao tem tools/) e o
+    # retreino falhava todo dia em silencio. A fase 6 daqui e run_phase6_live_dota,
+    # que treina E MEDE contra a previsao pre-jogo antes de salvar (16/08/2026).
+    _fase6_dota = Path(__file__).resolve().parents[1] / "run_phase6_live_dota.py"
+    if _fase6_dota.exists():
+        cmd = [sys.executable, "run_phase6_live_dota.py",
+               "--save-models-dir", str(save_models_dir)]
+        if extra_args:
+            cmd += list(extra_args)
+        return cmd
     cmd = [
         sys.executable, "tools/retrain_live_models_all.py",
         "--val-cutoff", str(val_cutoff),

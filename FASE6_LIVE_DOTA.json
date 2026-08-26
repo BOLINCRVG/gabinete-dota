@@ -1,0 +1,42 @@
+{
+ "gate": 0.005,
+ "minutos": [
+  {
+   "minuto": 10,
+   "n_treino": 3001,
+   "n_val": 1001,
+   "ll_pre_jogo": 0.6124,
+   "ll_estado": 0.5491,
+   "ganho": 0.0634,
+   "salvo": true
+  },
+  {
+   "minuto": 15,
+   "n_treino": 2953,
+   "n_val": 985,
+   "ll_pre_jogo": 0.617,
+   "ll_estado": 0.5153,
+   "ganho": 0.1018,
+   "salvo": true
+  },
+  {
+   "minuto": 20,
+   "n_treino": 2832,
+   "n_val": 944,
+   "ll_pre_jogo": 0.6229,
+   "ll_estado": 0.4415,
+   "ganho": 0.1814,
+   "salvo": true
+  },
+  {
+   "minuto": 25,
+   "n_treino": 2502,
+   "n_val": 834,
+   "ll_pre_jogo": 0.6338,
+   "ll_estado": 0.4257,
+   "ganho": 0.2081,
+   "salvo": true
+  }
+ ],
+ "salvos": 4
+}
