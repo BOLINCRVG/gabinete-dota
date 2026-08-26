@@ -21,10 +21,20 @@ from typing import Any, Optional
 _TRUTHY = {"1", "true", "yes", "on"}
 
 
+_FALSY = {"0", "false", "no", "off"}
+
+
 def is_viewer_mode() -> bool:
     v = str(os.environ.get("GABINETE_VIEWER", "") or "").strip().lower()
     if v in _TRUTHY:
         return True
+    # A variavel de ambiente vence nos DOIS sentidos (26/08/2026). Antes, so o
+    # "liga" era respeitado: com GABINETE_VIEWER="1" no secrets.toml local nao
+    # havia como DESLIGAR o modo sem editar o arquivo de secrets — e isso deixa
+    # a suite inteira do repo medindo o app errado (7 testes do run_cmd falhavam
+    # so por isso) e o dono do PC sem os botoes de manutencao, calado.
+    if v in _FALSY:
+        return False
     # Streamlit Community Cloud não expõe env vars custom; lá a flag vem
     # pelos secrets. Import tardio e à prova de falha: fora do Streamlit
     # (testes/scripts) simplesmente não há secret.
