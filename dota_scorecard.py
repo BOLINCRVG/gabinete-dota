@@ -222,6 +222,7 @@ def main() -> int:
     # app_core/nota_liga_core.py roda aqui VERBATIM, sem fork. Se um dia o
     # schema mudar la, muda aqui junto.
     (ev / "nota_por_liga.json").write_text(json.dumps({
+        "gerado_em": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
         "season": season, "nota_geral": geral.get("nota"), "min_n": int(args.min_n),
         "ligas": [{"liga": b["torneio"], "tier": "", "n": b["n"], "nota": b["nota"],
                    "logloss": b["logloss"], "acuracia": b["acuracia"], "ece": b["ece"]}

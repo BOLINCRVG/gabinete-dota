@@ -56,6 +56,18 @@ def _calib_label(ece: float) -> str:
     return "DESCONFIE"
 
 
+def _idade_em_dias(carimbo) -> float | None:
+    """Quantos dias tem a medição, ou None quando não há carimbo."""
+    if not isinstance(carimbo, str) or not carimbo.strip():
+        return None
+    try:
+        from datetime import datetime
+        quando = datetime.fromisoformat(carimbo.replace("Z", "+00:00").split("+")[0])
+        return (datetime.now() - quando).total_seconds() / 86400.0
+    except (ValueError, TypeError):
+        return None
+
+
 def render_nota_liga_badge(*, st: Any, root: Path, league: str, box: Any = None) -> None:
     """Uma linha no confronto: como o modelo se sai NESTA liga."""
     row = nota_for_league(root, league)
@@ -65,10 +77,26 @@ def render_nota_liga_badge(*, st: Any, root: Path, league: str, box: Any = None)
     ece = float(row.get("ece", 0.0) or 0.0)
     lbl = _calib_label(ece)
     icon = "🟢" if lbl == "honesta" else ("🟡" if lbl == "ok" else "🔴")
+    # A IDADE DA MEDICAO entra na mesma linha (27/08/2026). Motivo: a nota e um
+    # programa que so roda quando alguem roda — velha, ela repete o numero
+    # antigo com toda a confianca do mundo, e o sintoma aparece como "nota
+    # estranha", que nao aponta para a causa. Ele olha esta tela todo dia,
+    # entao aqui e o vigia mais barato que existe. Prazo = 2x a cadencia
+    # semanal, seguindo a pratica de SLA de frescor ("comece generoso; comecar
+    # apertado cria fadiga de alerta").
+    idade = _idade_em_dias(load_notas(root).get("gerado_em"))
+    if idade is None:
+        selo = " · ⏳ sem data de medição"
+    elif idade > 14:
+        selo = f" · ⏳ **medida há {idade:.0f} dias — provavelmente velha**"
+    elif idade < 1:
+        selo = " · medida hoje"
+    else:
+        selo = f" · medida há {idade:.0f} dia{'s' if idade >= 2 else ''}"
     tgt.caption(
         f"{icon} **{row.get('liga')}**: nota **{row.get('nota')}** · "
         f"acerto {100.0 * float(row.get('acuracia', 0) or 0):.0f}% · "
-        f"calibração {ece:.3f} ({lbl}) · {row.get('n')} jogos na season. "
+        f"calibração {ece:.3f} ({lbl}) · {row.get('n')} jogos na season{selo}. "
         "Nota = previsibilidade da liga; calibração = se o % do modelo é honesto."
     )
 
