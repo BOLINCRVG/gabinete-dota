@@ -136,8 +136,13 @@ def _solve(a: list, b: list):
     return [m[i][n] / m[i][i] for i in range(n)]
 
 
-def _fit_logistic(X: list, y: list, *, l2: float = 1e-3,
+def _fit_logistic(X: list, y: list, *, l2=1e-3,
                   max_iter: int = 200, tol: float = 1e-8) -> list:
+    """(l2 pode ser um NUMERO, penalizando tudo igual, ou uma LISTA com um
+    peso por coeficiente. A lista e o que permite calibrador HIERARQUICO:
+    penalidade ~0 nos termos globais e penalidade alta nos desvios por grupo,
+    de forma que grupo com pouco dado encolha sozinho na direcao do global —
+    em vez de eu escolher a mao um corte de 'minimo N jogos'.)"""
     """Newton/IRLS para regressao logistica com k features (sem intercepto
     implicito: quem quiser um bota uma coluna de 1s). Mesma receita do Platt
     acima, generalizada — e o alvo y pode ser fracionario, para aceitar os
@@ -145,10 +150,13 @@ def _fit_logistic(X: list, y: list, *, l2: float = 1e-3,
     if not X:
         return []
     k = len(X[0])
+    pen = list(l2) if isinstance(l2, (list, tuple)) else [float(l2)] * k
+    if len(pen) != k:
+        pen = [float(pen[0])] * k
     w = [0.0] * k
     for _ in range(max_iter):
-        grad = [l2 * w[j] for j in range(k)]
-        hess = [[l2 if i == j else 0.0 for j in range(k)] for i in range(k)]
+        grad = [pen[j] * w[j] for j in range(k)]
+        hess = [[pen[i] if i == j else 0.0 for j in range(k)] for i in range(k)]
         for xi, yi in zip(X, y):
             z = sum(w[j] * xi[j] for j in range(k))
             p = sigmoid(z)
