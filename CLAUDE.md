@@ -28,11 +28,16 @@ repositórios** (`regua_28.py`, `frescor.py`, `livro_caixa.py`,
    inclusive para consertar bug.
 4. **A fonte fica ESCRITA no arquivo**, em bloco FONTES. Pesquisa que não ficou
    escrita conta como pesquisa que não aconteceu.
-5. **Tudo testado. Só passa o que for medidamente melhor.** Teste cego separado
+5. **A regra vale para o código que JÁ EXISTE, não só para o novo.** Toda peça
+   que a frente tocar é auditada contra pesquisa: aquilo é mesmo o estado da
+   arte? já se sabe que é ruim? existe jeito melhor conhecido? A resposta, com
+   a fonte, entra no arquivo — inclusive quando a conclusão for "está certo,
+   mantém". Peça sem fonte é peça não auditada, mesmo que funcione.
+6. **Tudo testado. Só passa o que for medidamente melhor.** Teste cego separado
    do de calibração, intervalo de confiança, e a barra da casa: **ganho > 0,002
    de logloss, p < 0,05, limite inferior do intervalo acima de zero — as três
    juntas.** Nunca medir no conjunto usado para calibrar.
-6. **Nota nunca sai da cabeça**: programa reproduzível, com carimbo de quando
+7. **Nota nunca sai da cabeça**: programa reproduzível, com carimbo de quando
    foi medida. Em mercado binário, mostrar o ganho **sobre a taxa-base**.
 
 ## Fora do plano: CLV
