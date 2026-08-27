@@ -44,3 +44,13 @@ evidence/*
 # evidence/totals_scorecard (26/08/2026). Achado pelo tools/livro_caixa.py.
 !user_team_aliases.json
 user_schedule_store.json
+
+# As DECLARACOES da regua das 28 sao ENTRADA, nao saida: e o que o repo afirma
+# sobre si mesmo. Sem versionar, a esteira roda com zero declaracoes e a nota
+# despenca sozinha na nuvem sem nada ter mudado.
+!evidence/regua_28_declaracoes.json
+# E a SAIDA tambem: sem commitar, a medicao feita na esteira morre no runner
+# e por aqui a nota aparece velha sem ninguem entender por que (mesmo bug ja
+# documentado no gitignore do LoL para as notas de fase).
+!evidence/regua_28.json
+!evidence/frescor.json

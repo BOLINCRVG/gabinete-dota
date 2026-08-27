@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: dados-diarios-dota
@@ -107,6 +108,35 @@ jobs:
       - name: Livro-caixa do silencio (so reporta)
         continue-on-error: true
         run: python livro_caixa.py
+
+      # Frescor e regua das 28: ambas so REPORTAM. Regua que so roda quando
+      # alguem roda vale metade (ML Test Score, criterio de pontuacao), e a
+      # do Dota nao rodava em lugar nenhum — a nota que eu lia era de quando?
+      - name: Frescor das reguas (so reporta)
+        continue-on-error: true
+        run: python frescor.py
+
+      - name: Regua das 28 (so reporta)
+        continue-on-error: true
+        run: python regua_28.py 2>&1 | tee regua_out.txt
+
+
+      # A regua faz a nota cair sozinha quando uma declaracao vence (90 dias).
+      # Sem isto seria decadencia CALADA — o proprio defeito que ela ataca —,
+      # porque este repo nao tinha nenhum workflow que avisasse ninguem.
+      - name: Escalar declaracao vencida (abre issue)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          grep -q -e "declaracao(oes) VENCIDA" -e "declaracoes RECUSADAS" regua_out.txt || exit 0
+          quais=$(grep -A 6 -e "VENCIDA(s) ou sem data" -e "RECUSADAS" regua_out.txt | tr -s " \n" ' ' | head -c 400)
+          export CORPO="Alguma declaracao da regua das 28 passou dos 90 dias (ou nao vale neste repo). Ela conta ZERO ate alguem reverificar, entao a nota da regua caiu sozinha sem nada ter mudado no sistema - de proposito, carimbo que ninguem confere e decoracao. Itens: $quais Reverificar e atualizar evidence/regua_28_declaracoes.json."
+          python -c "import json,os,sys; open('issue.json','w').write(json.dumps({'title':'Regua das 28: declaracao vencida','body':os.environ['CORPO']}))"
+          curl -s -X POST -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues" \
+            -d @issue.json
 
       - name: Commitar dados e modelo
         run: |

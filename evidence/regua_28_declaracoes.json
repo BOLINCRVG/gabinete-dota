@@ -1,0 +1,105 @@
+{
+ "repo": "gabinete-dota",
+ "declaracoes": {
+  "dados 1": {
+   "nota": 0.0,
+   "justificativa": "nao ha ferramenta de contrato de dados: nenhum *contract*/*contrato* no repo (o LoL tem run_phase1_data_contract.py; aqui nao foi portado)",
+   "verificado_em": "2026-08-27"
+  },
+  "dados 2": {
+   "nota": 1.0,
+   "justificativa": "eval_fadiga_gate, eval_totals_dota, eval_whr_anocego, gate_calibradores_dota e outros; REJECTs registrados (players, calibracao ao vivo 15/15, totais fora de kills)",
+   "verificado_em": "2026-08-27"
+  },
+  "dados 3": {
+   "nota": 0.0,
+   "justificativa": "custo/latencia por feature nunca medido — nada no repo faz isso",
+   "verificado_em": "2026-08-27"
+  },
+  "dados 4": {
+   "nota": 0.5,
+   "justificativa": "as regras existem (premium x professional, tier) E ha testes que as forcam (mlcore/tests/test_active_teams_filter.py, test_league_context.py), mas a suite NAO roda em dados_diarios_dota.yml — so a mao",
+   "verificado_em": "2026-08-27"
+  },
+  "dados 5": {
+   "nota": 0.0,
+   "justificativa": "o pipeline persiste account_id do Steam (eval_whr_dota.py monta {team_id: roster:[account_id]}), que e identificador de CONTA de pessoa, nao pseudonimo profissional. Nao ha controle de privacidade nenhum. Pior que o LoL neste item, nao igual",
+   "verificado_em": "2026-08-27"
+  },
+  "dados 6": {
+   "nota": 0.5,
+   "justificativa": "sem registro central de features nem documento de 'como adicionar'; a feature nova e ligada por bandeira (app_core/feature_flags_ui_core.py) e medida por gate, mas o caminho e manual e nunca foi cronometrado",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 1": {
+   "nota": 1.0,
+   "justificativa": "tudo em git e os commits carregam o porque no corpo (282 linhas de corpo nos ultimos 20 commits); nenhuma mudanca de modelo sem gate",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 2": {
+   "nota": 0.0,
+   "justificativa": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 3": {
+   "nota": 0.5,
+   "justificativa": "gate_calibradores_dota.py varre 5 calibradores x 2 criterios de parada com bootstrap PAREADO, mas sem validacao cruzada em dobras e so rodando a mao",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 4": {
+   "nota": 0.0,
+   "justificativa": "impacto do envelhecimento NAO medido aqui — a medicao de 27/08 (+0.023 de logloss por calibrador velho) e do LoL e nao foi replicada no Dota",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 5": {
+   "nota": 1.0,
+   "justificativa": "comparacao contra a base presente nos gates, e o simples ganhou varias vezes e foi mantido: calibrar o ao vivo perdeu 15 de 15, e nos totais so kills bate a taxa-base",
+   "verificado_em": "2026-08-27"
+  },
+  "modelo 7": {
+   "nota": 1.0,
+   "justificativa": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado",
+   "verificado_em": "2026-08-27"
+  },
+  "infra 1": {
+   "nota": 0.5,
+   "justificativa": "ha semente fixa no treino (dota_ml.py:382, random_state=7) — melhor que o LoL, que nao tem nenhuma —, mas nao existe teste que rode duas vezes e compare o resultado",
+   "verificado_em": "2026-08-27"
+  },
+  "infra 5": {
+   "nota": 1.0,
+   "justificativa": "session_state[_ml_trace_last] guarda o caminho da previsao (app_core/first_x_gap_core.py, flow_runtime_core.py, csv_maintenance_runner_core.py) e a aba o exibe",
+   "verificado_em": "2026-08-27"
+  },
+  "infra 6": {
+   "nota": 0.0,
+   "justificativa": "nao ha canario: nenhuma mudanca de modelo entrou desligada por padrao aqui",
+   "verificado_em": "2026-08-27"
+  },
+  "monitor 1": {
+   "nota": 0.0,
+   "justificativa": "nao ha dependabot nem renovate em .github/; nada notifica",
+   "verificado_em": "2026-08-27"
+  },
+  "monitor 2": {
+   "nota": 0.5,
+   "justificativa": "dados_diarios_dota.yml tem GUARDA FALHOU para numero de times no artifact e para p_blue invalido; mas schema, volume e distribuicao nao sao vigiados",
+   "verificado_em": "2026-08-27"
+  },
+  "monitor 3": {
+   "nota": 0.0,
+   "justificativa": "divergencia treino/servico ENCONTRADA em 26/08 (scope_meta) e corrigida a mao; nenhum vigia existe para a proxima",
+   "verificado_em": "2026-08-27"
+  },
+  "monitor 5": {
+   "nota": 0.5,
+   "justificativa": "dota_ml.py protege as features delta_* com math.isfinite antes de subtrair (linhas 658-671), o que e mais que o LoL tem; mas NaN/infinito nao sao vigiados no fim do treino nem ao servir",
+   "verificado_em": "2026-08-27"
+  },
+  "monitor 6": {
+   "nota": 0.0,
+   "justificativa": "tempo de treino e de resposta nao sao medidos em lugar nenhum",
+   "verificado_em": "2026-08-27"
+  }
+ }
+}
