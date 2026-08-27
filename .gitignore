@@ -31,6 +31,16 @@ evidence/*
 !evidence/dota_scorecard.json
 !evidence/dota_totals_scorecard.json
 !evidence/nota_por_liga.json
+# O livro-caixa PRECISA ser versionado: e nele que mora o carimbo de
+# 'visto pela primeira vez'. Ignorado, a idade zera a cada rodada e o
+# ledger nunca envelhece — que e a funcao inteira dele.
+!evidence/livro_caixa.json
+!evidence/gate_calibradores_dota.json
 .gabinete_settings.json
-user_team_aliases.json
+# user_team_aliases.json NAO e estado de maquina: e dado que ELE digita
+# (os nomes da casa de apostas, tipo '1win' -> 'Iron Wing') e que o APP LE.
+# Ignorado, o que ele digita no PC nunca chega na Streamlit Cloud e o
+# recurso fica morto la, calado. Mesmo bug do live_models (07/2026) e do
+# evidence/totals_scorecard (26/08/2026). Achado pelo tools/livro_caixa.py.
+!user_team_aliases.json
 user_schedule_store.json

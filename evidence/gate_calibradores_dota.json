@@ -1,0 +1,464 @@
+{
+ "minutos": [
+  {
+   "minuto": 10,
+   "n_treino": 2001,
+   "n_calib": 1000,
+   "n_teste": 1001,
+   "arvores_total": 130,
+   "arvores_cru": 130,
+   "arvores_refinamento": 130,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.57248,
+     "ece": 0.0415,
+     "acerto": 0.6813,
+     "parametros": null
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.57201,
+     "ece": 0.0416,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.9145083911584961
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.57201,
+     "ece": 0.0379,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.921510869659573,
+      "b": 0.012313272755055301
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.57202,
+     "ece": 0.0409,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.9146283965361702,
+      "b": 0.01222321132093235
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.57207,
+     "ece": 0.0435,
+     "acerto": 0.6793,
+     "parametros": {
+      "a": 0.9735571674111196,
+      "b": 0.8564785668184927,
+      "c": 0.10718637549114743
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.57248,
+     "ece": 0.0415,
+     "acerto": 0.6813,
+     "parametros": null
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.57201,
+     "ece": 0.0416,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.9145083911584961
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.57201,
+     "ece": 0.0379,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.921510869659573,
+      "b": 0.012313272755055301
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.57202,
+     "ece": 0.0409,
+     "acerto": 0.6813,
+     "parametros": {
+      "a": 0.9146283965361702,
+      "b": 0.01222321132093235
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.57207,
+     "ece": 0.0435,
+     "acerto": 0.6793,
+     "parametros": {
+      "a": 0.9735571674111196,
+      "b": 0.8564785668184927,
+      "c": 0.10718637549114743
+     }
+    }
+   ]
+  },
+  {
+   "minuto": 15,
+   "n_treino": 1969,
+   "n_calib": 984,
+   "n_teste": 985,
+   "arvores_total": 173,
+   "arvores_cru": 170,
+   "arvores_refinamento": 110,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.52397,
+     "ece": 0.0324,
+     "acerto": 0.7381,
+     "parametros": null
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.52342,
+     "ece": 0.0345,
+     "acerto": 0.7381,
+     "parametros": {
+      "a": 0.9725216857000634
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.52356,
+     "ece": 0.0323,
+     "acerto": 0.7391,
+     "parametros": {
+      "a": 0.9809052804666774,
+      "b": -0.011448654777215322
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.52341,
+     "ece": 0.0354,
+     "acerto": 0.7391,
+     "parametros": {
+      "a": 0.9725645598303272,
+      "b": -0.011375391804026911
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.5234,
+     "ece": 0.0312,
+     "acerto": 0.7391,
+     "parametros": {
+      "a": 0.9487797214059371,
+      "b": 0.9961849153679256,
+      "c": -0.05184741620456151
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.52233,
+     "ece": 0.0427,
+     "acerto": 0.7452,
+     "parametros": null
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.52301,
+     "ece": 0.052,
+     "acerto": 0.7452,
+     "parametros": {
+      "a": 1.08055892248722
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.52316,
+     "ece": 0.0508,
+     "acerto": 0.7431,
+     "parametros": {
+      "a": 1.0894662999318736,
+      "b": -0.005242287668243259
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.52301,
+     "ece": 0.047,
+     "acerto": 0.7431,
+     "parametros": {
+      "a": 1.0805175209363416,
+      "b": -0.0053175258461678095
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.52305,
+     "ece": 0.0522,
+     "acerto": 0.7442,
+     "parametros": {
+      "a": 1.141443148175906,
+      "b": 1.0213094289458144,
+      "c": 0.0944557683926525
+     }
+    }
+   ]
+  },
+  {
+   "minuto": 20,
+   "n_treino": 1888,
+   "n_calib": 944,
+   "n_teste": 944,
+   "arvores_total": 234,
+   "arvores_cru": 230,
+   "arvores_refinamento": 140,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.45661,
+     "ece": 0.0133,
+     "acerto": 0.768,
+     "parametros": null
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.45935,
+     "ece": 0.0314,
+     "acerto": 0.768,
+     "parametros": {
+      "a": 1.1148283071772833
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.45995,
+     "ece": 0.0374,
+     "acerto": 0.768,
+     "parametros": {
+      "a": 1.1312671778593564,
+      "b": 0.0027110727388242736
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.45936,
+     "ece": 0.0319,
+     "acerto": 0.768,
+     "parametros": {
+      "a": 1.114799198782716,
+      "b": 0.0029067883756472837
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.45932,
+     "ece": 0.0321,
+     "acerto": 0.768,
+     "parametros": {
+      "a": 1.100328807877619,
+      "b": 1.1293915496175466,
+      "c": -0.021127458646936225
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.45335,
+     "ece": 0.0198,
+     "acerto": 0.7733,
+     "parametros": null
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.45615,
+     "ece": 0.0368,
+     "acerto": 0.7733,
+     "parametros": {
+      "a": 1.2453825394742342
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.45674,
+     "ece": 0.0416,
+     "acerto": 0.7744,
+     "parametros": {
+      "a": 1.2631834225052805,
+      "b": 0.0037016827941583432
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.45616,
+     "ece": 0.0366,
+     "acerto": 0.7744,
+     "parametros": {
+      "a": 1.2453969324420853,
+      "b": 0.0036119576694595254
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.45632,
+     "ece": 0.0384,
+     "acerto": 0.7744,
+     "parametros": {
+      "a": 1.3367723466233008,
+      "b": 1.156304368632043,
+      "c": 0.14932348249668315
+     }
+    }
+   ]
+  },
+  {
+   "minuto": 25,
+   "n_treino": 1668,
+   "n_calib": 834,
+   "n_teste": 834,
+   "arvores_total": 148,
+   "arvores_cru": 140,
+   "arvores_refinamento": 110,
+   "celulas": [
+    {
+     "parada": "crua",
+     "calibrador": "cru",
+     "logloss": 0.44968,
+     "ece": 0.0355,
+     "acerto": 0.7794,
+     "parametros": null
+    },
+    {
+     "parada": "crua",
+     "calibrador": "temperature",
+     "logloss": 0.44905,
+     "ece": 0.0364,
+     "acerto": 0.7794,
+     "parametros": {
+      "a": 0.9781873331273686
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_atual",
+     "logloss": 0.44943,
+     "ece": 0.0381,
+     "acerto": 0.7782,
+     "parametros": {
+      "a": 0.9922816895527374,
+      "b": -0.007367918831007672
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "platt_corrig",
+     "logloss": 0.44904,
+     "ece": 0.038,
+     "acerto": 0.7782,
+     "parametros": {
+      "a": 0.9782041684820234,
+      "b": -0.007265368152301071
+     }
+    },
+    {
+     "parada": "crua",
+     "calibrador": "beta",
+     "logloss": 0.44903,
+     "ece": 0.0359,
+     "acerto": 0.7794,
+     "parametros": {
+      "a": 0.9195970535255878,
+      "b": 1.0374220795102358,
+      "c": -0.11377536844880672
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "cru",
+     "logloss": 0.4466,
+     "ece": 0.0291,
+     "acerto": 0.7806,
+     "parametros": null
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "temperature",
+     "logloss": 0.44774,
+     "ece": 0.0316,
+     "acerto": 0.7806,
+     "parametros": {
+      "a": 1.075017346888039
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_atual",
+     "logloss": 0.4481,
+     "ece": 0.0324,
+     "acerto": 0.7806,
+     "parametros": {
+      "a": 1.0898503473487755,
+      "b": -0.009990648973299635
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "platt_corrig",
+     "logloss": 0.44773,
+     "ece": 0.0317,
+     "acerto": 0.7806,
+     "parametros": {
+      "a": 1.0750324951633543,
+      "b": -0.00990274572252532
+     }
+    },
+    {
+     "parada": "refinam.",
+     "calibrador": "beta",
+     "logloss": 0.44775,
+     "ece": 0.0339,
+     "acerto": 0.7818,
+     "parametros": {
+      "a": 1.027171177540799,
+      "b": 1.1229881596428033,
+      "c": -0.09405454427165993
+     }
+    }
+   ]
+  }
+ ]
+}
