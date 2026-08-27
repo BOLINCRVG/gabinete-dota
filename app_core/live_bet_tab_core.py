@@ -430,6 +430,34 @@ def _render_comp_summary(
 
 
 
+def _liga_compartilhada(team_games: Any, team_a: str, team_b: str) -> str:
+    """A liga DO CONFRONTO, ou "" quando os dois times não são da mesma.
+
+    Mesmo critério do resolve_shared_league_hint (Visão Geral): num jogo entre
+    ligas diferentes não existe "a liga da partida", e vazio é a resposta certa —
+    é o que faz o painel ao vivo cair no comportamento neutro em vez de assumir a
+    liga de um dos lados. Cada time entra com a liga em que MAIS jogou no recorte.
+    """
+    try:
+        if team_games is None or getattr(team_games, "empty", True):
+            return ""
+        cols = set(getattr(team_games, "columns", []))
+        if not {"teamname", "league"} <= cols:
+            return ""
+        ligas = []
+        for t in (team_a, team_b):
+            sub = team_games[team_games["teamname"].astype(str) == str(t)]
+            if sub.empty:
+                return ""
+            modo = sub["league"].astype(str).str.strip().replace("", None).dropna()
+            if modo.empty:
+                return ""
+            ligas.append(modo.value_counts().idxmax())
+        return str(ligas[0]) if ligas[0] == ligas[1] else ""
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return ""
+
+
 def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(
         st,
@@ -1172,7 +1200,12 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             p_map_pre_val = None
         # League / BO / playoffs context (best-effort, with safe defaults)
         try:
-            scope_league = str(scope_meta.get("league", "") or "") if "scope_meta" in locals() else ""  # noqa: F821  (guarded by locals())
+            # scope_meta NUNCA existiu neste modulo: a guarda locals() era
+            # sempre falsa, entao a liga chegava VAZIA ao modelo ao vivo — que
+            # no treino recebe a liga de verdade. Divergencia treino/servico,
+            # corrigida no repo do LoL em 26/08/2026 e portada para ca quando o
+            # varredor de erros do LoL apontou que aqui ficara para tras.
+            scope_league = _liga_compartilhada(team_games, str(team_a), str(team_b))
         except Exception:
             scope_league = ""
         try:
