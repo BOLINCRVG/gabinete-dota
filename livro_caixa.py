@@ -56,7 +56,33 @@ try:
 except (AttributeError, OSError, ValueError):
     pass
 
-ROOT = Path(__file__).resolve().parents[1]
+def _raiz_do_repo(inicio: Path) -> Path:
+    """A raiz do repositorio, sem depender de ONDE este arquivo mora.
+
+    Motivo: no LoL este script vive em tools/ e no Dota na raiz. Com
+    parents[1] fixo, a copia do Dota varria a Area de Trabalho e reportava
+    "total tolerado: 0" — alegremente. So nao passou batido porque a mensagem
+    de zero diz "ou a varredura esta cega, confira antes de comemorar".
+
+    `git rev-parse --show-toplevel` e o jeito canonico e este script ja exige
+    git (usa check-ignore e ls-files). Travessia atras de .git fica de reserva
+    para o caso do git nao estar no PATH."""
+    try:
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=str(inicio.parent), capture_output=True,
+                           text=True, encoding="utf-8", timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip()).resolve()
+    except (OSError, subprocess.SubprocessError):
+        pass
+    atual = inicio.resolve().parent
+    for cand in [atual, *atual.parents]:
+        if (cand / ".git").exists():
+            return cand
+    return atual
+
+
+ROOT = _raiz_do_repo(Path(__file__))
 
 # Extensões de dado que o app costuma LER em tempo de execução. Código (.py)
 # fica de fora: módulo não versionado quebra o import na cara, não em silêncio.

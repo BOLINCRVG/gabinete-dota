@@ -100,6 +100,14 @@ jobs:
         continue-on-error: true
         run: python dota_scorecard.py
 
+      # LIVRO-CAIXA DO SILENCIO: lista o que esta sendo tolerado, com IDADE.
+      # NAO bloqueia (severidade em camadas: derrubar a esteira de DADO por
+      # questao de contabilidade seria absurdo). Aqui ele so reporta e grava;
+      # a escalada por idade e do vigia semanal, que abre issue.
+      - name: Livro-caixa do silencio (so reporta)
+        continue-on-error: true
+        run: python livro_caixa.py
+
       - name: Commitar dados e modelo
         run: |
           git config user.name "Robo Gabinete Dota"
