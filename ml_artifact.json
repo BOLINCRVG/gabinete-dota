@@ -165,7 +165,7 @@
       "The Covenant": -397.0999240103104,
       "MOUZ": 272.35052028366647,
       "No Packet Loss": -33.56955287632022,
-      "Nemiga Gaming": 61.55682605706218,
+      "Nemiga Gaming": 42.92210245104621,
       "Eye Gaming #9481733": -4.859792750463813,
       "No nos ganen porfavor": -173.35666776970393,
       "TEAM RPP": -432.4447990658099,
@@ -2350,7 +2350,7 @@
       "Lindorfitos": -182.2794291665966,
       "Rising Rage": -291.5874442382503,
       "Team Bald": 37.265189747649295,
-      "RE ARISE": 151.1418014963907,
+      "RE ARISE": 135.35201916240447,
       "The Bug #10170364": -235.3139634459104,
       "4 Anchors + Ilmeria": -41.81960776925118,
       "Kosovo Team": -172.35187963282922,
@@ -2455,11 +2455,11 @@
       "Team Synapse": 54.61068010741199,
       "HULIGANI #10225339": -13.9972,
       "WW завозик 67": 13.9972,
-      "Klim Sani4": 107.16363599667122,
+      "Klim Sani4": 122.90175724315884,
       "PODNEBESNYA PRIME": 16.875853369494926,
       "Summer Bear #10225911": -5.040136118881336,
       "DYNASTY": 62.41354975286917,
-      "FTS": -57.72486339186321,
+      "FTS": -39.09090617838027,
       "Team Syntax #10232570": -12.591127643356439
     },
     "games_played": {
@@ -2589,7 +2589,7 @@
       "The Covenant": 19,
       "MOUZ": 474,
       "No Packet Loss": 3,
-      "Nemiga Gaming": 290,
+      "Nemiga Gaming": 291,
       "Eye Gaming #9481733": 13,
       "No nos ganen porfavor": 1,
       "TEAM RPP": 1,
@@ -4774,7 +4774,7 @@
       "Lindorfitos": 7,
       "Rising Rage": 2,
       "Team Bald": 6,
-      "RE ARISE": 25,
+      "RE ARISE": 26,
       "The Bug #10170364": 6,
       "4 Anchors + Ilmeria": 9,
       "Kosovo Team": 4,
@@ -4879,11 +4879,11 @@
       "Team Synapse": 11,
       "HULIGANI #10225339": 1,
       "WW завозик 67": 1,
-      "Klim Sani4": 7,
+      "Klim Sani4": 8,
       "PODNEBESNYA PRIME": 2,
       "Summer Bear #10225911": 9,
       "DYNASTY": 9,
-      "FTS": 9,
+      "FTS": 10,
       "Team Syntax #10232570": 1
     },
     "team_volatility": {
@@ -4919,12 +4919,12 @@
       "OG": 0.4547833696711316,
       "enjoy": 0.28968065934783394,
       "GamerLegion": 0.40241286585024283,
-      "RE ARISE": 0.44681370963688183,
+      "RE ARISE": 0.45610491719447405,
       "No Hoodwink": 0.4178091697136066,
       "Ilbirs Esports": 0.3560785062654553,
       "Team Syntax": 0.2984924058503351,
       "TEAM JENZ": 0.3896981955026267,
-      "Nemiga Gaming": 0.45663008075408473,
+      "Nemiga Gaming": 0.47331720991746723,
       "Team Synapse": 0.3645195057768118,
       "Rune Eaters": 0.4154916118730721,
       "Natus Vincere": 0.2709736611519756,
@@ -4940,7 +4940,7 @@
       "WW завозик 67": 0.316,
       "Inner Circle x Insanity": 0.3673904094188234,
       "Team Lynx": 0.42898066368950305,
-      "Klim Sani4": 0.4071640235321924,
+      "Klim Sani4": 0.4196272059781597,
       "Haters Verusya": 0.29250003493897303,
       "PODNEBESNYA PRIME": 0.33382313626252036,
       "Summer Bear #10225911": 0.39462139386087886,
@@ -4949,7 +4949,7 @@
       "Dead死Inside❤": 0.3120728784885208,
       "повер ренджерс": 0.3407231041186652,
       "DYNASTY": 0.43267592749541,
-      "FTS": 0.34982503893524025,
+      "FTS": 0.3750565714441303,
       "Team Syntax #10232570": 0.31198184677894564,
       "Team Spirit Academy": 0.38036292861142107
     },
@@ -14661,14 +14661,14 @@
     "b": 0.07908946371508502
   },
   "meta": {
-    "trained_at": "2026-08-28T21:45:15+00:00",
+    "trained_at": "2026-08-29T04:19:36+00:00",
     "data_min_date": "2026-01-03",
     "data_max_date": "2026-08-28",
     "cutoff_date": "2026-07-29",
     "ratings_max_date": "2026-08-28",
-    "n_games_total": 4356,
+    "n_games_total": 4358,
     "n_games_train": 22663,
-    "n_games_holdout": 402,
+    "n_games_holdout": 404,
     "n_teams": 2372,
     "csv": [
       "CSV_HISTORICO/2025_Dota_match_data_oe_like.csv",
@@ -24183,18 +24183,18 @@
       }
     },
     "metrics": {
-      "holdout_n": 402,
-      "logloss_raw": 0.6989386246694731,
-      "logloss_cal": 0.6831681839620081,
-      "brier_raw": 0.2513489941291813,
-      "brier_cal": 0.24509091238378541,
+      "holdout_n": 404,
+      "logloss_raw": 0.7018561803141122,
+      "logloss_cal": 0.6850500731129632,
+      "brier_raw": 0.25268419032423817,
+      "brier_cal": 0.24599813686808938,
       "calibrated": true,
       "calibration_reason": "whr_prequential_n=8643",
       "min_cal_gain": 0.0,
       "cal_a": 0.6666095097142787,
       "cal_b": 0.07908946371508502,
-      "ece_raw": 0.08172686520504001,
-      "ece_cal": 0.04509719920829661,
+      "ece_raw": 0.08488828025013416,
+      "ece_cal": 0.048112837831893976,
       "reliability_bins_raw": [
         {
           "lo": 0.0,
@@ -24215,10 +24215,10 @@
         {
           "lo": 0.2,
           "hi": 0.3,
-          "n": 37,
-          "p_mean": 0.26702353894896014,
-          "y_mean": 0.35135135135135137,
-          "gap": 0.08432781240239123
+          "n": 38,
+          "p_mean": 0.26612773609213436,
+          "y_mean": 0.3684210526315789,
+          "gap": 0.10229331653944457
         },
         {
           "lo": 0.3,
@@ -24247,10 +24247,10 @@
         {
           "lo": 0.6,
           "hi": 0.7,
-          "n": 57,
-          "p_mean": 0.6504516099354692,
-          "y_mean": 0.43859649122807015,
-          "gap": 0.2118551187073991
+          "n": 58,
+          "p_mean": 0.6508515552644731,
+          "y_mean": 0.43103448275862066,
+          "gap": 0.21981707250585247
         },
         {
           "lo": 0.7,
@@ -24297,10 +24297,10 @@
         {
           "lo": 0.3,
           "hi": 0.4,
-          "n": 44,
-          "p_mean": 0.3602280640494669,
-          "y_mean": 0.4090909090909091,
-          "gap": 0.04886284504144223
+          "n": 45,
+          "p_mean": 0.3595218810194696,
+          "y_mean": 0.4222222222222222,
+          "gap": 0.06270034120275264
         },
         {
           "lo": 0.4,
@@ -24321,10 +24321,10 @@
         {
           "lo": 0.6,
           "hi": 0.7,
-          "n": 77,
-          "p_mean": 0.6430086115346346,
-          "y_mean": 0.5584415584415584,
-          "gap": 0.08456705309307622
+          "n": 78,
+          "p_mean": 0.6429310938232871,
+          "y_mean": 0.5512820512820513,
+          "gap": 0.09164904254123574
         },
         {
           "lo": 0.7,
@@ -24365,17 +24365,15 @@
       "l2": 0.0,
       "avg_coverage": 0.0,
       "cal_after_lineup": null,
-      "holdout_n_used": 402,
+      "holdout_n_used": 404,
       "n_train_games": 22663,
-      "n_holdout_games": 402,
+      "n_holdout_games": 404,
       "prior": {}
     },
     "tail": {
       "n": 500,
-      "fingerprint": "7256ca3084b310c758b6bdd3ecbee916a77760153e927785f2d68538929e5d6c",
+      "fingerprint": "6c2fa48544f82c98e5c24b9613d2b3e4d8413dc7e9842c58e0988dd0a3f073d9",
       "gameids": [
-        "DOTA_8905164476",
-        "DOTA_8905233934",
         "DOTA_8905359313",
         "DOTA_8905490238",
         "DOTA_8905612460",
@@ -24873,12 +24871,14 @@
         "DOTA_8970880309",
         "DOTA_8970886632",
         "DOTA_8971007454",
-        "DOTA_8971016820"
+        "DOTA_8971016820",
+        "DOTA_8971111987",
+        "DOTA_8971115054"
       ]
     },
     "incremental": {
-      "last_run_at": "2026-08-28T21:45:15+00:00",
-      "added_games": 402,
+      "last_run_at": "2026-08-29T04:19:36+00:00",
+      "added_games": 404,
       "csv_used": [
         "CSV_DIARIO/2026_Dota_match_data_oe_like.csv"
       ],
@@ -24889,9 +24889,9 @@
     "players_layer_update": {
       "enabled": true,
       "players_artifact": "players_artifact.json",
-      "new_games": 402,
+      "new_games": 404,
       "games_used": 0,
-      "updated_at": "2026-08-28T21:45:15Z"
+      "updated_at": "2026-08-29T04:19:36Z"
     }
   }
 }

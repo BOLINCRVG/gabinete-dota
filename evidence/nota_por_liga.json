@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-08-28T21:45:40",
+ "gerado_em": "2026-08-29T04:19:57",
  "season": 2026,
- "nota_geral": 9.42,
+ "nota_geral": 9.41,
  "min_n": 60,
  "ligas": [
   {
@@ -80,8 +80,8 @@
    "liga": "Premier Series",
    "tier": "",
    "n": 165,
-   "nota": 7.14,
-   "logloss": 0.6249,
+   "nota": 7.12,
+   "logloss": 0.6256,
    "acuracia": 0.679,
    "ece": 0.094
   },
@@ -107,19 +107,19 @@
    "liga": "FISSURE Universe Episode 8",
    "tier": "",
    "n": 96,
-   "nota": 8.31,
-   "logloss": 0.5877,
+   "nota": 8.32,
+   "logloss": 0.5875,
    "acuracia": 0.625,
-   "ece": 0.116
+   "ece": 0.115
   },
   {
    "liga": "EPL Masters 2026",
    "tier": "",
-   "n": 219,
-   "nota": 8.43,
-   "logloss": 0.584,
-   "acuracia": 0.676,
-   "ece": 0.096
+   "n": 221,
+   "nota": 8.38,
+   "logloss": 0.5856,
+   "acuracia": 0.688,
+   "ece": 0.091
   },
   {
    "liga": "EPL Championship 2025-2026",
@@ -134,8 +134,8 @@
    "liga": "DreamLeague Season 29 Qualifiers",
    "tier": "",
    "n": 253,
-   "nota": 9.02,
-   "logloss": 0.5654,
+   "nota": 8.97,
+   "logloss": 0.5668,
    "acuracia": 0.735,
    "ece": 0.05
   },
@@ -143,8 +143,8 @@
    "liga": "DreamLeague Division 2 Season 4",
    "tier": "",
    "n": 170,
-   "nota": 9.52,
-   "logloss": 0.5495,
+   "nota": 9.4,
+   "logloss": 0.5532,
    "acuracia": 0.718,
    "ece": 0.086
   },
@@ -152,10 +152,10 @@
    "liga": "The International 2026 - Regional Qualifier Europe",
    "tier": "",
    "n": 63,
-   "nota": 9.97,
-   "logloss": 0.5351,
+   "nota": 9.96,
+   "logloss": 0.5353,
    "acuracia": 0.698,
-   "ece": 0.072
+   "ece": 0.071
   },
   {
    "liga": "DreamLeague Division 2 Season 3",
@@ -171,7 +171,7 @@
    "tier": "",
    "n": 238,
    "nota": 10.0,
-   "logloss": 0.4659,
+   "logloss": 0.4661,
    "acuracia": 0.769,
    "ece": 0.08
   },
@@ -180,7 +180,7 @@
    "tier": "",
    "n": 235,
    "nota": 10.0,
-   "logloss": 0.4887,
+   "logloss": 0.4889,
    "acuracia": 0.728,
    "ece": 0.05
   },
@@ -207,7 +207,7 @@
    "tier": "",
    "n": 206,
    "nota": 10.0,
-   "logloss": 0.4621,
+   "logloss": 0.4619,
    "acuracia": 0.777,
    "ece": 0.097
   },

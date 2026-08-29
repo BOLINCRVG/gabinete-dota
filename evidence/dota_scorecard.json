@@ -1,24 +1,24 @@
 {
  "season": 2026,
  "geral": {
-  "n": 4356,
-  "nota": 9.42,
-  "logloss": 0.5524,
-  "acuracia": 0.711,
+  "n": 4358,
+  "nota": 9.41,
+  "logloss": 0.5528,
+  "acuracia": 0.712,
   "ece": 0.021
  },
  "conhecidos": {
   "n": 2280,
-  "nota": 6.9,
-  "logloss": 0.6328,
+  "nota": 6.88,
+  "logloss": 0.6333,
   "acuracia": 0.639,
   "ece": 0.046
  },
  "pouco_conhecidos": {
-  "n": 2076,
+  "n": 2078,
   "nota": 10.0,
-  "logloss": 0.4641,
-  "acuracia": 0.79,
+  "logloss": 0.4644,
+  "acuracia": 0.792,
   "ece": 0.058
  },
  "torneios": [
@@ -88,8 +88,8 @@
   },
   {
    "n": 165,
-   "nota": 7.14,
-   "logloss": 0.6249,
+   "nota": 7.12,
+   "logloss": 0.6256,
    "acuracia": 0.679,
    "ece": 0.094,
    "torneio": "Premier Series"
@@ -112,18 +112,18 @@
   },
   {
    "n": 96,
-   "nota": 8.31,
-   "logloss": 0.5877,
+   "nota": 8.32,
+   "logloss": 0.5875,
    "acuracia": 0.625,
-   "ece": 0.116,
+   "ece": 0.115,
    "torneio": "FISSURE Universe Episode 8"
   },
   {
-   "n": 219,
-   "nota": 8.43,
-   "logloss": 0.584,
-   "acuracia": 0.676,
-   "ece": 0.096,
+   "n": 221,
+   "nota": 8.38,
+   "logloss": 0.5856,
+   "acuracia": 0.688,
+   "ece": 0.091,
    "torneio": "EPL Masters 2026"
   },
   {
@@ -136,26 +136,26 @@
   },
   {
    "n": 253,
-   "nota": 9.02,
-   "logloss": 0.5654,
+   "nota": 8.97,
+   "logloss": 0.5668,
    "acuracia": 0.735,
    "ece": 0.05,
    "torneio": "DreamLeague Season 29 Qualifiers"
   },
   {
    "n": 170,
-   "nota": 9.52,
-   "logloss": 0.5495,
+   "nota": 9.4,
+   "logloss": 0.5532,
    "acuracia": 0.718,
    "ece": 0.086,
    "torneio": "DreamLeague Division 2 Season 4"
   },
   {
    "n": 63,
-   "nota": 9.97,
-   "logloss": 0.5351,
+   "nota": 9.96,
+   "logloss": 0.5353,
    "acuracia": 0.698,
-   "ece": 0.072,
+   "ece": 0.071,
    "torneio": "The International 2026 - Regional Qualifier Europe"
   },
   {
@@ -169,7 +169,7 @@
   {
    "n": 238,
    "nota": 10.0,
-   "logloss": 0.4659,
+   "logloss": 0.4661,
    "acuracia": 0.769,
    "ece": 0.08,
    "torneio": "DreamLeague Season 28 Qualifiers"
@@ -177,7 +177,7 @@
   {
    "n": 235,
    "nota": 10.0,
-   "logloss": 0.4887,
+   "logloss": 0.4889,
    "acuracia": 0.728,
    "ece": 0.05,
    "torneio": "ESL One Birmingham 2026 Qualifiers"
@@ -201,7 +201,7 @@
   {
    "n": 206,
    "nota": 10.0,
-   "logloss": 0.4621,
+   "logloss": 0.4619,
    "acuracia": 0.777,
    "ece": 0.097,
    "torneio": "Road To EWC 2026 Regional Qualifiers"
