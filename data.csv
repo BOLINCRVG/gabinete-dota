@@ -1,4 +1,18 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+8976300473,2026-08-31T16:08:21.000Z,2026,EPL Masters 2026,10233067,4ikibamboni,10019843,Inner Circle x Insanity,radiant,2876,1,42,33,8,5,2,0,4,2,19944.0,1788192501.0,True,27.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+8976300473,2026-08-31T16:08:21.000Z,2026,EPL Masters 2026,10019843,Inner Circle x Insanity,10233067,4ikibamboni,dire,2876,0,33,42,5,8,0,2,2,4,19944.0,1788192501.0,True,27.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+8976166971,2026-08-31T14:53:16.000Z,2026,EPL Masters 2026,9928636,Team Lynx,10212329,Team Synapse,dire,2917,0,29,60,3,11,0,2,0,6,19944.0,1788187996.0,True,35.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8976166971,2026-08-31T14:53:16.000Z,2026,EPL Masters 2026,10212329,Team Synapse,9928636,Team Lynx,radiant,2917,1,60,29,11,3,2,0,6,0,19944.0,1788187996.0,True,35.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8976012755,2026-08-31T13:25:40.000Z,2026,EPL Masters 2026,9928636,Team Lynx,10212329,Team Synapse,radiant,2859,0,41,41,3,11,0,3,0,6,19944.0,1788182740.0,True,36.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+8976012755,2026-08-31T13:25:40.000Z,2026,EPL Masters 2026,10212329,Team Synapse,9928636,Team Lynx,dire,2859,1,41,41,11,3,3,0,6,0,19944.0,1788182740.0,True,36.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+8975871235,2026-08-31T12:10:28.000Z,2026,EPL Masters 2026,9928636,Team Lynx,10212329,Team Synapse,dire,2718,1,47,21,8,3,2,1,4,0,19944.0,1788178228.0,True,30.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8975871235,2026-08-31T12:10:28.000Z,2026,EPL Masters 2026,10212329,Team Synapse,9928636,Team Lynx,radiant,2718,0,21,47,3,8,1,2,0,4,19944.0,1788178228.0,True,30.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8975732660,2026-08-31T10:19:42.000Z,2026,EPL Masters 2026,10164236,PuckChamp,9600141,Zero Tenacity,dire,1691,0,14,20,3,7,0,1,0,2,19944.0,1788171582.0,True,23.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+8975732660,2026-08-31T10:19:42.000Z,2026,EPL Masters 2026,9600141,Zero Tenacity,10164236,PuckChamp,radiant,1691,1,20,14,7,3,1,0,2,0,19944.0,1788171582.0,True,23.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+8975647643,2026-08-31T09:08:11.000Z,2026,EPL Masters 2026,10164236,PuckChamp,10208035,Zero Tenacity,dire,2818,0,19,34,4,9,0,2,0,5,19944.0,1788167291.0,True,27.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8975647643,2026-08-31T09:08:11.000Z,2026,EPL Masters 2026,10208035,Zero Tenacity,10164236,PuckChamp,radiant,2818,1,34,19,9,4,2,0,5,0,19944.0,1788167291.0,True,27.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8975247180,2026-08-31T00:32:44.000Z,2026,ExitLag ChampZ: Dota 2,10150568,Lindorfitos,8647538,SALCHIPAPA,dire,2970,1,50,47,11,3,2,0,6,0,20134.0,1788136364.0,True,32.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+8975247180,2026-08-31T00:32:44.000Z,2026,ExitLag ChampZ: Dota 2,8647538,SALCHIPAPA,10150568,Lindorfitos,radiant,2970,0,47,50,3,11,0,2,0,6,20134.0,1788136364.0,True,32.0,ok,,opendota_api,1.0,1.0,0.0,1.0
 8975200206,2026-08-30T23:23:54.000Z,2026,ExitLag ChampZ: Dota 2,10150568,Lindorfitos,8647538,SALCHIPAPA,radiant,2653,1,52,25,9,3,2,0,3,0,20134.0,1788132234.0,True,26.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8975200206,2026-08-30T23:23:54.000Z,2026,ExitLag ChampZ: Dota 2,8647538,SALCHIPAPA,10150568,Lindorfitos,dire,2653,0,25,52,3,9,0,2,0,3,20134.0,1788132234.0,True,26.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 8975140994,2026-08-30T22:11:29.000Z,2026,ExitLag ChampZ: Dota 2,9740536,Capibarbas,8647538,SALCHIPAPA,radiant,2050,0,20,41,2,7,0,1,0,4,20134.0,1788127889.0,True,18.0,ok,,opendota_api,0.0,1.0,0.0,1.0
