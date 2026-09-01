@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-09-01T01:52:34",
+ "gerado_em": "2026-09-01T15:40:03",
  "season": 2026,
  "nota_geral": 9.4,
  "min_n": 60,
@@ -8,73 +8,64 @@
    "liga": "PGL Wallachia 2026 Season 8",
    "tier": "",
    "n": 119,
-   "nota": 3.99,
-   "logloss": 0.7253,
-   "acuracia": 0.555,
-   "ece": 0.144
+   "nota": 3.94,
+   "logloss": 0.7268,
+   "acuracia": 0.571,
+   "ece": 0.145
   },
   {
    "liga": "DreamLeague Season 28",
    "tier": "",
    "n": 195,
-   "nota": 4.69,
-   "logloss": 0.7029,
-   "acuracia": 0.549,
-   "ece": 0.12
+   "nota": 4.76,
+   "logloss": 0.7007,
+   "acuracia": 0.559,
+   "ece": 0.114
   },
   {
    "liga": "1win Essence II",
    "tier": "",
    "n": 60,
-   "nota": 5.6,
-   "logloss": 0.6739,
-   "acuracia": 0.683,
-   "ece": 0.108
+   "nota": 5.57,
+   "logloss": 0.675,
+   "acuracia": 0.617,
+   "ece": 0.136
   },
   {
    "liga": "BLAST SLAM VI",
    "tier": "",
    "n": 100,
-   "nota": 5.87,
-   "logloss": 0.6655,
+   "nota": 5.93,
+   "logloss": 0.6634,
    "acuracia": 0.64,
-   "ece": 0.142
+   "ece": 0.141
   },
   {
    "liga": "ESL One Birmingham 2026",
    "tier": "",
    "n": 142,
-   "nota": 6.3,
-   "logloss": 0.6518,
-   "acuracia": 0.627,
-   "ece": 0.118
+   "nota": 6.31,
+   "logloss": 0.6515,
+   "acuracia": 0.641,
+   "ece": 0.128
   },
   {
    "liga": "PGL Wallachia 2026 Season 7",
    "tier": "",
    "n": 124,
-   "nota": 6.65,
-   "logloss": 0.6406,
-   "acuracia": 0.653,
-   "ece": 0.086
-  },
-  {
-   "liga": "The Games of the Future 2026",
-   "tier": "",
-   "n": 72,
-   "nota": 6.92,
-   "logloss": 0.6321,
-   "acuracia": 0.694,
-   "ece": 0.119
+   "nota": 6.61,
+   "logloss": 0.6418,
+   "acuracia": 0.645,
+   "ece": 0.085
   },
   {
    "liga": "BLAST SLAM VII",
    "tier": "",
    "n": 102,
-   "nota": 6.98,
-   "logloss": 0.6301,
+   "nota": 6.97,
+   "logloss": 0.6304,
    "acuracia": 0.618,
-   "ece": 0.058
+   "ece": 0.083
   },
   {
    "liga": "Premier Series",
@@ -86,74 +77,83 @@
    "ece": 0.106
   },
   {
+   "liga": "The Games of the Future 2026",
+   "tier": "",
+   "n": 72,
+   "nota": 7.2,
+   "logloss": 0.6232,
+   "acuracia": 0.667,
+   "ece": 0.173
+  },
+  {
    "liga": "DreamLeague Season 29",
    "tier": "",
    "n": 185,
-   "nota": 7.35,
-   "logloss": 0.6183,
+   "nota": 7.32,
+   "logloss": 0.6193,
    "acuracia": 0.659,
-   "ece": 0.07
+   "ece": 0.072
   },
   {
    "liga": "The International 2026",
    "tier": "",
    "n": 147,
-   "nota": 7.65,
-   "logloss": 0.6087,
+   "nota": 7.64,
+   "logloss": 0.6093,
    "acuracia": 0.653,
-   "ece": 0.077
+   "ece": 0.118
   },
   {
    "liga": "FISSURE Universe Episode 8",
    "tier": "",
    "n": 96,
-   "nota": 8.24,
-   "logloss": 0.5901,
-   "acuracia": 0.625,
-   "ece": 0.097
-  },
-  {
-   "liga": "EPL Masters 2026",
-   "tier": "",
-   "n": 254,
-   "nota": 8.44,
-   "logloss": 0.5836,
-   "acuracia": 0.701,
-   "ece": 0.116
+   "nota": 8.27,
+   "logloss": 0.5891,
+   "acuracia": 0.635,
+   "ece": 0.098
   },
   {
    "liga": "EPL Championship 2025-2026",
    "tier": "",
    "n": 135,
-   "nota": 8.67,
-   "logloss": 0.5764,
-   "acuracia": 0.674,
-   "ece": 0.06
+   "nota": 8.57,
+   "logloss": 0.5797,
+   "acuracia": 0.667,
+   "ece": 0.068
+  },
+  {
+   "liga": "EPL Masters 2026",
+   "tier": "",
+   "n": 258,
+   "nota": 8.63,
+   "logloss": 0.5775,
+   "acuracia": 0.702,
+   "ece": 0.116
   },
   {
    "liga": "DreamLeague Season 29 Qualifiers",
    "tier": "",
    "n": 253,
-   "nota": 8.92,
-   "logloss": 0.5685,
+   "nota": 8.85,
+   "logloss": 0.5708,
    "acuracia": 0.727,
-   "ece": 0.055
+   "ece": 0.053
   },
   {
    "liga": "DreamLeague Division 2 Season 4",
    "tier": "",
    "n": 170,
-   "nota": 9.19,
-   "logloss": 0.5599,
+   "nota": 9.18,
+   "logloss": 0.5603,
    "acuracia": 0.724,
-   "ece": 0.086
+   "ece": 0.094
   },
   {
    "liga": "The International 2026 - Regional Qualifier Europe",
    "tier": "",
    "n": 63,
-   "nota": 9.98,
-   "logloss": 0.5347,
+   "nota": 9.93,
+   "logloss": 0.5362,
    "acuracia": 0.698,
    "ece": 0.071
   },
@@ -163,7 +163,7 @@
    "n": 89,
    "nota": 10.0,
    "logloss": 0.5191,
-   "acuracia": 0.753,
+   "acuracia": 0.73,
    "ece": 0.102
   },
   {
@@ -171,7 +171,7 @@
    "tier": "",
    "n": 238,
    "nota": 10.0,
-   "logloss": 0.4671,
+   "logloss": 0.468,
    "acuracia": 0.777,
    "ece": 0.087
   },
@@ -180,18 +180,18 @@
    "tier": "",
    "n": 235,
    "nota": 10.0,
-   "logloss": 0.4914,
+   "logloss": 0.489,
    "acuracia": 0.736,
-   "ece": 0.052
+   "ece": 0.049
   },
   {
    "liga": "Esports World Cup 2026",
    "tier": "",
    "n": 157,
    "nota": 10.0,
-   "logloss": 0.4982,
+   "logloss": 0.5018,
    "acuracia": 0.777,
-   "ece": 0.059
+   "ece": 0.061
   },
   {
    "liga": "Party To Play league",
@@ -207,8 +207,8 @@
    "tier": "",
    "n": 206,
    "nota": 10.0,
-   "logloss": 0.4624,
-   "acuracia": 0.777,
+   "logloss": 0.4626,
+   "acuracia": 0.782,
    "ece": 0.086
   },
   {

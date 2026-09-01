@@ -1,4 +1,12 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+8977623650,2026-09-01T13:38:34.000Z,2026,EPL Masters 2026,10019843,Inner Circle x Insanity,9928636,Team Lynx,radiant,3870,1,54,39,0,0,0,0,0,0,19944.0,1788269914.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
+8977623650,2026-09-01T13:38:34.000Z,2026,EPL Masters 2026,9928636,Team Lynx,10019843,Inner Circle x Insanity,dire,3870,0,39,54,0,0,0,0,0,0,19944.0,1788269914.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
+8977476867,2026-09-01T12:10:38.000Z,2026,EPL Masters 2026,10019843,Inner Circle x Insanity,9928636,Team Lynx,radiant,3227,1,30,29,11,4,2,0,6,0,19944.0,1788264638.0,True,35.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+8977476867,2026-09-01T12:10:38.000Z,2026,EPL Masters 2026,9928636,Team Lynx,10019843,Inner Circle x Insanity,dire,3227,0,29,30,4,11,0,2,0,6,19944.0,1788264638.0,True,35.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8977325814,2026-09-01T10:12:39.000Z,2026,EPL Masters 2026,10232231,Klim Sani4,10164236,PuckChamp,radiant,2538,1,44,28,9,3,3,0,4,0,19944.0,1788257559.0,True,28.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+8977325814,2026-09-01T10:12:39.000Z,2026,EPL Masters 2026,10164236,PuckChamp,10232231,Klim Sani4,dire,2538,0,28,44,3,9,0,3,0,4,19944.0,1788257559.0,True,28.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+8977252978,2026-09-01T09:04:33.000Z,2026,EPL Masters 2026,10232231,Klim Sani4,10164236,PuckChamp,dire,2338,1,48,13,9,1,2,0,6,0,19944.0,1788253473.0,True,27.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+8977252978,2026-09-01T09:04:33.000Z,2026,EPL Masters 2026,10164236,PuckChamp,10232231,Klim Sani4,radiant,2338,0,13,48,1,9,0,2,0,6,19944.0,1788253473.0,True,27.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 8976806033,2026-08-31T22:41:16.000Z,2026,EPL Masters 2026,10150633,Pipsqueak + 4,9948367,Team Spirit Academy,dire,2176,1,31,18,8,1,2,0,2,0,19944.0,1788216076.0,True,22.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8976806033,2026-08-31T22:41:16.000Z,2026,EPL Masters 2026,9948367,Team Spirit Academy,10150633,Pipsqueak + 4,radiant,2176,0,18,31,1,8,0,2,0,2,19944.0,1788216076.0,True,22.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 8976751962,2026-08-31T21:28:01.000Z,2026,EPL Masters 2026,10150633,Pipsqueak + 4,9948367,Team Spirit Academy,dire,2534,1,47,17,11,1,2,0,6,0,19944.0,1788211681.0,True,30.0,ok,,opendota_api,1.0,1.0,1.0,1.0
