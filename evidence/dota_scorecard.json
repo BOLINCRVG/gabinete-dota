@@ -1,159 +1,159 @@
 {
  "season": 2026,
  "geral": {
-  "n": 4395,
+  "n": 4401,
   "nota": 9.4,
-  "logloss": 0.5531,
+  "logloss": 0.5533,
   "acuracia": 0.711,
-  "ece": 0.024
+  "ece": 0.023
  },
  "conhecidos": {
-  "n": 2285,
-  "nota": 6.85,
-  "logloss": 0.6343,
-  "acuracia": 0.64,
-  "ece": 0.045
+  "n": 2287,
+  "nota": 6.84,
+  "logloss": 0.6345,
+  "acuracia": 0.639,
+  "ece": 0.044
  },
  "pouco_conhecidos": {
-  "n": 2110,
+  "n": 2114,
   "nota": 10.0,
-  "logloss": 0.4651,
-  "acuracia": 0.788,
+  "logloss": 0.4654,
+  "acuracia": 0.789,
   "ece": 0.056
  },
  "torneios": [
   {
    "n": 119,
-   "nota": 3.94,
-   "logloss": 0.7268,
+   "nota": 3.98,
+   "logloss": 0.7254,
    "acuracia": 0.571,
    "ece": 0.145,
    "torneio": "PGL Wallachia 2026 Season 8"
   },
   {
    "n": 195,
-   "nota": 4.76,
-   "logloss": 0.7007,
+   "nota": 4.73,
+   "logloss": 0.7018,
    "acuracia": 0.559,
-   "ece": 0.114,
+   "ece": 0.119,
    "torneio": "DreamLeague Season 28"
   },
   {
    "n": 60,
-   "nota": 5.57,
-   "logloss": 0.675,
-   "acuracia": 0.617,
-   "ece": 0.136,
+   "nota": 5.58,
+   "logloss": 0.6747,
+   "acuracia": 0.65,
+   "ece": 0.109,
    "torneio": "1win Essence II"
   },
   {
    "n": 100,
-   "nota": 5.93,
-   "logloss": 0.6634,
+   "nota": 5.89,
+   "logloss": 0.6649,
    "acuracia": 0.64,
-   "ece": 0.141,
+   "ece": 0.142,
    "torneio": "BLAST SLAM VI"
   },
   {
    "n": 142,
-   "nota": 6.31,
-   "logloss": 0.6515,
+   "nota": 6.33,
+   "logloss": 0.6509,
    "acuracia": 0.641,
-   "ece": 0.128,
+   "ece": 0.115,
    "torneio": "ESL One Birmingham 2026"
   },
   {
    "n": 124,
-   "nota": 6.61,
-   "logloss": 0.6418,
+   "nota": 6.64,
+   "logloss": 0.641,
    "acuracia": 0.645,
-   "ece": 0.085,
+   "ece": 0.086,
    "torneio": "PGL Wallachia 2026 Season 7"
   },
   {
    "n": 102,
    "nota": 6.97,
-   "logloss": 0.6304,
+   "logloss": 0.6306,
    "acuracia": 0.618,
-   "ece": 0.083,
+   "ece": 0.072,
    "torneio": "BLAST SLAM VII"
   },
   {
    "n": 165,
-   "nota": 7.05,
-   "logloss": 0.6278,
-   "acuracia": 0.673,
-   "ece": 0.106,
+   "nota": 7.06,
+   "logloss": 0.6275,
+   "acuracia": 0.661,
+   "ece": 0.091,
    "torneio": "Premier Series"
   },
   {
-   "n": 72,
-   "nota": 7.2,
-   "logloss": 0.6232,
-   "acuracia": 0.667,
-   "ece": 0.173,
-   "torneio": "The Games of the Future 2026"
-  },
-  {
    "n": 185,
-   "nota": 7.32,
-   "logloss": 0.6193,
+   "nota": 7.35,
+   "logloss": 0.6185,
    "acuracia": 0.659,
-   "ece": 0.072,
+   "ece": 0.073,
    "torneio": "DreamLeague Season 29"
   },
   {
+   "n": 72,
+   "nota": 7.48,
+   "logloss": 0.6142,
+   "acuracia": 0.681,
+   "ece": 0.16,
+   "torneio": "The Games of the Future 2026"
+  },
+  {
    "n": 147,
-   "nota": 7.64,
-   "logloss": 0.6093,
-   "acuracia": 0.653,
-   "ece": 0.118,
+   "nota": 7.66,
+   "logloss": 0.6084,
+   "acuracia": 0.667,
+   "ece": 0.092,
    "torneio": "The International 2026"
   },
   {
    "n": 96,
-   "nota": 8.27,
-   "logloss": 0.5891,
-   "acuracia": 0.635,
-   "ece": 0.098,
+   "nota": 8.24,
+   "logloss": 0.5899,
+   "acuracia": 0.646,
+   "ece": 0.097,
    "torneio": "FISSURE Universe Episode 8"
   },
   {
-   "n": 135,
-   "nota": 8.57,
-   "logloss": 0.5797,
-   "acuracia": 0.667,
-   "ece": 0.068,
-   "torneio": "EPL Championship 2025-2026"
-  },
-  {
-   "n": 258,
-   "nota": 8.63,
-   "logloss": 0.5775,
-   "acuracia": 0.702,
-   "ece": 0.116,
+   "n": 264,
+   "nota": 8.33,
+   "logloss": 0.5872,
+   "acuracia": 0.67,
+   "ece": 0.115,
    "torneio": "EPL Masters 2026"
   },
   {
+   "n": 135,
+   "nota": 8.55,
+   "logloss": 0.5803,
+   "acuracia": 0.674,
+   "ece": 0.069,
+   "torneio": "EPL Championship 2025-2026"
+  },
+  {
    "n": 253,
-   "nota": 8.85,
-   "logloss": 0.5708,
+   "nota": 8.89,
+   "logloss": 0.5696,
    "acuracia": 0.727,
-   "ece": 0.053,
+   "ece": 0.056,
    "torneio": "DreamLeague Season 29 Qualifiers"
   },
   {
    "n": 170,
    "nota": 9.18,
-   "logloss": 0.5603,
-   "acuracia": 0.724,
-   "ece": 0.094,
+   "logloss": 0.56,
+   "acuracia": 0.712,
+   "ece": 0.095,
    "torneio": "DreamLeague Division 2 Season 4"
   },
   {
    "n": 63,
    "nota": 9.93,
-   "logloss": 0.5362,
+   "logloss": 0.5363,
    "acuracia": 0.698,
    "ece": 0.071,
    "torneio": "The International 2026 - Regional Qualifier Europe"
@@ -161,33 +161,33 @@
   {
    "n": 89,
    "nota": 10.0,
-   "logloss": 0.5191,
+   "logloss": 0.5205,
    "acuracia": 0.73,
-   "ece": 0.102,
+   "ece": 0.07,
    "torneio": "DreamLeague Division 2 Season 3"
   },
   {
    "n": 238,
    "nota": 10.0,
-   "logloss": 0.468,
+   "logloss": 0.4678,
    "acuracia": 0.777,
-   "ece": 0.087,
+   "ece": 0.08,
    "torneio": "DreamLeague Season 28 Qualifiers"
   },
   {
    "n": 235,
    "nota": 10.0,
-   "logloss": 0.489,
-   "acuracia": 0.736,
+   "logloss": 0.4888,
+   "acuracia": 0.745,
    "ece": 0.049,
    "torneio": "ESL One Birmingham 2026 Qualifiers"
   },
   {
    "n": 157,
    "nota": 10.0,
-   "logloss": 0.5018,
+   "logloss": 0.4975,
    "acuracia": 0.777,
-   "ece": 0.061,
+   "ece": 0.07,
    "torneio": "Esports World Cup 2026"
   },
   {
@@ -201,7 +201,7 @@
   {
    "n": 206,
    "nota": 10.0,
-   "logloss": 0.4626,
+   "logloss": 0.4621,
    "acuracia": 0.782,
    "ece": 0.086,
    "torneio": "Road To EWC 2026 Regional Qualifiers"
