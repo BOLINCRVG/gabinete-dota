@@ -1,4 +1,10 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+8979484553,2026-09-02T17:07:00.000Z,2026,EPL Masters 2026,10233067,4ikibamboni,10212329,Team Synapse,dire,2097,0,10,25,5,9,0,1,0,5,19944.0,1788368820.0,True,27.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+8979484553,2026-09-02T17:07:00.000Z,2026,EPL Masters 2026,10212329,Team Synapse,10233067,4ikibamboni,radiant,2097,1,25,10,9,5,1,0,5,0,19944.0,1788368820.0,True,27.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+8979344496,2026-09-02T15:43:40.000Z,2026,EPL Masters 2026,10233067,4ikibamboni,10212329,Team Synapse,dire,2692,0,21,38,5,9,1,1,0,1,19944.0,1788363820.0,True,24.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+8979344496,2026-09-02T15:43:40.000Z,2026,EPL Masters 2026,10212329,Team Synapse,10233067,4ikibamboni,radiant,2692,1,38,21,9,5,1,1,1,0,19944.0,1788363820.0,True,24.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+8979241530,2026-09-02T14:41:40.000Z,2026,EPL Masters 2026,10225542,DYNASTY,10164236,PuckChamp,dire,1750,1,34,11,7,2,2,0,1,0,19944.0,1788360100.0,True,21.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+8979241530,2026-09-02T14:41:40.000Z,2026,EPL Masters 2026,10164236,PuckChamp,10225542,DYNASTY,radiant,1750,0,11,34,2,7,0,2,0,1,19944.0,1788360100.0,True,21.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 8979131280,2026-09-02T13:41:04.000Z,2026,EPL Masters 2026,10225542,DYNASTY,10164236,PuckChamp,radiant,1924,1,31,15,0,0,0,0,0,0,19944.0,1788356464.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
 8979131280,2026-09-02T13:41:04.000Z,2026,EPL Masters 2026,10164236,PuckChamp,10225542,DYNASTY,dire,1924,0,15,31,0,0,0,0,0,0,19944.0,1788356464.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
 8978986214,2026-09-02T12:06:55.000Z,2026,EPL Masters 2026,10019843,Inner Circle x Insanity,55,_PowerRangers,dire,1777,0,8,31,2,8,0,1,0,2,19944.0,1788350815.0,True,16.0,ok,,opendota_api,1.0,0.0,0.0,1.0
