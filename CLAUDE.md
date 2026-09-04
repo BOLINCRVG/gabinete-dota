@@ -64,6 +64,22 @@ melhor"**, nunca "é lucrativo". Não reabrir sozinho.
 - **Afirmação sobre um repo dentro de código compartilhado** vira crédito
   emprestado. Declaração é dado local e nomeia o seu dono.
 - **Divergência treino/serviço** já apareceu aqui (`scope_meta`) e não há vigia.
+- **Acento no caminho da pasta cega o modelo ao vivo, e a suíte MENTE.** O
+  LightGBM não abre arquivo por caminho absoluto que tenha acento. Com o repo
+  em `...\Área de Trabalho\...` a suíte dava 30 falhas em vez de 15, e o
+  retreino diário morria com `Model file ... is not available for writes` — que
+  parece permissão e não é. Medido em 04/09/2026. **O projeto tem que morar em
+  caminho sem acento** (hoje: `C:\Gabinetes\GabineteDOTA`).
+- **RODAR A SUÍTE RETREINA OS MODELOS DE PRODUÇÃO.** Um teste chama
+  `launch_retrain_background` contra o `live_models/` real em vez de uma pasta
+  temporária, e ele sobrescreve os 12 arquivos dos 4 minutos. Não há chave de
+  ambiente para desligar. **Copie `live_models/` antes de rodar a suíte** (são
+  1,8 MB). Enquanto o repo esteve em caminho com acento isso passava
+  despercebido, porque o acento é que impedia a escrita.
+- **`git checkout` NÃO restaura modelo do jeito que você espera.** Este repo tem
+  `core.autocrlf = true` e nenhum `.gitattributes`, então o checkout reescreve
+  `lgb_model.txt` com CRLF e engorda o arquivo em ~2.200 bytes. Para voltar ao
+  estado exato, restaure de uma cópia física, não do git.
 
 ## Comandos
 
@@ -73,5 +89,25 @@ python frescor.py         # as notas são de quando?
 python dota_scorecard.py  # a nota por torneio
 ```
 
-A suíte tem **15 falhas e 30 erros conhecidos**, anteriores a agosto/2026. Não
-são regressão nova e nunca foram atacados.
+A suíte roda 4.674 testes em ~2 min e tem **15 falhas e 30 erros conhecidos**,
+anteriores a agosto/2026. Não são regressão nova e nunca foram atacados.
+
+**Esse 15 só aparece com `GABINETE_VIEWER=0`.** O `.streamlit/secrets.toml`
+deste repo tem `GABINETE_VIEWER = "1"`, e o modo visualização bloqueia
+subprocesso — o que faz 7 testes do `run_cmd` falharem sem que nada esteja
+quebrado. Rode assim:
+
+```
+set GABINETE_VIEWER=0 && python -m unittest discover -s mlcore\tests -p "test_*.py"
+```
+
+Medido em 04/09/2026, e as quatro combinações ficam assim:
+
+| caminho | viewer | falhas | erros |
+|---|---|---|---|
+| com acento | 1 | 30 | 30 |
+| com acento | 0 | 23 | 30 |
+| sem acento | 1 | 22 | 30 |
+| **sem acento** | **0** | **15** | **30** |
+
+Antes de rodar, leia a armadilha do retreino acima e copie `live_models/`.

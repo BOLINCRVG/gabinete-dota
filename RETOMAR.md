@@ -6,14 +6,35 @@ dois projetos andam juntos e a maioria das decisões vale para os dois.
 
 Aqui fica só o que é específico do Dota.
 
+## Onde isto mora agora — 04/09/2026
+
+`C:\Gabinetes\GabineteDOTA`. **Saiu da Área de Trabalho de propósito**: acento no
+caminho faz o LightGBM não abrir modelo nenhum, o retreino morrer com um erro que
+parece de permissão, e a suíte dar 30 falhas em vez de 15. Ver a armadilha no
+`CLAUDE.md`. Não mover de volta.
+
 ## Reconstruir
 
-Python 3.13. `git clone https://github.com/BOLINCRVG/gabinete-dota.git`, depois
-`pip install -r requirements.txt`. O modelo (`ml_artifact.json`), os dados
-(`data.csv`, `CSV_DOTA/`), o `live_models/` e as notas (`evidence/`) **já vêm no
-clone** — conferido arquivo por arquivo em 27/08.
+Python **3.13** (em 04/09/2026 rodou com a 3.13.15; não passar para 3.14).
+Clonar **em pasta sem acento**:
 
-Nada aqui precisa de cópia manual. (No LoL precisa: `ops/baselines/`, ~68 MB.)
+```
+git clone https://github.com/BOLINCRVG/gabinete-dota.git C:\Gabinetes\GabineteDOTA
+cd C:\Gabinetes\GabineteDOTA
+pip install -r requirements.txt
+```
+
+Aqui **não há `.venv`**: os pacotes vão no Python do sistema. Consequência a
+saber — qualquer `pip install` global futuro pode mexer nas versões de que este
+projeto depende.
+
+O modelo (`ml_artifact.json`), os dados (`data.csv`, `CSV_DOTA/`), o
+`live_models/` e as notas (`evidence/`) **já vêm no clone** — conferido arquivo
+por arquivo em 27/08.
+
+O que **não** vem no clone: `.streamlit/secrets.toml` (está no `.gitignore`, e é
+onde moram as chaves da OpenDota e da PandaScore). Ele sobreviveu à mudança de
+27/08 só porque a pasta inteira foi copiada. Guarde-o à parte.
 
 Provar que voltou inteiro:
 
@@ -23,8 +44,42 @@ python frescor.py
 python dota_scorecard.py
 ```
 
-**A suíte do Dota tem 15 falhas e 30 erros conhecidos**, de antes desta rodada.
-Não são regressão nova; nunca foram atacados.
+## A suíte — leia antes de rodar
+
+**Rodar a suíte RETREINA os modelos de produção.** Um teste chama
+`launch_retrain_background` contra o `live_models/` real, e ele sobrescreve os 12
+arquivos dos 4 minutos. **Copie `live_models/` antes** (1,8 MB). A cópia de
+04/09/2026 está em `C:\Gabinetes\_backup_dota_pre_move_20260904\`.
+
+Para restaurar, **use a cópia física, não `git checkout`**: este repo tem
+`core.autocrlf = true` e nenhum `.gitattributes`, então o checkout reescreve
+`lgb_model.txt` com CRLF e engorda o arquivo em ~2.200 bytes. Confira por md5.
+
+**15 falhas e 30 erros conhecidos**, de antes de agosto/2026 — não são regressão
+nova e nunca foram atacados. Mas esse número **só aparece com
+`GABINETE_VIEWER=0`**, porque o `secrets.toml` daqui liga o modo visualização, e
+ele bloqueia subprocesso — o que derruba 7 testes do `run_cmd` sem que nada
+esteja quebrado:
+
+```
+set GABINETE_VIEWER=0 && python -m unittest discover -s mlcore\tests -p "test_*.py"
+```
+
+Medido em 04/09/2026 (4.674 testes, ~2 min):
+
+| caminho | viewer | falhas | erros |
+|---|---|---|---|
+| com acento | 1 | 30 | 30 |
+| com acento | 0 | 23 | 30 |
+| sem acento | 1 | 22 | 30 |
+| **sem acento** | **0** | **15** | **30** |
+
+Os 4 `lgb_model.txt` aparecem como modificados no `git status` desde 04/09.
+**Os arquivos em disco são os originais** (md5 conferido); o que mudou foi o
+relato do git. Eles sempre diferiram do commitado por 2 bytes — as duas últimas
+linhas terminam em CRLF e o resto em LF — e o git não mostrava porque o cache de
+`stat` dele nunca comparou o conteúdo. Não commitar por reflexo. Detalhe completo
+na dívida D7 do `RETOMAR.md` do LoL.
 
 ## Estado
 
