@@ -28,6 +28,18 @@ como "nota estranha", que não aponta para a causa.
 ║    sem cadência declarada não existe prazo possível — e um artefato que     ║
 ║    ninguém sabe quando deveria ser refeito é exatamente o que envelhece     ║
 ║    calado. Ele aparece na lista com essa marca.                             ║
+║                                                                             ║
+║ 5. POR QUE AS DUAS FAIXAS TÊM QUE EMITIR SINAIS DIFERENTES, e por que o     ║
+║    resumo não pode calar sobre a de aviso (conferido 04/09/2026):           ║
+║    a prática de monitoramento de frescor é configurar os testes com nível   ║
+║    de AVISO **e** de ERRO — quando o atraso passa do limiar de aviso        ║
+║    levanta-se um problema de nível aviso, e quando passa do limiar de erro, ║
+║    um de nível erro. Ter duas faixas e só reportar a de erro desperdiça a   ║
+║    faixa de aviso, que é exatamente a que existe para agir A TEMPO.         ║
+║    Era o bug da dívida D6: a tabela imprimia 8 réguas `atrasada` e o resumo ║
+║    logo abaixo dizia "todas dentro do prazo".                               ║
+║    https://dqops.com/docs/categories-of-data-quality-checks/how-to-detect-timeliness-and-freshness-issues/ ║
+║    https://pipecode.ai/blogs/data-freshness-sla-monitoring-budgets           ║
 ╚═════════════════════════════════════════════════════════════════════════════╝
 
 Uso: python tools/frescor.py [--root OUTRO_REPO]
@@ -174,6 +186,7 @@ def main() -> int:
 
     velhas = [x for x in linhas if x["estado"] == "VELHA"]
     sem = [x for x in linhas if x["estado"] == "SEM CARIMBO"]
+    atrasadas = [x for x in linhas if x["estado"] == "atrasada"]
     nao_decl = [x for x in linhas if x["estado"] == "frequencia nao declarada"]
     print()
     if velhas:
@@ -181,10 +194,19 @@ def main() -> int:
     if sem:
         print(f"ATENCAO: {len(sem)} regua(s) SEM CARIMBO — nao da pra saber a idade,")
         print("         que e o mesmo que nao ter vigia nenhum ali.")
+    # A faixa `atrasada` TEM que sair no resumo. Sem esta linha o vigia dava
+    # sinal verde com regua vencida — divida D6, corrigida em 04/09/2026.
+    # Ela e nivel de AVISO, separado do nivel de ERRO acima (fonte 5): as duas
+    # faixas existem para emitir sinais DIFERENTES, e emitir so o de erro
+    # joga fora metade do vigia.
+    if atrasadas:
+        print(f"AVISO: {len(atrasadas)} regua(s) ATRASADA(s) — passaram de 2x a propria")
+        print("       cadencia, mas ainda nao de 3x. Nao e emergencia: e a hora")
+        print("       de rodar, antes que vire VELHA.")
     if nao_decl:
         print(f"{len(nao_decl)} artefato(s) sem cadencia declarada: nao da pra ter prazo,")
         print("         e artefato sem prazo e o que envelhece calado (fonte 4).")
-    if not (velhas or sem):
+    if not (velhas or sem or atrasadas):
         print("todas as reguas declaradas estao dentro do prazo.")
 
     destino = raiz / str(args.out)
