@@ -1,0 +1,33 @@
+# Normaliza line-endings entre máquinas (evita corromper código/encoding ao
+# trocar entre o PC de cada um). Sem isso, o Windows pode reescrever LF<->CRLF
+# e quebrar diffs/execução.
+* text=auto
+
+# Código Python sempre LF (consistente em qualquer SO).
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+
+# Scripts PowerShell preferem CRLF no Windows.
+*.ps1 text eol=crlf
+
+# CSVs: texto, mas podem ser grandes — manter LF e não tentar diff binário.
+*.csv text eol=lf
+
+# Artefatos binários/imagens: nunca normalizar.
+*.png binary
+*.jpg binary
+*.ico binary
+*.xlsx binary
+*.parquet binary
+
+# ADICIONADO EM 06/09/2026 — este repositorio NAO tinha .gitattributes, e a
+# consequencia era grave: com core.autocrlf=true, `git clone` convertia os
+# `live_models/*/lgb_model.txt` para CRLF e o LightGBM passava a recusar os
+# modelos ("Model format error, expect a tree here"). Ou seja, o RETOMAR dizia
+# que o live_models/ "ja vem no clone" e vinha -- CORROMPIDO. Testado num
+# clone limpo: os 4 modelos falhavam. A linha `*.txt text eol=lf` abaixo e o
+# que conserta. NAO remover.
