@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-09-04T15:03:27",
+ "gerado_em": "2026-09-06T00:42:43",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -19,14 +19,7 @@
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.2,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "dota_totals_via_duracao.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": null,
+   "idade_dias": 0.4,
    "estado": "frequencia nao declarada"
   },
   {
@@ -47,21 +40,21 @@
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 8.6,
+   "idade_dias": 10.0,
    "estado": "ok"
   },
   {
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 0.2,
+   "idade_dias": 0.4,
    "estado": "ok"
   },
   {
    "arquivo": "nota_por_liga.json",
    "rotulo": "nota por liga — APARECE NA TELA",
    "cadencia_dias": 7,
-   "idade_dias": 0.2,
+   "idade_dias": 0.0,
    "estado": "ok"
   }
  ]
