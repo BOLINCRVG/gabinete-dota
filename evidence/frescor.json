@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-09-09T14:57:22",
+ "gerado_em": "2026-09-10T00:42:05",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -16,10 +16,17 @@
    "estado": "SEM CARIMBO"
   },
   {
+   "arquivo": "livro_caixa.json",
+   "rotulo": "livro-caixa do silencio",
+   "cadencia_dias": 7,
+   "idade_dias": 14.0,
+   "estado": "atrasada"
+  },
+  {
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.6,
+   "idade_dias": 0.4,
    "estado": "frequencia nao declarada"
   },
   {
@@ -37,17 +44,10 @@
    "estado": "frequencia nao declarada"
   },
   {
-   "arquivo": "livro_caixa.json",
-   "rotulo": "livro-caixa do silencio",
-   "cadencia_dias": 7,
-   "idade_dias": 13.6,
-   "estado": "ok"
-  },
-  {
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 0.6,
+   "idade_dias": 0.4,
    "estado": "ok"
   },
   {
