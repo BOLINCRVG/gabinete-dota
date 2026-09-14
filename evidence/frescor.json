@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-09-13T14:49:08",
+ "gerado_em": "2026-09-14T00:32:34",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -19,14 +19,14 @@
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 17.6,
+   "idade_dias": 18.0,
    "estado": "atrasada"
   },
   {
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.6,
+   "idade_dias": 0.4,
    "estado": "frequencia nao declarada"
   },
   {
@@ -47,7 +47,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 0.6,
+   "idade_dias": 0.4,
    "estado": "ok"
   },
   {
