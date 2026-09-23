@@ -21,6 +21,10 @@ rem SETUP_AND_RUN_GABINETE_DOTA_WINDOWS.bat uma vez).
 "%PYEXE%" -c "import streamlit" >nul 2>&1
 if errorlevel 1 set "PYEXE=python"
 
+rem Traz o que o robo publicou no GitHub ANTES de abrir (sincronizar.py).
+rem Nunca impede o app de abrir: qualquer problema vira so um aviso aqui.
+"%PYEXE%" "sincronizar.py"
+
 "%PYEXE%" -m streamlit run "gabinete_dota_app.py" --server.port 8502
 
 pause
