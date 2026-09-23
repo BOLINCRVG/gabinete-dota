@@ -33,6 +33,28 @@ Três famílias, escolhidas por terem pegado achados REAIS:
   3) PASSO DE ESTEIRA COM continue-on-error — falha por projeto, o que é
      legítimo, mas precisa estar na lista para ninguém esquecer que está lá.
 
+╔══ FONTES ═══════════════════════════════════════════════════════════════════╗
+║ 1. POR QUE ELE REPORTA E NÃO BLOQUEIA:                                      ║
+║    prática de qualidade em esteira — severidade em CAMADAS: derrubar a      ║
+║    construção só no que é crítico, avisar no resto. Bloquear a esteira de   ║
+║    DADO por questão de contabilidade seria absurdo.                          ║
+║                                                                             ║
+║ 2. POR QUE A FORÇA VEM DA IDADE, e não do aviso:                            ║
+║    mesma fonte — "desenvolvedores ignoram avisos a menos que haja processo  ║
+║    que force". Aviso solto vira ruído; por isso a escalada (issue/e-mail)   ║
+║    acontece quando o item passa de 30 dias tolerado.                        ║
+║                                                                             ║
+║ 3. POR QUE A FAMÍLIA "lido e não versionado" FUNCIONA COMO LINHA DE BASE:   ║
+║    ver o LIMITE HONESTO acima — três heurísticas testadas, todas deixam     ║
+║    resto. É assim que linter sério lida com isso: revisa uma vez, e daí em  ║
+║    diante o que importa é o item NOVO e a IDADE dos que ficaram.            ║
+║                                                                             ║
+║ 4. POR QUE A RAIZ DO REPO VEM DE `git rev-parse --show-toplevel`:           ║
+║    é o jeito canônico, e este script já exige git (usa check-ignore e       ║
+║    ls-files). Travessia atrás de .git fica de reserva se o git não estiver  ║
+║    no PATH. Ver o comentário em _raiz_do_repo.                              ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
 Uso:
     python tools/livro_caixa.py [--root OUTRO_REPO] [--suite-log ARQUIVO]
 
