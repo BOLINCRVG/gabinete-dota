@@ -1,12 +1,12 @@
 {
-  "lido_em": "2026-09-24T14:34:45-03:00",
+  "lido_em": "2026-09-24T14:56:32-03:00",
   "fonte": "https://guest.api.arcadia.pinnacle.com/0.1/",
   "fuso": "America/Sao_Paulo",
   "jogos": [],
   "linhas": [],
   "descartes": {
     "ao_vivo": 0,
-    "filho": 3,
+    "filho": 1,
     "sem_mercado": 1,
     "outro_jogo": 134,
     "sem_lados": 0
