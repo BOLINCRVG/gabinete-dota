@@ -214,6 +214,13 @@ def motivo_de_nao_precificar(linha: Dict[str, Any]) -> str:
     except (TypeError, ValueError):
         periodo = 0
 
+    # Desde 24/09/2026 o modelo calcula handicap de kills e total por time
+    # (mlcore/abates_por_time.py). Se a linha chegou aqui, foi o CONFRONTO
+    # que nao deu -- ou a leitura e antiga e nao diz de qual time e.
+    if forma_de_kills_por_time(linha):
+        return _motivo_kills_por_time(linha)
+    if tipo == "team_total" and unidade == "kills":
+        return "leitura antiga: nao diz de qual time e a linha (o robo guarda desde 23/09)"
     if tipo == "team_total":
         return _FALTA_POR_TIME
     if tipo in ("spread", "moneyline") and conhecida:
@@ -265,6 +272,7 @@ def montar_oportunidades(
     jogos_por_time: Optional[Callable[[str], int]] = None,
     prob_de_vencedor: Optional[Callable[[Dict[str, Any], Dict[str, Any]],
                                         Optional[float]]] = None,
+    medias_kills: Optional[Callable[[str, str], Optional[Tuple[float, float]]]] = None,
 ) -> Dict[str, Any]:
     """A lista do que vale a pena, e a lista honesta do que ficou de fora.
 
@@ -289,6 +297,8 @@ def montar_oportunidades(
     # Achado de cada linha, pela posicao: o "mercado completo" junta o que o
     # modelo disse a TODAS as linhas da casa, inclusive as que ele nao sabe.
     achado_da_linha: Dict[int, Dict[str, Any]] = {}
+    # Kills esperados de cada time, uma vez por jogo (24/09/2026).
+    medias_do_jogo: Dict[Any, Optional[Tuple[float, float]]] = {}
 
     for _i, l in enumerate(linhas):
         if not isinstance(l, dict):
@@ -297,6 +307,38 @@ def montar_oportunidades(
         if jogo is None:
             continue
         alvo = metrica_da_linha(l)
+        # HANDICAP DE KILLS E TOTAL DE KILLS POR TIME (24/09/2026). Pedido
+        # dele: e onde ele gira. Conta em mlcore/abates_por_time.py, medida
+        # cega em 2026 antes de chegar aqui.
+        if alvo is None and medias_kills is not None and forma_de_kills_por_time(l):
+            jid = jogo.get("id")
+            if jid not in medias_do_jogo:
+                try:
+                    medias_do_jogo[jid] = medias_kills(str(jogo.get("casa") or ""),
+                                                       str(jogo.get("fora") or ""))
+                except Exception:
+                    medias_do_jogo[jid] = None
+                if medias_do_jogo[jid] is None:
+                    sem_modelo.append({"jogo": jid, "casa": jogo.get("casa"),
+                                       "fora": jogo.get("fora"), "mapa": "kills por time"})
+            _pk = prob_de_kills_por_time(l, medias_do_jogo[jid])
+            if _pk is not None:
+                _vk = vantagem_pct(_pk, l.get("odd"))
+                if _vk is not None:
+                    achado = {
+                        "jogo": l.get("jogo"), "mercado": l.get("mercado"),
+                        "lado": l.get("lado"), "pontos": _num(l.get("pontos")),
+                        "odd_casa": _num(l.get("odd")), "odd_justa": odd_justa(_pk),
+                        "probabilidade": _pk, "vantagem_pct": _vk,
+                        "limite": l.get("limite"), "margem_pct": l.get("margem_pct"),
+                        "fecha_em": l.get("fecha_em"), "tipo": l.get("tipo"),
+                        "metrica": "kills_por_time",
+                        "mapa": "m{}".format(l.get("periodo")),
+                    }
+                    _com_a_casa(achado, l)
+                    _guardar(achados, achado, jogo, jogos_por_time)
+                    achado_da_linha[_i] = achado
+                    continue
         if alvo is None:
             # O MERCADO DE VENCEDOR vem de fora, do fluxo do confronto aberto
             # -- e o mesmo numero do card, nao uma segunda conta.
@@ -378,6 +420,70 @@ def montar_oportunidades(
     }
 
 
+def _motivo_kills_por_time(l: Dict[str, Any]) -> str:
+    """Mercado sem numero porque NAO PASSOU na prova cega (no Dota, o total
+    por time) e diferente de confronto que nao deu -- um nunca vem, o outro
+    vem quando o nome casar."""
+    try:
+        from mlcore.abates_por_time import carregar
+        if forma_de_kills_por_time(l) not in carregar():
+            return "o modelo deste mercado nao passou na prova cega: fica sem numero"
+    except Exception:
+        pass
+    return "o modelo nao conseguiu este confronto (time sem casar ou jogos de menos)"
+
+
+def forma_de_kills_por_time(l: Dict[str, Any]) -> Optional[str]:
+    """"handicap" ou "total_time" quando a linha e de kills de UM mapa.
+
+    O total por time precisa saber DE QUAL time e (`time`, que o coletor
+    guarda desde 23/09/2026); leitura antiga sem isso fica de fora, com
+    motivo, em vez de chutar o time.
+    """
+    if str(l.get("unidade") or "").strip().lower() != "kills":
+        return None
+    try:
+        periodo = int(l.get("periodo", 0) or 0)
+    except (TypeError, ValueError):
+        return None
+    if not 1 <= periodo <= 5 or _num(l.get("pontos")) is None:
+        return None
+    tipo = str(l.get("tipo") or "")
+    lado = str(l.get("lado") or "").strip().lower()
+    if tipo == "spread" and lado in ("home", "away"):
+        return "handicap"
+    if (tipo == "team_total" and lado in ("over", "under")
+            and str(l.get("time") or "").lower() in ("home", "away")):
+        return "total_time"
+    return None
+
+
+def prob_de_kills_por_time(l: Dict[str, Any],
+                           medias: Optional[Tuple[float, float]]) -> Optional[float]:
+    """A chance DESTE lado da linha, ou None.
+
+    `medias` = (kills esperados do mandante, do visitante), na ordem da casa.
+    """
+    forma = forma_de_kills_por_time(l)
+    if forma is None or not medias:
+        return None
+    try:
+        e_casa, e_fora = float(medias[0]), float(medias[1])
+    except (TypeError, ValueError, IndexError):
+        return None
+    from mlcore.abates_por_time import prob_cobre_handicap, prob_total_do_time_acima
+    pontos = float(l.get("pontos"))
+    lado = str(l.get("lado") or "").strip().lower()
+    if forma == "handicap":
+        e_lado, e_outro = (e_casa, e_fora) if lado == "home" else (e_fora, e_casa)
+        return prob_cobre_handicap(e_lado, e_outro, pontos)
+    e_time = e_casa if str(l.get("time")).lower() == "home" else e_fora
+    p_over = prob_total_do_time_acima(e_time, pontos)
+    if p_over is None:
+        return None
+    return p_over if lado == "over" else 1.0 - p_over
+
+
 def _com_a_casa(achado: Dict[str, Any], linha: Dict[str, Any]) -> None:
     """O justo da casa ao lado do justo do modelo, e a distancia entre eles.
 
@@ -407,8 +513,13 @@ def _motivo_no_quadro(l: Dict[str, Any]) -> str:
     """Um total que o motor SABE fazer, mas nao fez, nao e "nao precifica":
     e o confronto que nao deu (time sem casar, jogos de menos). Dizer o
     motivo errado mandaria ele esperar uma coisa que nunca vem."""
+    if forma_de_kills_por_time(l):
+        return _motivo_kills_por_time(l)
     if metrica_da_linha(l) is not None:
         return "o modelo nao conseguiu este confronto (time sem casar ou jogos de menos)"
+    if (str(l.get("tipo") or "") == "team_total"
+            and str(l.get("unidade") or "").strip().lower() == "kills"):
+        return "leitura antiga: nao diz de qual time e a linha (o robo guarda desde 23/09)"
     # Pela FORMA da aposta, que a tabela de nomes da casa entende. Sem isto,
     # "par ou impar de kills" caia em "o motor calcula o total, nao a
     # diferenca" -- motivo de outro mercado (visto na tela do Dota, 23/09).

@@ -112,7 +112,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
     r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
                              minimo_pct=0.0, jogos_por_time=jogos_por_time,
-                             prob_de_vencedor=_vencedor)
+                             prob_de_vencedor=_vencedor,
+                             medias_kills=ctx.get("medias_kills"))
 
     todas = list(r.get("todas") or [])
     # DE ONDE CADA PRECO VEIO. Nao e a abertura -- e o primeiro que NOS vimos.
@@ -284,15 +285,21 @@ def _nome_do_lado(a: Mapping[str, Any]) -> str:
     """Como chamar este lado da aposta, em portugues."""
     lado = str(a.get("lado") or "").strip()
     baixo = lado.lower()
-    if baixo == "home":
-        return str(a.get("casa") or "Casa")
-    if baixo == "away":
-        return str(a.get("fora") or "Fora")
+    if baixo in ("home", "away"):
+        nome = str(a.get("casa") or "Casa") if baixo == "home" else str(a.get("fora") or "Fora")
+        # Handicap: sem o numero, "Liquid" nao diz qual aposta e.
+        if str(a.get("tipo") or "") == "spread" and a.get("pontos") is not None:
+            nome += " {:+.1f}".format(float(a["pontos"])).replace(".", ",")
+        return nome
     ponto = _fmt(a.get("pontos"), 1).replace(".", ",")
+    # Total por time: DE QUEM e o total.
+    time = str(a.get("time") or "").lower()
+    dono = a.get("casa") if time == "home" else (a.get("fora") if time == "away" else None)
+    prefixo = "{}: ".format(dono) if dono else ""
     if baixo == "over":
-        return "acima de {}".format(ponto)
+        return "{}acima de {}".format(prefixo, ponto)
     if baixo == "under":
-        return "abaixo de {}".format(ponto)
+        return "{}abaixo de {}".format(prefixo, ponto)
     return lado or "?"
 
 

@@ -3593,6 +3593,18 @@ def _oportunidades_times_nao_casados() -> list:
     return [n for n in times_da_coleta(_odds) if not _oportunidades_resolver_time(n)]
 
 
+def _oportunidades_medias_kills(casa: str, fora: str):
+    """Kills esperados do mandante e do visitante (24/09/2026), pela mesma
+    conta Dixon-Coles do total (mlcore/abates_por_time.py). No Dota so o
+    HANDICAP passou na prova cega; o total por time fica sem numero."""
+    a_csv = _oportunidades_resolver_time(casa)
+    b_csv = _oportunidades_resolver_time(fora)
+    if not a_csv or not b_csv:
+        return None
+    from mlcore.abates_por_time import medias_dc
+    return medias_dc(team_games, a_csv, b_csv)
+
+
 def _render_oportunidades_dota() -> None:
     """Protegida: o despachante do Dota nao isola falha, e uma aba com defeito
     nao pode derrubar o app inteiro."""
@@ -3602,6 +3614,7 @@ def _render_oportunidades_dota() -> None:
             "raiz": APP_ROOT,
             "calcular_totais": _oportunidades_calcular_totais,
             "prob_over": core_prob_over_from_total,
+            "medias_kills": _oportunidades_medias_kills,
             "casados_sozinhos": {},
             "jogos_por_time": _oportunidades_jogos_por_time,
             "times_nao_casados": _oportunidades_times_nao_casados(),
