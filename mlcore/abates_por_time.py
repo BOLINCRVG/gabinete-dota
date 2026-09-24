@@ -29,6 +29,13 @@ contra time medio, pode errar feio -- e a tela marca "grande demais". O
 caminho seguinte e juntar a chance de vitoria do modelo de vencedor, e
 MEDIR antes de ligar.
 
+COM A CHANCE DE VITORIA (24/09/2026, tools/abates_com_vitoria.py). Resolve
+o limite acima no CONFRONTO ABERTO, o unico com a chance do cartao. Medida
+com a regua da nota honesta (chance do lado AZUL, feita no dia); servida com
+a do cartao, que e a MEDIA dos dois lados (ml_prediction_core: 0,5 x (ida +
+volta)). A diferenca e so o empurrao de lado, que a tela nao teria como
+saber antes do jogo: a casa nao diz quem e azul.
+
 O artefato (`abates_por_time_forma.json`) e gerado e MEDIDO por
 `tools/gerar_abates_por_time.py`: ajuste em 2024-2025, prova cega em 2026.
 Sem ele, as funcoes devolvem None e a tela diz "nao calcula" -- nunca um
@@ -123,15 +130,36 @@ def _acima(quantis, folga: float) -> float:
     return 1.0 - i / len(quantis)
 
 
+def _logit(p: float) -> float:
+    p = min(max(float(p), 1e-4), 1.0 - 1e-4)
+    return math.log(p / (1.0 - p))
+
+
 def prob_cobre_handicap(e_lado: float, e_outro: float, pontos: float,
-                        artefato: Optional[Dict[str, Any]] = None) -> Optional[float]:
+                        artefato: Optional[Dict[str, Any]] = None,
+                        p_lado: Optional[float] = None) -> Optional[float]:
     """P(kills do lado + pontos > kills do outro), ou None.
 
     `pontos` como a casa escreve: -7,5 para quem da o handicap, +7,5 para
     quem recebe. Linha inteira (empate devolvido) nao e tratada: a casa so
     oferece meia linha neste mercado.
+
+    `p_lado` = chance de o lado VENCER o mapa, do modelo de vencedor. Com
+    ela, usa o bloco `handicap_com_vitoria` (tools/abates_com_vitoria.py,
+    cego 23/06-21/09/2026: +0,0036 de Brier sobre a mesma conta sem ela).
+    A conta sem vitoria nao enxerga a forca do adversario.
     """
     art = artefato if artefato is not None else carregar()
+    if p_lado is not None:
+        reg = (art or {}).get("handicap_com_vitoria") or {}
+        q, coef = reg.get("quantis"), reg.get("coef")
+        try:
+            media = (float(coef[0]) * (float(e_lado) - float(e_outro))
+                     + float(coef[1]) * _logit(p_lado))
+            escala = max(float(reg["a"]) + float(reg["b"]) * (float(e_lado) + float(e_outro)), 1.0)
+            return _acima(q, (-float(pontos) - media) / escala) if q else None
+        except (TypeError, ValueError, KeyError, IndexError):
+            return None
     reg = (art or {}).get("handicap") or {}
     q = reg.get("quantis")
     try:
@@ -152,9 +180,25 @@ def prob_cobre_handicap(e_lado: float, e_outro: float, pontos: float,
 
 
 def prob_total_do_time_acima(e_time: float, linha: float,
-                             artefato: Optional[Dict[str, Any]] = None) -> Optional[float]:
-    """P(kills do time > linha), ou None."""
+                             artefato: Optional[Dict[str, Any]] = None,
+                             p_time: Optional[float] = None) -> Optional[float]:
+    """P(kills do time > linha), ou None.
+
+    `p_time` = chance de ESTE time vencer o mapa; com ela, o bloco
+    `total_time_com_vitoria` (cego: +0,0039 sobre a conta no ar).
+    """
     art = artefato if artefato is not None else carregar()
+    if p_time is not None:
+        reg = (art or {}).get("total_time_com_vitoria") or {}
+        q, coef = reg.get("quantis"), reg.get("coef")
+        try:
+            media = (float(coef[0]) + float(coef[1]) * float(e_time)
+                     + float(coef[2]) * _logit(p_time))
+            if not q or media <= 0:
+                return None
+            return _acima(q, (float(linha) - media) / math.sqrt(media))
+        except (TypeError, ValueError, KeyError, IndexError):
+            return None
     reg = (art or {}).get("total_time") or {}
     q = reg.get("quantis")
     try:

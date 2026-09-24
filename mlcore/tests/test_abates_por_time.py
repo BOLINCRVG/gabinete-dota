@@ -211,5 +211,68 @@ class TestMercadoReprovadoDizIsso(unittest.TestCase):
             ab._CACHE.update(guardado)
 
 
+class TestComAChanceDeVitoria(unittest.TestCase):
+    """24/09/2026: a conta so de kills nao enxerga a forca do adversario
+    (Aurora x GamerLegion). Com a chance de vitoria do modelo de vencedor
+    (tools/abates_com_vitoria.py, cego 23/06-21/09/2026, 2.594 jogos):
+        handicap  +0,0036 [+0,0022,+0,0049] sobre a mesma conta sem ela
+        por time  +0,0037 [+0,0027,+0,0047]
+    e os dois tambem ganham da conta que estava no ar."""
+
+    def setUp(self):
+        art = ab.carregar()
+        if "handicap_com_vitoria" not in art or "total_time_com_vitoria" not in art:
+            self.skipTest("blocos com vitoria ausentes (Dota nao tem regua de vencedor)")
+
+    def test_a_producao_e_a_conta_MEDIDA(self):
+        import json as _j
+        import math as _m
+        import tools.abates_com_vitoria as t
+        d = _j.loads((RAIZ / "abates_por_time_forma.json").read_text(encoding="utf-8"))
+        C = {"handicap": d["handicap_com_vitoria"], "total_time": d["total_time_com_vitoria"],
+             "com_p": True}
+        for ea, eb, p, L in ((18, 11, .7, -6.5), (14, 15, .4, 2.5), (20, 9, .85, -9.5)):
+            lp = _m.log(p / (1 - p))
+            self.assertAlmostEqual(ab.prob_cobre_handicap(ea, eb, L, p_lado=p),
+                                   t.prob_h(C, ea, eb, lp, L), places=12)
+            self.assertAlmostEqual(ab.prob_total_do_time_acima(ea, 15.5, p_time=p),
+                                   t.prob_t(C, ea, lp, 15.5), places=12)
+
+    def test_o_favorito_cobre_mais_com_os_mesmos_kills(self):
+        """O caso Aurora: kills medios iguais, mas um e favorito."""
+        igual = ab.prob_cobre_handicap(20, 20, -4.5, p_lado=0.5)
+        favorito = ab.prob_cobre_handicap(20, 20, -4.5, p_lado=0.8)
+        self.assertGreater(favorito, igual + 0.05)
+
+    def test_os_dois_lados_somam_um_com_vitoria(self):
+        p1 = ab.prob_cobre_handicap(18, 13, -5.5, p_lado=0.7)
+        p2 = ab.prob_cobre_handicap(13, 18, 5.5, p_lado=0.3)
+        self.assertAlmostEqual(p1 + p2, 1.0, delta=1.0 / 400)
+
+    def test_a_aba_usa_a_chance_so_no_confronto_aberto_e_vira_o_lado(self):
+        from app_core.oportunidades_core import montar_oportunidades
+        odds = {"jogos": [{"id": 1, "casa": "T1", "fora": "GenG"},
+                          {"id": 2, "casa": "HLE", "fora": "DK"}],
+                "linhas": [_linha(jogo=j, tipo="spread", lado=lado, pontos=pts,
+                                  mercado="Handicap - Kills - mapa 1")
+                           for j in (1, 2) for lado, pts in (("home", -6.5), ("away", 6.5))]}
+        r = montar_oportunidades(odds, lambda a, b, m: None, prob_over=lambda t, x: 0.5,
+                                 medias_kills=lambda a, b: (18.0, 11.0),
+                                 p_mapa_da_casa=lambda j: 0.7 if j["id"] == 1 else None)
+        por = {(a["jogo"], a["lado"]): a for a in r["todas"]}
+        self.assertTrue(por[(1, "home")]["com_vitoria"])
+        self.assertFalse(por[(2, "home")]["com_vitoria"])
+        self.assertAlmostEqual(por[(1, "home")]["probabilidade"],
+                               ab.prob_cobre_handicap(18, 11, -6.5, p_lado=0.7))
+        self.assertAlmostEqual(por[(1, "away")]["probabilidade"],
+                               ab.prob_cobre_handicap(11, 18, 6.5, p_lado=0.3))
+        self.assertAlmostEqual(por[(2, "home")]["probabilidade"],
+                               ab.prob_cobre_handicap(18, 11, -6.5))
+
+    def test_regravar_os_blocos_de_sempre_NAO_apaga_os_com_vitoria(self):
+        fonte = (RAIZ / "tools" / "gerar_abates_por_time.py").read_text(encoding="utf-8")
+        self.assertIn('"com_vitoria" in k', fonte)
+
+
 if __name__ == "__main__":
     unittest.main()

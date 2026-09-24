@@ -409,6 +409,17 @@ def main() -> int:
     art["_o_que_e"] = ("quantis do residuo de kills (diferenca, espelhada; e por "
                        "time) em volta da media Dixon-Coles; mlcore/abates_por_time.py")
     alvo = ROOT / "abates_por_time_forma.json"
+    # Os blocos COM A CHANCE DE VITORIA vem de outra regua
+    # (tools/abates_com_vitoria.py) e de outro periodo: regravar os de sempre
+    # nao pode apaga-los.
+    if alvo.exists():
+        try:
+            velho = json.loads(alvo.read_text(encoding="utf-8"))
+            for k, v in velho.items():
+                if "com_vitoria" in k:
+                    art[k] = v
+        except ValueError:
+            pass
     alvo.write_text(json.dumps(art, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n[abates] passou e gravou %s" % alvo)
     return 0

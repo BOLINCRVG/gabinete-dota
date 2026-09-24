@@ -273,6 +273,7 @@ def montar_oportunidades(
     prob_de_vencedor: Optional[Callable[[Dict[str, Any], Dict[str, Any]],
                                         Optional[float]]] = None,
     medias_kills: Optional[Callable[[str, str], Optional[Tuple[float, float]]]] = None,
+    p_mapa_da_casa: Optional[Callable[[Dict[str, Any]], Optional[float]]] = None,
 ) -> Dict[str, Any]:
     """A lista do que vale a pena, e a lista honesta do que ficou de fora.
 
@@ -321,7 +322,15 @@ def montar_oportunidades(
                 if medias_do_jogo[jid] is None:
                     sem_modelo.append({"jogo": jid, "casa": jogo.get("casa"),
                                        "fora": jogo.get("fora"), "mapa": "kills por time"})
-            _pk = prob_de_kills_por_time(l, medias_do_jogo[jid])
+            # A CHANCE DE VITORIA do cartao, so para o confronto aberto
+            # (24/09/2026: medida cega, melhora os dois mercados).
+            _pc = None
+            if p_mapa_da_casa is not None:
+                try:
+                    _pc = p_mapa_da_casa(jogo)
+                except Exception:
+                    _pc = None
+            _pk = prob_de_kills_por_time(l, medias_do_jogo[jid], p_casa=_pc)
             if _pk is not None:
                 _vk = vantagem_pct(_pk, l.get("odd"))
                 if _vk is not None:
@@ -334,6 +343,7 @@ def montar_oportunidades(
                         "fecha_em": l.get("fecha_em"), "tipo": l.get("tipo"),
                         "metrica": "kills_por_time",
                         "mapa": "m{}".format(l.get("periodo")),
+                        "com_vitoria": _pc is not None,
                     }
                     _com_a_casa(achado, l)
                     _guardar(achados, achado, jogo, jogos_por_time)
@@ -459,10 +469,13 @@ def forma_de_kills_por_time(l: Dict[str, Any]) -> Optional[str]:
 
 
 def prob_de_kills_por_time(l: Dict[str, Any],
-                           medias: Optional[Tuple[float, float]]) -> Optional[float]:
+                           medias: Optional[Tuple[float, float]],
+                           p_casa: Optional[float] = None) -> Optional[float]:
     """A chance DESTE lado da linha, ou None.
 
     `medias` = (kills esperados do mandante, do visitante), na ordem da casa.
+    `p_casa` = chance de o MANDANTE da casa vencer o mapa (so no confronto
+    aberto, vinda do cartao). Com ela a conta enxerga a forca do adversario.
     """
     forma = forma_de_kills_por_time(l)
     if forma is None or not medias:
@@ -474,11 +487,17 @@ def prob_de_kills_por_time(l: Dict[str, Any],
     from mlcore.abates_por_time import prob_cobre_handicap, prob_total_do_time_acima
     pontos = float(l.get("pontos"))
     lado = str(l.get("lado") or "").strip().lower()
+    pc = _num(p_casa)
+    if pc is not None and not 0.0 < pc < 1.0:
+        pc = None
     if forma == "handicap":
         e_lado, e_outro = (e_casa, e_fora) if lado == "home" else (e_fora, e_casa)
-        return prob_cobre_handicap(e_lado, e_outro, pontos)
-    e_time = e_casa if str(l.get("time")).lower() == "home" else e_fora
-    p_over = prob_total_do_time_acima(e_time, pontos)
+        p_lado = None if pc is None else (pc if lado == "home" else 1.0 - pc)
+        return prob_cobre_handicap(e_lado, e_outro, pontos, p_lado=p_lado)
+    casa = str(l.get("time")).lower() == "home"
+    e_time = e_casa if casa else e_fora
+    p_time = None if pc is None else (pc if casa else 1.0 - pc)
+    p_over = prob_total_do_time_acima(e_time, pontos, p_time=p_time)
     if p_over is None:
         return None
     return p_over if lado == "over" else 1.0 - p_over
@@ -569,6 +588,7 @@ def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, A
             "odd_modelo": (a or {}).get("odd_justa"),
             "vantagem_pct": (a or {}).get("vantagem_pct"),
             "diferenca_pp": (a or {}).get("diferenca_pp"),
+            "com_vitoria": (a or {}).get("com_vitoria"),
             "suspeito": (a or {}).get("suspeito"),
             "motivo": None if a else _motivo_no_quadro(l),
         })

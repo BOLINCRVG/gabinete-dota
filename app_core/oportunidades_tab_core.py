@@ -113,7 +113,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
                              minimo_pct=0.0, jogos_por_time=jogos_por_time,
                              prob_de_vencedor=_vencedor,
-                             medias_kills=ctx.get("medias_kills"))
+                             medias_kills=ctx.get("medias_kills"),
+                             p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
 
     todas = list(r.get("todas") or [])
     # DE ONDE CADA PRECO VEIO. Nao e a abertura -- e o primeiro que NOS vimos.
@@ -253,6 +254,10 @@ def tabela_do_mercado_completo(linhas: List[Mapping[str, Any]]) -> List[Dict[str
         "vantagem %": _r(x.get("vantagem_pct"), 1),
         "modelo x pinnacle (pts)": _r(x.get("diferenca_pp"), 1),
         "margem %": _r(x.get("margem_pct"), 1),
+        # Handicap e total por time: com a chance de vitoria do cartao (so o
+        # confronto aberto) ou so com os kills medios.
+        "conta": ("com vitoria" if x.get("com_vitoria") else
+                  ("so kills" if x.get("com_vitoria") is False else "")),
         "por que sem modelo": x.get("motivo") or "",
     } for x in linhas]
 
@@ -337,6 +342,10 @@ def _linha_comparada(a: Mapping[str, Any]) -> str:
         marcas += ("<span style='background:rgba(217,164,65,0.18);border:1px solid "
                    "rgba(217,164,65,0.55);border-radius:8px;padding:1px 7px;"
                    "font-size:0.72em;margin-left:8px;'>grande demais</span>")
+    if a.get("com_vitoria"):
+        marcas += ("<span style='background:rgba(45,170,196,0.14);border:1px solid "
+                   "rgba(45,170,196,0.5);border-radius:8px;padding:1px 7px;"
+                   "font-size:0.72em;margin-left:6px;'>com a chance de vitoria</span>")
     if a.get("dados_finos"):
         marcas += ("<span style='background:rgba(201,115,106,0.16);border:1px solid "
                    "rgba(201,115,106,0.5);border-radius:8px;padding:1px 7px;"
@@ -641,6 +650,34 @@ def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],
                                 casa_e_time_a=bool(lado_certo))
 
     return _prob
+
+
+def _p_mapa_da_casa(confronto: Mapping[str, Any],
+                    resolver: Optional[Callable[[str], str]]):
+    """Chance de o MANDANTE da casa vencer um mapa -- o numero do cartao.
+
+    So para o confronto aberto, como o vencedor: e o unico para o qual o app
+    calculou a chance. Entra no handicap de kills e no total por time
+    (mlcore/abates_por_time.py). Nao depende do BO: e por mapa.
+    """
+    if not confronto or resolver is None:
+        return None
+    time_a = str(confronto.get("teamA") or "")
+    time_b = str(confronto.get("teamB") or "")
+    try:
+        p_map = float(confronto.get("p_map"))
+    except (TypeError, ValueError):
+        return None
+    if not (time_a and time_b) or not 0.0 < p_map < 1.0:
+        return None
+
+    def _p(jogo):
+        lado_certo = mesmo_confronto(jogo, time_a, time_b, resolver)
+        if lado_certo is None:
+            return None
+        return p_map if lado_certo else 1.0 - p_map
+
+    return _p
 
 
 def _mostrar_casados_sozinhos(st: Any, casados: Mapping[str, Any],
