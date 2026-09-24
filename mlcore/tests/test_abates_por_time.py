@@ -193,6 +193,22 @@ class TestAAbaPrecifica(unittest.TestCase):
         self.assertEqual(r["todas"], [])
 
 
+class TestSemBlocoComVitoriaVoltaAContaDeSempre(unittest.TestCase):
+    """Defeito pego antes de entregar (24/09/2026): no Dota nao ha o bloco
+    com vitoria, mas a aba passa a chance do cartao -- e a conta devolvia
+    "sem numero" em vez da conta de sempre."""
+
+    def test_handicap_e_por_time(self):
+        art = {k: v for k, v in ab.carregar().items() if "com_vitoria" not in k}
+        if "handicap" not in art:
+            self.skipTest("artefato ausente")
+        self.assertEqual(ab.prob_cobre_handicap(18, 11, -6.5, artefato=art, p_lado=0.7),
+                         ab.prob_cobre_handicap(18, 11, -6.5, artefato=art))
+        if "total_time" in art:
+            self.assertEqual(ab.prob_total_do_time_acima(15, 14.5, artefato=art, p_time=0.7),
+                             ab.prob_total_do_time_acima(15, 14.5, artefato=art))
+
+
 class TestMercadoReprovadoDizIsso(unittest.TestCase):
 
     def test_motivo_de_mercado_que_nao_passou(self):

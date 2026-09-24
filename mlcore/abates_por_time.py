@@ -150,7 +150,9 @@ def prob_cobre_handicap(e_lado: float, e_outro: float, pontos: float,
     A conta sem vitoria nao enxerga a forca do adversario.
     """
     art = artefato if artefato is not None else carregar()
-    if p_lado is not None:
+    # Sem o bloco com vitoria (Dota: nao ha regua do vencedor), volta a conta
+    # de sempre -- nunca "sem numero" so porque a chance veio junto.
+    if p_lado is not None and (art or {}).get("handicap_com_vitoria"):
         reg = (art or {}).get("handicap_com_vitoria") or {}
         q, coef = reg.get("quantis"), reg.get("coef")
         try:
@@ -188,7 +190,7 @@ def prob_total_do_time_acima(e_time: float, linha: float,
     `total_time_com_vitoria` (cego: +0,0039 sobre a conta no ar).
     """
     art = artefato if artefato is not None else carregar()
-    if p_time is not None:
+    if p_time is not None and (art or {}).get("total_time_com_vitoria"):
         reg = (art or {}).get("total_time_com_vitoria") or {}
         q, coef = reg.get("quantis"), reg.get("coef")
         try:

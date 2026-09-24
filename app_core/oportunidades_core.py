@@ -343,7 +343,7 @@ def montar_oportunidades(
                         "fecha_em": l.get("fecha_em"), "tipo": l.get("tipo"),
                         "metrica": "kills_por_time",
                         "mapa": "m{}".format(l.get("periodo")),
-                        "com_vitoria": _pc is not None,
+                        "com_vitoria": _pc is not None and _tem_bloco_com_vitoria(l),
                     }
                     _com_a_casa(achado, l)
                     _guardar(achados, achado, jogo, jogos_por_time)
@@ -466,6 +466,15 @@ def forma_de_kills_por_time(l: Dict[str, Any]) -> Optional[str]:
             and str(l.get("time") or "").lower() in ("home", "away")):
         return "total_time"
     return None
+
+
+def _tem_bloco_com_vitoria(l: Dict[str, Any]) -> bool:
+    """A conta com vitoria existe para este mercado neste repositorio?"""
+    try:
+        from mlcore.abates_por_time import carregar
+        return bool(carregar().get("%s_com_vitoria" % forma_de_kills_por_time(l)))
+    except Exception:
+        return False
 
 
 def prob_de_kills_por_time(l: Dict[str, Any],
