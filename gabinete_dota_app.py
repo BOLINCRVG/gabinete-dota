@@ -3551,13 +3551,20 @@ def _oportunidades_calcular_totais(casa: str, fora: str, mapa: str):
     b_csv = _oportunidades_resolver_time(fora)
     if not a_csv or not b_csv:
         return None
-    _pA = build_profile(team_games, team=a_csv, filters=filters, league_mode=league_mode,
-                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
-    _pB = build_profile(team_games, team=b_csv, filters=filters, league_mode=league_mode,
-                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
-    if _pA.n_games == 0 or _pB.n_games == 0:
-        return None
-    return _expected_totals_dc(team_games, _pA, _pB)
+
+    def _construir(modo):
+        _pA = build_profile(team_games, team=a_csv, filters=filters, league_mode=league_mode,
+                            map_mode=modo, half_life_days=half_life_days, max_games=max_games)
+        _pB = build_profile(team_games, team=b_csv, filters=filters, league_mode=league_mode,
+                            map_mode=modo, half_life_days=half_life_days, max_games=max_games)
+        if _pA.n_games == 0 or _pB.n_games == 0:
+            return None, int(_pA.n_games), int(_pB.n_games)
+        return _expected_totals_dc(team_games, _pA, _pB), int(_pA.n_games), int(_pB.n_games)
+
+    # QUAL PERFIL (24/09/2026): o mapa 4 da Shopify tinha UM jogo e virou
+    # 94% em torres. Regra e medicao em app_core/oportunidades_core.py.
+    from app_core.oportunidades_core import totais_para_o_mapa
+    return totais_para_o_mapa(_construir, mapa)
 
 
 def _oportunidades_jogos_por_time(nome: str) -> int:

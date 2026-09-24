@@ -443,6 +443,54 @@ def _motivo_kills_por_time(l: Dict[str, Any]) -> str:
     return "o modelo nao conseguiu este confronto (time sem casar ou jogos de menos)"
 
 
+# ---------------------------------------------------------------------------
+# QUAL PERFIL USAR PARA CADA MAPA (24/09/2026)
+#
+# ERRO ACHADO no exemplo que ele pediu (Shopify Rebellion x Sentinels, LCS
+# 18/09): em "torres do mapa 4" o modelo dizia 94% para "acima de 12,5"
+# contra 47% da Pinnacle. A aba montava o perfil so com os mapas 4 de cada
+# time -- e a Shopify tinha UM mapa 4 em 2026. Um jogo so virava a media.
+#
+# MEDIDO no historico (29 mil mapas): o numero do mapa quase nao muda os
+# totais -- torres 11,98 a 12,14; dragoes 4,33 a 4,71; tempo 31,3 a 32,9;
+# kills 29,3 a 33,3 (o 29,3 e do mapa 5, com 508 jogos). Perfil por mapa
+# troca uma diferenca pequena por ruido enorme.
+#
+# A REGRA:
+#   - torres, dragoes, baroes, inibidores e tempo: perfil de TODOS os mapas,
+#     que e o perfil com que a forma deles foi medida
+#     (tools/espalhamento_dos_totais.py usa map_mode="avg");
+#   - kills: o perfil do mapa, como foi medido contra a casa
+#     (tools/abates_contra_a_casa.py) -- mas SO com pelo menos
+#     JOGOS_MINIMOS_NO_MAPA de cada time naquele mapa; abaixo disso, todos.
+# ---------------------------------------------------------------------------
+JOGOS_MINIMOS_NO_MAPA = 10
+_POR_MAPA = ("kills",)
+
+
+def totais_para_o_mapa(construir: Callable[[str], Optional[Tuple[Any, int, int]]],
+                       mapa: str,
+                       minimo: int = JOGOS_MINIMOS_NO_MAPA) -> Optional[Dict[str, Any]]:
+    """Os totais que a aba usa para um mapa.
+
+    `construir(map_mode)` devolve (totais, jogos do time A, jogos do time B)
+    pelo caminho de producao, ou None. Devolve os totais de TODOS os mapas,
+    com kills trocado pelo do mapa quando ha jogos suficientes naquele mapa.
+    """
+    base = construir("avg")
+    if base is None or base[0] is None or min(base[1], base[2]) <= 0:
+        return None
+    totais = dict(base[0])
+    if str(mapa or "avg") != "avg":
+        do_mapa = construir(str(mapa))
+        if (do_mapa is not None and do_mapa[0] is not None
+                and min(do_mapa[1], do_mapa[2]) >= int(minimo)):
+            for m in _POR_MAPA:
+                if m in do_mapa[0]:
+                    totais[m] = do_mapa[0][m]
+    return totais
+
+
 def forma_de_kills_por_time(l: Dict[str, Any]) -> Optional[str]:
     """"handicap" ou "total_time" quando a linha e de kills de UM mapa.
 

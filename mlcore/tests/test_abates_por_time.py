@@ -290,5 +290,36 @@ class TestComAChanceDeVitoria(unittest.TestCase):
         self.assertIn('"com_vitoria" in k', fonte)
 
 
+
+class TestQualPerfilParaCadaMapa(unittest.TestCase):
+    """O exemplo que ele pediu (24/09/2026): Shopify Rebellion x Sentinels,
+    torres do mapa 4 -- a Shopify tinha UM mapa 4 e o modelo disse 94%
+    contra 47% da Pinnacle."""
+
+    def _construir(self, n_mapa):
+        def c(modo):
+            if modo == "avg":
+                return {"towers": "T_todos", "kills": "K_todos"}, 54, 90
+            return {"towers": "T_mapa", "kills": "K_mapa"}, n_mapa, 33
+        return c
+
+    def test_um_jogo_no_mapa_usa_TODOS_os_mapas(self):
+        from app_core.oportunidades_core import totais_para_o_mapa
+        t = totais_para_o_mapa(self._construir(1), "m4")
+        self.assertEqual(t, {"towers": "T_todos", "kills": "K_todos"})
+
+    def test_torres_usa_sempre_todos_kills_usa_o_mapa_com_jogos(self):
+        from app_core.oportunidades_core import totais_para_o_mapa
+        t = totais_para_o_mapa(self._construir(22), "m1")
+        self.assertEqual(t["towers"], "T_todos")
+        self.assertEqual(t["kills"], "K_mapa")
+
+    def test_os_dois_apps_usam_a_regra(self):
+        for arq in (RAIZ / "plays_app.py", RAIZ.parent / "GabineteDOTA" / "gabinete_dota_app.py"):
+            if arq.exists():
+                self.assertIn("totais_para_o_mapa(_construir, mapa)",
+                              arq.read_text(encoding="utf-8"), arq)
+
+
 if __name__ == "__main__":
     unittest.main()

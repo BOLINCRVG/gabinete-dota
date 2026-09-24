@@ -128,8 +128,25 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         # O MERCADO PRIMEIRO, a aposta depois. Foi o que ele pediu: "eu
         # selecionaria por exemplo, Vencedor e voce me mostraria a tela com a
         # odd do modelo e ao lado a odd da casa".
-        por_mercado: Dict[str, List[Mapping[str, Any]]] = {}
+        #
+        # O JOGO ANTES DO MERCADO (24/09/2026). No exemplo que ele pediu, com
+        # cinco jogos na tela, "Handicap - Kills - mapa 1" listava LYON,
+        # Sentinels, Vivo Keyd e Forsaken misturados numa tabela de 20
+        # linhas. O mercado so faz sentido dentro de UM jogo. O confronto
+        # aberto vem primeiro: e o unico com vencedor e com a chance de
+        # vitoria nos kills.
+        por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
         for a in todas:
+            por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
+        jogos_cmp = ordem_dos_jogos(por_jogo_cmp)
+        jogo_cmp = st.selectbox(
+            "Qual jogo",
+            jogos_cmp,
+            format_func=lambda j: _rotulo_do_jogo(por_jogo_cmp[j]),
+            key="oportunidades_jogo_cmp",
+        )
+        por_mercado: Dict[str, List[Mapping[str, Any]]] = {}
+        for a in por_jogo_cmp.get(jogo_cmp) or []:
             por_mercado.setdefault(str(a.get("mercado") or "?"), []).append(a)
         nomes = sorted(por_mercado, key=lambda k: (-max(
             (x.get("vantagem_pct") or -999) for x in por_mercado[k]), k))
@@ -157,6 +174,25 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     _mostrar_mercado_completo(st, r)
     _o_que_ficou_de_fora(st, r, nao_casados)
+
+
+def ordem_dos_jogos(por_jogo: Mapping[Any, List[Mapping[str, Any]]]) -> List[Any]:
+    """O confronto aberto primeiro (o que tem conta com a chance de vitoria
+    ou vencedor), depois os outros pela maior vantagem."""
+    def _chave(j):
+        linhas = por_jogo[j]
+        aberto = any(x.get("com_vitoria") or x.get("metrica") == "vencedor" for x in linhas)
+        melhor = max((x.get("vantagem_pct") or -999.0) for x in linhas)
+        return (0 if aberto else 1, -melhor)
+    return sorted(por_jogo, key=_chave)
+
+
+def _rotulo_do_jogo(linhas: List[Mapping[str, Any]]) -> str:
+    x = linhas[0] if linhas else {}
+    aberto = any(y.get("com_vitoria") or y.get("metrica") == "vencedor" for y in linhas)
+    return "{}{} — {} x {}  ({} linhas)".format(
+        "ABERTO: " if aberto else "", x.get("liga") or "?", x.get("casa") or "?",
+        x.get("fora") or "?", len(linhas))
 
 
 def _texto_da_diferenca(a: Mapping[str, Any]) -> str:
