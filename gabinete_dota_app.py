@@ -3514,7 +3514,114 @@ if _TAB_CONS in tab_refs:
 # -----------------------------
 # Secondary tabs extracted from plays_app
 # -----------------------------
+# -----------------------------
+# Oportunidades: a Pinnacle inteira contra o modelo (23/09/2026)
+# -----------------------------
+# Ele pediu a Pinnacle "de forma total, 100%... tanto para o lol, quanto para
+# o dota". O robo deste repositorio (.github/workflows/odds.yml) grava as odds
+# do Dota; esta aba e a MESMA do LoL (app_core/oportunidades_*, identicos),
+# ligada ao caminho de producao do Dota.
+#
+# DIFERENCA DE PROPOSITO: aqui o app NAO casa nome de time sozinho. A regra do
+# LoL (app_core/casar_time_core.py) foi medida em 52 apelidos de LoL; no Dota
+# nunca foi medida, e a identidade de time aqui e team_id + elenco, nao o
+# nome. Casa so nome exato ou apelido que ele ensinar.
+from mlcore.lines_engine import prob_over_from_total as core_prob_over_from_total
+
+
+def _oportunidades_resolver_time(nome: str) -> str:
+    try:
+        achado, ok = core_resolve_schedule_team(str(nome), list(teams),
+                                                _oportunidades_apelidos())
+    except Exception:
+        return ""
+    return str(achado) if ok else ""
+
+
+def _oportunidades_apelidos():
+    try:
+        return core_load_schedule_aliases(st.session_state, APP_ROOT / "user_team_aliases.json")
+    except Exception:
+        return {}
+
+
+def _oportunidades_calcular_totais(casa: str, fora: str, mapa: str):
+    """Os totais do confronto pelo MESMO caminho da tela de analise do Dota."""
+    a_csv = _oportunidades_resolver_time(casa)
+    b_csv = _oportunidades_resolver_time(fora)
+    if not a_csv or not b_csv:
+        return None
+    _pA = build_profile(team_games, team=a_csv, filters=filters, league_mode=league_mode,
+                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
+    _pB = build_profile(team_games, team=b_csv, filters=filters, league_mode=league_mode,
+                        map_mode=mapa, half_life_days=half_life_days, max_games=max_games)
+    if _pA.n_games == 0 or _pB.n_games == 0:
+        return None
+    return _expected_totals_dc(team_games, _pA, _pB)
+
+
+def _oportunidades_jogos_por_time(nome: str) -> int:
+    alvo = _oportunidades_resolver_time(nome)
+    if not alvo:
+        return -1
+    try:
+        return int((team_games["team"].astype(str) == alvo).sum())
+    except Exception:
+        return -1
+
+
+def _oportunidades_sugerir_times(cru: str) -> list:
+    try:
+        return list(core_suggest_schedule_teams(str(cru), list(teams)))
+    except Exception:
+        return []
+
+
+def _oportunidades_ensinar_apelido(cru: str, escolhido: str) -> None:
+    caminho = APP_ROOT / "user_team_aliases.json"
+    apelidos = core_load_schedule_aliases(st.session_state, caminho)
+    apelidos[core_normalize_schedule_team_key(str(cru))] = str(escolhido)
+    core_save_schedule_aliases(st.session_state, caminho, apelidos)
+
+
+def _oportunidades_times_nao_casados() -> list:
+    from app_core.odds_coletadas_core import carregar_odds_coletadas, times_da_coleta
+    try:
+        _odds = carregar_odds_coletadas(APP_ROOT)
+    except Exception:
+        return []
+    return [n for n in times_da_coleta(_odds) if not _oportunidades_resolver_time(n)]
+
+
+def _render_oportunidades_dota() -> None:
+    """Protegida: o despachante do Dota nao isola falha, e uma aba com defeito
+    nao pode derrubar o app inteiro."""
+    try:
+        from app_core.oportunidades_tab_core import render_oportunidades_tab
+        render_oportunidades_tab(st=st, ctx={
+            "raiz": APP_ROOT,
+            "calcular_totais": _oportunidades_calcular_totais,
+            "prob_over": core_prob_over_from_total,
+            "casados_sozinhos": {},
+            "jogos_por_time": _oportunidades_jogos_por_time,
+            "times_nao_casados": _oportunidades_times_nao_casados(),
+            "resolver_time": _oportunidades_resolver_time,
+            "sugerir_times": _oportunidades_sugerir_times,
+            "ensinar_apelido": _oportunidades_ensinar_apelido,
+            # O MESMO numero do card do confronto (visao_tab_core le estes).
+            "confronto": {
+                "teamA": teamA, "teamB": teamB, "bo": int(bo),
+                "p_map": st.session_state.get("_p_map_used", p_map_cal),
+                "p_series": st.session_state.get("_p_series_used", p_series),
+            },
+        })
+    except Exception as _e:  # noqa: BLE001
+        st.error("A aba Oportunidades falhou ({}: {}). O resto do app segue.".format(
+            type(_e).__name__, _e))
+
+
 _secondary_tab_renderers = {
+    "Oportunidades": _render_oportunidades_dota,
     "Rankings": lambda: core_render_rankings_tab(
         st=st,
         team_games=team_games,

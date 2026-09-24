@@ -1,0 +1,99 @@
+# ODDS DO DOTA NA PINNACLE (23/09/2026)
+#
+# Ele pediu a Pinnacle "de forma total, 100%... tanto para o lol, quanto para
+# o dota". O Dota ja vinha, em TODA corrida do robo do LoL, na mesma resposta
+# da Pinnacle -- e era jogado fora. Este robo roda o MESMO coletor
+# (tools/coletar_odds.py, identico nos dois repositorios); ele percebe que
+# esta no repositorio do Dota e guarda so o Dota.
+#
+# O que sai daqui: `odds_pinnacle.json` (o retrato de agora),
+# `odds_pinnacle_historico.jsonl` (so o que MUDOU), `odds_pinnacle_partidas.jsonl`
+# (quem jogava) e `odds_coletas.jsonl` (o diario: uma linha por corrida, deu
+# certo ou nao).
+#
+# EDUCACAO COM A CASA -- as mesmas travas do LoL: identificacao honesta, 403 e
+# 429 param na hora, dois 401 param a corrida, teto de 40 chamadas.
+name: Odds (preco da Pinnacle)
+
+on:
+  schedule:
+    # BASE, de 3 em 3 horas, aos :35 -- DEZ minutos depois do robo do LoL
+    # (:25), para os dois nunca baterem na casa no mesmo instante.
+    - cron: "35 1,4,7,10,13,16,19,22 * * *"
+    # PERTO DO APITO, uma vez por hora. Uma so (o LoL usa duas): os jogos de
+    # Dota nao comecam todos na hora cheia como os de LoL, entao nao ha um
+    # minuto "certo" para mirar. :47 fica longe dos minutos mais disputados
+    # do agendador do GitHub (inicio de cada hora) e dos :43/:53 do LoL.
+    - cron: "47 6-22 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: odds
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # So o que o coletor usa. O requirements.txt inteiro traz o motor de
+      # treino (minutos de instalacao) para uma leitura de segundos.
+      - name: Instalar dependencias
+        run: pip install --quiet requests==2.32.5
+
+      - name: Ler as odds
+        id: coleta
+        run: |
+          set +e
+          python tools/coletar_odds.py --jogo dota
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::A casa bloqueou ou a rede caiu. Nada escrito; tenta na proxima janela."
+            exit 0
+          fi
+          exit "$rc"
+
+      # O diario sobe em qualquer desfecho; as odds, so quando a leitura deu
+      # certo (dado ruim nao entra). Mesma regra do robo do LoL.
+      - name: Commitar
+        if: always() && steps.coleta.outputs.rc != ''
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add odds_coletas.jsonl || true
+          if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
+            git add odds_pinnacle.json odds_pinnacle_historico.jsonl odds_pinnacle_partidas.jsonl
+            MSG="Robo: odds da Pinnacle (Dota) atualizadas"
+          else
+            MSG="Robo: corrida de odds sem leitura (rc=${{ steps.coleta.outputs.rc }})"
+          fi
+          if git diff --cached --quiet; then
+            echo "nada mudou - nada a commitar"
+          else
+            git commit -m "$MSG"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrencia) - rebase e nova tentativa $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
+
+      - name: Se falhou, dizer o que fazer
+        if: failure()
+        run: |
+          echo "::error::A leitura das odds falhou com erro de verdade (nao foi bloqueio nem rede)."
+          echo "O mais provavel e a API interna ter mudado de formato - o coletor"
+          echo "recusa gravar quando nao reconhece a resposta, de proposito."
+          echo "Para investigar: python tools/coletar_odds.py --jogo dota"
