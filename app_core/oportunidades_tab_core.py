@@ -154,7 +154,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
             key="oportunidades_jogo_cmp",
         )
-        _tabelas_estilo_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp], jogo_cmp)
+        _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
+                         _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""))
 
         # O MERCADO PRIMEIRO, a aposta depois (pedido de 16/09/2026): a
         # comparacao linha por linha continua aqui embaixo.
@@ -784,189 +785,23 @@ def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) 
 
 
 # ---------------------------------------------------------------------------
-# O PAINEL DA LINHA JUSTA (25/09/2026)
+# LINHA JUSTA NO FORMATO DA BET365 (25/09/2026)
 #
-# Ele: "caso o seu calculo de 25.5, eu quero ver como e a odd que o nosso
-# modelo da o 25.5 e como a pinnacle aponta". Uma linha por mercado, mapa a
-# mapa: a linha do modelo, a dela, a distancia, e o dinheiro na linha do
-# modelo. Onde ela nao oferece a linha do modelo, a comparacao vai para a
-# linha dela -- nunca some.
+# Ele mandou o print da bet365 e pediu o MESMO desenho: tres tabelas (Fair,
+# Modelo, Pinnacle), clique DENTRO da linha, a Fair fixa e Modelo/Pinnacle
+# andando juntas. O desenho e o clique vivem em app_core/tabela_casa_core.py.
 # ---------------------------------------------------------------------------
 
-_ORDEM_DO_MERCADO = {"kills_total": 0, "handicap": 1, "total_time": 2}
 
-
-def _nome_da_linha_justa(x: Mapping[str, Any]) -> str:
-    forma = str(x.get("forma") or "")
-    if forma == "handicap":
-        return "Handicap de kills"
-    if forma == "total_time":
-        dono = x.get("casa") if str(x.get("time") or "").lower() == "home" else x.get("fora")
-        return "Kills da {}".format(dono)
-    nome = str(x.get("nome_pt") or x.get("mercado") or "")
-    if "Kills" in str(x.get("mercado") or ""):
-        return "Kills (total)"
-    return nome.split(" - ")[0]
-
-
-def _chave_da_linha_justa(x: Mapping[str, Any]):
-    forma = str(x.get("forma") or "")
-    if forma == "total" and "Kills" in str(x.get("mercado") or ""):
-        forma = "kills_total"
-    return (_ORDEM_DO_MERCADO.get(forma, 9), _nome_da_linha_justa(x))
-
-
-def _linha_txt(x: Mapping[str, Any], L: Any) -> str:
-    try:
-        v = float(L)
-    except (TypeError, ValueError):
-        return "—"
-    if str(x.get("tipo_linha")) == "handicap":
-        return "{} {:+.1f}".format(x.get("casa") or "?", v).replace(".", ",")
-    return "{:.1f}".format(v).replace(".", ",")
-
-
-# ---------------------------------------------------------------------------
-# NO FORMATO DA CASA (25/09/2026)
-#
-# Ele mandou o print da bet365 -- "Mapa 1 - Totais", Mais de / Menos de -- e
-# pediu: "3 tabelas dessas, a com a linha da fair, a do modelo e a da
-# pinnacle, onde eu poderia clicar nas linhas para conseguir alterar conforme
-# a pinnacle me oferecesse as linhas".
-#
-# Um mercado por linha, mapa a mapa, com tres blocos lado a lado:
-#   1. LINHA JUSTA (modelo) -- fixa: onde o modelo acha 50/50;
-#   2. MODELO na linha escolhida;
-#   3. PINNACLE na linha escolhida -- verde quando paga mais que o modelo.
-# As linhas que a Pinnacle oferece viram botoes; comeca na principal dela.
-#
-# "QUE EU CLIQUE E ELE VA": o painel roda como FRAGMENTO -- clicar numa
-# linha recalcula so ele, nao o app inteiro. Tudo o que ele mostra ja veio
-# calculado (montar_linhas_justas guarda o modelo em CADA linha oferecida).
-# ---------------------------------------------------------------------------
-
-_COLUNAS = [1.35, 1.25, 1.55, 1.75, 2.3]
-_LINHAS_EM_VOLTA = 5      # botoes: a principal e ate 5 de cada lado
-
-
-def _vant_html(v: Any) -> str:
-    try:
-        f = float(v)
-    except (TypeError, ValueError):
-        return ""
-    cor = _COR_BOA if f > 0 else _COR_RUIM
-    return "<span style='color:{};font-weight:700;font-size:0.8em'> {:+.1f}%</span>".format(cor, f)
-
-
-def _celula(rotulo_a: str, rotulo_b: str, odd_a: Any, odd_b: Any, *, cor: str,
-            vant_a: Any = None, vant_b: Any = None, destaque: bool = False) -> str:
-    """Duas metades lado a lado, como Mais de | Menos de na casa."""
-    def _metade(rot, odd, vant):
-        verde = destaque and _num_ok(vant) and float(vant) > 0
-        fundo = "rgba(63,185,80,0.16)" if verde else "rgba(255,255,255,0.03)"
-        borda = "rgba(63,185,80,0.55)" if verde else "rgba(255,255,255,0.08)"
-        return ("<div style='flex:1;background:{f};border:1px solid {b};border-radius:8px;"
-                "padding:5px 8px;text-align:center'>"
-                "<div style='font-size:0.72em;opacity:0.65'>{r}</div>"
-                "<div style='color:{c};font-weight:800'>{o}{v}</div></div>").format(
-                    f=fundo, b=borda, r=escape(rot), c=cor, o=_fmt(odd),
-                    v=_vant_html(vant) if destaque else "")
-    return ("<div style='display:flex;gap:6px'>{}{}</div>".format(
-        _metade(rotulo_a, odd_a, vant_a), _metade(rotulo_b, odd_b, vant_b)))
-
-
-def _num_ok(v: Any) -> bool:
-    try:
-        return float(v) == float(v)
-    except (TypeError, ValueError):
-        return False
-
-
-def _rotulos(x: Mapping[str, Any], L: Any):
-    """("Mais de 25,5", "Menos de 25,5") ou ("FlyQuest -3,5", "Shopify +3,5")."""
-    try:
-        v = float(L)
-    except (TypeError, ValueError):
-        return ("—", "—")
-    if str(x.get("tipo_linha")) == "handicap":
-        return ("{} {:+.1f}".format(x.get("casa") or "casa", v).replace(".", ","),
-                "{} {:+.1f}".format(x.get("fora") or "fora", -v).replace(".", ","))
-    t = "{:.1f}".format(v).replace(".", ",")
-    return ("Mais de " + t, "Menos de " + t)
-
-
-def _botoes_de_linha(x: Mapping[str, Any]) -> List[Mapping[str, Any]]:
-    linhas = list(x.get("linhas_pin") or [])
+def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str) -> None:
+    from app_core.tabela_casa_core import altura, html_das_tabelas, linhas_da_tela
+    linhas = linhas_da_tela(justas)
     if not linhas:
-        return []
-    i0 = next((i for i, l in enumerate(linhas) if l.get("principal")), len(linhas) // 2)
-    return linhas[max(0, i0 - _LINHAS_EM_VOLTA): i0 + _LINHAS_EM_VOLTA + 1]
-
-
-def _tabelas_estilo_casa(st: Any, justas: List[Mapping[str, Any]], jogo: Any) -> None:
-    if not justas:
         return
-
-    def _painel():
-        st.markdown("### Linha justa: modelo x Pinnacle")
-        mapas = sorted({int(x.get("periodo") or 0) for x in justas})
-        mapa = st.radio("Mapa", mapas, horizontal=True, format_func=lambda m: "Mapa %d" % m,
-                        key="lj_mapa_%s" % jogo, label_visibility="collapsed")
-        do_mapa = sorted([x for x in justas if int(x.get("periodo") or 0) == mapa],
-                         key=_chave_da_linha_justa)
-        cab = st.columns(_COLUNAS)
-        for c, t, cor in zip(cab, ("Mercado", "Linha justa (modelo)", "Modelo na linha",
-                                   "Pinnacle na linha", "Linhas da Pinnacle (clique)"),
-                             ("", _COR_MODELO, _COR_MODELO, _COR_CASA, "")):
-            c.markdown("<div style='font-size:0.72em;text-transform:uppercase;letter-spacing:"
-                       "0.05em;opacity:0.7;color:{}'>{}</div>".format(cor or "inherit", t),
-                       unsafe_allow_html=True)
-        for x in do_mapa:
-            col = st.columns(_COLUNAS, vertical_alignment="center")
-            botoes = _botoes_de_linha(x)
-            escolhida = None
-            with col[4]:
-                if botoes:
-                    principal = next((b["linha"] for b in botoes if b.get("principal")),
-                                     botoes[len(botoes) // 2]["linha"])
-                    # st.radio e nao st.pills: o testador do Streamlit (AppTest)
-                    # quebra com pills de escolha unica ('float' is not
-                    # iterable) e derrubava dois testes de tela; o radio
-                    # horizontal e o mesmo clique unico.
-                    _ops = [b["linha"] for b in botoes]
-                    escolhida = st.radio(
-                        "linha", _ops, index=_ops.index(principal), horizontal=True,
-                        format_func=lambda L, _x=x: _linha_txt(_x, L),
-                        key="lj_%s_%s_%s_%s" % (jogo, x.get("mercado"), x.get("time"), mapa),
-                        label_visibility="collapsed")
-                    if escolhida is None:
-                        escolhida = principal
-                else:
-                    st.caption("a Pinnacle nao oferece linha")
-            nome = _nome_da_linha_justa(x)
-            col[0].markdown("**{}**".format(nome) + (
-                "<div style='font-size:0.7em;opacity:0.6'>com a chance de vitoria</div>"
-                if x.get("conta") == "com vitoria" else ""), unsafe_allow_html=True)
-            ra, rb = _rotulos(x, x.get("linha_modelo"))
-            col[1].markdown(_celula(ra, rb, x.get("odd_modelo_a"), x.get("odd_modelo_b"),
-                                    cor=_COR_MODELO), unsafe_allow_html=True)
-            info = next((b for b in botoes if b["linha"] == escolhida), None)
-            if info is None:
-                col[2].caption("—")
-                col[3].caption("—")
-                continue
-            ra, rb = _rotulos(x, escolhida)
-            col[2].markdown(_celula(ra, rb, info.get("odd_modelo_a"), info.get("odd_modelo_b"),
-                                    cor=_COR_MODELO), unsafe_allow_html=True)
-            col[3].markdown(_celula(ra, rb, info.get("casa_a"), info.get("casa_b"),
-                                    cor=_COR_CASA, vant_a=info.get("vantagem_a"),
-                                    vant_b=info.get("vantagem_b"), destaque=True),
-                            unsafe_allow_html=True)
-        st.caption(
-            "**Linha justa** e onde o modelo acha 50/50 (as odds dele dos dois lados). "
-            "Clique nas linhas da Pinnacle para ver, na mesma linha, a odd do **modelo** e o "
-            "que a **Pinnacle** paga; em verde, o lado em que ela paga mais que o modelo, com "
-            "a vantagem. Comeca na linha principal dela.")
-
-    frag = st.fragment(_painel) if hasattr(st, "fragment") else _painel
-    frag()
+    st.markdown("### Linha justa: modelo x Pinnacle")
+    try:
+        import streamlit.components.v1 as _componentes
+    except Exception:
+        st.info("Esta versao do Streamlit nao desenha a tabela no formato da casa.")
+        return
+    _componentes.html(html_das_tabelas(linhas, titulo), height=altura(linhas), scrolling=True)

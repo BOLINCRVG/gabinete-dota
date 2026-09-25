@@ -981,6 +981,26 @@ def montar_linhas_justas(
                 "vantagem_a": vantagem_pct(pl, ca) if pl is not None else None,
                 "vantagem_b": vantagem_pct(1.0 - pl, cb) if pl is not None else None,
             })
+        # A GRADE para clicar (25/09/2026, pedido dele com o print da bet365):
+        # as linhas que ela oferece + as vizinhas da linha justa do modelo,
+        # cada uma com a odd do modelo e -- se ela oferece -- a dela.
+        pin_por_linha = {l["linha"]: l for l in linhas_pin}
+        grade_linhas = sorted(set(pin_por_linha) | {L_mod + k for k in range(-6, 7)})
+        if tipo_linha != "handicap":
+            grade_linhas = [g for g in grade_linhas if g > 0]
+        grade = []
+        for L in grade_linhas:
+            pl = _num(f(L))
+            if pl is None:
+                continue
+            pin_l = pin_por_linha.get(L) or {}
+            grade.append({
+                "linha": L,
+                "odd_modelo_a": odd_justa(pl), "odd_modelo_b": odd_justa(1.0 - pl),
+                "casa_a": pin_l.get("casa_a"), "casa_b": pin_l.get("casa_b"),
+                "vantagem_a": pin_l.get("vantagem_a"), "vantagem_b": pin_l.get("vantagem_b"),
+                "principal": bool(pin_l.get("principal")),
+            })
         # NA LINHA DA PINNACLE tambem: quando ela nao oferece a linha do
         # modelo, e aqui que a comparacao continua existindo.
         p_mod_pin = _num(f(pin[0])) if pin else None
@@ -1009,6 +1029,7 @@ def montar_linhas_justas(
             "vantagem_b": vantagem_pct(1.0 - p_mod, casa_b),
             "margem_pct": (na_linha.get("a") or {}).get("margem_pct"),
             "linhas_pin": linhas_pin,
+            "grade": grade,
             "p_modelo_na_linha_pinnacle": p_mod_pin,
             "odd_modelo_pin_a": odd_justa(p_mod_pin) if p_mod_pin is not None else None,
             "odd_modelo_pin_b": odd_justa(1.0 - p_mod_pin) if p_mod_pin is not None else None,
