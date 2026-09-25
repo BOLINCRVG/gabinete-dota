@@ -1,11 +1,11 @@
 {
- "gerado_em": "2026-09-24T15:39:25",
+ "gerado_em": "2026-09-25T15:42:08",
  "reguas": [
   {
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 28.6,
+   "idade_dias": 29.6,
    "estado": "VELHA"
   },
   {
