@@ -773,3 +773,225 @@ def nome_que_falta_casar(jogo: Dict[str, Any], time_a: str, time_b: str,
     if len(casaram) == 1 and len(faltaram) == 1:
         return faltaram[0]
     return None
+
+
+# ---------------------------------------------------------------------------
+# A LINHA JUSTA (25/09/2026)
+#
+# ELE PEDIU, depois de ver a aba com FlyQuest x Shopify: "eu gostaria que
+# voce calculasse qual seria a linha justa desse confronto, caso o seu calculo
+# de 25.5, eu quero ver como e a odd que o nosso modelo da o 25.5 e como a
+# pinnacle aponta".
+#
+# Para cada mercado de linha (total de kills, handicap de kills, total de
+# kills do time, torres, dragoes, baroes, inibidores):
+#   - a LINHA JUSTA DO MODELO: a meia-linha em que ele chega mais perto de
+#     50/50;
+#   - a LINHA JUSTA DA PINNACLE: entre as linhas que ela oferece (principal e
+#     alternativas), a que fica mais perto de 50/50 SEM A MARGEM;
+#   - a DISTANCIA entre as duas, em kills (ou torres...);
+#   - NA LINHA DO MODELO: a odd dele dos dois lados, o que a Pinnacle paga
+#     nessa mesma linha (se oferece) e a vantagem de cada lado.
+#
+# A conta de cada mercado e a MESMA da aba (prob_over do motor, e
+# mlcore/abates_por_time.py para handicap e total por time) -- nao nasce uma
+# segunda conta aqui.
+# ---------------------------------------------------------------------------
+
+
+def linha_mais_perto_de_meio(f: Callable[[float], Optional[float]],
+                             candidatas) -> Optional[Tuple[float, float]]:
+    """(linha, P) da meia-linha em que P fica mais perto de 50%.
+
+    Empate: fica a primeira da lista (as candidatas vem em ordem crescente).
+    """
+    melhor = None
+    for L in candidatas:
+        try:
+            p = f(float(L))
+        except Exception:
+            p = None
+        p = _num(p)
+        if p is None:
+            continue
+        d = abs(p - 0.5)
+        if melhor is None or d < melhor[2] - 1e-12:
+            melhor = (float(L), p, d)
+    return (melhor[0], melhor[1]) if melhor else None
+
+
+def _meias_linhas(lo: float, hi: float) -> List[float]:
+    return [x + 0.5 for x in range(int(math.floor(lo)), int(math.ceil(hi)))]
+
+
+def _chave_do_grupo(l: Dict[str, Any]) -> Tuple[Any, ...]:
+    return (l.get("jogo"), str(l.get("mercado") or ""), str(l.get("tipo") or ""),
+            l.get("periodo"), str(l.get("time") or ""))
+
+
+def _lados_por_linha(grupo: List[Dict[str, Any]], tipo_linha: str) -> Dict[float, Dict[str, Any]]:
+    """{linha: {"a": linha do lado de cima/mandante, "b": o outro lado}}.
+
+    Total e total do time: a linha e os pontos (a = acima, b = abaixo).
+    Handicap: a linha e o handicap do MANDANTE (a = mandante com esses
+    pontos, b = visitante com os pontos trocados de sinal).
+    """
+    fora: Dict[float, Dict[str, Any]] = {}
+    for l in grupo:
+        pts = _num(l.get("pontos"))
+        if pts is None:
+            continue
+        lado = str(l.get("lado") or "").strip().lower()
+        if tipo_linha == "handicap":
+            if lado == "home":
+                fora.setdefault(pts, {})["a"] = l
+            elif lado == "away":
+                fora.setdefault(-pts, {})["b"] = l
+        else:
+            if lado == "over":
+                fora.setdefault(pts, {})["a"] = l
+            elif lado == "under":
+                fora.setdefault(pts, {})["b"] = l
+    return fora
+
+
+def montar_linhas_justas(
+    odds: Dict[str, Any],
+    calcular_totais: Callable[[str, str, str], Optional[Dict[str, Any]]],
+    *,
+    prob_over: Callable[[Any, float], float],
+    medias_kills: Optional[Callable[[str, str], Optional[Tuple[float, float]]]] = None,
+    p_mapa_da_casa: Optional[Callable[[Dict[str, Any]], Optional[float]]] = None,
+) -> List[Dict[str, Any]]:
+    """Uma linha de tabela por mercado de linha de cada jogo. Ver o bloco acima."""
+    from app_core.preco_justo_casa_core import anexar_preco_justo
+    jogos = {int(j.get("id", -1)): j for j in (odds.get("jogos") or [])}
+    linhas = anexar_preco_justo(odds.get("linhas") or [])
+    grupos: Dict[Tuple[Any, ...], List[Dict[str, Any]]] = {}
+    for l in linhas:
+        if isinstance(l, dict):
+            grupos.setdefault(_chave_do_grupo(l), []).append(l)
+
+    totais_cache: Dict[Tuple[Any, str], Any] = {}
+    medias_cache: Dict[Any, Any] = {}
+    p_cache: Dict[Any, Any] = {}
+    fora: List[Dict[str, Any]] = []
+
+    for chave, grupo in grupos.items():
+        jogo = jogos.get(int(chave[0] if chave[0] is not None else -1))
+        if jogo is None:
+            continue
+        exemplo = grupo[0]
+        forma_k = forma_de_kills_por_time(exemplo)
+        alvo = metrica_da_linha(exemplo)
+        if forma_k is None and alvo is None:
+            continue
+        jid = jogo.get("id")
+        tipo_linha = "handicap" if forma_k == "handicap" else "total"
+        lados = _lados_por_linha(grupo, tipo_linha)
+        if not lados:
+            continue
+
+        # --- a conta do modelo para qualquer linha ---
+        f = None
+        conta = "so kills"
+        if forma_k is not None:
+            if medias_kills is None:
+                continue
+            if jid not in medias_cache:
+                try:
+                    medias_cache[jid] = medias_kills(str(jogo.get("casa") or ""),
+                                                     str(jogo.get("fora") or ""))
+                except Exception:
+                    medias_cache[jid] = None
+            if jid not in p_cache:
+                try:
+                    p_cache[jid] = p_mapa_da_casa(jogo) if p_mapa_da_casa else None
+                except Exception:
+                    p_cache[jid] = None
+            med, pc = medias_cache[jid], p_cache[jid]
+            if not med:
+                continue
+            if pc is not None and _tem_bloco_com_vitoria(exemplo):
+                conta = "com vitoria"
+            if forma_k == "handicap":
+                f = (lambda h, _m=med, _p=pc: prob_de_kills_por_time(
+                    {"unidade": "Kills", "periodo": exemplo.get("periodo"), "tipo": "spread",
+                     "lado": "home", "pontos": h}, _m, p_casa=_p))
+            else:
+                f = (lambda L, _m=med, _p=pc, _t=exemplo.get("time"): prob_de_kills_por_time(
+                    {"unidade": "Kills", "periodo": exemplo.get("periodo"), "tipo": "team_total",
+                     "lado": "over", "pontos": L, "time": _t}, _m, p_casa=_p))
+        else:
+            metrica, mapa = alvo
+            ck = (jid, mapa)
+            if ck not in totais_cache:
+                try:
+                    totais_cache[ck] = calcular_totais(str(jogo.get("casa") or ""),
+                                                       str(jogo.get("fora") or ""), mapa)
+                except Exception:
+                    totais_cache[ck] = None
+            tot = (totais_cache[ck] or {}).get(metrica)
+            if tot is None:
+                continue
+            conta = "modelo"
+            f = (lambda L, _t=tot: prob_over(_t, L))
+
+        pts = sorted(lados)
+        cand = _meias_linhas(min(pts) - 25, max(pts) + 25)
+        if tipo_linha != "handicap":
+            cand = [c for c in cand if c > 0]
+        mod = linha_mais_perto_de_meio(f, cand)
+        if mod is None:
+            continue
+        L_mod, p_mod = mod
+
+        # --- a linha justa da Pinnacle: a mais perto de 50/50 sem margem ---
+        pin = None
+        for L, par in lados.items():
+            pa = _num((par.get("a") or {}).get("p_casa_justa"))
+            if pa is None or par.get("b") is None:
+                continue
+            d = abs(pa - 0.5)
+            if pin is None or d < pin[2] - 1e-12:
+                pin = (L, pa, d)
+        na_linha = lados.get(L_mod) or {}
+        casa_a = _num((na_linha.get("a") or {}).get("odd"))
+        casa_b = _num((na_linha.get("b") or {}).get("odd"))
+        justa_a = _num((na_linha.get("a") or {}).get("odd_casa_justa"))
+        justa_b = _num((na_linha.get("b") or {}).get("odd_casa_justa"))
+        # NA LINHA DA PINNACLE tambem: quando ela nao oferece a linha do
+        # modelo, e aqui que a comparacao continua existindo.
+        p_mod_pin = _num(f(pin[0])) if pin else None
+        par_pin = lados.get(pin[0]) if pin else {}
+        pin_casa_a = _num(((par_pin or {}).get("a") or {}).get("odd"))
+        pin_casa_b = _num(((par_pin or {}).get("b") or {}).get("odd"))
+        nome = str(exemplo.get("nome_pt") or exemplo.get("mercado") or "")
+        fora.append({
+            "jogo": jid, "liga": jogo.get("liga"), "casa": jogo.get("casa"),
+            "fora": jogo.get("fora"), "inicio_utc": jogo.get("inicio_utc"),
+            "mercado": str(exemplo.get("mercado") or ""), "nome_pt": nome,
+            "tipo_linha": tipo_linha, "forma": forma_k or "total",
+            "time": exemplo.get("time"), "periodo": exemplo.get("periodo"),
+            "conta": conta,
+            "linha_modelo": L_mod,
+            "p_modelo_a": p_mod,
+            "odd_modelo_a": odd_justa(p_mod), "odd_modelo_b": odd_justa(1.0 - p_mod),
+            "linha_pinnacle": pin[0] if pin else None,
+            "p_pinnacle_a": pin[1] if pin else None,
+            # quanto a linha do modelo esta ACIMA (+) ou ABAIXO (-) da dela
+            "diferenca": (L_mod - pin[0]) if pin else None,
+            "pinnacle_oferece": bool(casa_a and casa_b),
+            "casa_a": casa_a, "casa_b": casa_b,
+            "justa_casa_a": justa_a, "justa_casa_b": justa_b,
+            "vantagem_a": vantagem_pct(p_mod, casa_a),
+            "vantagem_b": vantagem_pct(1.0 - p_mod, casa_b),
+            "margem_pct": (na_linha.get("a") or {}).get("margem_pct"),
+            "p_modelo_na_linha_pinnacle": p_mod_pin,
+            "odd_modelo_pin_a": odd_justa(p_mod_pin) if p_mod_pin is not None else None,
+            "odd_modelo_pin_b": odd_justa(1.0 - p_mod_pin) if p_mod_pin is not None else None,
+            "pin_casa_a": pin_casa_a, "pin_casa_b": pin_casa_b,
+            "vantagem_pin_a": vantagem_pct(p_mod_pin, pin_casa_a) if p_mod_pin is not None else None,
+            "vantagem_pin_b": vantagem_pct(1.0 - p_mod_pin, pin_casa_b) if p_mod_pin is not None else None,
+        })
+    return fora

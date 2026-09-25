@@ -37,6 +37,7 @@ from app_core.odds_coletadas_core import (
 from app_core.oportunidades_core import (
     bo_bate,
     mesmo_confronto,
+    montar_linhas_justas,
     montar_oportunidades,
     nome_que_falta_casar,
     prob_do_vencedor,
@@ -124,50 +125,63 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     for _a in todas:
         _crua = _por_chave.get(_chave_do_achado(_a, _por_chave))
         _a["_movimento"] = movimento_da_linha(_crua or {}, _mov)
-    if todas:
-        # O MERCADO PRIMEIRO, a aposta depois. Foi o que ele pediu: "eu
-        # selecionaria por exemplo, Vencedor e voce me mostraria a tela com a
-        # odd do modelo e ao lado a odd da casa".
-        #
-        # O JOGO ANTES DO MERCADO (24/09/2026). No exemplo que ele pediu, com
-        # cinco jogos na tela, "Handicap - Kills - mapa 1" listava LYON,
-        # Sentinels, Vivo Keyd e Forsaken misturados numa tabela de 20
-        # linhas. O mercado so faz sentido dentro de UM jogo. O confronto
-        # aberto vem primeiro: e o unico com vencedor e com a chance de
-        # vitoria nos kills.
-        por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
-        for a in todas:
-            por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
+
+    # A LINHA JUSTA (pedido dele, 25/09/2026): onde o modelo poe a linha,
+    # onde a Pinnacle poe, e o que ela paga na linha do modelo.
+    justas = montar_linhas_justas(odds, calcular_totais, prob_over=prob_over,
+                                  medias_kills=ctx.get("medias_kills"),
+                                  p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+
+    # O JOGO ANTES DE TUDO (24/09/2026): o mercado so faz sentido dentro de UM
+    # jogo. O confronto aberto vem primeiro -- e o unico com vencedor e com a
+    # chance de vitoria nos kills.
+    por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
+    for a in todas:
+        por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
+    for x in justas:
+        por_jogo_cmp.setdefault(x.get("jogo"), []).append({
+            "jogo": x.get("jogo"), "liga": x.get("liga"), "casa": x.get("casa"),
+            "fora": x.get("fora"), "com_vitoria": x.get("conta") == "com vitoria",
+            "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
+                                 if v is not None] or [-999.0]),
+            "_so_resumo": True})
+    if por_jogo_cmp:
         jogos_cmp = ordem_dos_jogos(por_jogo_cmp)
         jogo_cmp = st.selectbox(
             "Qual jogo",
             jogos_cmp,
-            format_func=lambda j: _rotulo_do_jogo(por_jogo_cmp[j]),
+            format_func=lambda j: _rotulo_do_jogo(
+                [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
             key="oportunidades_jogo_cmp",
         )
-        por_mercado: Dict[str, List[Mapping[str, Any]]] = {}
-        for a in por_jogo_cmp.get(jogo_cmp) or []:
-            por_mercado.setdefault(str(a.get("mercado") or "?"), []).append(a)
-        nomes = sorted(por_mercado, key=lambda k: (-max(
-            (x.get("vantagem_pct") or -999) for x in por_mercado[k]), k))
+        _painel_linha_justa(st, [x for x in justas if x.get("jogo") == jogo_cmp])
 
-        escolhido = st.selectbox(
-            "Qual mercado voce quer comparar",
-            nomes,
-            format_func=lambda k: "{}  (melhor: {:+.1f}%)".format(
-                k, max((x.get("vantagem_pct") or 0.0) for x in por_mercado[k])),
-            key="oportunidades_mercado",
-        )
-        linhas = sorted(por_mercado.get(escolhido) or [], key=_ordem_da_linha)
-        _tabela_comparada(st, escolhido, linhas)
-        st.caption(
-            "**Modelo** e a odd que o confronto aberto calcula; **casa** e a "
-            "que a Pinnacle esta pagando; **Pinnacle sem margem** e a odd dela "
-            "com a margem tirada -- o preco que ela acha justo. Embaixo dele, "
-            "quantos pontos de chance o modelo da a mais (+) ou a menos (-) "
-            "que ela. Vantagem positiva quer dizer que a casa paga mais do que "
-            "o modelo acha que vale."
-            "  ·  entra quando a casa paga acima da odd do modelo.")
+        # O MERCADO PRIMEIRO, a aposta depois (pedido de 16/09/2026): a
+        # comparacao linha por linha continua aqui embaixo.
+        por_mercado: Dict[str, List[Mapping[str, Any]]] = {}
+        for a in todas:
+            if a.get("jogo") == jogo_cmp:
+                por_mercado.setdefault(str(a.get("mercado") or "?"), []).append(a)
+        if por_mercado:
+            st.markdown("#### Linha por linha")
+            nomes = sorted(por_mercado, key=lambda k: (-max(
+                (x.get("vantagem_pct") or -999) for x in por_mercado[k]), k))
+            escolhido = st.selectbox(
+                "Qual mercado voce quer comparar",
+                nomes,
+                format_func=lambda k: "{}  (melhor: {:+.1f}%)".format(
+                    k, max((x.get("vantagem_pct") or 0.0) for x in por_mercado[k])),
+                key="oportunidades_mercado",
+            )
+            linhas = sorted(por_mercado.get(escolhido) or [], key=_ordem_da_linha)
+            _tabela_comparada(st, escolhido, linhas)
+            st.caption(
+                "**Modelo** e a odd que o confronto aberto calcula; **casa** e a "
+                "que a Pinnacle esta pagando; **Pinnacle sem margem** e a odd dela "
+                "com a margem tirada -- o preco que ela acha justo. Embaixo dele, "
+                "quantos pontos de chance o modelo da a mais (+) ou a menos (-) "
+                "que ela. Vantagem positiva quer dizer que a casa paga mais do que "
+                "o modelo acha que vale.")
     elif _jogos_que_dao:
         st.info("Este painel nao conseguiu precificar nenhuma linha deste "
                 "confronto.")
@@ -767,3 +781,159 @@ def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) 
             for g in fora:
                 st.caption("· {} — {} linha(s) — {}".format(
                     g.get("mercado"), g.get("linhas"), g.get("motivo")))
+
+
+# ---------------------------------------------------------------------------
+# O PAINEL DA LINHA JUSTA (25/09/2026)
+#
+# Ele: "caso o seu calculo de 25.5, eu quero ver como e a odd que o nosso
+# modelo da o 25.5 e como a pinnacle aponta". Uma linha por mercado, mapa a
+# mapa: a linha do modelo, a dela, a distancia, e o dinheiro na linha do
+# modelo. Onde ela nao oferece a linha do modelo, a comparacao vai para a
+# linha dela -- nunca some.
+# ---------------------------------------------------------------------------
+
+_ORDEM_DO_MERCADO = {"kills_total": 0, "handicap": 1, "total_time": 2}
+
+
+def _nome_da_linha_justa(x: Mapping[str, Any]) -> str:
+    forma = str(x.get("forma") or "")
+    if forma == "handicap":
+        return "Handicap de kills"
+    if forma == "total_time":
+        dono = x.get("casa") if str(x.get("time") or "").lower() == "home" else x.get("fora")
+        return "Kills da {}".format(dono)
+    nome = str(x.get("nome_pt") or x.get("mercado") or "")
+    if "Kills" in str(x.get("mercado") or ""):
+        return "Kills (total)"
+    return nome.split(" - ")[0]
+
+
+def _chave_da_linha_justa(x: Mapping[str, Any]):
+    forma = str(x.get("forma") or "")
+    if forma == "total" and "Kills" in str(x.get("mercado") or ""):
+        forma = "kills_total"
+    return (_ORDEM_DO_MERCADO.get(forma, 9), _nome_da_linha_justa(x))
+
+
+def _linha_txt(x: Mapping[str, Any], L: Any) -> str:
+    try:
+        v = float(L)
+    except (TypeError, ValueError):
+        return "—"
+    if str(x.get("tipo_linha")) == "handicap":
+        return "{} {:+.1f}".format(x.get("casa") or "?", v).replace(".", ",")
+    return "{:.1f}".format(v).replace(".", ",")
+
+
+def _lados_txt(x: Mapping[str, Any]):
+    if str(x.get("tipo_linha")) == "handicap":
+        return (str(x.get("casa") or "casa"), str(x.get("fora") or "fora"))
+    return ("acima", "abaixo")
+
+
+def _distancia_txt(x: Mapping[str, Any]) -> str:
+    d = x.get("diferenca")
+    try:
+        d = float(d)
+    except (TypeError, ValueError):
+        return "—"
+    if abs(d) < 1e-9:
+        return "mesma linha"
+    n = "{:.1f}".format(abs(d)).replace(".", ",").replace(",0", "")
+    if str(x.get("tipo_linha")) == "handicap":
+        # linha de handicap do mandante: maior = mandante menos favorito
+        return ("modelo: {} {} kills MENOS favorito".format(x.get("casa"), n) if d > 0
+                else "modelo: {} {} kills MAIS favorito".format(x.get("casa"), n))
+    return "modelo {} {}".format(n, "ABAIXO" if d < 0 else "ACIMA")
+
+
+def _vant_html(v: Any) -> str:
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return "<span style='opacity:0.4'>—</span>"
+    cor = _COR_BOA if f > 0 else _COR_RUIM
+    return "<span style='color:{};font-weight:800'>{:+.1f}%</span>".format(cor, f)
+
+
+def _odd(v: Any) -> str:
+    return _fmt(v)
+
+
+def _linha_justa_html(x: Mapping[str, Any]) -> str:
+    a, b = _lados_txt(x)
+    oferece = bool(x.get("pinnacle_oferece"))
+    if oferece:
+        casa = "{} {} · {} {}".format(a, _odd(x.get("casa_a")), b, _odd(x.get("casa_b")))
+        vant = "{} {} · {} {}".format(a, _vant_html(x.get("vantagem_a")),
+                                      b, _vant_html(x.get("vantagem_b")))
+        extra = ""
+    else:
+        casa = "<span style='opacity:0.55'>nao oferece esta linha</span>"
+        vant = "<span style='opacity:0.4'>—</span>"
+        extra = ""
+    if not oferece and x.get("linha_pinnacle") is not None:
+        extra = (
+            "<div style='grid-column:1/-1;opacity:0.75;font-size:0.8em;padding:2px 0 0 2px;'>"
+            "na linha dela ({lp}): modelo {a} {ma} · {b} {mb} &nbsp;|&nbsp; ela paga {a} {ca} · "
+            "{b} {cb} &nbsp;|&nbsp; vantagem {a} {va} · {b} {vb}</div>").format(
+                lp=escape(_linha_txt(x, x.get("linha_pinnacle"))), a=escape(a), b=escape(b),
+                ma=_odd(x.get("odd_modelo_pin_a")), mb=_odd(x.get("odd_modelo_pin_b")),
+                ca=_odd(x.get("pin_casa_a")), cb=_odd(x.get("pin_casa_b")),
+                va=_vant_html(x.get("vantagem_pin_a")), vb=_vant_html(x.get("vantagem_pin_b")))
+    marca = ""
+    if x.get("conta") == "com vitoria":
+        marca = ("<span style='font-size:0.68em;border:1px solid rgba(45,170,196,0.5);"
+                 "border-radius:8px;padding:0 6px;margin-left:6px;opacity:0.85'>com vitoria</span>")
+    return (
+        "<div style='display:grid;grid-template-columns:1.25fr 1.15fr 0.8fr 1.25fr 1.35fr 1.3fr;"
+        "gap:10px;align-items:center;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.07);"
+        "font-size:0.92em'>"
+        "<div><b>{nome}</b>{marca}</div>"
+        "<div style='color:{cm}'><b>{lm}</b><div style='font-size:0.8em;opacity:0.85'>"
+        "{a} {oa} · {b} {ob}</div></div>"
+        "<div style='color:{cc}'><b>{lp}</b></div>"
+        "<div style='font-size:0.85em'>{dist}</div>"
+        "<div style='font-size:0.85em'>{casa}</div>"
+        "<div style='font-size:0.85em'>{vant}</div>"
+        "{extra}</div>").format(
+            nome=escape(_nome_da_linha_justa(x)), marca=marca, cm=_COR_MODELO, cc=_COR_CASA,
+            lm=escape(_linha_txt(x, x.get("linha_modelo"))), a=escape(a), b=escape(b),
+            oa=_odd(x.get("odd_modelo_a")), ob=_odd(x.get("odd_modelo_b")),
+            lp=escape(_linha_txt(x, x.get("linha_pinnacle"))),
+            dist=escape(_distancia_txt(x)), casa=casa, vant=vant, extra=extra)
+
+
+def _painel_linha_justa(st: Any, justas: List[Mapping[str, Any]]) -> None:
+    if not justas:
+        return
+    st.markdown("### Linha justa: modelo x Pinnacle")
+    cab = (
+        "<div style='display:grid;grid-template-columns:1.25fr 1.15fr 0.8fr 1.25fr 1.35fr 1.3fr;"
+        "gap:10px;padding:2px 4px;opacity:0.55;font-size:0.72em;text-transform:uppercase;"
+        "letter-spacing:0.05em'>"
+        "<div>mercado</div><div style='color:{cm}'>linha justa do modelo</div>"
+        "<div style='color:{cc}'>linha justa da pinnacle</div><div>distancia</div>"
+        "<div>pinnacle paga na linha do modelo</div><div>vantagem</div></div>").format(
+            cm=_COR_MODELO, cc=_COR_CASA)
+    por_mapa: Dict[Any, List[Mapping[str, Any]]] = {}
+    for x in justas:
+        por_mapa.setdefault(x.get("periodo"), []).append(x)
+    blocos = []
+    for mapa in sorted(por_mapa, key=lambda m: int(m or 0)):
+        corpo = "".join(_linha_justa_html(x) for x in sorted(por_mapa[mapa], key=_chave_da_linha_justa))
+        blocos.append(
+            "<div style='background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.09);"
+            "border-top:3px solid {cm};border-radius:14px;padding:10px 14px 8px;margin-bottom:12px'>"
+            "<div style='opacity:0.7;font-size:0.8em;text-transform:uppercase;letter-spacing:0.06em;"
+            "margin-bottom:4px'>mapa {m}</div>{cab}{corpo}</div>".format(
+                cm=_COR_MODELO, m=escape(str(mapa)), cab=cab, corpo=corpo))
+    st.markdown("".join(blocos), unsafe_allow_html=True)
+    st.caption(
+        "**Linha justa** e a linha em que o lado de cima e o de baixo valem o mesmo: para o "
+        "modelo, a meia-linha mais perto de 50/50 (as odds dele ao lado); para a Pinnacle, a "
+        "linha dela mais perto de 50/50 sem a margem. **Vantagem** e o que sobra apostando na "
+        "linha do modelo ao preco que ela paga. Onde ela nao oferece a linha do modelo, a "
+        "comparacao vai para a linha dela. Em mercados de contagem baixa (dragoes, baroes) "
+        "nenhuma meia-linha fica perto de 50/50 -- as odds do modelo mostram o quanto.")
