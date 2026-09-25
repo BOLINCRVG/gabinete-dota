@@ -154,7 +154,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
             key="oportunidades_jogo_cmp",
         )
-        _painel_linha_justa(st, [x for x in justas if x.get("jogo") == jogo_cmp])
+        _tabelas_estilo_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp], jogo_cmp)
 
         # O MERCADO PRIMEIRO, a aposta depois (pedido de 16/09/2026): a
         # comparacao linha por linha continua aqui embaixo.
@@ -826,114 +826,147 @@ def _linha_txt(x: Mapping[str, Any], L: Any) -> str:
     return "{:.1f}".format(v).replace(".", ",")
 
 
-def _lados_txt(x: Mapping[str, Any]):
-    if str(x.get("tipo_linha")) == "handicap":
-        return (str(x.get("casa") or "casa"), str(x.get("fora") or "fora"))
-    return ("acima", "abaixo")
+# ---------------------------------------------------------------------------
+# NO FORMATO DA CASA (25/09/2026)
+#
+# Ele mandou o print da bet365 -- "Mapa 1 - Totais", Mais de / Menos de -- e
+# pediu: "3 tabelas dessas, a com a linha da fair, a do modelo e a da
+# pinnacle, onde eu poderia clicar nas linhas para conseguir alterar conforme
+# a pinnacle me oferecesse as linhas".
+#
+# Um mercado por linha, mapa a mapa, com tres blocos lado a lado:
+#   1. LINHA JUSTA (modelo) -- fixa: onde o modelo acha 50/50;
+#   2. MODELO na linha escolhida;
+#   3. PINNACLE na linha escolhida -- verde quando paga mais que o modelo.
+# As linhas que a Pinnacle oferece viram botoes; comeca na principal dela.
+#
+# "QUE EU CLIQUE E ELE VA": o painel roda como FRAGMENTO -- clicar numa
+# linha recalcula so ele, nao o app inteiro. Tudo o que ele mostra ja veio
+# calculado (montar_linhas_justas guarda o modelo em CADA linha oferecida).
+# ---------------------------------------------------------------------------
 
-
-def _distancia_txt(x: Mapping[str, Any]) -> str:
-    d = x.get("diferenca")
-    try:
-        d = float(d)
-    except (TypeError, ValueError):
-        return "—"
-    if abs(d) < 1e-9:
-        return "mesma linha"
-    n = "{:.1f}".format(abs(d)).replace(".", ",").replace(",0", "")
-    if str(x.get("tipo_linha")) == "handicap":
-        # linha de handicap do mandante: maior = mandante menos favorito
-        return ("modelo: {} {} kills MENOS favorito".format(x.get("casa"), n) if d > 0
-                else "modelo: {} {} kills MAIS favorito".format(x.get("casa"), n))
-    return "modelo {} {}".format(n, "ABAIXO" if d < 0 else "ACIMA")
+_COLUNAS = [1.35, 1.25, 1.55, 1.75, 2.3]
+_LINHAS_EM_VOLTA = 5      # botoes: a principal e ate 5 de cada lado
 
 
 def _vant_html(v: Any) -> str:
     try:
         f = float(v)
     except (TypeError, ValueError):
-        return "<span style='opacity:0.4'>—</span>"
+        return ""
     cor = _COR_BOA if f > 0 else _COR_RUIM
-    return "<span style='color:{};font-weight:800'>{:+.1f}%</span>".format(cor, f)
+    return "<span style='color:{};font-weight:700;font-size:0.8em'> {:+.1f}%</span>".format(cor, f)
 
 
-def _odd(v: Any) -> str:
-    return _fmt(v)
+def _celula(rotulo_a: str, rotulo_b: str, odd_a: Any, odd_b: Any, *, cor: str,
+            vant_a: Any = None, vant_b: Any = None, destaque: bool = False) -> str:
+    """Duas metades lado a lado, como Mais de | Menos de na casa."""
+    def _metade(rot, odd, vant):
+        verde = destaque and _num_ok(vant) and float(vant) > 0
+        fundo = "rgba(63,185,80,0.16)" if verde else "rgba(255,255,255,0.03)"
+        borda = "rgba(63,185,80,0.55)" if verde else "rgba(255,255,255,0.08)"
+        return ("<div style='flex:1;background:{f};border:1px solid {b};border-radius:8px;"
+                "padding:5px 8px;text-align:center'>"
+                "<div style='font-size:0.72em;opacity:0.65'>{r}</div>"
+                "<div style='color:{c};font-weight:800'>{o}{v}</div></div>").format(
+                    f=fundo, b=borda, r=escape(rot), c=cor, o=_fmt(odd),
+                    v=_vant_html(vant) if destaque else "")
+    return ("<div style='display:flex;gap:6px'>{}{}</div>".format(
+        _metade(rotulo_a, odd_a, vant_a), _metade(rotulo_b, odd_b, vant_b)))
 
 
-def _linha_justa_html(x: Mapping[str, Any]) -> str:
-    a, b = _lados_txt(x)
-    oferece = bool(x.get("pinnacle_oferece"))
-    if oferece:
-        casa = "{} {} · {} {}".format(a, _odd(x.get("casa_a")), b, _odd(x.get("casa_b")))
-        vant = "{} {} · {} {}".format(a, _vant_html(x.get("vantagem_a")),
-                                      b, _vant_html(x.get("vantagem_b")))
-        extra = ""
-    else:
-        casa = "<span style='opacity:0.55'>nao oferece esta linha</span>"
-        vant = "<span style='opacity:0.4'>—</span>"
-        extra = ""
-    if not oferece and x.get("linha_pinnacle") is not None:
-        extra = (
-            "<div style='grid-column:1/-1;opacity:0.75;font-size:0.8em;padding:2px 0 0 2px;'>"
-            "na linha dela ({lp}): modelo {a} {ma} · {b} {mb} &nbsp;|&nbsp; ela paga {a} {ca} · "
-            "{b} {cb} &nbsp;|&nbsp; vantagem {a} {va} · {b} {vb}</div>").format(
-                lp=escape(_linha_txt(x, x.get("linha_pinnacle"))), a=escape(a), b=escape(b),
-                ma=_odd(x.get("odd_modelo_pin_a")), mb=_odd(x.get("odd_modelo_pin_b")),
-                ca=_odd(x.get("pin_casa_a")), cb=_odd(x.get("pin_casa_b")),
-                va=_vant_html(x.get("vantagem_pin_a")), vb=_vant_html(x.get("vantagem_pin_b")))
-    marca = ""
-    if x.get("conta") == "com vitoria":
-        marca = ("<span style='font-size:0.68em;border:1px solid rgba(45,170,196,0.5);"
-                 "border-radius:8px;padding:0 6px;margin-left:6px;opacity:0.85'>com vitoria</span>")
-    return (
-        "<div style='display:grid;grid-template-columns:1.25fr 1.15fr 0.8fr 1.25fr 1.35fr 1.3fr;"
-        "gap:10px;align-items:center;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.07);"
-        "font-size:0.92em'>"
-        "<div><b>{nome}</b>{marca}</div>"
-        "<div style='color:{cm}'><b>{lm}</b><div style='font-size:0.8em;opacity:0.85'>"
-        "{a} {oa} · {b} {ob}</div></div>"
-        "<div style='color:{cc}'><b>{lp}</b></div>"
-        "<div style='font-size:0.85em'>{dist}</div>"
-        "<div style='font-size:0.85em'>{casa}</div>"
-        "<div style='font-size:0.85em'>{vant}</div>"
-        "{extra}</div>").format(
-            nome=escape(_nome_da_linha_justa(x)), marca=marca, cm=_COR_MODELO, cc=_COR_CASA,
-            lm=escape(_linha_txt(x, x.get("linha_modelo"))), a=escape(a), b=escape(b),
-            oa=_odd(x.get("odd_modelo_a")), ob=_odd(x.get("odd_modelo_b")),
-            lp=escape(_linha_txt(x, x.get("linha_pinnacle"))),
-            dist=escape(_distancia_txt(x)), casa=casa, vant=vant, extra=extra)
+def _num_ok(v: Any) -> bool:
+    try:
+        return float(v) == float(v)
+    except (TypeError, ValueError):
+        return False
 
 
-def _painel_linha_justa(st: Any, justas: List[Mapping[str, Any]]) -> None:
+def _rotulos(x: Mapping[str, Any], L: Any):
+    """("Mais de 25,5", "Menos de 25,5") ou ("FlyQuest -3,5", "Shopify +3,5")."""
+    try:
+        v = float(L)
+    except (TypeError, ValueError):
+        return ("—", "—")
+    if str(x.get("tipo_linha")) == "handicap":
+        return ("{} {:+.1f}".format(x.get("casa") or "casa", v).replace(".", ","),
+                "{} {:+.1f}".format(x.get("fora") or "fora", -v).replace(".", ","))
+    t = "{:.1f}".format(v).replace(".", ",")
+    return ("Mais de " + t, "Menos de " + t)
+
+
+def _botoes_de_linha(x: Mapping[str, Any]) -> List[Mapping[str, Any]]:
+    linhas = list(x.get("linhas_pin") or [])
+    if not linhas:
+        return []
+    i0 = next((i for i, l in enumerate(linhas) if l.get("principal")), len(linhas) // 2)
+    return linhas[max(0, i0 - _LINHAS_EM_VOLTA): i0 + _LINHAS_EM_VOLTA + 1]
+
+
+def _tabelas_estilo_casa(st: Any, justas: List[Mapping[str, Any]], jogo: Any) -> None:
     if not justas:
         return
-    st.markdown("### Linha justa: modelo x Pinnacle")
-    cab = (
-        "<div style='display:grid;grid-template-columns:1.25fr 1.15fr 0.8fr 1.25fr 1.35fr 1.3fr;"
-        "gap:10px;padding:2px 4px;opacity:0.55;font-size:0.72em;text-transform:uppercase;"
-        "letter-spacing:0.05em'>"
-        "<div>mercado</div><div style='color:{cm}'>linha justa do modelo</div>"
-        "<div style='color:{cc}'>linha justa da pinnacle</div><div>distancia</div>"
-        "<div>pinnacle paga na linha do modelo</div><div>vantagem</div></div>").format(
-            cm=_COR_MODELO, cc=_COR_CASA)
-    por_mapa: Dict[Any, List[Mapping[str, Any]]] = {}
-    for x in justas:
-        por_mapa.setdefault(x.get("periodo"), []).append(x)
-    blocos = []
-    for mapa in sorted(por_mapa, key=lambda m: int(m or 0)):
-        corpo = "".join(_linha_justa_html(x) for x in sorted(por_mapa[mapa], key=_chave_da_linha_justa))
-        blocos.append(
-            "<div style='background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.09);"
-            "border-top:3px solid {cm};border-radius:14px;padding:10px 14px 8px;margin-bottom:12px'>"
-            "<div style='opacity:0.7;font-size:0.8em;text-transform:uppercase;letter-spacing:0.06em;"
-            "margin-bottom:4px'>mapa {m}</div>{cab}{corpo}</div>".format(
-                cm=_COR_MODELO, m=escape(str(mapa)), cab=cab, corpo=corpo))
-    st.markdown("".join(blocos), unsafe_allow_html=True)
-    st.caption(
-        "**Linha justa** e a linha em que o lado de cima e o de baixo valem o mesmo: para o "
-        "modelo, a meia-linha mais perto de 50/50 (as odds dele ao lado); para a Pinnacle, a "
-        "linha dela mais perto de 50/50 sem a margem. **Vantagem** e o que sobra apostando na "
-        "linha do modelo ao preco que ela paga. Onde ela nao oferece a linha do modelo, a "
-        "comparacao vai para a linha dela. Em mercados de contagem baixa (dragoes, baroes) "
-        "nenhuma meia-linha fica perto de 50/50 -- as odds do modelo mostram o quanto.")
+
+    def _painel():
+        st.markdown("### Linha justa: modelo x Pinnacle")
+        mapas = sorted({int(x.get("periodo") or 0) for x in justas})
+        mapa = st.radio("Mapa", mapas, horizontal=True, format_func=lambda m: "Mapa %d" % m,
+                        key="lj_mapa_%s" % jogo, label_visibility="collapsed")
+        do_mapa = sorted([x for x in justas if int(x.get("periodo") or 0) == mapa],
+                         key=_chave_da_linha_justa)
+        cab = st.columns(_COLUNAS)
+        for c, t, cor in zip(cab, ("Mercado", "Linha justa (modelo)", "Modelo na linha",
+                                   "Pinnacle na linha", "Linhas da Pinnacle (clique)"),
+                             ("", _COR_MODELO, _COR_MODELO, _COR_CASA, "")):
+            c.markdown("<div style='font-size:0.72em;text-transform:uppercase;letter-spacing:"
+                       "0.05em;opacity:0.7;color:{}'>{}</div>".format(cor or "inherit", t),
+                       unsafe_allow_html=True)
+        for x in do_mapa:
+            col = st.columns(_COLUNAS, vertical_alignment="center")
+            botoes = _botoes_de_linha(x)
+            escolhida = None
+            with col[4]:
+                if botoes:
+                    principal = next((b["linha"] for b in botoes if b.get("principal")),
+                                     botoes[len(botoes) // 2]["linha"])
+                    # st.radio e nao st.pills: o testador do Streamlit (AppTest)
+                    # quebra com pills de escolha unica ('float' is not
+                    # iterable) e derrubava dois testes de tela; o radio
+                    # horizontal e o mesmo clique unico.
+                    _ops = [b["linha"] for b in botoes]
+                    escolhida = st.radio(
+                        "linha", _ops, index=_ops.index(principal), horizontal=True,
+                        format_func=lambda L, _x=x: _linha_txt(_x, L),
+                        key="lj_%s_%s_%s_%s" % (jogo, x.get("mercado"), x.get("time"), mapa),
+                        label_visibility="collapsed")
+                    if escolhida is None:
+                        escolhida = principal
+                else:
+                    st.caption("a Pinnacle nao oferece linha")
+            nome = _nome_da_linha_justa(x)
+            col[0].markdown("**{}**".format(nome) + (
+                "<div style='font-size:0.7em;opacity:0.6'>com a chance de vitoria</div>"
+                if x.get("conta") == "com vitoria" else ""), unsafe_allow_html=True)
+            ra, rb = _rotulos(x, x.get("linha_modelo"))
+            col[1].markdown(_celula(ra, rb, x.get("odd_modelo_a"), x.get("odd_modelo_b"),
+                                    cor=_COR_MODELO), unsafe_allow_html=True)
+            info = next((b for b in botoes if b["linha"] == escolhida), None)
+            if info is None:
+                col[2].caption("—")
+                col[3].caption("—")
+                continue
+            ra, rb = _rotulos(x, escolhida)
+            col[2].markdown(_celula(ra, rb, info.get("odd_modelo_a"), info.get("odd_modelo_b"),
+                                    cor=_COR_MODELO), unsafe_allow_html=True)
+            col[3].markdown(_celula(ra, rb, info.get("casa_a"), info.get("casa_b"),
+                                    cor=_COR_CASA, vant_a=info.get("vantagem_a"),
+                                    vant_b=info.get("vantagem_b"), destaque=True),
+                            unsafe_allow_html=True)
+        st.caption(
+            "**Linha justa** e onde o modelo acha 50/50 (as odds dele dos dois lados). "
+            "Clique nas linhas da Pinnacle para ver, na mesma linha, a odd do **modelo** e o "
+            "que a **Pinnacle** paga; em verde, o lado em que ela paga mais que o modelo, com "
+            "a vantagem. Comeca na linha principal dela.")
+
+    frag = st.fragment(_painel) if hasattr(st, "fragment") else _painel
+    frag()

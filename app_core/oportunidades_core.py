@@ -960,6 +960,27 @@ def montar_linhas_justas(
         casa_b = _num((na_linha.get("b") or {}).get("odd"))
         justa_a = _num((na_linha.get("a") or {}).get("odd_casa_justa"))
         justa_b = _num((na_linha.get("b") or {}).get("odd_casa_justa"))
+        # TODAS AS LINHAS QUE ELA OFERECE, com o modelo em cada uma (25/09/2026:
+        # ele quer "clicar nas linhas" como na casa e ver o modelo mudar junto).
+        linhas_pin = []
+        for L in sorted(lados):
+            par = lados[L]
+            la, lb = par.get("a") or {}, par.get("b") or {}
+            ca, cb = _num(la.get("odd")), _num(lb.get("odd"))
+            if ca is None or cb is None:
+                continue
+            pl = _num(f(L))
+            linhas_pin.append({
+                "linha": L, "casa_a": ca, "casa_b": cb,
+                "principal": not (la.get("alternativa") or lb.get("alternativa")),
+                "justa_casa_a": _num(la.get("odd_casa_justa")),
+                "justa_casa_b": _num(lb.get("odd_casa_justa")),
+                "p_modelo_a": pl,
+                "odd_modelo_a": odd_justa(pl) if pl is not None else None,
+                "odd_modelo_b": odd_justa(1.0 - pl) if pl is not None else None,
+                "vantagem_a": vantagem_pct(pl, ca) if pl is not None else None,
+                "vantagem_b": vantagem_pct(1.0 - pl, cb) if pl is not None else None,
+            })
         # NA LINHA DA PINNACLE tambem: quando ela nao oferece a linha do
         # modelo, e aqui que a comparacao continua existindo.
         p_mod_pin = _num(f(pin[0])) if pin else None
@@ -987,6 +1008,7 @@ def montar_linhas_justas(
             "vantagem_a": vantagem_pct(p_mod, casa_a),
             "vantagem_b": vantagem_pct(1.0 - p_mod, casa_b),
             "margem_pct": (na_linha.get("a") or {}).get("margem_pct"),
+            "linhas_pin": linhas_pin,
             "p_modelo_na_linha_pinnacle": p_mod_pin,
             "odd_modelo_pin_a": odd_justa(p_mod_pin) if p_mod_pin is not None else None,
             "odd_modelo_pin_b": odd_justa(1.0 - p_mod_pin) if p_mod_pin is not None else None,
