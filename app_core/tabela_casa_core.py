@@ -20,6 +20,14 @@ A LOGICA DO CLIQUE
     linhas disponiveis; a escolhida vale para as duas.
   - Comeca na linha PRINCIPAL da Pinnacle.
   - Na Pinnacle, o lado que paga mais que o modelo fica verde, com a vantagem.
+
+DEPOIS DE VER NO SITE (25/09/2026): "so gostaria que fosse nas cores do
+modelo mesmo, e que em cima disso tudo tenha a parte do vencedor, baseado no
+BO que o calendario [da] por padrao". As cores sao as do app (ciano do
+modelo, ambar da Pinnacle, paineis do global_css_core) e seguem o tema claro
+ou escuro do navegador. O vencedor vem em cima: a SERIE no BO do confronto
+aberto (o que o calendario escolheu) e o vencedor de cada mapa. O numero do
+modelo e o MESMO do cartao da Visao Geral (vem pronto da aba).
 """
 from __future__ import annotations
 
@@ -82,6 +90,45 @@ def linhas_da_tela(justas: List[Mapping[str, Any]]) -> List[Dict[str, Any]]:
     return fora
 
 
+def vencedores_da_tela(linhas_do_jogo: List[Mapping[str, Any]],
+                       achados_do_jogo: List[Mapping[str, Any]]) -> List[Dict[str, Any]]:
+    """Vencedor da serie (periodo 0) e de cada mapa: a odd da Pinnacle e, se o
+    app calculou (so o confronto aberto), a do modelo e a vantagem.
+
+    `linhas_do_jogo` sao as linhas cruas da casa; `achados_do_jogo` os de
+    `montar_oportunidades` com metrica "vencedor" -- o numero do cartao.
+    """
+    por: Dict[int, Dict[str, Any]] = {}
+    for l in linhas_do_jogo:
+        if str(l.get("tipo") or "") != "moneyline" or str(l.get("unidade") or "").strip():
+            continue
+        lado = str(l.get("lado") or "").strip().lower()
+        if lado not in ("home", "away"):
+            continue
+        try:
+            per = int(l.get("periodo") or 0)
+        except (TypeError, ValueError):
+            continue
+        r = por.setdefault(per, {"periodo": per})
+        r["pin_a" if lado == "home" else "pin_b"] = l.get("odd")
+    for a in achados_do_jogo:
+        if str(a.get("metrica") or "") != "vencedor":
+            continue
+        m = str(a.get("mercado") or "").lower()
+        if m.endswith("serie"):
+            per = 0
+        else:
+            try:
+                per = int(m.rsplit(" ", 1)[-1])
+            except ValueError:
+                continue
+        r = por.setdefault(per, {"periodo": per})
+        k = "a" if str(a.get("lado") or "").lower() == "home" else "b"
+        r["modelo_" + k] = a.get("odd_justa")
+        r["vant_" + k] = a.get("vantagem_pct")
+    return [por[k] for k in sorted(por) if por[k].get("pin_a") and por[k].get("pin_b")]
+
+
 def altura(linhas: List[Mapping[str, Any]]) -> int:
     """Altura da moldura, em pixels, para o mapa com mais linhas."""
     por_mapa: Dict[int, Dict[str, int]] = {}
@@ -92,60 +139,81 @@ def altura(linhas: List[Mapping[str, Any]]) -> int:
     for secoes in por_mapa.values():
         h = sum(44 + 34 + 46 * n for n in secoes.values()) + 12 * len(secoes)
         pior = max(pior, h)
-    return int(pior + 150)
+    # + o vencedor da serie em cima e o do mapa (duas secoes de uma linha)
+    return int(pior + 150 + 2 * (44 + 34 + 46 + 12))
 
 
-def html_das_tabelas(linhas: List[Mapping[str, Any]], titulo_jogo: str = "") -> str:
+def html_das_tabelas(linhas: List[Mapping[str, Any]], titulo_jogo: str = "",
+                     vencedores: List[Mapping[str, Any]] = (), bo: Any = None,
+                     casa: str = "", fora: str = "") -> str:
     dados = json.dumps(linhas, ensure_ascii=False).replace("</", "<\\/")
-    return _MODELO_HTML.replace("__DADOS__", dados).replace("__TITULO__", escape(titulo_jogo))
+    venc = json.dumps({"linhas": list(vencedores), "bo": bo, "casa": casa, "fora": fora},
+                      ensure_ascii=False).replace("</", "<\\/")
+    from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
+    return (_MODELO_HTML.replace("__DADOS__", dados).replace("__VENCEDOR__", venc)
+            .replace("__SUSPEITA__", str(float(VANTAGEM_SUSPEITA_PCT)))
+            .replace("__TITULO__", escape(titulo_jogo)))
 
 
 _MODELO_HTML = r"""<!doctype html>
 <html><head><meta charset="utf-8">
 <style>
-  :root { --fundo:#141414; --caixa:#262626; --cab:#333333; --linha:#2e2e2e; --texto:#e6e6e6;
-          --fraco:#9a9a9a; --odd:#f2d91a; --modelo:#2daac4; --pin:#d9a441; --boa:#3fb950; --ruim:#c9736a; }
+  :root { --texto:#e6e6e6; --fraco:#9aa0a6; --painel:rgba(255,255,255,0.035);
+          --borda:rgba(255,255,255,0.12); --cab:rgba(255,255,255,0.06); --linha:rgba(255,255,255,0.07);
+          --modelo:#2daac4; --pin:#d9a441; --boa:#3fb950; --ruim:#c9736a;
+          --verde-fundo:rgba(63,185,80,0.14); --verde-borda:rgba(63,185,80,0.55); --menu:#1f2227; }
+  @media (prefers-color-scheme: light) {
+    :root { --texto:#1f2328; --fraco:#6a737d; --painel:rgba(0,0,0,0.025); --borda:rgba(0,0,0,0.12);
+            --cab:rgba(0,0,0,0.045); --linha:rgba(0,0,0,0.07); --menu:#ffffff; }
+  }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--fundo); color:var(--texto);
-         font-family:"Segoe UI",Arial,sans-serif; font-size:13px; }
-  .topo { display:flex; gap:8px; align-items:center; padding:8px 4px 10px; flex-wrap:wrap; }
-  .topo b { font-size:14px; margin-right:8px; }
-  .mapa { background:var(--caixa); color:var(--texto); border:1px solid #3a3a3a; border-radius:6px;
-          padding:5px 14px; cursor:pointer; font-weight:600; }
-  .mapa.ativo { background:var(--odd); color:#111; border-color:var(--odd); }
-  .colunas { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+  body { margin:0; background:transparent; color:var(--texto);
+         font-family:"Source Sans Pro","Segoe UI",Arial,sans-serif; font-size:13.5px; }
+  .topo { display:flex; gap:8px; align-items:center; padding:10px 2px 10px; flex-wrap:wrap; }
+  .topo b { font-size:14.5px; margin-right:8px; }
+  .mapa { background:var(--painel); color:var(--texto); border:1px solid var(--borda); border-radius:8px;
+          padding:5px 14px; cursor:pointer; font-weight:600; font-family:inherit; }
+  .mapa.ativo { background:rgba(45,170,196,0.16); border-color:var(--modelo); color:var(--modelo); }
+  .colunas { display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
   .coluna { flex:1 1 330px; min-width:300px; }
-  .nome-col { font-weight:800; letter-spacing:0.06em; font-size:12px; padding:0 2px 6px;
+  .nome-col { font-weight:800; letter-spacing:0.07em; font-size:12px; padding:0 2px 6px;
               text-transform:uppercase; }
-  .secao { background:var(--caixa); border-radius:6px; margin-bottom:10px; overflow:hidden; }
-  .secao h3 { margin:0; padding:11px 12px; font-size:14px; font-weight:700; }
-  .cab { display:grid; background:var(--cab); font-weight:700; font-size:12px; }
-  .cab div { padding:8px 6px; text-align:center; }
+  .secao { background:var(--painel); border:1px solid var(--borda); border-top:3px solid var(--modelo);
+           border-radius:12px; margin-bottom:12px; overflow:hidden; }
+  .col-pinnacle .secao { border-top-color:var(--pin); }
+  .secao h3 { margin:0; padding:10px 12px; font-size:13.5px; font-weight:700; }
+  .cab { display:grid; background:var(--cab); font-weight:700; font-size:11.5px; opacity:0.85; }
+  .cab div { padding:7px 6px; text-align:center; }
   .row { display:grid; border-top:1px solid var(--linha); align-items:stretch; }
   .row > div { padding:0 6px; display:flex; align-items:center; justify-content:center; min-height:45px; }
   .row .rot { justify-content:flex-start; padding-left:12px; }
   .g3 { grid-template-columns: 1.15fr 1fr 1fr; }
   .g2 { grid-template-columns: 1fr 1fr; }
   .cel { gap:7px; border-left:1px solid var(--linha); }
-  .ln { color:#cfcfcf; }
-  .ln.clica { cursor:pointer; border-bottom:1px dashed #777; }
-  .ln.clica:hover { color:#fff; border-bottom-color:#fff; }
-  .odd { color:var(--odd); font-weight:700; }
-  .cel.verde { background:rgba(63,185,80,0.18); }
+  .ln { color:var(--fraco); }
+  .ln.clica { cursor:pointer; border-bottom:1px dashed var(--fraco); }
+  .ln.clica:hover { color:var(--texto); border-bottom-color:var(--texto); }
+  .odd { font-weight:800; }
+  .col-fair .odd, .col-modelo .odd { color:var(--modelo); }
+  .col-pinnacle .odd { color:var(--pin); }
+  .cel.verde { background:var(--verde-fundo); box-shadow:inset 0 0 0 1px var(--verde-borda); }
   .v { font-size:11px; font-weight:700; }
   .v.b { color:var(--boa); } .v.r { color:var(--ruim); }
-  .nada { color:#666; font-size:12px; }
-  .menu { position:fixed; z-index:10; background:#1d1d1d; border:1px solid #555; border-radius:6px;
-          max-height:260px; overflow:auto; box-shadow:0 6px 18px rgba(0,0,0,0.5); min-width:210px; }
+  .nada { color:var(--fraco); font-size:11.5px; }
+  .alerta { font-size:9.5px; color:var(--pin); border:1px solid rgba(217,164,65,0.55); border-radius:8px;
+            padding:0 5px; margin-left:4px; white-space:nowrap; }
+  .menu { position:fixed; z-index:10; background:var(--menu); border:1px solid var(--borda); border-radius:8px;
+          max-height:260px; overflow:auto; box-shadow:0 6px 18px rgba(0,0,0,0.35); min-width:210px; }
   .menu div { padding:6px 10px; cursor:pointer; display:flex; justify-content:space-between; gap:12px; }
-  .menu div:hover { background:#333; }
-  .menu .sel { background:#3a3a1a; }
-  .menu .pp { color:var(--odd); font-size:11px; }
+  .menu div:hover { background:var(--cab); }
+  .menu .sel { background:rgba(45,170,196,0.16); }
+  .menu .pp { color:var(--pin); font-size:11px; }
   .nota { color:var(--fraco); font-size:11.5px; padding:6px 2px 0; line-height:1.45; }
   .tag { font-size:10px; color:var(--modelo); border:1px solid rgba(45,170,196,0.5); border-radius:8px;
          padding:0 5px; margin-left:6px; }
 </style></head>
 <body>
+<div class="colunas" id="serie"></div>
 <div class="topo" id="topo"></div>
 <div class="colunas" id="colunas"></div>
 <div class="nota">
@@ -156,14 +224,25 @@ _MODELO_HTML = r"""<!doctype html>
 </div>
 <script>
 const DADOS = __DADOS__;
+const VENC = __VENCEDOR__;
 const TITULO = "__TITULO__";
 const sel = {};
 let mapaAtual = null;
 DADOS.forEach((m, i) => { m.id = i; sel[i] = m.inicial; });
-const mapas = [...new Set(DADOS.map(m => m.mapa))].sort((a, b) => a - b);
+const mapas = [...new Set(DADOS.map(m => m.mapa).concat(
+  VENC.linhas.map(v => v.periodo).filter(p => p > 0)))].sort((a, b) => a - b);
 mapaAtual = mapas[0];
 
 function esc(x) { return String(x).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }
+// Acima disto, desconfie do modelo antes da casa (mesma regra da aba:
+// VANTAGEM_SUSPEITA_PCT em oportunidades_core). Medido 25/09: no vencedor o
+// modelo e mais timido que o mercado (inclinacao 0,71).
+const SUSPEITA = __SUSPEITA__;
+function vantTxt(v) {
+  if (v === null || v === undefined) return "";
+  const t = `<span class="v ${v > 0 ? "b" : "r"}">${(v > 0 ? "+" : "") + v.toFixed(1)}%</span>`;
+  return v > SUSPEITA ? t + `<span class="alerta">grande demais</span>` : t;
+}
 function fmtL(v) { return (Math.round(v * 10) / 10).toFixed(1); }
 function fmtO(v) { return (v === null || v === undefined) ? null : Number(v).toFixed(2); }
 function sinal(v) { return (v > 0 ? "+" : "") + fmtL(v); }
@@ -180,11 +259,28 @@ function celula(m, L, odd, vant, clica, destaque) {
     if (o === null) return `<div class="cel"><span class="ln ${clica ? "clica" : ""}" data-m="${m.id}">${r[k]}</span><span class="nada">não oferece</span></div>`;
     const v = vant ? vant[k] : null;
     const verde = destaque && v !== null && v !== undefined && v > 0;
-    const vt = (destaque && v !== null && v !== undefined)
-      ? `<span class="v ${v > 0 ? "b" : "r"}">${(v > 0 ? "+" : "") + v.toFixed(1)}%</span>` : "";
+    const vt = destaque ? vantTxt(v) : "";
     const lnTxt = m.tipo === "handicap" ? r[k].split(" ").slice(-1)[0] : r[k];
     return `<div class="cel ${verde ? "verde" : ""}"><span class="ln ${clica ? "clica" : ""}" data-m="${m.id}">${lnTxt}</span><span class="odd">${o}</span>${vt}</div>`;
   }).join("");
+}
+
+function vencHTML(tabela, titulo, v) {
+  let h = `<div class="secao"><h3>${titulo}</h3>`;
+  h += `<div class="cab g2"><div>${esc(VENC.casa)}</div><div>${esc(VENC.fora)}</div></div><div class="row g2">`;
+  [["a", "pin_a", "vant_a"], ["b", "pin_b", "vant_b"]].forEach(([k, pk, vk]) => {
+    if (tabela === "pinnacle") {
+      const vv = v[vk];
+      const verde = vv !== null && vv !== undefined && vv > 0;
+      const vt = vantTxt(vv);
+      h += `<div class="cel ${verde ? "verde" : ""}"><span class="odd">${fmtO(v[pk])}</span>${vt}</div>`;
+    } else {
+      const o = fmtO(v["modelo_" + k]);
+      h += o === null ? `<div class="cel"><span class="nada">abra este confronto</span></div>`
+                      : `<div class="cel"><span class="odd">${o}</span></div>`;
+    }
+  });
+  return h + `</div></div>`;
 }
 
 function secaoHTML(tabela, nome, itens) {
@@ -212,15 +308,26 @@ function secaoHTML(tabela, nome, itens) {
   return h + `</div>`;
 }
 
+const COLS = [["fair", "Fair (modelo)", "var(--modelo)"], ["modelo", "Modelo", "var(--modelo)"],
+              ["pinnacle", "Pinnacle", "var(--pin)"]];
+
+function desenhaSerie() {
+  const serie = VENC.linhas.find(v => v.periodo === 0);
+  const bo = VENC.bo ? ` (BO${VENC.bo})` : "";
+  document.getElementById("serie").innerHTML = COLS.map(([t, nome, cor]) =>
+    `<div class="coluna col-${t}"><div class="nome-col" style="color:${cor}">${nome}</div>` +
+    (serie ? vencHTML(t, "Série - Vencedor" + bo, serie) : "") + `</div>`).join("");
+}
+
 function desenha() {
   document.getElementById("topo").innerHTML = `<b>${TITULO}</b>` + mapas.map(p =>
     `<button class="mapa ${p === mapaAtual ? "ativo" : ""}" data-mapa="${p}">Mapa ${p}</button>`).join("");
   const doMapa = DADOS.filter(m => m.mapa === mapaAtual);
   const secoes = ["Totais", "Handicap de Kills", "Kills por time"];
-  const cols = [["fair", "Fair (modelo)", "var(--modelo)"], ["modelo", "Modelo", "var(--modelo)"],
-                ["pinnacle", "Pinnacle", "var(--pin)"]];
-  document.getElementById("colunas").innerHTML = cols.map(([t, nome, cor]) => {
-    let h = `<div class="coluna"><div class="nome-col" style="color:${cor}">${nome}</div>`;
+  const vm = VENC.linhas.find(v => v.periodo === mapaAtual);
+  document.getElementById("colunas").innerHTML = COLS.map(([t, nome, cor]) => {
+    let h = `<div class="coluna col-${t}">`;
+    if (vm) h += vencHTML(t, `Mapa ${mapaAtual} - Vencedor`, vm);
     secoes.forEach(s => {
       const itens = doMapa.filter(m => m.secao === s).sort((a, b) => a.ordem - b.ordem);
       if (itens.length) h += secaoHTML(t, s, itens);
@@ -231,6 +338,7 @@ function desenha() {
 
 function fechaMenu() { const x = document.querySelector(".menu"); if (x) x.remove(); }
 
+desenhaSerie();
 document.addEventListener("click", ev => {
   const bm = ev.target.closest(".mapa");
   if (bm) { mapaAtual = Number(bm.dataset.mapa); fechaMenu(); desenha(); return; }

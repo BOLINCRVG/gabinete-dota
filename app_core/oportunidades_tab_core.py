@@ -154,8 +154,21 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
             key="oportunidades_jogo_cmp",
         )
+        # O VENCEDOR em cima (pedido dele, 25/09/2026), no BO do confronto
+        # aberto -- o que o calendario escolheu. Para os outros jogos, o BO da
+        # casa e so a odd dela (o modelo so calculou o confronto aberto).
+        _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
+        _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
+        _aberto = any(a.get("metrica") == "vencedor" or a.get("com_vitoria") for a in _do_jogo)
+        from app_core.tabela_casa_core import vencedores_da_tela
+        _venc = vencedores_da_tela(
+            [l for l in (odds.get("linhas") or []) if isinstance(l, dict) and l.get("jogo") == jogo_cmp],
+            _do_jogo)
         _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
-                         _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""))
+                         _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""),
+                         vencedores=_venc,
+                         bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
+                         casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""))
 
         # O MERCADO PRIMEIRO, a aposta depois (pedido de 16/09/2026): a
         # comparacao linha por linha continua aqui embaixo.
@@ -793,10 +806,12 @@ def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) 
 # ---------------------------------------------------------------------------
 
 
-def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str) -> None:
+def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str, *,
+                     vencedores: List[Mapping[str, Any]] = (), bo: Any = None,
+                     casa: str = "", fora: str = "") -> None:
     from app_core.tabela_casa_core import altura, html_das_tabelas, linhas_da_tela
     linhas = linhas_da_tela(justas)
-    if not linhas:
+    if not linhas and not vencedores:
         return
     st.markdown("### Linha justa: modelo x Pinnacle")
     try:
@@ -804,4 +819,6 @@ def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str) -> N
     except Exception:
         st.info("Esta versao do Streamlit nao desenha a tabela no formato da casa.")
         return
-    _componentes.html(html_das_tabelas(linhas, titulo), height=altura(linhas), scrolling=True)
+    _componentes.html(html_das_tabelas(linhas, titulo, vencedores=vencedores, bo=bo,
+                                       casa=casa, fora=fora),
+                      height=altura(linhas), scrolling=True)
