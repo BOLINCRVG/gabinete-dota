@@ -17,6 +17,17 @@ Design note (important):
     (c) recent calibrated logloss degrading vs the artifact's own holdout logloss.
 """
 
+import sys
+
+# Console cp1252 no Windows derruba print com acento — e este modulo agora
+# imprime a mensagem de "CSV parado", que tem travessao. O proprio guarda
+# test_sem_falha_silenciosa pegou isto no meu codigo novo (16/08/2026).
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -54,6 +65,15 @@ def _resolve_csv_path(p: Path) -> Path:
 class CheckConfig:
     # Policy thresholds (used by mlcore_app sliders)
     max_days: int = 14                  # retrain if artifact older than this
+    # CSV PARADO: o dado em si envelhecendo, mesmo com o artifact recem-treinado.
+    # Achado 16/08/2026 (pergunta dele sobre a data de referencia): a data de
+    # decaimento e HOJE, nao o ultimo jogo do CSV — o que esta CERTO, senao jogo
+    # velho pareceria novo. Mas se o CSV congela, `hoje` avanca e envelhece tudo
+    # sozinho, e NENHUM dos outros gatilhos dispara: o artifact continua novo e
+    # "jogos novos" fica em zero. Com half-life de 60d, 14 dias parado ja tira 15%
+    # do peso do dado mais recente, e 30 dias tiram 29% — sem sintoma visivel.
+    # A cota do Google Drive ja travou o upload dele varias vezes: e cenario real.
+    max_csv_stale_days: int = 5
     min_new_games: int = 1200           # retrain if >= this many new maps since last train
 
     # Quality window (recent tail)
@@ -172,7 +192,15 @@ def check_retrain_needed(
         art_mtime = datetime.now(timezone.utc)
     # Use whichever is more recent: meta timestamp or file modification time.
     trained_at = art_mtime if trained_at_meta is None else max(trained_at_meta, art_mtime)
-    data_max = _parse_iso_dt(str((art.meta or {}).get("data_max_date") or ""))
+    # "Jogos novos" tem que ser contado a partir do que os RATINGS viram, nao do
+    # fim dos dados: quando o artifact vem de um train_offline, o holdout ficou de
+    # fora do fit e esses jogos SAO novos para o modelo. Usar data_max_date aqui
+    # subestimava a defasagem — foi assim que o incidente holdout-180 (junho/2026)
+    # passou 4 dias despercebido, com os ratings congelados em dezembro.
+    # Artifact sem a chave nova cai em data_max_date, comportamento de antes.
+    _m = art.meta or {}
+    data_max = (_parse_iso_dt(str(_m.get("ratings_max_date") or ""))
+                or _parse_iso_dt(str(_m.get("data_max_date") or "")))
 
     now = datetime.now(timezone.utc)
     days_since = int((now - trained_at).total_seconds() / 86400)
@@ -197,6 +225,17 @@ def check_retrain_needed(
     if (baseline_ll is not None) and (ll_recent == ll_recent):
         ll_delta = float(ll_recent - baseline_ll)
 
+    # Quantos dias faz que o CSV nao recebe jogo novo (independe do artifact).
+    csv_stale_days = None
+    csv_last_date = "?"
+    try:
+        _ult = pd.to_datetime(games["date"], errors="coerce").max()
+        if pd.notna(_ult):
+            csv_last_date = _ult.date().isoformat()
+            csv_stale_days = int((datetime.now(timezone.utc).date() - _ult.date()).days)
+    except (KeyError, TypeError, ValueError):
+        csv_stale_days = None
+
     reasons: List[str] = []
 
     # Policy-based triggers
@@ -204,6 +243,11 @@ def check_retrain_needed(
         reasons.append(f"artifact is {days_since} days old (>= {cfg.max_days})")
     if new_games >= int(cfg.min_new_games):
         reasons.append(f"{new_games} new games since last train (>= {cfg.min_new_games})")
+    if csv_stale_days is not None and csv_stale_days >= int(cfg.max_csv_stale_days):
+        reasons.append(
+            f"CSV parado ha {csv_stale_days} dias (ultimo jogo {csv_last_date}); o decaimento "
+            f"usa HOJE como referencia, entao o dado perde peso sozinho — reponha o CSV"
+        )
 
     # Quality-based trigger (only if we have enough recent samples)
     if (baseline_ll is not None) and (ll_delta == ll_delta) and (n_recent >= int(cfg.min_recent_eval)):
@@ -216,6 +260,9 @@ def check_retrain_needed(
     stats: Dict[str, Any] = {
         "days_since_train": days_since,
         "new_games": new_games,
+        "csv_stale_days": csv_stale_days,
+        "csv_last_date": csv_last_date,
+
         "n_total_games": len(games),
         "n_recent_eval": int(n_recent),
         "recent_logloss_cal": float(ll_recent) if ll_recent == ll_recent else None,

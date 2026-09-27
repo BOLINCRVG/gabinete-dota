@@ -107,6 +107,9 @@ def build_pre_engine_input(
     caption_fn: Callable[[str], None] | None,
     warning_fn: Callable[[str], None] | None,
     match_league: Any = "",
+    # Calibrador com grupo (05/09/2026, divida D8). None = desligado, que e
+    # exatamente o comportamento de antes.
+    postfusion_grupo_coef: Any = None,
 ) -> MlPreEngineInput:
     return MlPreEngineInput(
         p_map_used=p_map_used,
@@ -154,6 +157,7 @@ def build_pre_engine_input(
         caption_fn=caption_fn,
         warning_fn=warning_fn,
         match_league=str(match_league or ""),
+        postfusion_grupo_coef=postfusion_grupo_coef,
     )
 
 

@@ -30,6 +30,53 @@ def _sc_team_match_key(value: Any) -> str:
     return s.lower().strip()
 
 
+def escolha_inicial_da_comparacao(
+    *,
+    opcoes: Any,
+    time_a: Any,
+    time_b: Any,
+    ja_escolhido: Any,
+    semeado_antes: Any,
+) -> Optional[list]:
+    """Quais times a comparacao deve ja vir marcando. None = nao mexer.
+
+    Pedido do dono em 13/09/2026: a comparacao do StatsCamps comecava vazia e
+    ele tinha de remarcar, na mao, os mesmos dois times que ja estavam
+    escolhidos no Confronto logo acima.
+
+    A regra tem de seguir o confronto SEM atropelar escolha feita a mao:
+      - ninguem mexeu ainda  -> marca os dois do confronto;
+      - trocou o confronto e a comparacao continuava como foi semeada
+        -> acompanha;
+      - o dono mexeu na comparacao (inclusive para esvaziar) -> nao toca mais.
+
+    Time que nao esta na lista de opcoes (filtro de liga/ano/split diferente)
+    NAO e forcado: o Streamlit recusaria o valor, e forcar seria mentir sobre
+    o recorte. Comparacao e tolerante a caixa e a acento quebrado, como o
+    resto desta tela.
+    """
+    disponiveis = [str(o) for o in (opcoes or [])]
+    por_chave: dict = {}
+    for o in disponiveis:
+        por_chave.setdefault(_sc_team_match_key(o), o)
+
+    alvo: list = []
+    for t in (time_a, time_b):
+        achado = por_chave.get(_sc_team_match_key(t))
+        if achado and achado not in alvo:
+            alvo.append(achado)
+    if not alvo:
+        return None
+
+    if ja_escolhido is None:
+        return alvo
+    atual = [str(x) for x in (ja_escolhido or [])]
+    semeado = [str(x) for x in (semeado_antes or [])]
+    if atual == semeado and alvo != semeado:
+        return alvo
+    return None
+
+
 def compute_statscamps_autofill(
     team_games: pd.DataFrame,
     team_a: str,
@@ -203,6 +250,7 @@ def render_statscamps_tab(
     Filters: Any,
     apply_filters_fn: Callable[[pd.DataFrame, Any], pd.DataFrame],
     parse_lines_fn: Callable[[str], list[float]],
+    parse_time_lines_fn: Callable[[str], list[float]],
     min_to_mmss_fn: Callable[[Any], str],
     format_num_fn: Callable[[float, int], str],
     df_contract_view_fn: Callable[..., pd.DataFrame],
@@ -370,6 +418,11 @@ def render_statscamps_tab(
             "INHIB thresholds (C. Inhib) — ex: 1.5",
             key="sc_th_inhib",
         )
+        th_time = st.text_input(
+            "TEMPO thresholds (Game Time) — ex: 32:30, 35, 28.5",
+            key="sc_th_time",
+            help="Aceita 32:30, 32.5 ou 32. O padrão é 32:30.",
+        )
 
     sc_filters = Filters(
         year=None if not sc_year else int(sc_year),
@@ -398,6 +451,16 @@ def render_statscamps_tab(
     # apagar as colunas 23.5/25.5/... — so adiciona a nova.
     from app_core.stats_config import STATS_MARKET_CONFIG as _SMC
 
+    def _th_tempo(txt: Any) -> list:
+        """Linhas de tempo, que aceitam 32:30 alem de 32.5.
+
+        O parser comum nao entende "32:30" — ele quebraria em 32 e 30, e o
+        dono ia digitar o horario e ver duas linhas erradas aparecerem.
+        """
+        cfg = _SMC.get("Tempo")
+        base = parse_time_lines_fn(str(cfg["default_thresholds"])) if cfg else []
+        return sorted(set(list(base) + list(parse_time_lines_fn(txt))))
+
     def _th(txt: Any, market: str) -> list:
         # .get, nao [] (26/08/2026): o dota_overrides troca "Dragões" por
         # "Megacreeps" no registro, e esta aba pedia a chave literal — a aba
@@ -414,6 +477,7 @@ def render_statscamps_tab(
     th_d = _th(th_dragons, "Dragões")
     th_b = _th(th_barons, "Nashors")
     th_i = _th(th_inhib, "Inibidores")
+    th_tm = _th_tempo(th_time)
     agg_rows = []
     for team_name, group in df_sc.groupby("team"):
         group = group.copy()
@@ -450,6 +514,12 @@ def render_statscamps_tab(
             row[f"% Nashors > {line}"] = _pct(pd.to_numeric(group["total_nashors"], errors="coerce") > float(line))
         for line in th_i:
             row[f"% Inhib > {line}"] = _pct(pd.to_numeric(group["total_inhibitors"], errors="coerce") > float(line))
+        for line in th_tm:
+            # O rotulo mostra o horario (32:30), nao o decimal (32.5) — e como
+            # a linha e vendida na casa.
+            row[f"% Tempo > {min_to_mmss_fn(float(line))}"] = _pct(
+                pd.to_numeric(group.get("game_time_min"), errors="coerce") > float(line)
+            )
         agg_rows.append(row)
 
     df_tab = pd.DataFrame(agg_rows)
@@ -484,6 +554,22 @@ def render_statscamps_tab(
         subtitle="Selecione 2 ou mais times para ver a tabela lado a lado e o delta por metrica.",
     )
     all_teams_sc = df_tab_raw["Team"].tolist() if "Team" in df_tab_raw.columns else []
+
+    # A comparacao ja nasce com os dois times do Confronto. Tem de ser ANTES do
+    # widget: o Streamlit so aceita escrever na chave dele antes de ele existir
+    # no desenho. `_sc_compare_semeado` guarda o que foi semeado, e e o que
+    # permite saber se o dono mexeu na mao depois.
+    _alvo_cmp = escolha_inicial_da_comparacao(
+        opcoes=all_teams_sc,
+        time_a=session_state.get("teamA"),
+        time_b=session_state.get("teamB"),
+        ja_escolhido=session_state.get("sc_compare_sel"),
+        semeado_antes=session_state.get("_sc_compare_semeado"),
+    )
+    if _alvo_cmp is not None:
+        session_state["sc_compare_sel"] = list(_alvo_cmp)
+        session_state["_sc_compare_semeado"] = list(_alvo_cmp)
+
     selected = st.multiselect("Selecione 2+ times", options=all_teams_sc, key="sc_compare_sel")
     if not selected or len(selected) < 2:
         return
@@ -512,31 +598,82 @@ def render_statscamps_tab(
             r = df_tab_raw[df_tab_raw["Team"].astype(str) == str(tm)]
             return r.iloc[0] if not r.empty else None
 
-        for _co, _tm in zip(st.columns(len(selected)), selected):
+        # Paleta categórica por time — validada (CVD ΔE 14+, banda de luminância
+        # e contraste no fundo escuro): scripts/validate_palette.js do skill dataviz.
+        _PAL = ["#2695ad", "#8b5cf6", "#c2760a", "#4d9e4d", "#c05a8a", "#7a8fb8"]
+
+        def _num_of(tm: str, m: str):
+            _r = _row_of(tm)
+            try:
+                v = float(_r.get(m)) if _r is not None else float("nan")
+                return v if math.isfinite(v) else None
+            except (TypeError, ValueError):
+                return None
+
+        # "melhor" por métrica (Deaths e Game Time: menor é melhor) — destaque
+        # sem depender só de cor (o valor vencedor fica em negrito + ponto).
+        _lower_better = {"Deaths", "Game Time"}
+
+        for _i, (_co, _tm) in enumerate(zip(st.columns(len(selected)), selected)):
             _r = _row_of(_tm)
             if _r is None:
                 continue
+            _cor = _PAL[_i % len(_PAL)]
             with _co, st.container(border=True):
-                st.markdown(f"**{_tm}** · {int(_r.get('# Games') or 0)} jogos")
+                st.markdown(
+                    f"<div style='border-left:3px solid {_cor};padding-left:8px;margin-bottom:6px'>"
+                    f"<div style='font-weight:700;font-size:1.05em;line-height:1.2'>{_tm}</div>"
+                    f"<div style='opacity:.55;font-size:.78em'>{int(_r.get('# Games') or 0)} jogos</div></div>",
+                    unsafe_allow_html=True)
                 for _m in _card_metrics:
-                    if _m in _r:
-                        st.markdown(
-                            f"<div style='font-size:.85em;display:flex;justify-content:space-between'>"
-                            f"<span style='opacity:.6'>{_m}</span><b>{_cell(_m, _r.get(_m))}</b></div>",
-                            unsafe_allow_html=True)
+                    if _m not in _r:
+                        continue
+                    _vals = [v for v in (_num_of(t, _m) for t in selected) if v is not None]
+                    _mine = _num_of(_tm, _m)
+                    _best = (_mine is not None and len(_vals) > 1 and
+                             (_mine == (min(_vals) if _m in _lower_better else max(_vals))))
+                    _mark = f"<span style='color:{_cor}'>●</span> " if _best else ""
+                    _w = "700" if _best else "500"
+                    st.markdown(
+                        f"<div style='font-size:.85em;display:flex;justify-content:space-between;"
+                        f"padding:2px 0;border-top:1px solid rgba(255,255,255,.04)'>"
+                        f"<span style='opacity:.55'>{_m}</span>"
+                        f"<span style='font-weight:{_w}'>{_mark}{_cell(_m, _r.get(_m))}</span></div>",
+                        unsafe_allow_html=True)
 
         _line_cols = [c for c in df_tab_raw.columns if str(c).startswith("% ")]
         if _line_cols:
-            st.markdown("##### Comparativo das linhas (%)")
-            _lrows = []
+            st.markdown("##### Comparativo das linhas")
+            # Barras (magnitude entre entidades) em vez de tabela de texto: dá pra
+            # ler quem bate mais a linha de relance. Legenda direta + valor ao lado
+            # da barra (identidade nunca só por cor).
+            _leg = " · ".join(
+                f"<span style='color:{_PAL[i % len(_PAL)]}'>●</span> "
+                f"<span style='opacity:.75'>{_esc(str(t))}</span>"
+                for i, t in enumerate(selected))
+            st.markdown(f"<div style='font-size:.82em;margin-bottom:6px'>{_leg}</div>",
+                        unsafe_allow_html=True)
+            _html = ["<div style='display:flex;flex-direction:column;gap:7px'>"]
             for _lc in _line_cols:
-                _lrow = {"Linha": str(_lc).replace("% ", "")}
-                for _tm in selected:
-                    _r = _row_of(_tm)
-                    _v = _r.get(_lc) if _r is not None else None
-                    _lrow[_tm] = _cell("%", _v)
-                _lrows.append(_lrow)
-            st.dataframe(pd.DataFrame(_lrows), width="stretch", hide_index=True)
+                _label = str(_lc).replace("% ", "")
+                _html.append(
+                    "<div style='display:flex;align-items:center;gap:10px'>"
+                    f"<div style='width:120px;font-size:.82em;opacity:.7;text-align:right'>{_esc(_label)}</div>"
+                    "<div style='flex:1;display:flex;flex-direction:column;gap:2px'>")
+                for _i, _tm in enumerate(selected):
+                    _v = _num_of(_tm, _lc)
+                    _cor = _PAL[_i % len(_PAL)]
+                    _pct = max(0.0, min(100.0, float(_v))) if _v is not None else 0.0
+                    _txt = f"{_pct:.0f}%" if _v is not None else "-"
+                    _html.append(
+                        "<div style='display:flex;align-items:center;gap:8px' "
+                        f"title='{_esc(str(_tm))} · {_esc(_label)}: {_txt}'>"
+                        "<div style='flex:1;height:9px;background:rgba(255,255,255,.05);border-radius:4px'>"
+                        f"<div style='width:{_pct:.1f}%;height:100%;background:{_cor};border-radius:4px'></div></div>"
+                        f"<div style='width:38px;font-size:.8em;font-weight:600'>{_txt}</div></div>")
+                _html.append("</div></div>")
+            _html.append("</div>")
+            st.markdown("".join(_html), unsafe_allow_html=True)
 
     with tab_delta:
         c_a, c_b = st.columns(2)
@@ -620,18 +757,46 @@ def render_statscamps_tab(
             st.warning("Não consegui montar Delta para esse par (dados faltando).")
             return
 
-        rows = []
+        # Layout A | métrica | B com o vencedor destacado (mesma linguagem visual
+        # dos cards): identidade por cor E por negrito, delta ao lado. Cores da
+        # paleta validada (validate_palette.js: contraste + CVD no fundo escuro).
+        _CA, _CB = "#2695ad", "#8b5cf6"
+        # métricas onde MENOR é melhor
+        _LOWER = {"Deaths", "Game Time"}
+        # neutras: não faz sentido "vencer" (amostra/contexto)
+        _NEUTRAL = {"# Games"}
+
+        st.markdown(
+            "<div style='display:flex;align-items:center;padding:6px 10px;margin-top:4px;"
+            "border-radius:8px 8px 0 0;background:rgba(255,255,255,.04);font-size:.8em;"
+            "text-transform:uppercase;letter-spacing:.05em;opacity:.75'>"
+            f"<div style='flex:1;text-align:right;color:{_CA};font-weight:700'>{_esc(str(team_a))}</div>"
+            "<div style='flex:1.1;text-align:center'>métrica</div>"
+            f"<div style='flex:1;text-align:left;color:{_CB};font-weight:700'>{_esc(str(team_b))}</div>"
+            "<div style='width:88px;text-align:right'>delta</div></div>",
+            unsafe_allow_html=True,
+        )
+
+        _html = []
         for col in df_tab_raw.columns:
             if col in ("Team", "Gold", "C. Gold"):  # gold nao ajuda a decidir linha (pedido dele)
                 continue
-            a_val = row_a.get(col)
-            b_val = row_b.get(col)
+            a_val, b_val = row_a.get(col), row_b.get(col)
             d_val = _fmt_delta_time(a_val, b_val) if col == "Game Time" else _fmt_delta_num(col, a_val, b_val)
-            rows.append({"Metrica": col, team_a: _fmt_val(col, a_val), team_b: _fmt_val(col, b_val), "Delta (A - B)": d_val})
 
-        df_delta = pd.DataFrame(rows)
-        st.dataframe(
-            df_contract_view_fn(df_delta, ["Metrica", team_a, team_b, "Delta (A - B)"], context="Series > Scout delta", fill_value="-"),
-            width="stretch",
-            hide_index=True,
-        )
+            _wa = _wb = False
+            if col not in _NEUTRAL and _is_num(a_val) and _is_num(b_val) and float(a_val) != float(b_val):
+                _a_wins = (float(a_val) < float(b_val)) if col in _LOWER else (float(a_val) > float(b_val))
+                _wa, _wb = _a_wins, not _a_wins
+            _sa = f"color:{_CA};font-weight:700" if _wa else "opacity:.75"
+            _sb = f"color:{_CB};font-weight:700" if _wb else "opacity:.75"
+            _dc = "#9ca3af" if col in _NEUTRAL or not (_wa or _wb) else (_CA if _wa else _CB)
+            _html.append(
+                "<div style='display:flex;align-items:center;padding:5px 10px;"
+                "border-top:1px solid rgba(255,255,255,.05);font-size:.9em'>"
+                f"<div style='flex:1;text-align:right;{_sa}'>{_esc(_fmt_val(col, a_val))}</div>"
+                f"<div style='flex:1.1;text-align:center;opacity:.5;font-size:.86em'>{_esc(str(col))}</div>"
+                f"<div style='flex:1;text-align:left;{_sb}'>{_esc(_fmt_val(col, b_val))}</div>"
+                f"<div style='width:88px;text-align:right;color:{_dc};font-size:.85em'>{_esc(str(d_val))}</div></div>"
+            )
+        st.markdown("".join(_html), unsafe_allow_html=True)

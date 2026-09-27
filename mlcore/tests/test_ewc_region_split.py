@@ -56,7 +56,6 @@ class AnnotateEwcTests(unittest.TestCase):
     def test_preenche_split_do_ewc_com_regiao_casa(self):
         out = annotate_ewc_region_split(self._base())
         ewc = out[out["league"] == "EWC"]
-        by_team_empty = {(r.team): r.split for r in ewc.itertuples() if r.team in ("A", "B", "NEW")}
         # A aparece 2x no EWC (uma vazia->KR, uma Manual); pega as linhas por índice
         self.assertIn("KR", set(ewc[ewc["team"] == "A"]["split"]))
         self.assertEqual(set(ewc[ewc["team"] == "B"]["split"]), {"CN"})

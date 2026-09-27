@@ -24,7 +24,7 @@ from .players_layer import (
 from .roster_signal_core import lineup_continuity_from_details, transfer_signal_from_details
 from .stats_teams import build_team_games, load_team_rows
 from .tiers import tier_for_league, tier_priority
-from .utils import brier, clip_prob, logit, logloss, safe_float as _f, sigmoid
+from .utils import brier, clip_prob, coerce_loud, logit, logloss, safe_float as _f, sigmoid
 from .fit_io_core import _read_json_file_safe, _safe_int
 def _is_valid_areal_prob_tuning(cfg: Any) -> bool:
     if not isinstance(cfg, dict):
@@ -396,7 +396,7 @@ def _fit_fused_post_calibration_from_pred_rows(
         out_base["n_total"] = len(df)
         return out_base
 
-    p_oof = pd.to_numeric(df["p"], errors="coerce").fillna(0.5).astype(float).clip(lower=1e-9, upper=1.0 - 1e-9).copy()
+    p_oof = coerce_loud(df["p"], nome="p (OOF p/ calibracao)", default=0.5).astype(float).clip(lower=1e-9, upper=1.0 - 1e-9).copy()
     fold_rows: List[Dict[str, Any]] = []
     for m in months:
         tr = df[df["month"].astype(str) < str(m)]
@@ -412,7 +412,7 @@ def _fit_fused_post_calibration_from_pred_rows(
         except Exception:
             continue
         idx = te.index
-        p_raw_te = pd.to_numeric(df.loc[idx, "p"], errors="coerce").fillna(0.5).astype(float).clip(lower=1e-9, upper=1.0 - 1e-9)
+        p_raw_te = coerce_loud(df.loc[idx, "p"], nome="p (fold de teste)", default=0.5).astype(float).clip(lower=1e-9, upper=1.0 - 1e-9)
         p_cal_te = p_raw_te.map(lambda x: float(clip_prob(float(cal.predict_proba(float(x))))))
         p_oof.loc[idx] = p_cal_te
         y_te = [int(v) for v in te["y"].tolist()]

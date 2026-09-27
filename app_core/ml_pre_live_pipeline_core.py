@@ -135,6 +135,106 @@ def _clip_prob_local(p: Any) -> float:
     return float(max(1e-6, min(1.0 - 1e-6, _f(p, 0.5))))
 
 
+_PSCORE_CACHE: Dict[str, Any] = {}
+
+
+def _carregar_pscore(artifact_path: str) -> Dict[str, Any] | None:
+    """Le players_pscore.json ao lado do artefato. Devolve None se nao houver.
+
+    AUSENCIA NAO E ERRO: modelo treinado antes desta camada, ou com
+    --no-pscore, simplesmente nao tem o arquivo, e o estagio fica inerte.
+    O cache e por (caminho, mtime, tamanho) para pegar retreino sem reiniciar.
+    """
+    import json as _json
+    import os as _os
+
+    try:
+        alvo = Path(str(artifact_path)).expanduser().with_name("players_pscore.json")
+    except (TypeError, ValueError):
+        return None
+    try:
+        st = _os.stat(str(alvo))
+    except OSError:
+        return None
+    chave = "{}|{}|{}".format(alvo, int(st.st_mtime), int(st.st_size))
+    if chave in _PSCORE_CACHE:
+        return _PSCORE_CACHE[chave]
+    try:
+        with open(str(alvo), "r", encoding="utf-8") as fh:
+            pac = _json.load(fh)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(pac, dict) or not isinstance(pac.get("notas"), dict):
+        return None
+    _PSCORE_CACHE.clear()
+    _PSCORE_CACHE[chave] = pac
+    return pac
+
+
+def _aplicar_pscore(
+    *,
+    p_map: float,
+    artifact_path: str,
+    blue_lineup: Mapping[str, Any],
+    red_lineup: Mapping[str, Any],
+    session_state: Mapping[str, Any],
+) -> Dict[str, Any]:
+    """Desloca o logito pela diferenca de nota de desempenho das escalacoes."""
+    from mlcore.players_pscore_core import delta_da_escalacao as _delta_ps
+
+    if not bool(session_state.get("ml_pscore_enabled", True)):
+        return {"applied": False, "reason": "desligado"}
+    if not math.isfinite(float(p_map)):
+        return {"applied": False, "reason": "p_map invalido"}
+
+    pac = _carregar_pscore(str(artifact_path))
+    if not pac:
+        return {"applied": False, "reason": "sem players_pscore.json"}
+
+    w = float(pac.get("w", 0.0) or 0.0)
+    if not math.isfinite(w) or abs(w) <= 1e-12:
+        return {"applied": False, "reason": "peso zero"}
+
+    # `apelidos` traduz NOME -> id do jogador.
+    #
+    # ESTE CAMINHO NAO PRECISAVA DELE: a escalacao daqui vem de `lineup_ml_*`,
+    # que guarda a CHAVE do jogador (o editor mostra o nome e grava a chave).
+    # Conferido no app dirigido em 14/09/2026 com o artefato de producao:
+    # applied=True, cobertura 5/5. Quem precisa e o Radar, que monta o draft
+    # por `playername`.
+    #
+    # Fica aqui mesmo assim porque custa nada e cobre quem chamar por nome —
+    # e porque em 13/09 eu concluí, ERRADO, que esta chamada recebia nomes.
+    # Artefato antigo nao tem a chave; `.get` devolve None e nada muda.
+    d, cobertura = _delta_ps(
+        pac.get("notas") or {},
+        blue_lineup={str(k): str(v) for k, v in (blue_lineup or {}).items() if v},
+        red_lineup={str(k): str(v) for k, v in (red_lineup or {}).items() if v},
+        apelidos=pac.get("apelidos") or {},
+    )
+    # PRINCIPIO IV: escalacao incompleta nao vira um delta menor disfarcado de
+    # delta certo. Sem os 5 de cada lado, o estagio nao age.
+    minimo = int(session_state.get("ml_pscore_min_cobertura", 5) or 5)
+    if int(cobertura) < minimo:
+        return {"applied": False, "reason": "cobertura {}/{}".format(cobertura, minimo),
+                "delta": float(d), "cobertura": int(cobertura)}
+    if not math.isfinite(float(d)) or abs(float(d)) <= 1e-12:
+        return {"applied": False, "reason": "delta zero",
+                "delta": float(d), "cobertura": int(cobertura)}
+
+    pc = min(max(float(p_map), 1e-6), 1.0 - 1e-6)
+    z = math.log(pc / (1.0 - pc)) + w * float(d)
+    p_out = 1.0 / (1.0 + math.exp(-max(-30.0, min(30.0, z))))
+    return {
+        "applied": True,
+        "reason": "ok",
+        "p_out": float(p_out),
+        "delta": float(d),
+        "cobertura": int(cobertura),
+        "w": float(w),
+    }
+
+
 def _interregional_strength_prior(
     *,
     p_map: Any,
@@ -644,6 +744,12 @@ def _stage_hybrid_blend(
                 knee_games=float(hy_knee),
                 momentum_games=int(ss.get("ml_hybrid_momentum_games", 10) or 10),
                 beta_prior=float(ss.get("ml_hybrid_beta", 2.0) or 2.0),
+                # 1.0 = o comportamento de sempre. Ver a explicacao em
+                # mlcore.fusion_core.hybrid_momentum_blend: a forma so
+                # acrescenta onde DISCORDA do modelo, e e justo ali que a
+                # formula de hoje a cala. O botao existe para medir isso.
+                agree_damp=float(ss.get("ml_hybrid_agree_damp", 1.0)
+                                 if ss.get("ml_hybrid_agree_damp") is not None else 1.0),
             )
             if isinstance(hy, dict):
                 trace_hybrid_info = dict(hy)
@@ -1090,6 +1196,64 @@ def run_ml_pre_live_pipeline(
     )
     interregional_pre = bool(league_pair_ctx.get("interregional", False))
     trace_interregional_strength_info: Dict[str, Any] = {}
+
+    # ------------------------------------------------------------------
+    # CAMADA DE JOGADORES POR DESEMPENHO
+    #
+    # POR QUE AQUI, e nao no ramo `use_lineup` que ja existe. Medido em
+    # 11/09/2026 na regua honesta (8 dobras, n=8.494, pareado, contra a base
+    # REAL servida):
+    #   producao hoje (camada bloqueada) ....... 7,09
+    #   + este estagio ......................... 7,20   +0,00388
+    #                                            IC [+0,00270, +0,00506]
+    #
+    # O ramo `use_lineup` faria o deslocamento E a fusao por precisao. A fusao
+    # sozinha CUSTA -0,00183, com o intervalo inteiro abaixo de zero — e por
+    # isso que `use_lineup_adjust` estar desligado esta CERTO. Abrir aquele
+    # portao traria o estagio ruim junto. Este estagio faz so o que paga.
+    #
+    # POSICAO NA FILA: logo apos a probabilidade calibrada e ANTES de
+    # season_form_blend, que e exatamente onde a regua mediu.
+    #
+    # DESLIGAR: `ml_pscore_enabled = False`, ou apagar players_pscore.json.
+    # Sem o arquivo o estagio e inerte, nao quebra nada.
+    # ------------------------------------------------------------------
+    trace_pscore_info: Dict[str, Any] = {}
+    try:
+        _ps_before = float(p_map) if math.isfinite(float(p_map)) else float("nan")
+        trace_pscore_info = _aplicar_pscore(
+            p_map=float(p_map),
+            artifact_path=str(artifact_path),
+            blue_lineup=(lineupA_sel if isinstance(lineupA_sel, dict) else {}),
+            red_lineup=(lineupB_sel if isinstance(lineupB_sel, dict) else {}),
+            session_state=ss,
+        )
+        if bool(trace_pscore_info.get("applied", False)) and math.isfinite(
+            _f(trace_pscore_info.get("p_out"))
+        ):
+            p_map = float(trace_pscore_info.get("p_out"))
+            p_series = _safe_prob_win_series(prob_win_series_fn, float(p_map), int(bo_i))
+        append_pipeline_step(
+            steps=steps,
+            stage="players_pscore",
+            before=_ps_before,
+            after=(float(p_map) if math.isfinite(float(p_map)) else float("nan")),
+            applied=bool(trace_pscore_info.get("applied", False)),
+            reason=str(trace_pscore_info.get("reason", "") or ""),
+            delta=(float(trace_pscore_info["delta"])
+                   if trace_pscore_info.get("delta") is not None else None),
+            cobertura=(int(trace_pscore_info["cobertura"])
+                       if trace_pscore_info.get("cobertura") is not None else None),
+        )
+    except Exception as exc:
+        append_pipeline_step(
+            steps=steps,
+            stage="players_pscore",
+            before=p_map,
+            after=p_map,
+            applied=False,
+            error="{}: {}".format(type(exc).__name__, exc),
+        )
 
     try:
         p_before = float(p_map) if math.isfinite(float(p_map)) else float("nan")

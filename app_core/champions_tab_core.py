@@ -41,12 +41,12 @@ def _render_matchup_pool_block(
         rows = load_player_rows_fn(csv_sig)
         if rows is None or rows.empty:
             return
-        year = None
-        try:
-            yr = pd.to_numeric(rows.get("year"), errors="coerce")
-            year = int(yr.max()) if yr.notna().any() else None
-        except Exception:
-            year = None
+        # NAO e `max(year)`. Duas temporadas se sobrepoem no calendario e o
+        # maior ano pode ser um split recem-comecado com poucos times — o que
+        # derrubou a lista do Radar de 394 para 18 em 28/08/2026.
+        # Ver app_core/temporada_corrente_core.py.
+        from app_core.temporada_corrente_core import ano_da_temporada_corrente
+        year = ano_da_temporada_corrente(rows)
 
         # tiers do patch atual (mesmo cache de sessão do Radar)
         meta_map: dict = {}

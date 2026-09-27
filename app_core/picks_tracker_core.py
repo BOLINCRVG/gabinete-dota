@@ -16,7 +16,9 @@ JSON schema (one file at ops/picks_tracker.json):
          "line": 27.5,                       # null for ML
          "odd_casa": 1.85,
          "stake_units": 1.0,                 # 0.5/0.75/1/1.25/1.5/2
-         "p_hist": 0.62,
+         "p_hist": 0.62,                     # da FREQUENCIA historica, nao do modelo
+         "p_modelo": 0.58,                   # o que o MODELO disse na hora da aposta
+         "momento": "pre",                   # pre|live|desconhecido
          "edge_hist_pct": 5.5,
          "status": "open",                   # open|won|lost|void
          "profit_units": null,
@@ -62,6 +64,29 @@ class Pick:
     odd_casa: float
     stake_units: float
     p_hist: Optional[float] = None
+    # O QUE O MODELO DISSE, e QUANDO a aposta foi feita.
+    #
+    # POR QUE ENTRARAM (21/09/2026). Ele observou: "NORMALMENTE, os ml's pres
+    # sao vindos do modelo de alguma forma, talvez 80% deles no minimo, os
+    # live, nos nao costumamos levar o modelo em conta".
+    #
+    # Isso invalidou uma coisa que eu tinha afirmado. Eu usei "ML: -2,89% de
+    # ROI em 884 apostas" como prova de que o modelo de vencedor e ruim. So
+    # que o tracker nao separa pre de live, e as 884 misturam apostas que
+    # vieram do modelo com apostas que nunca passaram por ele. O numero nao
+    # sustenta a conclusao.
+    #
+    # E pior: `p_hist` NAO e a probabilidade do modelo -- e a da frequencia
+    # historica (odd_to_prob(odd_hist)). Sao coisas diferentes no codigo
+    # (odd_model, odd_hist, p_stats) e so a do meio era gravada. Ou seja, o
+    # tracker nunca conseguiu responder "o modelo ganha dinheiro?", nem para
+    # apostas antigas nem para novas.
+    #
+    # `momento` nasce "desconhecido" de proposito: as 4.788 apostas ja
+    # gravadas nao dizem se foram pre ou live, e chuta-las como "pre" seria
+    # inventar o dado que falta. Quem nao sabe, diz que nao sabe.
+    p_modelo: Optional[float] = None
+    momento: str = "desconhecido"
     edge_hist_pct: Optional[float] = None
     status: str = "open"
     profit_units: Optional[float] = None
@@ -83,9 +108,15 @@ def new_pick(*, team_a: str, team_b: str, league: str,
               metric_key: str, side_key: str, line: Optional[float],
               odd_casa: float, stake_units: float,
               p_hist: Optional[float] = None,
+              p_modelo: Optional[float] = None,
+              momento: str = "pre",
               edge_hist_pct: Optional[float] = None,
               ts: Optional[str] = None) -> Pick:
-    """Construct a fresh Pick with a deterministic id."""
+    """Construct a fresh Pick with a deterministic id.
+
+    `momento` cai em "pre" porque o app so precifica pre-jogo. Uma aposta
+    live registrada aqui tem de dizer isso na chamada.
+    """
     ts_iso = ts or datetime.now().isoformat(timespec="seconds")
     pid = _compute_pick_id(ts_iso, team_a, team_b, metric_key, side_key, line)
     return Pick(
@@ -94,6 +125,11 @@ def new_pick(*, team_a: str, team_b: str, league: str,
         side_key=str(side_key), line=(float(line) if line is not None else None),
         odd_casa=float(odd_casa), stake_units=float(stake_units),
         p_hist=(float(p_hist) if p_hist is not None else None),
+        p_modelo=(float(p_modelo)
+                  if (p_modelo is not None and math.isfinite(float(p_modelo)))
+                  else None),
+        momento=(str(momento) if momento in ("pre", "live", "desconhecido")
+                 else "desconhecido"),
         edge_hist_pct=(float(edge_hist_pct) if edge_hist_pct is not None else None),
     )
 

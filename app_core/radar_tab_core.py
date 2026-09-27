@@ -36,7 +36,6 @@ from app_core.radar_confronto_core import (
     champion_meta_presence,
     classify_comp_archetype,
     latest_roster,
-    map_pattern_signals,
     player_champion_familiarity,
     team_style_history,
     team_vs_style_history,
@@ -358,13 +357,42 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
         return
 
     # ------------------------- Confronto -------------------------
-    years = sorted({int(y) for y in pd.to_numeric(team_games.get("year"), errors="coerce").dropna().unique()})
-    year = int(years[-1]) if years else 0
+    # A TEMPORADA NAO E "O MAIOR ANO". Ver app_core/temporada_corrente_core.py:
+    # desde 28/08/2026 o maior ano e 2027 (split Winter das ligas regionais
+    # europeias), com 18 times — e a lista daqui passou a esconder os outros
+    # 376. Foi assim que o dono procurou um time pelo nome exato e a tela
+    # respondeu que ele nao existia.
+    from app_core.temporada_corrente_core import (
+        ano_da_temporada_corrente as _ano_corrente,
+        anos_disponiveis as _anos_disp,
+    )
+    _anos = _anos_disp(team_games)
+    _padrao = _ano_corrente(team_games)
+    if _padrao is None:
+        st.warning("Sem ano nos jogos carregados.")
+        return
+    # O seletor existe para a outra temporada continuar ALCANCAVEL: consertar o
+    # padrao nao pode virar um novo jeito de sumir com times.
+    _chave_ano = f"radar{_S}_ano"
+    if str(session_state.get(_chave_ano, "")) not in {str(a) for a in _anos}:
+        session_state[_chave_ano] = int(_padrao)
+    year = int(session_state.get(_chave_ano) or _padrao)
     df_year = team_games[pd.to_numeric(team_games["year"], errors="coerce") == year].copy()
     teams = sorted({str(t) for t in df_year["team"].dropna().astype(str) if str(t).strip()})
 
     with st.container(border=True):
         render_tab_section(st, title="Confronto", subtitle=f"Season {year} · o recorte segue a liga de cada time.")
+        if len(_anos) > 1:
+            # Rotulo "Ano da temporada", e nao "Temporada": o app JA tem um
+            # seletor "Temporada" (S14/S15/S16), que e outra coisa. Dois
+            # seletores com o mesmo nome e coisas diferentes e como se erra
+            # aposta. Visto ao dirigir o app em 15/09/2026.
+            st.selectbox("Ano da temporada", _anos, key=_chave_ano,
+                         help="Duas temporadas convivem no calendario: as "
+                              "ligas europeias comecam a do ano seguinte ainda "
+                              "neste ano (o split Winter de 2027 comecou em "
+                              "28/08/2026). O padrao e a que tem mais jogos "
+                              "agora.")
         c1, c2 = st.columns(2)
         team_a_seed = str(session_state.get(f"radar{_S}_team_a") or session_state.get("teamA") or "")
         team_b_seed = str(session_state.get(f"radar{_S}_team_b") or session_state.get("teamB") or "")
@@ -436,6 +464,18 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     f"{mk['label']}", value=float(mk["line"]), step=0.5,
                     key=f"radar{_S}_line_{mk['key']}",
                 ))
+
+    # Torneio de exibição (KeSPA/Demacia): medido 24/07 — o modelo acerta ~39%
+    # nesses jogos (vs ~67% na LCK). Avisar ANTES do veredito, não fingir confiança.
+    try:
+        from app_core.exhibition_league_core import exhibition_warning
+        for _lg_ex in {str(league_a or ""), str(league_b or "")}:
+            _w = exhibition_warning(_lg_ex)
+            if _w:
+                st.warning(_w)
+                break
+    except Exception:
+        pass
 
     # ------------------------- Veredito por mercado -------------------------
     # Decisão primeiro (polimento 23/07): a resposta no topo, no golpe de vista.
@@ -547,6 +587,83 @@ def _render_radar_slot(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     roster_a = latest_roster(players_df=players_df, team=team_a) if players_df is not None else {}
     roster_b = latest_roster(players_df=players_df, team=team_b) if players_df is not None else {}
+
+    # ------------------- Escalacao (nota por desempenho) -------------------
+    # Pedido dele em 13/09/2026: ver aqui a conta nova de jogadores. O Radar ja
+    # sabia QUEM joga cada rota e ja mostrava o veredito com a camada aplicada
+    # — mas so o resultado, sem a razao. Agora da para ver de ONDE vem a
+    # vantagem de escalacao, e quanto ela vale em probabilidade.
+    try:
+        from app_core.ml_pre_live_pipeline_core import _carregar_pscore
+        from app_core.radar_jogadores_core import (
+            efeito_na_probabilidade as _efeito_p,
+            indice_das_linhas as _indice_linhas,
+            montar_painel as _painel_jog,
+        )
+        _pac_jog = _carregar_pscore(str(artifact_path))
+        # O indice NOME -> id so entra no arquivo de notas no treino COMPLETO,
+        # que roda uma vez por mes. Ate la ele sai das linhas que esta tela ja
+        # carregou — de graca, sem tocar no modelo nem na odd. Guardado na
+        # sessao porque montar toda hora custa caro a toa.
+        _ch_idx = "_radar_apelidos_{}".format(csv_sig)
+        _idx = session_state.get(_ch_idx)
+        if _idx is None:
+            _idx = _indice_linhas(players_df)
+            session_state[_ch_idx] = _idx
+        _pj = _painel_jog(_pac_jog, roster_a=roster_a, roster_b=roster_b,
+                          apelidos_extra=_idx)
+    except Exception:
+        _pj = {"disponivel": False, "motivo": ""}
+
+    if _pj.get("disponivel"):
+        with st.container(border=True):
+            render_tab_section(
+                st, title="Escalação",
+                subtitle="Nota por desempenho de cada jogador — de onde vem a vantagem, rota a rota.",
+            )
+            _desl = float(_pj.get("deslocamento") or 0.0)
+            _sem = _efeito_p(p_base_v, _desl) if (p_base_v is not None and _desl) else None
+
+            def _n(v):
+                return "—" if v is None else format_num_fn(v, 2)
+
+            _ln = []
+            _ln.append("<table style='width:100%;border-collapse:collapse;font-size:.86em'>")
+            _ln.append("<tr style='opacity:.55;font-size:.85em'>"
+                       "<th style='text-align:left'></th>"
+                       f"<th style='text-align:left'>{_esc(_short_name(team_a))}</th>"
+                       "<th style='text-align:right'>nota</th>"
+                       f"<th style='text-align:left;padding-left:1.2em'>{_esc(_short_name(team_b))}</th>"
+                       "<th style='text-align:right'>nota</th>"
+                       "<th style='text-align:right'>vantagem</th></tr>")
+            for _l in _pj.get("linhas") or []:
+                _d = _l.get("delta")
+                _cor = "inherit" if _d is None else (_COR_A if _d > 0 else _COR_B)
+                _ln.append(
+                    "<tr>"
+                    f"<td style='opacity:.6'>{_esc(str(_l['rotulo']))}</td>"
+                    f"<td>{_esc(str(_l['jogador_a']) or '—')}</td>"
+                    f"<td style='text-align:right'>{_n(_l['nota_a'])}</td>"
+                    f"<td style='padding-left:1.2em'>{_esc(str(_l['jogador_b']) or '—')}</td>"
+                    f"<td style='text-align:right'>{_n(_l['nota_b'])}</td>"
+                    f"<td style='text-align:right;color:{_cor}'>{_n(_d)}</td>"
+                    "</tr>")
+            _ln.append("</table>")
+            st.markdown("".join(_ln), unsafe_allow_html=True)
+
+            if not _pj.get("entra_na_conta"):
+                # Dizer que NAO entrou vale mais que esconder: sem os cinco de
+                # cada lado a camada nao age, e o veredito acima nao a inclui.
+                st.caption(f"Não entra na odd: {_pj.get('motivo')}. "
+                           "A camada só age com os 5 de cada lado com nota.")
+            elif _sem is not None:
+                st.caption(
+                    f"Com a escalação {100 * p_base_v:.1f}% · sem ela "
+                    f"{100 * _sem:.1f}% — a vantagem de escalação vale "
+                    f"{100 * (p_base_v - _sem):+.1f} ponto(s) para "
+                    f"{_esc(_short_name(team_a if _desl > 0 else team_b))}.")
+            else:
+                st.caption("Escalação completa e dentro da conta do veredito acima.")
 
     with st.container(border=True):
         render_tab_section(

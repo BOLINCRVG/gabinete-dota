@@ -210,8 +210,63 @@ def mlcore_p_map_v2(
         p_raw = p_from_diff_points_fn(diff, scale_points=scale_points)
         pricing_source = "reconstructed_diff"
 
+    # SIMETRIZADO NOS DOIS SENTIDOS (16/09/2026).
+    #
+    # ELE MANDOU DOIS PRINTS do MESMO confronto com numeros diferentes e
+    # atribuiu ao CSV que tinha acabado de subir. O CSV nao tinha mexido nada
+    # ali (0.567 antes, 0.567 depois; nenhum dos dois times jogou nos 54 jogos
+    # novos). O que mudou foi a ORDEM: num print a NAVI estava no Time 1, no
+    # outro o KOI.
+    #
+    # A CAUSA: o calibrador carrega o INTERCEPTO DO LADO AZUL. Ele manda
+    # p=0.50 para 0.5253, e a vitoria do lado azul nos dados e 53,62% em 8.758
+    # mapas -- o calibrador esta CERTO, aprendeu uma vantagem que existe. So
+    # que o caminho servido passa o Time 1 como lado azul, e na tela o "Time 1"
+    # e apenas a caixa onde ele digitou primeiro.
+    #
+    # Resultado: cal(p) + cal(1-p) dava 1.05, e o mesmo confronto mudava ate 5
+    # pontos percentuais conforme a ordem -- bem no meio da tabela, onde as
+    # decisoes de aposta acontecem.
+    #
+    # E O PROJETO JA FAZIA ISSO EM TRES LUGARES, menos aqui:
+    #   mlcore/fit_samples_core.py      (as amostras de TREINO)
+    #   app_core/live_between_maps_core.py
+    #   tools/calibrate_key_expectations.py
+    # Ou seja: o modelo era TREINADO com a probabilidade simetrizada e SERVIDO
+    # sem ela. Divergencia treino/servico, que e o que mlcore/replay_pre_jogo
+    # cita o Google para evitar ("garanta que treino e producao se imitem o
+    # mais perto possivel").
+    #
+    # MEDIDO em 6.331 mapas (tools/medir_lado_azul.py), com a ordem dos times
+    # arbitraria, que e o caso dele:
+    #     hoje              logloss 0.58871   nota 8.28
+    #     simetrizado       logloss 0.58760   nota 8.32
+    # ganho +0.00111, intervalo 95% [+0.00125, +0.00133] no caminho inteiro --
+    # pequeno, mas nao cabe zero dentro dele. E a convexidade do logloss
+    # garante que simetrizar NUNCA piora quando a ordem e arbitraria.
+    # A inconsistencia por confronto cai de 4,8 para 1,54 pontos (mediana).
     try:
-        p_cal = float(clip_prob_fn(float(art.calibrator.predict_proba(float(p_raw)))))
+        p_raw_rev = float("nan")
+        if model is not None and hasattr(model, "p_blue"):
+            p_raw_rev = float(
+                model.p_blue(
+                    team_red,
+                    team_blue,
+                    blue_league=red.get("league"),
+                    red_league=blue.get("league"),
+                    blue_tier=red.get("tier"),
+                    red_tier=blue.get("tier"),
+                )
+            )
+        if math.isfinite(p_raw_rev):
+            cal_f = float(art.calibrator.predict_proba(float(p_raw)))
+            cal_r = float(art.calibrator.predict_proba(float(p_raw_rev)))
+            p_cal = float(clip_prob_fn(0.5 * (cal_f + (1.0 - cal_r))))
+        else:
+            # Sem o sentido inverso nao ha o que simetrizar. Fica o de sempre
+            # -- pior que simetrizado, melhor que nada, e DITO no retorno.
+            p_cal = float(clip_prob_fn(float(art.calibrator.predict_proba(float(p_raw)))))
+            cal_error = "sem_sentido_inverso_nao_simetrizado"
     except Exception:
         p_cal = float(clip_prob_fn(float(p_raw)))
         cal_error = "calibrator_failed_fallback_to_p_raw"

@@ -300,8 +300,29 @@ def render_rankings_tab(
     with s2:
         top_n = st.slider("Top N", min_value=50, max_value=400, step=50, key="rank_top_n")
 
+    # Filtro de TIER + amostra mínima (pedido dele 24/07): sem isso a tabela
+    # mistura academies (LCKC/MINOR) e times com pouquíssimos jogos no meio dos
+    # principais. Default = só times principais, que é o que ele olha.
+    _fc1, _fc2 = st.columns([2.2, 1.0])
+    with _fc1:
+        _tiers_sel = st.multiselect(
+            "Mostrar tiers", options=["T1", "T2", "ERL", "MINOR", "OTHER"],
+            default=["T1", "T2"], key="rank_tier_filter",
+            help="Academies e ligas menores ficam fora por padrão (MINOR/ERL).",
+        )
+    with _fc2:
+        _min_games = st.number_input(
+            "Mín. de jogos", min_value=0, max_value=300, value=30, step=10,
+            key="rank_min_games", help="Corta times com amostra pequena demais.",
+        )
+
     def _apply_recorte(df: pd.DataFrame) -> pd.DataFrame:
         out = df
+        if _tiers_sel and ("tier" in out.columns):
+            out = out[out["tier"].astype(str).isin(_tiers_sel)].copy()
+        if int(_min_games) > 0 and _games_by_team:
+            _g = {str(k): int(v) for k, v in dict(_games_by_team).items()}
+            out = out[out["team"].astype(str).map(lambda t: _g.get(str(t), 0)) >= int(_min_games)].copy()
         if rank_league and ("league" in out.columns):
             out = out[out["league"].astype(str) == str(rank_league)].copy()
         if rank_year and ("year" in out.columns):
@@ -476,6 +497,15 @@ def render_rankings_tab(
             pass
         if "league" not in elo_df.columns or elo_df["league"].astype(str).str.len().sum() <= 0:
             return
+
+        try:
+            from pathlib import Path as _P
+
+            from app_core.nota_liga_core import render_nota_liga_table as _nl_table
+
+            _nl_table(st=st, root=_P(__file__).resolve().parents[1], pd=pd)
+        except (ImportError, OSError, TypeError, ValueError, KeyError):
+            pass
 
         st.markdown("#### Força média por liga (no recorte)")
         try:

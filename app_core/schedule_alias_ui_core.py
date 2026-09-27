@@ -11,6 +11,11 @@ from app_core.schedule_import_core import (
     suggest_schedule_teams,
     upsert_schedule_alias,
 )
+from app_core.frescor_do_time_core import (
+    avisar_se_velho,
+    legenda as legenda_frescor,
+    opcoes as opcoes_frescor,
+)
 from app_core.schedule_state_core import has_schedule_unknown_aliases
 
 
@@ -39,10 +44,21 @@ def render_schedule_alias_mapping(
         if "alias_rawB" not in session_state:
             session_state["alias_rawB"] = ""
 
+        st.caption(legenda_frescor())
         col_a, col_b = st.columns(2)
         with col_a:
             raw_a = st.text_input("Apelido / nome do Time 1", key="alias_rawA")
-            pick_a = st.selectbox("Mapear Time 1 para...", options=["", *suggest_schedule_teams(raw_a, teams)], key="alias_pickA")
+            _rot_a, _volta_a = opcoes_frescor(
+                suggest_schedule_teams(raw_a, teams),
+                session_state.get("_ultimo_jogo_por_time") or {})
+            pick_a = _volta_a.get(st.selectbox(
+                "Mapear Time 1 para...", options=["", *_rot_a],
+                key="alias_pickA"), "")
+            if pick_a:
+                _av = avisar_se_velho(pick_a,
+                                      session_state.get("_ultimo_jogo_por_time") or {})
+                if _av:
+                    st.warning(_av)
             if st.button("Aplicar no Time 1", width="stretch", key="alias_applyA"):
                 if raw_a.strip() and pick_a:
                     upsert_schedule_alias(session_state, alias_file, raw_a, pick_a)
@@ -52,7 +68,17 @@ def render_schedule_alias_mapping(
 
         with col_b:
             raw_b = st.text_input("Apelido / nome do Time 2", key="alias_rawB")
-            pick_b = st.selectbox("Mapear Time 2 para...", options=["", *suggest_schedule_teams(raw_b, teams)], key="alias_pickB")
+            _rot_b, _volta_b = opcoes_frescor(
+                suggest_schedule_teams(raw_b, teams),
+                session_state.get("_ultimo_jogo_por_time") or {})
+            pick_b = _volta_b.get(st.selectbox(
+                "Mapear Time 2 para...", options=["", *_rot_b],
+                key="alias_pickB"), "")
+            if pick_b:
+                _av = avisar_se_velho(pick_b,
+                                      session_state.get("_ultimo_jogo_por_time") or {})
+                if _av:
+                    st.warning(_av)
             if st.button("Aplicar no Time 2", width="stretch", key="alias_applyB"):
                 if raw_b.strip() and pick_b:
                     upsert_schedule_alias(session_state, alias_file, raw_b, pick_b)

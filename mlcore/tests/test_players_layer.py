@@ -568,7 +568,6 @@ class TestFitWLineup(unittest.TestCase):
     @staticmethod
     def _dados(w_true: float, n: int = 400, seed: int = 3):
         import numpy as np
-        from mlcore.players_layer import sigmoid
         rng = np.random.default_rng(seed)
         lb = rng.normal(0.0, 0.8, n)
         d = rng.normal(0.0, 1.0, n)

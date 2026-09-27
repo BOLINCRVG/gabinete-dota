@@ -9,6 +9,14 @@ import math
 import os
 import sys
 
+# Console cp1252 no Windows derruba qualquer print com acento/emoji — e o estouro
+# vem no fim, depois do trabalho todo feito. Ver tools/find_silent_failures.py.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, OSError, ValueError):
+    pass
+
 if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     __package__ = "mlcore"
@@ -224,6 +232,42 @@ def _augment_games_with_home_meta(
     return out
 
 
+def _mov_do_jogo(r: Any, sinal: str) -> Optional[float]:
+    """Margem de vitória do BLUE, no sinal escolhido. None = não medível.
+
+    None NÃO é zero: quem chama trata "sem sinal" caindo no ganhou/perdeu puro
+    e CONTANDO o caso. Devolver 0.0 aqui seria dizer "empatou em margem", que é
+    uma afirmação — e é exatamente a família de falha silenciosa das dívidas
+    D5/D8/D9 (ausência de dado virando número plausível).
+
+    Ordem de qualidade medida no eval cego 2026 (tools/eval_whr_mov.py):
+    gd15 (+0.0099) >> kills (+0.0037) > goldpm (+0.0032) > torres/ouro (+0.0022).
+    O ouro aos 15 ganha porque mede ANTES da bola de neve: depois disso a margem
+    vira consequência do próprio resultado, não medida de qualidade.
+    """
+    def _f(nome: str) -> Optional[float]:
+        try:
+            v = float(getattr(r, nome))
+        except (TypeError, ValueError, AttributeError):
+            return None
+        return v if math.isfinite(v) else None
+
+    def _dif(stem: str) -> Optional[float]:
+        b, v = _f(f"blue_{stem}"), _f(f"red_{stem}")
+        return None if b is None or v is None else b - v
+
+    if sinal == "gd15":
+        return _f("blue_golddiffat15")
+    if sinal == "kills":
+        return _dif("teamkills")
+    if sinal == "towers":
+        return _dif("towers")
+    # 'gold'/'goldpm' ficaram de fora: `totalgold` não está em
+    # io_oracle.FLOAT_STEMS, então não chega até aqui. Ver o comentário no
+    # argumento --whr-mov.
+    return None
+
+
 def _p_from_diff_points(diff_points: float, scale_points: float = 400.0) -> float:
     """Base-10 Elo logistic (same as EloModel uses)."""
     try:
@@ -271,6 +315,7 @@ def _maybe_reset_on_promotion(
     new_tier: str,
     *,
     last_tier: Dict[str, str],
+    league: str = "",
 ) -> None:
     """Reset residual rating when a team moves to a *stronger* tier.
 
@@ -289,6 +334,18 @@ def _maybe_reset_on_promotion(
     t = str(team)
     nt = str(new_tier or "OTHER")
     ot = str(last_tier.get(t) or "")
+
+    # Torneio INTERNACIONAL (MSI/Worlds/EWC...) nao e promocao: um time da LCS
+    # (T2) que vai ao MSI (T1) continua sendo o mesmo time. Sem isto, todo time
+    # que joga internacional perdia o historico (medido 24/07: 61 times, FlyQuest
+    # e Team Liquid com 8 resets cada). Nao mexe no last_tier tambem — senao a
+    # VOLTA pra liga domestica pareceria rebaixamento/promocao no proximo evento.
+    try:
+        if league and is_international_league(str(league)):
+            return
+    except (TypeError, ValueError):
+        pass
+
     if not ot:
         last_tier[t] = nt
         return
@@ -421,6 +478,25 @@ def main() -> None:
                          "MOVDA/dynamic-k não se aplicam ao fit whr.")
     ap.add_argument("--whr-w2", type=float, default=60.0,
                     help="Drift do WHR (Elo^2/dia). 60 tunado prequencialmente em 2025, eval cego 2026.")
+    # ---- margem de vitória no WHR (resultado fracionário) ----
+    # DESLIGADA por default: 'off' deixa o fit BIT A BIT o de antes de 09/2026.
+    # Prova cega em 2026 (tools/eval_whr_mov.py): gd15/lam=0.35/folga=0.15/w2=90
+    # -> logloss +0.0117 (IC95 [+0.0078,+0.0157]), acerto 65.0%->65.7%, ganho em
+    # 9/9 meses e 28/34 ligas. Ver evidence/eval_whr_mov_*.log.
+    # 'gold'/'goldpm' NÃO entram aqui de propósito: io_oracle.FLOAT_STEMS não
+    # carrega `totalgold`, então eles voltariam None em 100% dos jogos — uma
+    # opção que não faz nada é pior que uma opção que não existe. Os dois foram
+    # os PIORES no eval cego (+0.0022 e +0.0032 contra +0.0099 do gd15), então
+    # não vale mexer no io_oracle por eles.
+    ap.add_argument("--whr-mov", choices=["off", "gd15", "kills", "towers"],
+                    default="off",
+                    help="Sinal de margem no fit WHR. gd15 (ouro aos 15 min) foi o melhor "
+                         "no eval cego, por medir qualidade ANTES da bola de neve.")
+    ap.add_argument("--whr-mov-lambda", type=float, default=0.35,
+                    help="Peso da surpresa de margem. Só vale com --whr-mov != off.")
+    ap.add_argument("--whr-mov-folga", type=float, default=0.15,
+                    help="Vitória normal vale 1-folga, para sobrar teto e o modelo "
+                         "poder PREMIAR domínio (sem folga, 72%% dos jogos saturam).")
     ap.add_argument("--calibrate", choices=["auto","yes","no"], default="auto", help="Platt calibration on holdout raw probs")
     ap.add_argument("--min-holdout", type=int, default=500, help="Min holdout size to fit calibrator when --calibrate=auto")
     ap.add_argument("--min-cal-gain", type=float, default=0.0, help="Minimum holdout logloss improvement required to keep calibration")
@@ -435,6 +511,24 @@ def main() -> None:
              "Use --no-fit-players SO para experimentos Elo-only rapidos (nao deployar).",
     )
     ap.add_argument("--players-out", default="players_artifact.json", help="Output players artifact path (json)")
+    ap.add_argument("--pscore-out", default="players_pscore.json",
+                    help="Onde gravar a nota de jogador POR DESEMPENHO (por rota).")
+    ap.add_argument("--no-pscore", action="store_true",
+                    help="Nao monta a camada de jogadores por desempenho. "
+                         "E o caminho de volta: sem ela o modelo fica como antes.")
+    # PADRAO AINDA E 'media', de proposito. O 'ffa' MEDE melhor (+0,00921
+    # contra +0,00402), mas ainda nao foi conferido de ponta a ponta no app
+    # dirigido. Trocar o padrao antes disso seria subir no escuro.
+    ap.add_argument("--pscore-rating", choices=("ffa", "media"), default="media",
+                    help="Como a nota de desempenho vira rating do jogador. "
+                         "'ffa' = confronto de todos contra todos (Plackett-Luce); "
+                         "'media' = media acumulada (o comportamento antigo). "
+                         "Medido em 11/09/2026, contra a base real servida: "
+                         "media +0,00402, ffa +0,00921.")
+    ap.add_argument("--pscore-max-abs", type=float, default=0.50,
+                    help="Teto do peso da camada por desempenho. O ajuste converge "
+                         "para ~0,066; o teto so existe para holdout curto nao "
+                         "escolher um peso absurdo.")
     ap.add_argument("--players-stats", default=None, help="OracleElixir byTournament player stats CSV (optional prior)")
     ap.add_argument("--players-half-life", type=float, default=180.0, help="Players rating half-life (days)")
     ap.add_argument("--players-k", type=float, default=0.15, help="Players online update step (k)")
@@ -568,6 +662,8 @@ def main() -> None:
     last_tier: Dict[str, str] = {}
 
     train_fit = train_fit.sort_values(["date", "gameid"]).reset_index(drop=True)
+    # Receita da margem, para gravar no artefato. None = treinou sem margem.
+    _whr_mov_meta: Optional[Dict[str, Any]] = None
     if str(getattr(args, "core", "elo")) == "whr":
         # ------------------ WHR (alavanca N) ------------------
         # Fit MAP do histórico completo; depois EXPORTA os ratings finais pro
@@ -576,9 +672,41 @@ def main() -> None:
         #   ratings_armazenados = R_whr - pontos_da_liga (o p_blue soma o prior
         #   de volta via league_prior_weight=1.0), alpha=0 (sem shrink),
         #   tier_prior_weight=0, scale=400, dynk/MOVDA off.
-        from .whr_core import WHRFitter
+        from .whr_core import WHRFitter, ajustar_expectativa_mov
+
+        # ---- margem de vitória: DUAS passadas ----
+        # A 1ª roda SEM margem só para colher (Δr, MOV) e ajustar E[MOV|Δr]. A
+        # expectativa TEM que vir do Δr deste modelo: usar a de outro motor faria
+        # o resíduo carregar o viés do outro. Custo: o fit do WHR roda 2x — só
+        # quando --whr-mov != off.
+        _mov_sinal = str(getattr(args, "whr_mov", "off") or "off")
+        _mov_fit: Optional[Dict[str, float]] = None
+        if _mov_sinal != "off":
+            _pre = WHRFitter(w2_elo_per_day=float(args.whr_w2),
+                             league_prior_points=dict(model.league_base_points_map))
+            _xs: List[float] = []
+            _ys: List[float] = []
+            for r in train_fit.itertuples(index=False):
+                _b, _r = str(r.blue), str(r.red)
+                _bl, _rl = str(r.blue_league), str(r.red_league)
+                _m = _mov_do_jogo(r, _mov_sinal)
+                if _m is not None:
+                    _xs.append(_pre.rating_nat(_b, _bl) - _pre.rating_nat(_r, _rl))
+                    _ys.append(float(_m))
+                _pre.add_game(_b, _r, int(r.blue_win), int(r.date.toordinal()),
+                              blue_league=_bl, red_league=_rl)
+                _pre.refresh_pair(_b, _r, iters=2)
+            _mov_fit = ajustar_expectativa_mov(_xs, _ys)
+            print(f"[train_offline] WHR margem '{_mov_sinal}': E[MOV|dr] "
+                  f"a={_mov_fit['a']:.3f} b={_mov_fit['b']:.3f} c={_mov_fit['c']:.3f} "
+                  f"desvio={_mov_fit['s']:.3f} n={_mov_fit['n']} "
+                  f"(sem sinal em {len(train_fit) - len(_xs)} jogos)")
+
         whr = WHRFitter(w2_elo_per_day=float(args.whr_w2),
-                        league_prior_points=dict(model.league_base_points_map))
+                        league_prior_points=dict(model.league_base_points_map),
+                        mov_lambda=(float(args.whr_mov_lambda) if _mov_sinal != "off" else 0.0),
+                        mov_folga=(float(args.whr_mov_folga) if _mov_sinal != "off" else 0.0),
+                        mov_fit=_mov_fit)
         _n_fit = 0
         # Predições PREQUENCIAIS (prever ANTES de adicionar o jogo) do último
         # ano de treino — é nelas que o Platt do artefato é fitado (a receita
@@ -587,6 +715,10 @@ def main() -> None:
         _preq_cut = train_fit["date"].max() - pd.Timedelta(days=365)
         whr_preq_y: List[int] = []
         whr_preq_p: List[float] = []
+        # O gameid vai junto para que outras camadas possam ser ajustadas
+        # NESTE conjunto — sao previsoes feitas ANTES de o modelo ver o jogo,
+        # entao sao fora da amostra por construcao, e sao ~9x o holdout de 30d.
+        whr_preq_gid: List[str] = []
         for r in train_fit.itertuples(index=False):
             day = int(r.date.toordinal())
             _b, _r = str(r.blue), str(r.red)
@@ -602,8 +734,10 @@ def main() -> None:
                         float(args.unc_scale_c), float(args.unc_n_prior))
                 whr_preq_p.append(_p_preq)
                 whr_preq_y.append(int(r.blue_win))
+                whr_preq_gid.append(str(getattr(r, "gameid", "")))
             whr.add_game(_b, _r, int(r.blue_win), day,
-                         blue_league=str(r.blue_league), red_league=str(r.red_league))
+                         blue_league=str(r.blue_league), red_league=str(r.red_league),
+                         mov=(_mov_do_jogo(r, _mov_sinal) if _mov_sinal != "off" else None))
             whr.refresh_pair(_b, _r, iters=2)
             _n_fit += 1
             if _n_fit % 400 == 0:
@@ -611,6 +745,17 @@ def main() -> None:
         _sweeps = whr.full_sweeps(sweeps=12, tol_elo=0.5, iters=1)
         print(f"[train_offline] WHR fit: {_n_fit} jogos, convergiu em {_sweeps} varreduras finais; "
               f"{len(whr_preq_y)} predições prequenciais p/ calibração.")
+        if _mov_sinal != "off":
+            print(f"[train_offline] WHR margem aplicada em {whr.n_mov_usados} jogos, "
+                  f"ausente em {whr.n_mov_faltando} (esses caem no ganhou/perdeu puro).")
+            _whr_mov_meta = {
+                "sinal": _mov_sinal,
+                "lambda": float(args.whr_mov_lambda),
+                "folga": float(args.whr_mov_folga),
+                "expectativa": dict(_mov_fit or {}),
+                "jogos_com_margem": int(whr.n_mov_usados),
+                "jogos_sem_margem": int(whr.n_mov_faltando),
+            }
 
         # DEFASAGEM DO HOLDOUT (achado 16/08/2026): os ratings so viam ate o
         # corte, ou seja, o modelo publicado ficava --holdout-days DIAS ATRASADO
@@ -664,8 +809,8 @@ def main() -> None:
             bt = str(r.blue_tier)
             rt = str(r.red_tier)
 
-            _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier)
-            _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier)
+            _maybe_reset_on_promotion(model, blue, bt, last_tier=last_tier, league=bl)
+            _maybe_reset_on_promotion(model, red, rt, last_tier=last_tier, league=rl)
 
             # MOV (diff de kills do blue) — só tem efeito com --mov-lambda > 0.
             _mov_val = None
@@ -864,6 +1009,10 @@ def main() -> None:
         "holdout_days": int(args.holdout_days),
         "core": str(getattr(args, "core", "elo")),
         "whr_w2": float(getattr(args, "whr_w2", 0.0)) if str(getattr(args, "core", "elo")) == "whr" else None,
+        # Margem de vitória: fica GRAVADA para o artefato dizer sozinho com que
+        # receita foi treinado. Sem isto, descobrir se um modelo usou margem
+        # exigiria adivinhar pelo comando que alguém rodou meses atrás.
+        "whr_mov": _whr_mov_meta,
         "params": {
             "k": float(args.k),
             "scale_points": float(args.scale),
@@ -1058,6 +1207,194 @@ def main() -> None:
         except Exception as e:
             meta["players_layer"] = {"enabled": False, "error": str(e)}
             print("[train_offline] players_layer FAILED:", str(e))
+
+    # ------------------------------------------------------------------
+    # CAMADA DE JOGADORES POR DESEMPENHO (nao pelo resultado da partida)
+    #
+    # A camada acima move a nota com `y - p`: ganhou o time, sobe todo mundo.
+    # Esta aqui avalia COMO o jogador jogou, por rota. Medido na regua honesta
+    # em 11/09/2026 (8 dobras, n=8.494, pareado, contra a base REAL servida):
+    #   producao hoje ............. 7,09
+    #   + camada antiga ........... 7,13   +0,00233
+    #   + esta camada ............. 7,20   +0,00388  IC [+0,00270, +0,00506]
+    #
+    # DOIS CORTES, e confundi-los vazaria futuro:
+    #   - os PESOS por rota so enxergam jogos anteriores ao corte do treino;
+    #   - as NOTAS usadas para AJUSTAR o peso tambem param no corte, senao o
+    #     peso seria escolhido com a resposta do holdout na mao.
+    # Depois de ajustado o peso, as notas SALVAS sao refeitas com tudo, porque
+    # a partida a prever ainda nao aconteceu.
+    # ------------------------------------------------------------------
+    if bool(args.fit_players) and not bool(args.no_pscore):
+        try:
+            from mlcore.players_pscore_core import (
+                carregar_linhas as _ps_carregar,
+                construir as _ps_construir,
+                delta_da_escalacao as _ps_delta,
+            )
+
+            from mlcore.players_pscore_core import (
+                ajustar as _ps_ajustar,
+                calcular_pscore as _ps_calc,
+                deltas_por_jogo as _ps_deltas,
+            )
+
+            _corte = cutoff_dt.date() if (cutoff_dt is not None and pd.notna(cutoff_dt)) else None
+            _df_ps = _ps_carregar(csv_paths)
+
+            # ONDE O PESO E AJUSTADO, e por que NAO no holdout de 30 dias.
+            #
+            # A primeira versao ajustava nos ~984 jogos do holdout e achava
+            # w=0,032. A regua honesta, ajustando em 8.494 jogos, converge para
+            # w=0,066 — e nas dobras pequenas ela tambem oscilava (0,146 na
+            # primeira, de 1.146 jogos). Ou seja: 984 jogos nao bastam, o peso
+            # saia pela metade, e a camada entregaria menos do que foi medido.
+            #
+            # As predicoes PREQUENCIAIS do ultimo ano de treino resolvem: sao
+            # feitas ANTES de o modelo ver cada jogo, logo sao fora da amostra
+            # por construcao, e sao ~9x mais. E o mesmo conjunto onde o Platt
+            # do artefato ja e ajustado.
+            #
+            # E o delta de cada jogo usa a nota PONTO NO TEMPO do jogador: so
+            # o que ele tinha feito ANTES daquele jogo.
+            _aj = _ps_ajustar(_df_ps, ate=_corte)
+            _ps_valores = _ps_calc(_df_ps, _aj)
+
+            # COMO A NOTA DE DESEMPENHO VIRA RATING DO JOGADOR
+            #
+            # 'media' (PADRAO hoje): media acumulada das notas anteriores dele.
+            # 'ffa':                os 10 do jogo sao ordenados pela nota e o
+            #                       rating e atualizado por esse confronto, com
+            #                       Plackett-Luce. Sabe CONTRA QUEM ele jogou.
+            #
+            # MEDIDO PAREADO, ffa CONTRA 'media' — o que esta servido — nos
+            # mesmos 8.494 jogos, 8 dobras, todos fora da amostra, escalacao
+            # ANTERIOR (ponto-no-tempo fiel). 13/09/2026:
+            #   ffa completo (mu - 3*sigma) .. +0,00534  IC [+0,00418, +0,00649]
+            #   so experiencia (placebo) ..... +0,00276  IC [+0,00095, +0,00456]
+            #   so habilidade (mu puro) ...... +0,00219  IC [+0,00139, +0,00299]
+            # Os tres passam BH e Holm. Nota: 7,43 contra 7,20.
+            #
+            # O QUE O GANHO E, SEM ENFEITE: 52% vem de EXPERIENCIA, nao de
+            # habilidade — a nota e `mu - 3*sigma`, o sigma encolhe com o
+            # numero de jogos, e isso premia elenco rodado. Sinal real e
+            # disponivel antes da partida, nao e vazamento, mas nao e o que o
+            # nome sugere. Os outros 41% sao habilidade de fato, e essa parte
+            # sozinha ja passaria na regua.
+            #
+            # CORRECAO REGISTRADA: uma medicao anterior dizia "~72% e
+            # experiencia". Aquela conta usava OUTRA base (sem camada de
+            # jogadores nenhuma), nao a servida. Contra a servida, e 52%.
+            # Numero de comparacao so vale junto com a base dele.
+            if str(args.pscore_rating) == "ffa":
+                from mlcore.players_skill_ffa import (
+                    construir_notas as _ffa_construir,
+                    deltas_por_jogo as _ffa_deltas,
+                )
+                _antes_ffa, _notas_ffa = _ffa_construir(_df_ps, _ps_valores)
+                _delta_gid = _ffa_deltas(_df_ps, _antes_ffa)
+            else:
+                _delta_gid = _ps_deltas(_df_ps, _ps_valores)
+
+            _ys: List[int] = []
+            _lb: List[float] = []
+            _dl: List[float] = []
+            _n_sem_cobertura = 0
+            _fonte_peso = "prequencial"
+
+            _preq = list(zip(whr_preq_gid, whr_preq_y, whr_preq_p)) if (
+                str(args.core) == "whr" and whr_preq_gid) else []
+            for _gid, _y, _pp in _preq:
+                _d = _delta_gid.get(str(_gid))
+                if _d is None:
+                    _n_sem_cobertura += 1
+                    continue
+                _pp = min(max(float(_pp), 1e-6), 1.0 - 1e-6)
+                _ys.append(int(_y))
+                _lb.append(float(_logit(_pp)))
+                _dl.append(float(_d))
+
+            if len(_ys) < int(args.min_holdout):
+                # Sem prequencial (outro motor, ou poucos jogos): cai no
+                # holdout, que e menor mas continua fora da amostra.
+                _fonte_peso = "holdout"
+                _ys, _lb, _dl = [], [], []
+                _n_sem_cobertura = 0
+                for rr in test_df.sort_values("date").itertuples(index=False):
+                    _d = _delta_gid.get(str(rr.gameid))
+                    if _d is None:
+                        _n_sem_cobertura += 1
+                        continue
+                    _yy = _safe_int_year(getattr(rr, "year", None))
+                    _mlg = str(getattr(rr, "league", "") or "OTHER")
+                    _bl = _resolve_home_league(team=str(rr.blue), year=_yy, match_league=_mlg,
+                                               domestic_by_year=domestic_by_year,
+                                               team_meta_latest=team_meta_latest)
+                    _rl = _resolve_home_league(team=str(rr.red), year=_yy, match_league=_mlg,
+                                               domestic_by_year=domestic_by_year,
+                                               team_meta_latest=team_meta_latest)
+                    _pp = float(model.p_blue(str(rr.blue), str(rr.red),
+                                             blue_league=_bl, red_league=_rl,
+                                             blue_tier=str(tier_for_league(_bl)),
+                                             red_tier=str(tier_for_league(_rl))))
+                    _pp = min(max(_pp, 1e-6), 1.0 - 1e-6)
+                    _ys.append(int(rr.blue_win))
+                    _lb.append(float(_logit(_pp)))
+                    _dl.append(float(_d))
+
+            if len(_ys) < int(args.min_holdout):
+                raise ValueError(
+                    "so {} jogos utilizaveis para ajustar o peso, abaixo do minimo {}".format(
+                        len(_ys), int(args.min_holdout)))
+
+            _w_raw = float(fit_w_lineup(y=_ys, logit_base=_lb, delta=_dl,
+                                        l2=float(args.wlineup_l2)))
+            # Piso em 0 pelo mesmo motivo da camada antiga: peso NEGATIVO quer
+            # dizer "apostar contra quem jogou melhor", o que nao tem base e na
+            # pratica e ruido de holdout curto. Com piso, o pior caso e a
+            # camada ficar neutra. O valor cru fica registrado.
+            _w = max(0.0, min(float(args.pscore_max_abs), _w_raw))
+
+            # (2) notas com TUDO, que sao as que vao servir
+            _pac = _ps_construir(csv_paths, ate=_corte, ate_notas=None, df=_df_ps)
+            if str(args.pscore_rating) == "ffa":
+                # As notas salvas passam a ser as do confronto de todos contra
+                # todos. O FORMATO nao muda — segue chave "jogador|||Rota" com
+                # o campo "n" — entao o app nao precisa mudar nada para ler.
+                _pac["notas"] = _notas_ffa
+                _pac["rating"] = "ffa"
+            else:
+                _pac["rating"] = "media"
+            _pac["w"] = float(_w)
+            _pac["w_raw"] = float(_w_raw)
+
+            _ps_out = Path(str(args.pscore_out)).expanduser()
+            _ps_out.parent.mkdir(parents=True, exist_ok=True)
+            _ps_out.write_text(json.dumps(_pac, ensure_ascii=False), encoding="utf-8")
+
+            meta["players_pscore"] = {
+                "enabled": True,
+                "arquivo": str(_ps_out),
+                "w": float(_w),
+                "w_raw": float(_w_raw),
+                "w_com_piso": bool(_w_raw < 0.0),
+                "corte_pesos": (_corte.isoformat() if _corte else None),
+                "rotas": len(_pac.get("pesos_por_rota") or {}),
+                "atributos": list(_pac.get("atributos") or []),
+                "n_jogadores": len(_pac.get("notas") or {}),
+                "rating": str(args.pscore_rating),
+                "fonte_do_peso": _fonte_peso,
+                "jogos_usados": len(_ys),
+                "jogos_sem_delta": int(_n_sem_cobertura),
+                "beta": float(_pac.get("beta", 0.0) or 0.0),
+            }
+            print("[train_offline] players_pscore [{}]: w={:.4f} (cru {:.4f}) | "
+                  "{} jogadores | peso ajustado em {} jogos ({}), {} sem delta".format(
+                      args.pscore_rating, _w, _w_raw, len(_pac.get("notas") or {}),
+                      len(_ys), _fonte_peso, _n_sem_cobertura))
+        except Exception as e:
+            meta["players_pscore"] = {"enabled": False, "error": str(e)}
+            print("[train_offline] players_pscore FALHOU:", str(e))
 
     # Save artifact
     art = MLArtifact(version="0.4.0", model=model, calibrator=cal, meta=meta)

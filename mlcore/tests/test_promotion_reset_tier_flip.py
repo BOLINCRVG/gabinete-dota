@@ -45,6 +45,26 @@ class ResetPorTrocaDeTierTests(unittest.TestCase):
         self.assertEqual(m.games_played["Academy"], 0)
         self.assertEqual(m.ratings["Academy"], 0.0)
 
+    def test_torneio_internacional_nunca_zera(self):
+        """LCS(T2) -> MSI(T1) -> LCS(T2): ir ao internacional nao e promocao.
+        Medido 24/07: 61 times sofriam isso; FlyQuest/Team Liquid 8x cada."""
+        m = _FakeModel("FlyQuest", rating=180.0, gp=300)
+        last: dict = {}
+        _maybe_reset_on_promotion(m, "FlyQuest", "T2", last_tier=last, league="LCS")
+        _maybe_reset_on_promotion(m, "FlyQuest", "T1", last_tier=last, league="MSI")
+        _maybe_reset_on_promotion(m, "FlyQuest", "T2", last_tier=last, league="LCS")
+        _maybe_reset_on_promotion(m, "FlyQuest", "T1", last_tier=last, league="WLDs")
+        self.assertEqual(m.games_played["FlyQuest"], 300, "internacional zerou o time (bug)")
+        self.assertEqual(m.ratings["FlyQuest"], 180.0)
+
+    def test_promocao_domestica_real_ainda_zera_com_liga(self):
+        """Subir de liga DOMESTICA (LCKC -> LCK) continua resetando."""
+        m = _FakeModel("Academy", rating=900.0, gp=120)
+        last: dict = {}
+        _maybe_reset_on_promotion(m, "Academy", "MINOR", last_tier=last, league="LCKC")
+        _maybe_reset_on_promotion(m, "Academy", "T1", last_tier=last, league="LCK")
+        self.assertEqual(m.games_played["Academy"], 0)
+
     def test_primeiro_tier_nao_zera(self):
         m = _FakeModel("Novo", gp=5)
         last: dict = {}

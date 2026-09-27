@@ -219,6 +219,9 @@ def run_ml_pre_engine_layers(
     apply_microseg_fn: Callable[..., Any] | None = None,
     apply_fused_postcal_fn: Callable[..., Any] | None = None,
     postfusion_microseg_table: Mapping[str, Any] | None = None,
+    # Calibrador com grupo (05/09/2026, divida D8). Unico estagio pos-fusao
+    # que o app roda; ms2 e Platt da fusao seguem desligados por medicao.
+    postfusion_grupo_coef: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
     ss = session_state if isinstance(session_state, Mapping) else {}
     ssw = session_state if isinstance(session_state, MutableMapping) else None
@@ -228,6 +231,9 @@ def run_ml_pre_engine_layers(
     red_league_out = str((ml.get("red") or {}).get("league") or "").strip()
 
     p_map = _f(p_map_used, float("nan"))
+    # Marca se o calibrador COM GRUPO ja foi aplicado num dos ramos de
+    # escalacao. Ver a aplicacao de reserva no fim (08/09/2026).
+    _pfc_grupo_aplicado = False
     p_series = _f(p_series_used, float("nan"))
     bo_i = int(bo)
     diff_cur = _f(diff_used, float("nan"))
@@ -613,12 +619,15 @@ def run_ml_pre_engine_layers(
                             microseg_cap_pp=float(ss.get("ml_microseg_cap_pp", 8.0) or 8.0),
                             apply_microseg_fn=apply_microseg_fn,
                             apply_fused_postcal_fn=apply_fused_postcal_fn,
+                            grupo_coef=postfusion_grupo_coef,
                             use_fitted_postcal=bool(ss.get("ml_fused_post_cal_use_fitted", True)),
                         )
                         if math.isfinite(_p_postfus):
                             p_map = float(_p_postfus)
                             p_fused = float(p_map)
                         fusion_info["postfusion_calibration"] = _pfc_info
+                        if ((_pfc_info or {}).get("postcal") or {}).get("modo") == "grupo":
+                            _pfc_grupo_aplicado = True
                     except Exception as _exc_pfc:
                         fusion_info["postfusion_calibration"] = {"enabled": True, "error": f"{type(_exc_pfc).__name__}: {_exc_pfc}"}
                 fusion_info["freshness_avg"] = float(freshness_avg)
@@ -798,12 +807,15 @@ def run_ml_pre_engine_layers(
                         microseg_cap_pp=float(ss.get("ml_microseg_cap_pp", 8.0) or 8.0),
                         apply_microseg_fn=apply_microseg_fn,
                         apply_fused_postcal_fn=apply_fused_postcal_fn,
+                        grupo_coef=postfusion_grupo_coef,
                         use_fitted_postcal=bool(ss.get("ml_fused_post_cal_use_fitted", True)),
                     )
                     if math.isfinite(_p_postfus):
                         p_map = float(_p_postfus)
                         p_fused = float(p_map)
                     fusion_info["postfusion_calibration"] = _pfc_info
+                    if ((_pfc_info or {}).get("postcal") or {}).get("modo") == "grupo":
+                        _pfc_grupo_aplicado = True
                 except Exception as _exc_pfc:
                     fusion_info["postfusion_calibration"] = {"enabled": True, "error": f"{type(_exc_pfc).__name__}: {_exc_pfc}"}
             fusion_info["freshness_avg"] = float(freshness_proxy)
@@ -848,6 +860,59 @@ def run_ml_pre_engine_layers(
                         f"pull={_fmt_num(100.0 * float(cg.get('pull', 0.0)),1,format_num_fn)}%."
                     ),
                 )
+
+    # CALIBRADOR COM GRUPO — APLICACAO DE RESERVA (08/09/2026).
+    #
+    # Os dois pontos acima vivem dentro de ramos `use_lineup`, e `use_lineup`
+    # vem DESLIGADO por padrao (session_state['use_lineup_adjust'], default
+    # False). Medido em 08/09 abrindo o app: com e sem o bloco em
+    # params_fitted.json, o numero servido era IDENTICO ate o ultimo digito --
+    # o estagio nunca era alcancado. O ganho de +0,02 que o gate media nao
+    # estava sendo entregue na tela.
+    #
+    # POR QUE VALE PARA TODO JOGO, e nao so com escalacao: medido no teste
+    # cego, o calibrador ajuda NOS DOIS ramos --
+    #   com fusao (onde foi ajustado): +0,02073  IC [+0,01614, +0,02510]
+    #   sem fusao (o app por padrao):  +0,01889  IC [+0,01465, +0,02296]
+    # A literatura previa que um calibrador unico entre ramos de distribuicao
+    # diferente "sub-corrigiria uns e sobre-corrigiria outros"
+    # (https://arxiv.org/pdf/2605.13030, conferido em 08/09/2026 — e sobre
+    # calibracao de features em modelos fundidos, entao e analogia, nao prova
+    # do nosso caso). Aqui isso NAO aconteceu, e quem decide e a medicao.
+    #
+    # Sem o bloco em params_fitted.json isto e inerte: `grupo_coef=None` faz
+    # apply_postfusion_calibration devolver p igual. Apagar a chave desliga.
+    if (postfusion_grupo_coef and not _pfc_grupo_aplicado
+            and bool(ss.get("ml_postfusion_cal_enabled", False))
+            and math.isfinite(_f(p_map, float("nan")))):
+        try:
+            from app_core.postfusion_calibration_core import (
+                apply_postfusion_calibration as _apply_pfc_reserva,
+            )
+            _p_res, _info_res = _apply_pfc_reserva(
+                float(p_map),
+                enabled=True,
+                league_hint=str(match_league or ""),
+                bo=int(bo_i),
+                split_hint=str(getattr(filters, "split", "") or ""),
+                phase_hint=("playoffs" if str(playoffs_opt).lower()
+                            in {"playoffs", "true", "1"} else "regular"),
+                side="blue",
+                microseg_table=None,
+                apply_microseg_fn=None,
+                apply_fused_postcal_fn=None,
+                grupo_coef=postfusion_grupo_coef,
+            )
+            if math.isfinite(float(_p_res)):
+                p_map = float(_p_res)
+                _pfc_grupo_aplicado = True
+            if isinstance(trace_fusion_info, dict):
+                trace_fusion_info["postfusion_calibration_reserva"] = dict(_info_res)
+        except Exception as _exc_res:
+            if isinstance(trace_fusion_info, dict):
+                trace_fusion_info["postfusion_calibration_reserva"] = {
+                    "erro": f"{type(_exc_res).__name__}: {_exc_res}"}
+
 
     # ML engine switch: elo season + players.
     elo_info = None

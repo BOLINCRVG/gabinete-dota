@@ -6,8 +6,59 @@ that calibrating both BEFORE and AFTER fusion yields:
   - +0.97pp logloss vs calibrating only before fusion (current default behavior)
   - ECE reduced by 48% (0.085 -> 0.044 on 1313-sample holdout)
 
-Feature-flagged via session_state["ml_postfusion_cal_enabled"] (default False).
-Enable in production after validating in your specific deployment context.
+Bandeira: session_state["ml_postfusion_cal_enabled"]. O texto antigo aqui dizia
+"default False", o que estava VENCIDO: o default de runtime e True
+(app_core/ml_settings_runtime_core.py, com teste garantindo).
+
+MAS A BANDEIRA LIGADA NAO SIGNIFICA A ETAPA ATIVA (achado de 04/09/2026).
+O texto anterior afirmava "a etapa ESTA ativa em producao" e isso e FALSO.
+Este modulo so faz alguma coisa se receber, por injecao, `apply_microseg_fn`,
+`apply_fused_postcal_fn` ou `postfusion_microseg_table` — e no caminho servido
+NENHUM dos tres e passado: o contrato `MlPreEngineInput`
+(app_core/ml_pre_pipeline_models.py) nao tem esses campos, e
+`build_pre_engine_input` nao os produz. Conferido rodando com os argumentos
+exatos do app: p_out == p_in, applied == False.
+Detalhe e perguntas em aberto na divida D8 do RETOMAR.md. NAO ligar os
+callbacks sem medir o efeito isolado disso.
+
+╔══ FONTES ═══════════════════════════════════════════════════════════════════╗
+║ (Preenchido em 04/09/2026 — este arquivo estava na lista da divida D2, sem  ║
+║ bloco FONTES, e a frente 0 o toca. Regra 5.)                                ║
+║                                                                             ║
+║ 1. PLATT: por que uma sigmoide ajustada sobre a saida do modelo, e nao a    ║
+║    saida crua. Platt (1999), "Probabilistic outputs for support vector      ║
+║    machines...". A implementacao esta em mlcore/calibration.py.             ║
+║                                                                             ║
+║ 2. O GRUPO ENTRA COMO FEATURE DE UM CALIBRADOR SO, nao um calibrador por    ║
+║    grupo — assim os grupos compartilham a inclinacao global e o grupo       ║
+║    pequeno encolhe sozinho, sem corte arbitrario de "minimo N jogos".       ║
+║    O desenho, a escolha de L2/agrupamento e a medicao estao no bloco        ║
+║    FONTES de tools/gate_calibrador_final.py — que carrega tambem            ║
+║    Cawley & Talbot, JMLR 11:2079-2107 (2010),                               ║
+║    https://jmlr.org/papers/v11/cawley10a.html (conferido 04/09/2026).       ║
+║                                                                             ║
+║ 3. RECALIBRAR TEM LIMITE: opera apenas sobre a ordenacao que o modelo ja    ║
+║    produz. Um modelo que chuta sempre a taxa-base e perfeitamente           ║
+║    calibrado e inutil. Logo, este arquivo NAO conserta perda de ordenacao;  ║
+║    para isso e preciso refazer o modelo. Ver a discussao do ponto 3 no      ║
+║    RETOMAR.md, com Schnellinger EM, Yang W, Kimmel SE, Diagn Progn Res      ║
+║    2021;5:20, https://pmc.ncbi.nlm.nih.gov/articles/PMC8647501/             ║
+║    (conferido 04/09/2026).                                                  ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+CALIBRADOR COM GRUPO (27/08/2026) — desligado ate os coeficientes existirem
+em params_fitted.json["postfusion_group_calibration"]. Sem o bloco, o
+comportamento e exatamente o de antes; remover o bloco desfaz.
+
+Medido em teste cego de 5.525 jogos: o numero servido e SUBCONFIANTE (dizia
+68.8% onde acontecia 75.7%), porque o calibrador final e ajustado em
+temporadas ANTIGAS e a distorcao a corrigir e da atual. Ajustar em dado
+recente e dar ao calibrador o GRUPO (formato de serie + fase) como entrada:
+  logloss 0.58577 -> 0.56209   ganho +0.02368  IC 95% [+0.01847, +0.02866]
+  Z de Spiegelhalter -8.97 -> -2.94
+O grupo entra como FEATURE de um calibrador so (nao um calibrador por grupo):
+assim os grupos compartilham a inclinacao global e o grupo pequeno encolhe
+sozinho, sem corte arbitrario de "minimo N jogos".
 """
 from __future__ import annotations
 
@@ -15,6 +66,50 @@ import math
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple
 
 from app_core.prob_math_core import safe_float as _f
+from mlcore.agrupamentos import chave as _chave_do_grupo
+from mlcore.agrupamentos import nome_do_bloco as _nome_do_agrupamento
+
+
+def _calibrador_com_grupo(coef, bo: str, phase: str):
+    """Devolve a funcao de calibracao, ou None quando nao ha coeficientes.
+
+    Formato do bloco em params_fitted.json:
+      {"agrupamento": "formato + fase",
+       "niveis": ["3|regular", ...], "w": [w_z, w_1, w_z_g1, w_1_g1, ...]}
+    A ordem das features e [logit(p), 1] seguida de [ind*logit(p), ind] para
+    cada nivel — o primeiro nivel do ajuste e a REFERENCIA e nao aparece.
+
+    A CHAVE DO GRUPO vem do campo `agrupamento` do proprio bloco (divida D10,
+    06/09/2026). Antes era cravada como f"{bo}|{phase}", entao dos quatro
+    agrupamentos que a validacao cruzada pode escolher so um era
+    representavel: quando ela escolhia outro, a paridade divergia e o
+    reajuste ficava bloqueado. Bloco sem o campo cai no legado, que era o
+    unico que podia estar em producao. Ver mlcore/agrupamentos.py."""
+    if not coef:
+        return None
+    niveis = list(coef.get("niveis") or [])
+    w = [float(x) for x in (coef.get("w") or [])]
+    if len(w) != 2 + 2 * len(niveis):
+        return None
+    try:
+        chave = _chave_do_grupo(_nome_do_agrupamento(coef), bo, phase)
+    except KeyError:
+        # Agrupamento que este app nao sabe montar: NAO servir o global
+        # calado fingindo que aplicou o grupo — desligar e o comportamento
+        # honesto, e o de antes.
+        return None
+
+    def aplicar(p: float) -> float:
+        pc = min(max(float(p), 1e-12), 1.0 - 1e-12)
+        z = math.log(pc / (1.0 - pc))
+        s = w[0] * z + w[1]
+        for i, nv in enumerate(niveis):
+            if chave == nv:
+                s += w[2 + 2 * i] * z + w[3 + 2 * i]
+                break
+        return 1.0 / (1.0 + math.exp(-s)) if s > -700 else 0.0
+
+    return aplicar
 
 
 def apply_postfusion_calibration(
@@ -35,6 +130,7 @@ def apply_postfusion_calibration(
     apply_microseg_fn: Optional[Callable[..., Tuple[float, Dict[str, Any]]]] = None,
     apply_fused_postcal_fn: Optional[Callable[..., Tuple[float, Dict[str, Any]]]] = None,
     use_fitted_postcal: bool = True,
+    grupo_coef: Optional[Mapping[str, Any]] = None,
 ) -> Tuple[float, Dict[str, Any]]:
     """Apply Microseg + Platt to a fused probability and return (p_out, trace_info).
 
@@ -86,6 +182,24 @@ def apply_postfusion_calibration(
                 p_out = float(p_after_ms)
         except Exception as exc:
             info["microseg"]["error"] = f"{type(exc).__name__}: {exc}"
+
+    # Step 2b: calibrador COM GRUPO. Roda no lugar do Platt simples quando os
+    # coeficientes existem; sem eles, cai no caminho de sempre.
+    grupo_cal = _calibrador_com_grupo(grupo_coef, bo_hint, str(phase_hint or "regular"))
+    if grupo_cal is not None:
+        try:
+            p_novo = grupo_cal(float(p_out))
+            if math.isfinite(p_novo) and 0.0 < p_novo < 1.0:
+                info["postcal"] = {"applied": True, "modo": "grupo",
+                                   "grupo": f"{bo_hint}|{phase_hint or 'regular'}",
+                                   "p_in": float(p_out), "p_out": float(p_novo)}
+                p_out = float(p_novo)
+                info["p_out"] = float(p_out)
+                info["applied"] = bool(abs(float(p_out) - p_in) > 1e-9)
+                info["diff_pp"] = float(100.0 * (p_out - p_in))
+                return float(p_out), info
+        except (TypeError, ValueError, KeyError) as exc:
+            info["postcal"]["error_grupo"] = f"{type(exc).__name__}: {exc}"
 
     # Step 2: Fused post-calibration (Platt) on p_fused (or microseg'd p_fused)
     if callable(apply_fused_postcal_fn):

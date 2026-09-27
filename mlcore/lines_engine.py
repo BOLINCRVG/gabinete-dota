@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Dict, Literal, Optional, Tuple
+from typing import Any, Dict, Literal, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -277,6 +277,15 @@ class MatchupTotals:
     mean: float
     sd: float
     dist: Dist
+    # QUAL MERCADO este total e. Opcional e com padrao None de proposito: quem
+    # nao informa continua com o comportamento de sempre (a curva).
+    #
+    # Existe para a forma empirica chegar a TODAS as telas de uma vez. Havia
+    # oito pontos chamando `prob_over_from_total(totals[m], linha)` com o nome
+    # do mercado ao alcance mas sem passa-lo; mexer em cada um seria oito
+    # chances de esquecer um. Com o total carregando o proprio nome, a fair
+    # certa sai em qualquer tela que use este objeto.
+    metric: Optional[str] = None
 
 
 def _combine_mean(a_for: float, b_against: float) -> float:
@@ -311,44 +320,44 @@ def matchup_expected_totals(pA: TeamProfile, pB: TeamProfile) -> Dict[Metric, Ma
     b = _combine_mean(pB.kills_for, pA.kills_against)
     mean = a + b
     sd = math.sqrt(_combine_sd(pA.kills_for_sd, pB.kills_against_sd) ** 2 + _combine_sd(pB.kills_for_sd, pA.kills_against_sd) ** 2)
-    out["kills"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 1.0)), dist="normal")
+    out["kills"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 1.0)), dist="normal", metric="kills")
 
     # TOWERS
     a = _combine_mean(pA.towers_for, pB.towers_against)
     b = _combine_mean(pB.towers_for, pA.towers_against)
     mean = a + b
     sd = math.sqrt(_combine_sd(pA.towers_for_sd, pB.towers_against_sd) ** 2 + _combine_sd(pB.towers_for_sd, pA.towers_against_sd) ** 2)
-    out["towers"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 0.8)), dist="normal")
+    out["towers"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 0.8)), dist="normal", metric="towers")
 
     # DRAGONS (Poisson)
     a = _combine_mean(pA.dragons_for, pB.dragons_against)
     b = _combine_mean(pB.dragons_for, pA.dragons_against)
     mean = max(a + b, 1e-6)
-    out["dragons"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson")
+    out["dragons"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson", metric="dragons")
 
     # ELEMENTAL DRAGONS (Poisson, excludes elder)
     a = _combine_mean(pA.elementaldrakes_for, pB.elementaldrakes_against)
     b = _combine_mean(pB.elementaldrakes_for, pA.elementaldrakes_against)
     if math.isfinite(a) and math.isfinite(b):
         mean = max(a + b, 1e-6)
-        out["dragons_elemental"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson")
+        out["dragons_elemental"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson", metric="dragons_elemental")
 
     # BARONS (Poisson)
     a = _combine_mean(pA.barons_for, pB.barons_against)
     b = _combine_mean(pB.barons_for, pA.barons_against)
     mean = max(a + b, 1e-6)
-    out["barons"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson")
+    out["barons"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson", metric="barons")
 
     # INHIBITORS (Poisson)
     a = _combine_mean(pA.inhib_for, pB.inhib_against)
     b = _combine_mean(pB.inhib_for, pA.inhib_against)
     mean = max(a + b, 1e-6)
-    out["inhibitors"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson")
+    out["inhibitors"] = MatchupTotals(mean=float(mean), sd=float(math.sqrt(mean)), dist="poisson", metric="inhibitors")
 
     # TIME (Normal)
     mean = 0.5 * (pA.time_min + pB.time_min) if math.isfinite(pA.time_min) and math.isfinite(pB.time_min) else float("nan")
     sd = 0.5 * math.sqrt(pA.time_min_sd ** 2 + pB.time_min_sd ** 2) if math.isfinite(pA.time_min_sd) and math.isfinite(pB.time_min_sd) else float("nan")
-    out["time"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 1.5)) if math.isfinite(sd) else float("nan"), dist="normal")
+    out["time"] = MatchupTotals(mean=float(mean), sd=float(max(sd, 1.5)) if math.isfinite(sd) else float("nan"), dist="normal", metric="time")
 
     return out
 
@@ -445,7 +454,8 @@ def apply_dc_blend(
                 continue
             new_mean = (1.0 - float(blend)) * float(tot.mean) + float(blend) * float(dc_mean)
             new_sd = float(math.sqrt(new_mean)) if tot.dist == "poisson" else float(tot.sd)
-            out[metric] = MatchupTotals(mean=float(new_mean), sd=new_sd, dist=tot.dist)
+            out[metric] = MatchupTotals(mean=float(new_mean), sd=new_sd, dist=tot.dist,
+                                        metric=getattr(tot, "metric", None) or metric)
         return out
     except Exception:
         return totals
@@ -473,7 +483,8 @@ def apply_time_sd_calibration(
         if tot is None or tot.dist != "normal" or not math.isfinite(float(tot.sd)):
             return totals
         out = dict(totals)
-        out["time"] = MatchupTotals(mean=float(tot.mean), sd=float(tot.sd) * float(factor), dist=tot.dist)
+        out["time"] = MatchupTotals(mean=float(tot.mean), sd=float(tot.sd) * float(factor), dist=tot.dist,
+                                    metric=getattr(tot, "metric", None) or "time")
         return out
     except Exception:
         return totals
@@ -501,14 +512,189 @@ def _poisson_cdf(k: int, lam: float) -> float:
     return min(max(s, 0.0), 1.0)
 
 
-def prob_over_from_total(total: MatchupTotals, line: float) -> float:
+# FORMA EMPIRICA DOS TOTAIS (gate 2026-09-23).
+#
+# O que ela conserta: a normal e o Poisson espalham os totais MUITO mais do que
+# a realidade. Medido em 29.178 jogos, com o desvio dos residuos padronizados
+# (1 = espalhamento certo):
+#
+#     torres 0,437 | dragoes 0,551 | baroes 0,635 | inibidores 0,651
+#     abates 0,900 | tempo 1,012 (este ja tinha sido calibrado em 2026-07-17)
+#
+# A causa: `matchup_expected_totals` soma as variacoes dos dois times como se
+# fossem INDEPENDENTES. Nao sao -- quando um time atropela, ele derruba muitas
+# torres e o outro quase nenhuma (correlacao -0,82 em torres, -0,67 em
+# dragoes). O efeito e que toda linha fica achatada para perto de 50%: o modelo
+# enxerga MENOS vantagem do que existe.
+#
+# POR QUE A FORMA, E NAO SO ENCOLHER O SD. Ja se tentou encolher
+# (`eval_totals_league_dispersion.py`, 2026-07-17) e REPROVOU. Duas razoes,
+# descobertas agora:
+#   - aquele codigo tinha piso `RHO_MIN = 0.75`, e torres precisava de 0,44:
+#     o conserto certo estava fora do que ele permitia;
+#   - nos Poisson (dragoes/baroes/inibidores) encolher o sd NAO FAZ NADA --
+#     `prob_over_from_total` la nem le o campo sd.
+#
+# GATE (mesmo protocolo e mesma barra de 0,0005 do gate que reprovou antes;
+# forma ajustada SO em 2024+2025, avaliacao CEGA em 2026, 39.145 apostas):
+#
+#     mercado      hoje      so largura   com a forma    ganho
+#     torres       0,20438     0,18727      0,18555     +0,0188
+#     dragoes      0,13183     0,13183      0,11329     +0,0185
+#     baroes       0,07903     0,07903      0,06772     +0,0113
+#     inibidores   0,09597     0,09597      0,08716     +0,0088
+#     tempo        0,22970     0,22812      0,22551     +0,0042
+#     abates       0,19988     0,19926      0,19989     neutro -> FICA DE FORA
+#
+# Regenerar: tools/eval_totais_forma_empirica.py + tools/gerar_forma_dos_totais.py
+#
+# ABATES NAO ENTRA. O ganho foi nulo (-0,00000) e o mercado e o que ele mais
+# aposta: trocar a conta de um mercado sem ganho medido seria mexer por mexer.
+# OS MERCADOS QUE PASSARAM NO GATE PELO CAMINHO DA TELA.
+#
+# O primeiro gate usou a media V0 (`matchup_expected_totals`). A tela usa
+# `_expected_totals_dc`, que passa kills, dragoes e tempo pelo blend
+# Dixon-Coles. Por isso houve um SEGUNDO gate, pelo caminho servido
+# (`tools/eval_totais_forma_empirica.py --servido`), e o artefato foi gerado
+# dele. Avaliacao cega em 2026, 39.145 apostas, barra 0,0005:
+#
+#     mercado      hoje(tela)  com a forma   ganho
+#     torres        0,20438     0,18555     +0,0188
+#     dragoes       0,13249     0,11458     +0,0179
+#     baroes        0,07903     0,06772     +0,0113
+#     inibidores    0,09597     0,08716     +0,0088
+#     tempo         0,22773     0,22537     +0,0024
+#     abates        0,19801     0,19958     -0,0016  <- PIORARIA: fica de fora
+#
+# Torres, baroes e inibidores deram o MESMO numero nos dois gates, ate a 5a
+# casa -- a prova de que nao passam pelo blend. Abates piora pelo caminho da
+# tela; e o mercado que ele mais aposta, entao nao se mexe.
+FORMA_EMPIRICA_MERCADOS = ("towers", "dragons", "barons", "inhibitors", "time")
+_FORMA_CACHE: Dict[str, Any] = {}
+
+
+def _forma_dos_totais() -> Dict[str, list]:
+    """Os quantis do residuo por mercado, lidos do artefato (uma vez so).
+
+    Falha graciosa: sem o arquivo, devolve vazio e o motor segue com a curva
+    de sempre. Um preco pior e ruim; um preco que estoura e pior.
+    """
+    if "tabela" in _FORMA_CACHE:
+        return _FORMA_CACHE["tabela"]
+    tabela: Dict[str, list] = {}
+    try:
+        import json as _json
+        from pathlib import Path as _Path
+        alvo = _Path(__file__).resolve().parents[1] / "totais_forma_empirica.json"
+        if alvo.exists():
+            d = _json.loads(alvo.read_text(encoding="utf-8"))
+            for nome, reg in (d.get("mercados") or {}).items():
+                q = reg.get("quantis")
+                if isinstance(q, list) and len(q) >= 50:
+                    tabela[str(nome)] = [float(v) for v in q]
+    except Exception:
+        tabela = {}
+    _FORMA_CACHE["tabela"] = tabela
+    return tabela
+
+
+def _prob_acima_pela_forma(metric: str, mean: float, line: float):
+    """P(total > linha) pelos quantis do residuo. None quando nao da."""
+    if metric not in FORMA_EMPIRICA_MERCADOS:
+        return None
+    quantis = _forma_dos_totais().get(str(metric))
+    if not quantis or not math.isfinite(float(mean)):
+        return None
+    folga = float(line) - float(mean)
+    import bisect
+    i = bisect.bisect_right(quantis, folga)
+    return float(1.0 - (i / len(quantis)))
+
+
+# ---------------------------------------------------------------------------
+# O TOTAL DE KILLS REAJUSTADO TODA SEMANA (25/09/2026)
+#
+# A conta servida do total de kills (normal com a media V0+Dixon-Coles)
+# esta descalibrada: onde diz 40%, acontece 37%. O conserto e uma reta
+# (total real ~ a + b x media) com a forma real do erro, REFEITA TODA SEMANA
+# com os ultimos 60 dias (tools/gerar_kills_recalibrado.py): o nivel de kills
+# anda, e o mesmo conserto ajustado uma vez so piorou (gate de 23/09).
+#
+# Prova cega 23/06-21/09/2026, refeito semanalmente: Brier 0,23236 -> 0,22940
+# (+0,0030, IC95 [+0,0006, +0,0054]); calibracao 2,19 -> 1,69 pp.
+#
+# TRAVA DE IDADE: mais de KILLS_RECAL_MAX_DIAS e o arquivo e ignorado e volta
+# a curva de sempre -- ajuste velho e exatamente o que falhou.
+# ---------------------------------------------------------------------------
+KILLS_RECAL_MAX_DIAS = 21
+_KILLS_RECAL_CACHE: Dict[str, Any] = {}
+
+
+def _kills_recalibrado(hoje: Optional[Any] = None) -> Optional[Dict[str, Any]]:
+    """O reajuste semanal, ou None (ausente, quebrado ou velho demais)."""
+    if "art" not in _KILLS_RECAL_CACHE:
+        art = None
+        try:
+            import json as _json
+            from pathlib import Path as _Path
+            alvo = _Path(__file__).resolve().parents[1] / "kills_recalibrado.json"
+            if alvo.exists():
+                d = _json.loads(alvo.read_text(encoding="utf-8"))
+                q, c = d.get("quantis"), d.get("coef")
+                if (isinstance(q, list) and len(q) >= 50 and q == sorted(q)
+                        and isinstance(c, list) and len(c) == 2):
+                    art = d
+        except Exception:
+            art = None
+        _KILLS_RECAL_CACHE["art"] = art
+    art = _KILLS_RECAL_CACHE["art"]
+    if not art:
+        return None
+    try:
+        from datetime import date as _date
+        gerado = _date.fromisoformat(str(art.get("gerado_em"))[:10])
+        ref = hoje if hoje is not None else _date.today()
+        if (ref - gerado).days > KILLS_RECAL_MAX_DIAS:
+            return None
+    except (TypeError, ValueError):
+        return None
+    return art
+
+
+def _prob_kills_recalibrado(mean: float, line: float) -> Optional[float]:
+    art = _kills_recalibrado()
+    if art is None or not math.isfinite(float(mean)):
+        return None
+    import bisect
+    a, b = float(art["coef"][0]), float(art["coef"][1])
+    q = art["quantis"]
+    folga = float(line) - (a + b * float(mean))
+    return float(1.0 - bisect.bisect_right(q, folga) / len(q))
+
+
+def prob_over_from_total(total: MatchupTotals, line: float,
+                         metric: Optional[str] = None) -> float:
     """Probability that integer total is OVER a .5 line.
+
+    Com `metric` e forma empirica disponivel para aquele mercado, usa a FORMA
+    medida em vez da curva. Sem isso, o comportamento e o de sempre.
 
     For normal we treat continuous and use P(X > line).
     For poisson we use integer logic (>= floor(line)+1).
     """
     if not math.isfinite(total.mean):
         return float("nan")
+
+    if metric is None:
+        metric = getattr(total, "metric", None)
+    if metric is not None:
+        p = _prob_acima_pela_forma(str(metric), float(total.mean), float(line))
+        if p is not None:
+            return float(min(max(p, 0.0), 1.0))
+        if str(metric) == "kills":
+            p = _prob_kills_recalibrado(float(total.mean), float(line))
+            if p is not None:
+                return float(min(max(p, 0.0), 1.0))
 
     if total.dist == "normal":
         # continuity correction for .5 lines is basically the same as threshold

@@ -409,7 +409,26 @@ def hybrid_momentum_blend(
     knee_games: float = 12.0,
     momentum_games: int = 10,
     beta_prior: float = 2.0,
+    agree_damp: float = 1.0,
 ) -> Dict[str, Any]:
+    """Mistura o preco do modelo com os "pilares" de forma recente.
+
+    `agree_damp` controla QUANTO a concordancia com o modelo aumenta o peso
+    dado a forma. 1.0 e o comportamento de sempre; 0.0 desliga esse efeito.
+    O padrao e 1.0 de proposito -- este botao existe para ser MEDIDO antes de
+    ser mexido, nao para mudar o preco por conta propria.
+
+    POR QUE ELE EXISTE (medido em 21/09/2026). Comparando as previsoes fora da
+    amostra com o resultado real, a forma recente AINDA acrescenta depois deste
+    estagio. E o ganho nao esta espalhado -- esta concentrado exatamente onde o
+    `agree` manda calar:
+
+        mapa 1, forma CONCORDA com o modelo ... +0,004 [-0,004, +0,012]  nada
+        mapa 1, forma DISCORDA do modelo ...... +0,037 [+0,018, +0,058]  real
+
+    Faz sentido: quando a forma concorda, ela nao tem nada a acrescentar; a
+    informacao nova esta na discordancia. A formula de hoje pesa ao contrario.
+    """
     out: Dict[str, Any] = {
         "applied": False,
         "enabled": bool(enabled),
@@ -499,7 +518,11 @@ def hybrid_momentum_blend(
     sample_factor = n_eff / (n_eff + kng)
     agree = float(np.mean([max(0.0, 1.0 - abs(it[1] - pm) / 0.5) for it in items]))
     w_cap = max(0.0, min(0.95, float(max_weight)))
-    w_h = float(w_cap * sample_factor * (0.35 + 0.65 * agree))
+    # `fator_concordancia` = 1.0 quando agree_damp=0 (a concordancia nao pesa),
+    # e (0.35 + 0.65*agree) quando agree_damp=1 (o comportamento de sempre).
+    d = max(0.0, min(1.0, _safe_float(agree_damp, 1.0)))
+    fator_concordancia = (1.0 - d) + d * (0.35 + 0.65 * agree)
+    w_h = float(w_cap * sample_factor * fator_concordancia)
     w_h = max(0.0, min(0.95, w_h))
     p_blended = float(clip_prob((1.0 - w_h) * pm + w_h * p_h))
 
@@ -511,6 +534,8 @@ def hybrid_momentum_blend(
             "w_hybrid": float(w_h),
             "n_eff": float(n_eff),
             "agree_to_model": float(agree),
+            "agree_damp": float(d),
+            "fator_concordancia": float(fator_concordancia),
             "pillars": pillars,
             "reason": "ok",
         }

@@ -79,7 +79,11 @@ STATS_MARKET_CONFIG: dict[str, dict[str, Any]] = {
         "metric_key": "time",
         "combined_col": "game_time_min",
         "threshold_key": "sc_th_time",
-        "default_thresholds": "",
+        # 32.5 = 32:30. Pedido dele em 13/09/2026: a tela de stats do
+        # campeonato nao tinha recorte de tempo, so de kills/torres/dragoes/
+        # nashors/inibidores. O mercado "Tempo" ja existia aqui, mas com a
+        # lista VAZIA — por isso nenhuma coluna "% Game Time >" aparecia.
+        "default_thresholds": "32.5",
         "default_line": 32.5,
         "pct_prefix": "% Game Time > ",
         "v3_label": "Tempo", "v3_key": "time", "mv2_col": "game_time_min",

@@ -191,7 +191,8 @@ def apply_recommended_preset(session_state: MutableMapping[str, Any], profile: s
     session_state["ml_interregional_conf_guard_max_shrink_mult"] = _to_float(
         session_state.get("ml_interregional_conf_guard_max_shrink_mult", 0.35), 0.35
     )
-    session_state["ml_patch_guard_enabled"] = _to_bool(session_state.get("ml_patch_guard_enabled", True), True)
+    # default False desde 11/09/2026 — ver APP_STATE_DEFAULTS
+    session_state["ml_patch_guard_enabled"] = _to_bool(session_state.get("ml_patch_guard_enabled", False), False)
     session_state["ml_patch_guard_warn_shrink"] = _to_float(session_state.get("ml_patch_guard_warn_shrink", 0.08), 0.08)
     session_state["ml_patch_guard_refit_shrink"] = _to_float(session_state.get("ml_patch_guard_refit_shrink", 0.16), 0.16)
     session_state["ml_patch_guard_focus_bonus"] = _to_float(session_state.get("ml_patch_guard_focus_bonus", 0.06), 0.06)
@@ -467,7 +468,15 @@ APP_STATE_DEFAULTS: Dict[str, Any] = {
     "ml_interregional_conf_guard_players_eff_weight": 0.12,
     "ml_interregional_conf_guard_players_eff_cap": 18.0,
     "ml_interregional_conf_guard_max_shrink_mult": 0.35,
-    "ml_patch_guard_enabled": True,
+    # DESLIGADO em 11/09/2026 (specs/001-ligar-margem-vitoria). Medido na regua
+    # honesta COM calibrador: piora em TODOS os niveis, com e sem a margem —
+    # "warn" -0,00129 [-0,00212,-0,00045]; "refit" -0,00334 [-0,00494,-0,00175].
+    # Causa: o calibrador Platt ja corrige a confianca excessiva que o guard
+    # tentava tratar; ele encolhia em cima de um numero ja calibrado.
+    # ESTE default e o que VALE: build_runtime_param_defaults usa setdefault,
+    # entao o valor daqui vence o de shared_ml_defaults. Mudar la nao adianta
+    # (erro cometido e pego pelo teste dentro do app em 11/09/2026).
+    "ml_patch_guard_enabled": False,
     "ml_patch_guard_warn_shrink": 0.08,
     "ml_patch_guard_refit_shrink": 0.16,
     "ml_patch_guard_focus_bonus": 0.06,

@@ -43,7 +43,15 @@ class TestDispatchWorkflow(unittest.TestCase):
 
         ok, msg = dispatch_data_workflow(token="tok123", repo="X/y", post_fn=fake_post)
         self.assertTrue(ok, msg)
-        self.assertIn("/repos/X/y/actions/workflows/dados_diarios.yml/dispatches", seen["url"])
+        # Cada repositorio acorda o SEU robo (27/09/2026): no LoL, o retreino;
+        # no Dota, o dados_diarios_dota.yml -- os unicos que existem em cada um.
+        from app_core.viewer_mode_core import _workflow_do_repo
+        esperado = _workflow_do_repo()
+        self.assertIn(esperado, ("retreino.yml", "dados_diarios_dota.yml"))
+        self.assertIn("/repos/X/y/actions/workflows/%s/dispatches" % esperado, seen["url"])
+        raiz = __import__("pathlib").Path(__file__).resolve().parents[2]
+        self.assertTrue((raiz / ".github" / "workflows" / esperado).exists(),
+                        "o botao aponta para um robo que nao existe neste repositorio")
         self.assertEqual(seen["auth"], "Bearer tok123")
 
     def test_non_204_is_explained_failure(self):
@@ -95,49 +103,87 @@ class _FakeStWatch:
         self.reran = True
 
 
-class TestUpdateButtonCooldownKeepsWatch(unittest.TestCase):
-    """BUG 18/07 (report dele): no cooldown pós-clique, o return precoce
-    matava a tela de acompanhamento no re-render seguinte. O cooldown agora
-    TAMBÉM renderiza o watch (que expira sozinho em 12 min)."""
+class TestAcompanhamentoDaPublicacao(unittest.TestCase):
+    """O que sobrou depois de o botao "Retreinar com o CSV do repo" sair.
 
-    def test_cooldown_still_renders_watch(self):
+    O BOTAO FOI REMOVIDO a pedido dele em 15/09/2026 — e a checagem deu razao
+    ao pedido por outro motivo: ele NAO estava desabilitado (o disparo
+    funcionava), mas prometia "baixa o CSV novo do Oracle's Elixir" e acordava
+    um workflow que nao baixa CSV nenhum.
+
+    O QUE ESTES TESTES PRESERVAM: o BUG 18/07 (report dele) era o
+    acompanhamento da publicacao MORRER no re-render seguinte. O cooldown do
+    botao morreu junto com o botao, mas o acompanhamento continua — e e dele
+    que o envio de CSV depende para narrar o que esta acontecendo.
+    """
+
+    def test_o_acompanhamento_do_UPLOAD_continua_sendo_desenhado(self):
         import time as _t
 
         from app_core import viewer_mode_core as vm
 
         fake = _FakeStWatch()
-        now = _t.time()
-        fake.session_state["_upd_now_last_ts"] = now  # cooldown ativo
-        fake.session_state["_button_watch_t0"] = now  # acompanhamento ativo
+        fake.session_state["_upload_watch_t0"] = _t.time()
 
         prog = {"upload_commit": False, "csv_commit": False,
                 "data_run": "rodando", "retrain": "aguardando",
                 "model_commit": False}
-        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("tok", "X/y")), \
-                mock.patch.object(vm, "check_publish_progress", return_value=prog), \
-                mock.patch("time.sleep"):
+        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("tok", "X/y")),                 mock.patch.object(vm, "check_publish_progress", return_value=prog),                 mock.patch("time.sleep"):
             vm.render_update_now_button(fake)
 
-        self.assertTrue(any("aguarda" in c for c in fake.captions), fake.captions)
         self.assertTrue(
-            any("Acompanhamento da atualiza" in i for i in fake.infos),
-            f"watch sumiu no cooldown: infos={fake.infos} warnings={fake.warnings}",
+            any("Acompanhamento da publica" in i for i in fake.infos),
+            "o acompanhamento sumiu: e dele que o envio de CSV depende",
         )
 
-    def test_cooldown_without_watch_only_caption(self):
-        """Sem watch ativo (t0 zerado/expirado), o cooldown mostra só o caption."""
-        import time as _t
-
+    def test_sem_token_nao_desenha_nada(self):
         from app_core import viewer_mode_core as vm
 
         fake = _FakeStWatch()
-        fake.session_state["_upd_now_last_ts"] = _t.time()
-
-        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("tok", "X/y")):
+        with mock.patch.object(vm, "_gh_dispatch_config", return_value=("", "")):
             vm.render_update_now_button(fake)
-
-        self.assertTrue(any("aguarda" in c for c in fake.captions))
         self.assertEqual(fake.infos, [])
+        self.assertEqual(fake.captions, [])
+
+    def test_o_BOTAO_nao_existe_mais(self):
+        """Se ele voltar sem querer, esta trava avisa.
+
+        Procura a CRIACAO do botao (`st.button`), nao o rotulo dele: a
+        docstring da funcao cita o rotulo de proposito, para explicar a
+        remocao. Eu escrevi este teste errado tres vezes seguidas caindo
+        nisso — teste que grep no fonte acha a propria explicacao.
+        """
+        import inspect
+
+        from app_core import viewer_mode_core as vm
+        self.assertNotIn("st.button", inspect.getsource(vm.render_update_now_button))
+
+    def test_o_cooldown_do_botao_foi_apagado_junto(self):
+        """Nada mais escreve `_upd_now_last_ts`: era codigo inalcancavel.
+
+        Olha o CODIGO, nao a documentacao: a docstring cita a chave de
+        proposito, para explicar por que ela sumiu. A primeira versao deste
+        teste caiu nessa — procurou o nome no texto inteiro e achou a
+        explicacao.
+        """
+        import inspect
+
+        from app_core import viewer_mode_core as vm
+        # Procura a ESCRITA da chave no modulo inteiro. Olhar o texto da
+        # funcao nao serve: a docstring cita a chave de proposito, para
+        # explicar por que ela sumiu — e a primeira versao deste teste caiu
+        # nisso, achando a propria explicacao.
+        src = inspect.getsource(vm)
+        self.assertNotIn('"_upd_now_last_ts"] =', src)
+        self.assertNotIn('"_button_watch_t0"] =', src)
+
+    def test_o_rotulo_do_envio_ficou_curto(self):
+        """Pedido dele: so "Enviar CSV novo", sem o texto sobre cota."""
+        import inspect
+
+        from app_core import viewer_mode_core as vm
+        src = inspect.getsource(vm)
+        self.assertIn('st.expander("📤 Enviar CSV novo")', src)
 
 
 class TestCsvUpload(unittest.TestCase):

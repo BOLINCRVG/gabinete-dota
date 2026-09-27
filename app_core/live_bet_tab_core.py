@@ -470,8 +470,6 @@ def render_live_bet_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     filters_cls = ctx["Filters"]
     active_filters = ctx["active_filters"]
     apply_filters_fn = ctx["apply_filters_fn"]
-    team_a_default = ctx["teamA"]
-    team_b_default = ctx["teamB"]
     csv_sig = ctx["csv_sig"]
     state_get_str_fn = ctx["state_get_str_fn"]
     load_player_rows_fn = ctx["load_player_rows_fn"]

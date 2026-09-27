@@ -182,7 +182,23 @@ def resolve_schedule_team(raw: str, teams_all: Iterable[str], aliases: dict[str,
     return team, False
 
 
-def suggest_schedule_teams(raw: str, teams_all: Iterable[str], *, limit: int = 60) -> List[str]:
+def suggest_schedule_teams(raw: str, teams_all: Iterable[str], *, limit: int = 60,
+                           prioridade: Iterable[str] | None = None) -> List[str]:
+    """Palpites de qual time do CSV e esse nome da agenda.
+
+    `prioridade` sao os times que jogam na MESMA LIGA do confronto. Eles sobem
+    para o topo da lista sem sair dela -- a ordem muda, nada e escondido.
+
+    POR QUE ISSO EXISTE (16/09/2026, achado depois de ele estranhar uma
+    analise): num jogo do Hitpoint Masters (Tchequia) a agenda trazia "UP2U
+    Meavedron". A lista ofereceu em PRIMEIRO "UP2UMEDIA Cebulaki" -- time
+    POLONES, da Rift Legends, com 4 jogos de historico -- so porque o nome
+    comeca parecido. O time certo, "Meavedron", com 63 jogos, ficou embaixo.
+    Ele escolheu o primeiro, e a analise inteira saiu sobre o time errado.
+
+    Nomes parecidos entre ligas nao sao coincidencia: sao o mesmo
+    patrocinador em paises diferentes. A liga desempata.
+    """
     teams = [str(v) for v in teams_all if str(v or "").strip()]
     team = (raw or "").strip()
     if not team:
@@ -197,4 +213,11 @@ def suggest_schedule_teams(raw: str, teams_all: Iterable[str], *, limit: int = 6
         for item in group:
             if item not in out:
                 out.append(item)
-    return out[:limit] if out else teams[:limit]
+    out = out[:limit] if out else teams[:limit]
+
+    da_liga = {str(x) for x in (prioridade or []) if str(x or "").strip()}
+    if not da_liga:
+        return out
+    # Os da liga do confronto primeiro, na ordem em que ja estavam. Os outros
+    # continuam logo abaixo: quem manda na escolha e ele, nao a ordenacao.
+    return ([x for x in out if x in da_liga] + [x for x in out if x not in da_liga])

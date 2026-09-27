@@ -93,6 +93,36 @@ def logloss(y_true: Iterable[int], p: Iterable[float], eps: float = 1e-12) -> fl
         n += 1
     return total / max(n, 1)
 
+def coerce_loud(series: Any, *, nome: str, default: float,
+                limite_ruim: float = 0.20, avisar: Any = None) -> Any:
+    """to_numeric(errors="coerce").fillna(default), MAS gritando quando o
+    preenchimento vira regra em vez de exceção.
+
+    Por que existe (varredura de 16/08/2026): o par coerce+fillna aparece 99 vezes
+    no projeto e é silencioso por construção — o que não dá pra ler vira NaN, e o
+    NaN vira um número plausível. Numa coluna de probabilidade isso significa que
+    "a coluna mudou de nome" se transforma em "todo mundo com 0.5", e o calibrador
+    é ajustado em cima disso sem uma linha de aviso.
+
+    O default neutro continua certo para um caso isolado; o que estava faltando é
+    perceber quando ele deixou de ser isolado. Acima de `limite_ruim` (20% por
+    padrão) isto imprime — o dado segue passando, mas para de passar CALADO.
+    """
+    import pandas as pd  # local: utils é importado em caminho quente
+
+    s = pd.to_numeric(series, errors="coerce")
+    n = int(len(s))
+    if n:
+        ruins = int(s.isna().sum())
+        frac = ruins / n
+        if frac > float(limite_ruim):
+            msg = (f"[coerce_loud] '{nome}': {ruins}/{n} valores ({100*frac:.0f}%) "
+                   f"não puderam ser lidos e viraram {default}. "
+                   f"Coluna mudou de formato?")
+            (avisar or print)(msg)
+    return s.fillna(default)
+
+
 def brier(y_true: Iterable[int], p: Iterable[float]) -> float:
     """Brier score: mean squared error between predicted probabilities and binary outcomes."""
     total = 0.0

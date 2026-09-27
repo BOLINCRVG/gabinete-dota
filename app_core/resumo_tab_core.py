@@ -433,6 +433,11 @@ def _render_bet_button(
         pick = new_pick(
             **payload, odd_casa=float(oc), stake_units=float(units),
             p_hist=odd_to_prob(c.odd_hist),
+            # O que o MODELO disse, separado da frequencia historica. Sem isto
+            # nao ha como responder depois se o modelo ganha dinheiro -- ver a
+            # explicacao em app_core/picks_tracker_core.Pick.
+            p_modelo=odd_to_prob(row.get("Odd (Modelo)")),
+            momento="pre",
             edge_hist_pct=c.edge_hist,
         )
         picks = load_picks(PICKS_TRACKER_PATH)

@@ -261,8 +261,20 @@ def _render_h2h_lines_with_tags(
     line: Optional[float],
     n: int = 10,
     binary: bool = False,
+    valores_b: Optional[Mapping[str, Any]] = None,
+    team_b: str = "",
 ) -> None:
-    """Render H2H games (vs the same opponent across years if available)."""
+    """Render H2H games (vs the same opponent across years if available).
+
+    `valores_b` (gameid -> valor do time B) acrescenta o OUTRO LADO em cada
+    jogo. Pedido dele em 15/09/2026: o card mostrava so a coluna do time A, e
+    "Gen.G fez 26" sem saber quantas o adversario fez nao diz se foi jogo de
+    sangue ou atropelo — que e a leitura que decide uma linha de kills por
+    time.
+
+    O pareamento e por `gameid`, nunca por data: um BO5 tem ate cinco jogos no
+    mesmo dia, e casar por data mostraria o valor do mapa errado ao lado.
+    """
     if df_h2h is None or df_h2h.empty or str(col_name) not in df_h2h.columns:
         st.markdown("<div style='opacity:0.55;'>— sem H2H —</div>", unsafe_allow_html=True)
         return
@@ -293,6 +305,32 @@ def _render_h2h_lines_with_tags(
             league_avg=league_avg,
         )
         tag_html = _tag_html(tag) if tag else ""
+
+        # O OUTRO LADO do mesmo jogo, quando disponivel. Pareado por
+        # `gameid`, nunca por data: um BO5 tem ate cinco jogos no mesmo dia.
+        vb_html = ""
+        if valores_b:
+            _gid = str(row.get("gameid", "") or "")
+            _vb = valores_b.get(_gid) if _gid else None
+            if _vb is not None:
+                vb_html = (
+                    "<span style='font-weight:700;opacity:0.85;"
+                    "white-space:nowrap;'>"
+                    + escape(str(metric_formatter(str(col_name), _vb, 0)))
+                    + "</span>"
+                )
+        if vb_html:
+            rows_html.append(
+                f"<div style='display:flex;justify-content:space-between;"
+                f"align-items:center;gap:8px;padding:3px 0;'>"
+                f"<span><span style='font-weight:600;'>{escape(str(v_str))}</span>"
+                f"<span style='margin:0 6px;opacity:0.4;'>·</span>"
+                f"<span style='opacity:0.6;font-size:0.88em;'>{escape(date_str)}</span>"
+                f"{tag_html}</span>"
+                f"{vb_html}"
+                f"</div>"
+            )
+            continue
         rows_html.append(
             f"<div style='padding:3px 0;'>"
             f"<span style='font-weight:600;'>{escape(str(v_str))}</span>"
@@ -301,6 +339,14 @@ def _render_h2h_lines_with_tags(
             f"{tag_html}"
             f"</div>"
         )
+    if valores_b and team_b and rows_html:
+        # Cabecalho de quem e cada coluna. Sem ele, dois numeros soltos
+        # na mesma linha viram adivinhacao.
+        rows_html.insert(0,
+            f"<div style='display:flex;justify-content:space-between;"
+            f"font-size:0.76em;opacity:0.55;text-transform:uppercase;"
+            f"padding-bottom:2px;'>"
+            f"<span>{escape(team_a)}</span><span>{escape(team_b)}</span></div>")
     st.markdown("\n".join(rows_html), unsafe_allow_html=True)
 
 
@@ -371,6 +417,9 @@ def render_v3_market_context_panel(
     df_b_context_season: pd.DataFrame,
     df_h2h_year: pd.DataFrame,
     df_h2h_context_year_full_a: Optional[pd.DataFrame],
+    # O MESMO recorte H2H visto do lado do time B (team==B, opponent==A).
+    # Pedido dele em 15/09/2026: o card mostrava so a media do time A.
+    df_h2h_year_b: Optional[pd.DataFrame] = None,
     league_scope_df: pd.DataFrame,
     line: Optional[float],
     min_to_mmss_fn: Callable[[float], str],
@@ -404,6 +453,8 @@ def render_v3_market_context_panel(
     df_a_context_season = _only_with_metric(df_a_context_season)
     df_b_context_season = _only_with_metric(df_b_context_season)
     df_h2h_year = _only_with_metric(df_h2h_year)
+    if df_h2h_year_b is not None:
+        df_h2h_year_b = _only_with_metric(df_h2h_year_b)
     if df_h2h_context_year_full_a is not None:
         df_h2h_context_year_full_a = _only_with_metric(df_h2h_context_year_full_a)
 
@@ -631,6 +682,26 @@ def render_v3_market_context_panel(
             n_h2h = int(h2h_series.shape[0]) if h2h_series is not None else 0
             avg_h2h = (h2h_series.mean() if (h2h_series is not None and n_h2h > 0)
                        else float("nan"))
+
+            # A MEDIA DO OUTRO TIME, nos mesmos confrontos. "Gen.G fez 16,8"
+            # sozinho nao diz se o jogo dela e de sangue ou de atropelo — e e
+            # essa leitura que decide uma linha de kills por time.
+            # Em mercado `total_*` os dois lados compartilham o valor, entao
+            # ali continua so "Avg (combined)".
+            _e_total = str(col_name).startswith("total_")
+            _serie_b = (h2h_numeric_series(df_h2h_year_b, col_name)
+                        if (df_h2h_year_b is not None and not _e_total)
+                        else None)
+            _tem_b = _serie_b is not None and int(_serie_b.shape[0]) > 0
+            _avg_b = _serie_b.mean() if _tem_b else float("nan")
+            _caixa_b = ""
+            if _tem_b:
+                _caixa_b = (
+                    "<div><div style='opacity:0.6;font-size:0.78em;"
+                    "text-transform:uppercase;'>Avg (" + escape(team_b) + ")</div>"
+                    "<div style='font-size:1.4em;font-weight:700;'>"
+                    + escape(str(metric(col_name, _avg_b))) + "</div></div>"
+                )
             st.markdown(
                 f"<div style='display:flex;gap:14px;padding-bottom:8px;"
                 f"border-bottom:1px solid rgba(255,255,255,0.08);'>"
@@ -640,6 +711,7 @@ def render_v3_market_context_panel(
                 f"{'Avg (combined)' if str(col_name).startswith('total_') else f'Avg ({escape(team_a)})'}"
                 f"</div>"
                 f"<div style='font-size:1.4em;font-weight:700;'>{escape(str(metric(col_name, avg_h2h)))}</div></div>"
+                f"{_caixa_b}"
                 f"</div>",
                 unsafe_allow_html=True,
             )
@@ -716,11 +788,23 @@ def render_v3_market_context_panel(
             elif (df_h2h_context_year_full_a is not None
                     and not df_h2h_context_year_full_a.empty
                     and col_name in df_h2h_context_year_full_a.columns):
+                # Mapa gameid -> valor do time B, para a lista mostrar os
+                # dois lados do MESMO jogo. Por gameid e nao por data: um BO5
+                # tem ate cinco jogos no mesmo dia.
+                _mapa_b = {}
+                if (df_h2h_year_b is not None and not df_h2h_year_b.empty
+                        and not _e_total
+                        and "gameid" in df_h2h_year_b.columns
+                        and str(col_name) in df_h2h_year_b.columns):
+                    for _gid, _val in zip(df_h2h_year_b["gameid"].astype(str),
+                                          df_h2h_year_b[str(col_name)]):
+                        _mapa_b[_gid] = _val
                 _render_h2h_lines_with_tags(
                     st=st, df_h2h=df_h2h_context_year_full_a,
                     col_name=col_name, team_a=team_a, metric_formatter=metric,
                     opp_baselines=opp_baselines, league_avg=league_avg,
                     line=line_for_tags_a, n=10, binary=binary,
+                    valores_b=_mapa_b, team_b=team_b,
                 )
             else:
                 st.markdown("<div style='opacity:0.55;'>— sem H2H —</div>", unsafe_allow_html=True)

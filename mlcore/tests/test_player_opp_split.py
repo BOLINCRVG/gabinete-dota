@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """player_lines_opp_split: média K/D/A por força do adversário (pedido dele 24/07)."""
-import math
 import unittest
 
 import pandas as pd

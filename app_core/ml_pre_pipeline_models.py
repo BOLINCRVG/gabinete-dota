@@ -67,6 +67,13 @@ class MlPreEngineInput:
     caption_fn: Callable[[str], None] | None = None
     warning_fn: Callable[[str], None] | None = None
     match_league: str = ""
+    # Calibrador com grupo (05/09/2026). Vem de
+    # params_fitted.json["postfusion_group_calibration"]. Sem o bloco fica None
+    # e o comportamento e exatamente o de antes — apagar a chave DESLIGA.
+    # E o UNICO estagio pos-fusao que o app passa a rodar: o microssegmento da
+    # fusao e o Platt da fusao seguem desligados, porque foi medido que custam
+    # (divida D8). Nao injetar os callbacks deles sem medir.
+    postfusion_grupo_coef: Mapping[str, Any] | None = None
 
     def to_kwargs(self) -> Dict[str, Any]:
         return {
@@ -157,6 +164,7 @@ class MlPreEngineInput:
             "caption_fn": self.caption_fn,
             "warning_fn": self.warning_fn,
             "match_league": str(self.match_league or ""),
+            "postfusion_grupo_coef": self.postfusion_grupo_coef,
         }
 
 

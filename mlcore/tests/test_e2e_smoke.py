@@ -57,6 +57,21 @@ analisar[0].click(); at.run()
 if at.exception:
     print("RESULT|EXC|" + str(getattr(at.exception[0], "message", at.exception[0]))[:300])
     raise SystemExit(0)
+
+# A blindagem do despacho impede que uma aba quebrada derrube o app — e por
+# isso ela NAO aparece mais em `at.exception`. Sem esta checagem, a rede de
+# seguranca ficaria cega justamente para o defeito que derrubou o site em
+# 13/09/2026. `.get` com padrao: o clone Dota pode nao ter a chave.
+# `at.session_state` nao e dicionario: `.get` levanta AttributeError e
+# `["chave"]` ausente levanta KeyError. Descoberto ao dirigir o app.
+try:
+    _falhas = list(at.session_state["_tab_falhas"] or [])
+except (KeyError, AttributeError):
+    _falhas = []
+if _falhas:
+    print("RESULT|EXC|aba quebrada -> " + "; ".join(
+        "%s: %s" % (n, m) for n, m in _falhas)[:300])
+    raise SystemExit(0)
 tabs = [str(t.label) for t in at.tabs]
 print("RESULT|OK|" + ";".join(tabs))
 """

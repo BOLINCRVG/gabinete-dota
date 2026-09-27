@@ -596,25 +596,71 @@ def load_match_player_rows(
     return df.reset_index(drop=True)
 
 
+# ÍNDICE DAS ESCALAÇÕES, montado uma vez por quadro.
+#
+# POR QUE (23/09/2026). O perfil de UMA passada do app deu 808 segundos, e
+# 660 deles estavam aqui: `lineup_for_game` era chamada 29.178 vezes (uma por
+# jogo do histórico) e, a cada chamada, convertia e varria a coluna `gameid`
+# inteira — ~290 mil linhas. São bilhões de comparações de texto para
+# responder o que um índice responde de imediato. O custo crescia ao
+# quadrado, e ele atualiza o CSV todos os dias.
+#
+# O CACHE SEGURA O PRÓPRIO QUADRO, e não só o endereço dele.
+#
+# A primeira versão usava `(id(quadro), len(quadro))` como chave. Um teste
+# reprovou na suíte e passou sozinho — a assinatura clássica de lixo entre
+# testes. A causa era real e séria: o Python REAPROVEITA endereços de memória.
+# Quando um quadro morria e outro nascia no mesmo endereço com o mesmo
+# tamanho, a chave batia e o índice velho era devolvido — escalação de OUTRO
+# jogo, com toda a confiança. Isso é bem pior que lentidão.
+#
+# Guardando uma referência ao quadro, ele não pode ser coletado enquanto
+# estiver em cache, e o endereço não pode ser reaproveitado. Fica UM só,
+# porque o app trabalha com um quadro de cada vez e cada um pesa dezenas de MB.
+_INDICE_ESCALACOES: Dict[str, Any] = {}
+
+
+def _montar_indice_escalacoes(player_rows: pd.DataFrame) -> Dict[str, Tuple[Dict[str, str], Dict[str, str]]]:
+    """gameid -> (escalação azul, escalação vermelha), numa passada só.
+
+    Mantém a MESMA regra da versão que varria linha a linha: para cada lado e
+    posição vale a PRIMEIRA linha encontrada, na ordem do quadro.
+    """
+    fora: Dict[str, Tuple[Dict[str, str], Dict[str, str]]] = {}
+    colunas = ("gameid", "side", "pos_can", "player_key")
+    if any(c not in player_rows.columns for c in colunas):
+        return fora
+    for gid, lado, pos, chave in zip(
+        player_rows["gameid"].astype(str),
+        player_rows["side"],
+        player_rows["pos_can"],
+        player_rows["player_key"].astype(str),
+    ):
+        if pos not in POS_CANON:
+            continue
+        par = fora.get(gid)
+        if par is None:
+            par = ({}, {})
+            fora[gid] = par
+        alvo = par[0] if lado == "blue" else (par[1] if lado == "red" else None)
+        if alvo is None or pos in alvo:
+            continue            # primeira linha vence, como antes
+        alvo[pos] = str(chave).strip()
+    return fora
+
+
 def lineup_for_game(player_rows: pd.DataFrame, gameid: str) -> Tuple[Dict[str, str], Dict[str, str]]:
     """Return (blue_lineup, red_lineup) dict[pos]->player for one gameid."""
     if player_rows is None or player_rows.empty:
         return {}, {}
-    g = player_rows[player_rows["gameid"].astype(str) == str(gameid)].copy()
-    if g.empty:
-        return {}, {}
-
-    blue = {}
-    red = {}
-    for pos in POS_CANON:
-        # Use player_key (playerid preferred). Keep playername in the rows for display/debug.
-        b = g[(g["side"] == "blue") & (g["pos_can"] == pos)]["player_key"].astype(str).tolist()
-        r = g[(g["side"] == "red") & (g["pos_can"] == pos)]["player_key"].astype(str).tolist()
-        if b:
-            blue[pos] = str(b[0]).strip()
-        if r:
-            red[pos] = str(r[0]).strip()
-    return blue, red
+    guardado = _INDICE_ESCALACOES.get("quadro")
+    if guardado is None or guardado is not player_rows:
+        _INDICE_ESCALACOES["quadro"] = player_rows      # segura a referência
+        _INDICE_ESCALACOES["indice"] = _montar_indice_escalacoes(player_rows)
+    indice = _INDICE_ESCALACOES["indice"]
+    azul, vermelho = indice.get(str(gameid), ({}, {}))
+    # Cópias: quem chama pode mexer no que recebe, e o índice é compartilhado.
+    return dict(azul), dict(vermelho)
 
 
 def compute_delta_and_confidence(

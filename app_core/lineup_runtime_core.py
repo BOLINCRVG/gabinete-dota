@@ -154,7 +154,58 @@ def _pos_order_by_relevance(sub: pd.DataFrame) -> list[str]:
         return sorted(sub["player_key"].astype(str).unique().tolist())
 
 
+# CACHE DAS OPÇÕES DE ESCALAÇÃO (23/09/2026).
+#
+# O perfil de UM CLIQUE no app deu 10,5 s, e 6,0 s deles estavam aqui: esta
+# função era chamada 16 vezes por clique e, a cada chamada, COPIAVA a tabela
+# inteira de jogadores (~291 mil linhas) e aplicava uma função Python linha a
+# linha. O resultado só muda quando o CSV muda — e a aba Jogadores roda em
+# todo clique, mesmo com ele em outra aba, porque o Streamlit desenha todas.
+#
+# Mesmo cuidado da escalação indexada (mlcore/players_layer.py): o cache
+# SEGURA a referência à tabela e à função de posição. Chavear só pelo
+# endereço de memória já devolveu dado de outro quadro uma vez — o Python
+# reaproveita endereços.
+_CACHE_OPCOES: dict = {"quadro": None, "norm": None, "resultados": {}}
+_CACHE_OPCOES_MAX = 256
+
+
 def build_lineup_name_choices(
+    *,
+    df_pr: pd.DataFrame | None,
+    team_ui: str,
+    pos_canon: list[str],
+    norm_pos_fn: Callable[[str], str],
+    include_all_teams: bool = False,
+) -> tuple[dict[str, list[str]], dict[str, str]]:
+    """Opções de escalação por posição, em NOME de jogador (com cache).
+
+    O cálculo de verdade está em `_build_lineup_name_choices_sem_cache`; aqui
+    só se evita refazê-lo para a mesma tabela, time e opções.
+    """
+    if df_pr is None or getattr(df_pr, "empty", True):
+        return _build_lineup_name_choices_sem_cache(
+            df_pr=df_pr, team_ui=team_ui, pos_canon=pos_canon,
+            norm_pos_fn=norm_pos_fn, include_all_teams=include_all_teams)
+    if _CACHE_OPCOES["quadro"] is not df_pr or _CACHE_OPCOES["norm"] is not norm_pos_fn:
+        _CACHE_OPCOES["quadro"] = df_pr          # segura a referência
+        _CACHE_OPCOES["norm"] = norm_pos_fn
+        _CACHE_OPCOES["resultados"] = {}
+    chave = (str(team_ui), tuple(str(p) for p in pos_canon), bool(include_all_teams))
+    res = _CACHE_OPCOES["resultados"].get(chave)
+    if res is None:
+        if len(_CACHE_OPCOES["resultados"]) >= _CACHE_OPCOES_MAX:
+            _CACHE_OPCOES["resultados"].clear()
+        res = _build_lineup_name_choices_sem_cache(
+            df_pr=df_pr, team_ui=team_ui, pos_canon=pos_canon,
+            norm_pos_fn=norm_pos_fn, include_all_teams=include_all_teams)
+        _CACHE_OPCOES["resultados"][chave] = res
+    # CÓPIAS: quem chama pode mexer nas listas, e o cache é compartilhado.
+    opcoes, time_de = res
+    return {k: list(v) for k, v in opcoes.items()}, dict(time_de)
+
+
+def _build_lineup_name_choices_sem_cache(
     *,
     df_pr: pd.DataFrame | None,
     team_ui: str,

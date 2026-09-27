@@ -11,6 +11,13 @@ produção+MOVDA) e caminho fiel com Platt (+0.59 nota harness, ECE melhora).
 w2*=60 tunado prequencialmente em 2025. Ver tools/eval_whr*.py e
 evidence/eval_whr*.log.
 
+MARGEM DE VITORIA (09/2026): a likelihood aceita resultado FRACIONARIO ỹ ∈ [0,1]
+no lugar de y ∈ {0,1}. Gradiente (ỹ-p) e Hessiana -p(1-p) ficam intactos — a
+Hessiana nao depende do resultado —, entao o Newton segue valido. Prova cega em
+2026 (tools/eval_whr_mov.py, evidence/eval_whr_mov_*.log), com ouro aos 15 min
+como sinal: logloss +0.0117, acerto 65.0%->65.7%, ganho em 9/9 meses e 28/34
+ligas. DESLIGADO por default (mov_lambda=0).
+
 Deploy: train_offline --core whr usa este fitter e EXPORTA os ratings finais
 para um artefato EloModel comum (ratings já descontados do prior de liga;
 params alpha=0 / league_prior_weight=1.0 / scale=400 reconstroem exatamente
@@ -48,13 +55,24 @@ class WHRFitter:
     """MAP do histórico completo; ratings em unidades naturais internamente."""
 
     def __init__(self, *, w2_elo_per_day: float = DEFAULT_W2,
-                 league_prior_points: Optional[Dict[str, float]] = None):
+                 league_prior_points: Optional[Dict[str, float]] = None,
+                 mov_lambda: float = 0.0, mov_folga: float = 0.0,
+                 mov_fit: Optional[Dict[str, float]] = None):
+        # MARGEM DE VITORIA — resultado fracionario (ver docstring do modulo).
+        # mov_lambda = 0.0 (default) deixa ỹ == y: o fitter fica BIT A BIT o
+        # de antes de 09/2026. Nada muda em producao sem alguem ligar isto.
+        self.mov_lambda = float(mov_lambda)
+        self.mov_folga = float(mov_folga)
+        self.mov_fit = dict(mov_fit or {})
+        self.n_mov_usados = 0
+        self.n_mov_faltando = 0
         self.w2 = float(w2_elo_per_day) * NAT * NAT
         self.prior_mu = {str(k): float(v) * NAT for k, v in (league_prior_points or {}).items()}
         self.days: Dict[str, List[int]] = {}
         self.r: Dict[str, np.ndarray] = {}
         self.mu0: Dict[str, float] = {}
-        self.games: Dict[str, List[Tuple[int, str, int, int]]] = {}
+        # (idx_do_time, oponente, idx_do_oponente, ỹ) — ỹ é float desde 09/2026
+        self.games: Dict[str, List[Tuple[int, str, int, float]]] = {}
         self.n_games: Dict[str, int] = {}
         self.home_league: Dict[str, str] = {}
 
@@ -77,13 +95,58 @@ class WHRFitter:
             self.r[team] = np.append(self.r[team], self.r[team][-1])
         return len(ds) - 1
 
+    def resultado_fracionario(self, blue: str, red: str, blue_win: int,
+                              mov: Optional[float],
+                              blue_league: str = "", red_league: str = "") -> float:
+        """ỹ ∈ [0,1] na perspectiva do blue.
+
+        ỹ = recorta( folga + y·(1-2·folga) + lam·(MOV - E[MOV|Δr]) / desvio )
+
+        - Só a SURPRESA da margem entra: E[MOV|Δr] = a·tanh(b·Δr) + c. Margem
+          crua confundiria "dominou porque é melhor" (já está no rating) com
+          "dominou acima do esperado" (informação nova).
+        - `folga` deixa a vitória normal valer 1-folga, para sobrar teto e o
+          modelo conseguir PREMIAR domínio, não só descontar vitória ruim.
+        - Sem MOV no jogo, cai no y binário: ausência de dado não vira número.
+        """
+        y = 1.0 if int(blue_win) == 1 else 0.0
+        base = self.mov_folga + y * (1.0 - 2.0 * self.mov_folga)
+        if self.mov_lambda == 0.0 or mov is None:
+            if self.mov_lambda != 0.0:
+                self.n_mov_faltando += 1
+            return base
+        try:
+            m = float(mov)
+        except (TypeError, ValueError):
+            self.n_mov_faltando += 1
+            return base
+        if not math.isfinite(m):
+            self.n_mov_faltando += 1
+            return base
+        f = self.mov_fit
+        s = float(f.get("s", 0.0))
+        if not (math.isfinite(s) and s > 0.0):
+            self.n_mov_faltando += 1
+            return base
+        dr = (self.rating_nat(blue, blue_league) - self.rating_nat(red, red_league))
+        esperado = (float(f.get("a", 0.0)) * math.tanh(float(f.get("b", 1.0)) * dr)
+                    + float(f.get("c", 0.0)))
+        self.n_mov_usados += 1
+        return min(max(base + self.mov_lambda * (m - esperado) / s, 0.0), 1.0)
+
     def add_game(self, blue: str, red: str, blue_win: int, day: int,
-                 blue_league: str = "", red_league: str = "") -> None:
+                 blue_league: str = "", red_league: str = "",
+                 mov: Optional[float] = None) -> None:
+        # ỹ tem que sair ANTES de _ensure_point: ele usa o Δr de agora, que é
+        # o que o modelo sabia antes deste jogo.
+        yf = self.resultado_fracionario(blue, red, blue_win, mov,
+                                        blue_league, red_league)
         ib = self._ensure_point(blue, day, blue_league)
         ir = self._ensure_point(red, day, red_league)
-        y = 1 if int(blue_win) == 1 else 0
-        self.games[blue].append((ib, red, ir, y))
-        self.games[red].append((ir, blue, ib, 1 - y))
+        # O oponente recebe 1-ỹ: a simetria sai por construção, não por uma
+        # segunda conta que poderia divergir da primeira.
+        self.games[blue].append((ib, red, ir, yf))
+        self.games[red].append((ir, blue, ib, 1.0 - yf))
         self.n_games[blue] = self.n_games.get(blue, 0) + 1
         self.n_games[red] = self.n_games.get(red, 0) + 1
 
@@ -156,3 +219,34 @@ class WHRFitter:
     def ratings_elo(self) -> Dict[str, float]:
         """{time -> rating final em pontos Elo (prior de liga INCLUSO)}."""
         return {t: float(arr[-1]) / NAT for t, arr in self.r.items() if len(arr)}
+
+
+def ajustar_expectativa_mov(dr_nat: List[float], movs: List[float]) -> Dict[str, float]:
+    """Ajusta E[MOV|Δr] = a·tanh(b·Δr) + c por mínimos quadrados (grid em b).
+
+    Devolve também `s` = desvio do resíduo, que é o que normaliza a surpresa:
+    sem ele, `lam` teria um significado diferente para cada sinal de margem
+    (kills anda em unidades de ~10, ouro aos 15 em unidades de ~2500).
+
+    A tanh não é enfeite: ela SATURA, então uma margem absurda não vira um
+    ajuste absurdo. É o que trata placar inflado no fim de jogo.
+    Fonte da forma: MOVDA, https://arxiv.org/html/2506.00348 (aberta 08/09/2026).
+    """
+    X = np.asarray(dr_nat, dtype=float)
+    Y = np.asarray(movs, dtype=float)
+    ok = np.isfinite(X) & np.isfinite(Y)
+    X, Y = X[ok], Y[ok]
+    if len(X) < 200:
+        raise ValueError(f"amostra insuficiente para ajustar E[MOV]: n={len(X)}")
+    melhor: Optional[Dict[str, float]] = None
+    for b in (0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0):
+        T = np.tanh(b * X)
+        A = np.column_stack([T, np.ones_like(T)])
+        coef, *_ = np.linalg.lstsq(A, Y, rcond=None)
+        resid = Y - A @ coef
+        sse = float(resid @ resid)
+        if melhor is None or sse < melhor["sse"]:
+            melhor = {"a": float(coef[0]), "b": float(b), "c": float(coef[1]),
+                      "s": float(resid.std(ddof=2)), "sse": sse, "n": int(len(X))}
+    assert melhor is not None
+    return melhor

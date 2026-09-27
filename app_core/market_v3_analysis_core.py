@@ -540,6 +540,58 @@ INTERNATIONAL_LEAGUES: frozenset = frozenset({
 })
 
 
+def descrever_recorte_por_time(rec_a: dict, rec_b: dict, team_a: str, team_b: str) -> dict:
+    """Diz a VERDADE sobre por que cada time foi avaliado no recorte dele.
+
+    ╔══ O DEFEITO QUE ISTO CONSERTA (13/09/2026) ════════════════════════════╗
+    ║ Duas telas anunciavam "⚔️ Times de ligas diferentes" com base nisto:   ║
+    ║                                                                        ║
+    ║     _cross_league = df_a.empty or df_b.empty                           ║
+    ║                                                                        ║
+    ║ Isso NAO compara liga nenhuma. Dispara sempre que UM DOS TIMES nao     ║
+    ║ tem jogos no recorte escolhido — que e outra coisa completamente.      ║
+    ║ Sentinels x FlyQuest, os dois da LCS, apareciam como "ligas            ║
+    ║ diferentes" so porque o filtro de ano/split/mapa esvaziou um lado.     ║
+    ║                                                                        ║
+    ║ O comportamento de reconstruir cada time no proprio recorte CONTINUA   ║
+    ║ certo e nao muda. O que estava errado era so a explicacao, e uma       ║
+    ║ explicacao errada e pior que nenhuma: ela faz o dono desconfiar dos    ║
+    ║ numeros certos, ou confiar pelo motivo errado.                        ║
+    ╚════════════════════════════════════════════════════════════════════════╝
+
+    Devolve {"mesma_liga": bool, "liga_a": str, "liga_b": str, "texto": str}.
+    """
+    liga_a = str((rec_a or {}).get("league", "") or "").strip()
+    liga_b = str((rec_b or {}).get("league", "") or "").strip()
+    split_a = str((rec_a or {}).get("split", "") or "").strip() or "—"
+    split_b = str((rec_b or {}).get("split", "") or "").strip() or "—"
+
+    # Sem saber as duas ligas nao da para afirmar nem uma coisa nem outra.
+    conhecidas = bool(liga_a) and bool(liga_b)
+    mesma = conhecidas and (liga_a.casefold() == liga_b.casefold())
+
+    if mesma:
+        texto = (
+            "Sem jogos de {a} ou de {b} no recorte escolhido — os dois são da "
+            "**{liga}**, e cada um foi remontado no split mais recente dele "
+            "({sa} / {sb}). Não é confronto entre ligas; é o filtro de "
+            "ano/split/mapa que ficou vazio de um lado."
+        ).format(a=team_a, b=team_b, liga=liga_a, sa=split_a, sb=split_b)
+    elif conhecidas:
+        texto = (
+            "⚔️ Times de ligas diferentes — **{a}** ({la} · {sa}) vs **{b}** "
+            "({lb} · {sb}), cada um avaliado na liga dele. Oponentes e médias "
+            "são de cada liga respectiva."
+        ).format(a=team_a, la=liga_a, sa=split_a, b=team_b, lb=liga_b, sb=split_b)
+    else:
+        texto = (
+            "Sem jogos no recorte escolhido para pelo menos um dos times, e não "
+            "consegui identificar a liga dos dois. Cada um foi remontado no "
+            "split mais recente que existir."
+        )
+    return {"mesma_liga": bool(mesma), "liga_a": liga_a, "liga_b": liga_b, "texto": texto}
+
+
 def resolve_team_home_scope(
     team_games: pd.DataFrame,
     team: str,

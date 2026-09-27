@@ -72,7 +72,23 @@ def mlcore_rank_table_v2(
     if df.empty:
         return pd.DataFrame(columns=cols)
 
-    df = df.sort_values("total_strength", ascending=False).reset_index(drop=True)
+    # ORDEM POR TIER (achado com ele 24/07): a tabela mostrava academies da LCKC
+    # (residual altissimo por dominar pool fraco) ACIMA de Gen.G/T1. O
+    # strength_breakdown monta o total com apply_rank_caps=False porque serve ao
+    # PRICING, que precisa dos componentes crus — nao se mexe la. Aqui usamos a
+    # MESMA regra do _top_global_v04 do modelo: tier manda, forca desempata.
+    # Preferimos isso a capar o valor (o cap T1=909 achataria Gen.G/T1/BLG num
+    # empate) — assim a forca exibida continua real e a ordem faz sentido.
+    from mlcore.tiers import tier_priority as _tier_prio
+    df["_tier_rank"] = df["tier"].map(lambda t: _tier_prio(str(t or "OTHER")))
+
+    # tier ASC (T1 primeiro) + forca DESC dentro do tier; residual desempata.
+    _tie = [c for c in ("residual_elo",) if c in df.columns]
+    df = df.sort_values(
+        ["_tier_rank", "total_strength", *_tie],
+        ascending=[True, False] + [False] * len(_tie),
+    ).reset_index(drop=True)
+    df = df.drop(columns=["_tier_rank"])
     df.insert(0, "rank", np.arange(1, len(df) + 1))
 
     if top_n is not None and int(top_n) > 0:

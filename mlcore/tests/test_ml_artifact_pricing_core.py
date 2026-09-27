@@ -45,8 +45,19 @@ class _FakeModel:
     def _shrink_factor(self, n_games: int) -> float:
         return 0.5 if int(n_games) > 0 else 0.0
 
-    def p_blue(self, _blue: str, _red: str, **_kwargs) -> float:
-        return 0.64
+    def p_blue(self, blue: str, _red: str, **_kwargs) -> float:
+        """0.64 para o Blue, 0.36 para o Red.
+
+        ANTES DEVOLVIA 0.64 NOS DOIS SENTIDOS, o que nenhum modelo real faz:
+        medido no artefato de producao em 16/09/2026,
+        p_blue(A,B) + p_blue(B,A) = 0.5399 + 0.4601 = 1.0000 exato.
+
+        O dublê irreal escondia uma coisa e reprovou outra: quando o caminho
+        servido passou a simetrizar (cancelar o intercepto de lado azul do
+        calibrador), ele viu 0.64 nas duas direcoes e concluiu "os dois lados
+        sao favoritos", devolvendo 0.5. O defeito era do dublê.
+        """
+        return 0.64 if str(blue) == "Blue" else 0.36
 
 
 class _FakeModelWithComponents(_FakeModel):
@@ -162,8 +173,107 @@ class TestMlArtifactPricingCore(unittest.TestCase):
                 p_from_diff_points_fn=lambda diff, scale_points=400.0: p_from_diff_points(diff, scale_points=scale_points, clip_prob_fn=_clip_prob),
             )
         self.assertAlmostEqual(float(out["p_raw"]), 0.64, places=9)
-        self.assertAlmostEqual(float(out["p_cal"]), 0.65, places=9)
+        # O CALIBRADOR DESTE DUBLÊ SOMA +0.01 A QUEM ESTIVER NO TIME 1 --
+        # que e EXATAMENTE o formato do intercepto de lado azul do calibrador
+        # de producao (ele manda p=0.50 para 0.5253). Simetrizar cancela esse
+        # tipo de vies, e por isso o resultado volta a 0.64.
+        #
+        # Nao e o calibrador deixando de ser aplicado: o teste logo abaixo
+        # usa um calibrador que NAO e um vies de lado e mostra que ele passa
+        # inteiro.
+        self.assertAlmostEqual(float(out["p_cal"]), 0.64, places=9)
         self.assertEqual(str(out["ml_pricing_source"]), "artifact_model_p_blue")
+
+    def test_o_calibrador_de_verdade_continua_sendo_aplicado(self):
+        """Simetrizar tira o VIES DE LADO, nao o trabalho do calibrador.
+
+        Este calibrador estica a probabilidade em torno de 0.5 -- e o que um
+        calibrador faz quando o modelo esta subconfiante -- e nao carrega vies
+        de lado nenhum. Ele tem de atravessar a simetrizacao intacto.
+        """
+        class _CalibradorSemVies:
+            def predict_proba(self, p):
+                return 0.5 + 1.2 * (float(p) - 0.5)
+
+        fake_art = SimpleNamespace(
+            model=_FakeModel(),
+            calibrator=_CalibradorSemVies(),
+            meta={"team_meta": {"Blue": {"league": "LCK", "tier": "T1"},
+                                "Red": {"league": "LPL", "tier": "T1"}}},
+            version="v1",
+        )
+        with TemporaryDirectory() as td:
+            art_path = Path(td) / "ml_artifact.json"
+            art_path.write_text("{}", encoding="utf-8")
+            out = mlcore_p_map_v2(
+                artifact_path=str(art_path),
+                team_blue="Blue",
+                team_red="Red",
+                as_of="2026-03-07",
+                clip_prob_fn=_clip_prob,
+                artifact_sig_fn=lambda p: ("sig", p),
+                load_artifact_cached_fn=lambda _sig: fake_art,
+                team_meta_from_artifact_fn=team_meta_from_artifact,
+                ach_layer_for_artifact_fn=lambda _art, _path, _override: {
+                    "enabled": False, "path": "", "weights_points": {}, "team_idx": {}},
+                strength_breakdown_fn=lambda **kwargs: strength_breakdown(
+                    norm_league_fn=lambda s: str(s or "").strip(),
+                    tier_from_league_fn=lambda lg: "T1" if lg in {"LCK", "LPL"} else "MINOR",
+                    tier_base_points_fn=lambda _tr: 0.0,
+                    league_base_points_fn=lambda _lg: 0.0,
+                    team_boost_points_fn=lambda *_args: 0.0,
+                    **kwargs,
+                ),
+                p_from_diff_points_fn=lambda diff, scale_points=400.0: p_from_diff_points(
+                    diff, scale_points=scale_points, clip_prob_fn=_clip_prob),
+            )
+        # 0.5 + 1.2*(0.64-0.5) = 0.668, e a simetrizacao devolve o mesmo:
+        # 0.5*(0.668 + (1 - 0.332)) = 0.668
+        self.assertAlmostEqual(float(out["p_cal"]), 0.668, places=9)
+        self.assertNotAlmostEqual(float(out["p_cal"]), float(out["p_raw"]), places=3)
+
+    def test_a_ORDEM_dos_times_nao_muda_mais_o_numero(self):
+        """O defeito que ele relatou, guardado.
+
+        Dois prints do mesmo confronto davam numeros diferentes so porque num
+        deles a NAVI estava no Time 1 e no outro o KOI.
+        """
+        def _rodar(a, b):
+            fake_art = SimpleNamespace(
+                model=_FakeModel(),
+                calibrator=_FakeCalibrator(add=0.01),
+                meta={"team_meta": {"Blue": {"league": "LCK", "tier": "T1"},
+                                    "Red": {"league": "LPL", "tier": "T1"}}},
+                version="v1",
+            )
+            with TemporaryDirectory() as td:
+                art_path = Path(td) / "ml_artifact.json"
+                art_path.write_text("{}", encoding="utf-8")
+                return mlcore_p_map_v2(
+                    artifact_path=str(art_path),
+                    team_blue=a, team_red=b, as_of="2026-03-07",
+                    clip_prob_fn=_clip_prob,
+                    artifact_sig_fn=lambda p: ("sig", p),
+                    load_artifact_cached_fn=lambda _sig: fake_art,
+                    team_meta_from_artifact_fn=team_meta_from_artifact,
+                    ach_layer_for_artifact_fn=lambda _art, _path, _override: {
+                        "enabled": False, "path": "", "weights_points": {}, "team_idx": {}},
+                    strength_breakdown_fn=lambda **kwargs: strength_breakdown(
+                        norm_league_fn=lambda s: str(s or "").strip(),
+                        tier_from_league_fn=lambda lg: "T1" if lg in {"LCK", "LPL"} else "MINOR",
+                        tier_base_points_fn=lambda _tr: 0.0,
+                        league_base_points_fn=lambda _lg: 0.0,
+                        team_boost_points_fn=lambda *_args: 0.0,
+                        **kwargs,
+                    ),
+                    p_from_diff_points_fn=lambda diff, scale_points=400.0: p_from_diff_points(
+                        diff, scale_points=scale_points, clip_prob_fn=_clip_prob),
+                )
+
+        p_blue_primeiro = float(_rodar("Blue", "Red")["p_cal"])
+        p_red_primeiro = float(_rodar("Red", "Blue")["p_cal"])
+        self.assertAlmostEqual(p_blue_primeiro, 1.0 - p_red_primeiro, places=9,
+                               msg="a ordem dos times ainda muda o numero")
 
     def test_mlcore_p_map_v2_falls_back_when_model_and_calibrator_fail(self):
         class _NoModel(_FakeModel):

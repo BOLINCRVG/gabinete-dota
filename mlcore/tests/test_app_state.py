@@ -88,7 +88,12 @@ class ThresholdDefaultsSingleSourceTests(unittest.TestCase):
     def test_valores_historicos_preservados(self):
         from app_core.app_state import APP_STATE_DEFAULTS
         self.assertEqual(APP_STATE_DEFAULTS.get("sc_th_kills"), "23.5,25.5,27.5,29.5")
-        self.assertEqual(APP_STATE_DEFAULTS.get("sc_th_time"), "")
+        # sc_th_time era "" ate 13/09/2026, quando o dono pediu o recorte de
+        # TEMPO na tela de stats do campeonato: "pode ser o padrao de 32:30 a
+        # linha padrao". 32.5 = 32:30, e bate com o default_line do mercado,
+        # que ja era 32.5 desde sempre — a lista de limiares e que estava vazia,
+        # e por isso nenhuma coluna "% Tempo >" aparecia.
+        self.assertEqual(APP_STATE_DEFAULTS.get("sc_th_time"), "32.5")
 
     def test_nao_ha_sc_th_extra_nem_faltando(self):
         from app_core.app_state import APP_STATE_DEFAULTS

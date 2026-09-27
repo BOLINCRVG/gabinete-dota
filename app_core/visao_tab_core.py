@@ -289,14 +289,83 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         confidence_baseline=_conf_baseline,
     )
     _conf_summary = core_build_confidence_summary(_conf if isinstance(_conf, dict) else {})
+
+    # CONFIANCA ML — refeita em 15/09/2026, depois de ele perguntar por que o
+    # cartao mostrava "C (Baixa) 35/100" TODO DIA. Mostrava porque a conta era
+    # 50 de base menos 15 de "nao tenho o relatorio de validacao": o relatorio
+    # era procurado so na memoria da sessao, que zera a cada reinicio, e o
+    # arquivo em disco era de 04/03/2026 com uma liga so.
+    # Agora a fonte e a medicao por liga (33 ligas, mesma que alimenta a linha
+    # abaixo do confronto), mais o ajuste deste confronto que ja era calculado
+    # aqui. Sem medicao utilizavel o cartao mostra "—", nunca um numero.
+    # Ver app_core/confianca_ml_core.py.
+    try:
+        from pathlib import Path as _P2
+
+        from app_core.confianca_ml_core import montar_confianca as _montar_conf
+        from app_core.nota_liga_core import (
+            _idade_em_dias as _idade_medicao,
+            load_notas as _load_notas_liga,
+            nota_for_league as _nota_da_liga,
+        )
+        # Mesma raiz que a linha da liga usa logo acima (linha ~270), para as
+        # duas lerem exatamente o mesmo arquivo de medicao.
+        _raiz_notas = _P2(__file__).resolve().parents[1]
+        # CONFRONTO ENTRE LIGAS (consertado em 15/09/2026, relatado por ele).
+        # `_lg_hint` so vem preenchido quando as DUAS ligas sao a mesma; num
+        # PRM x TCL ele vem vazio e o cartao apagava — justo onde confianca
+        # mais importa, porque ligar duas escalas de rating e a conta mais
+        # dificil que o modelo faz. Agora olha as duas e fica com a PIOR.
+        from app_core.confianca_ml_core import escolher_entre_ligas as _entre_ligas
+        if str(_lg_hint or "").strip():
+            _linha_conf = _nota_da_liga(_raiz_notas, _lg_hint)
+            _entre = False
+            _liga_txt = str(_lg_hint)
+        else:
+            # NAO chamar esta variavel de `_esc`: esse nome ja e a funcao de
+            # escapar HTML, importada no topo do arquivo. Eu a atropelei com um
+            # dicionario em 15/09/2026 e a Visao Geral inteira caiu com
+            # "'dict' object is not callable" — 300 linhas abaixo, onde o
+            # `_esc` de verdade era usado.
+            _escolha_liga = _entre_ligas(
+                _nota_da_liga(_raiz_notas, str(locals().get("_lgA", "") or "")),
+                _nota_da_liga(_raiz_notas, str(locals().get("_lgB", "") or "")))
+            _linha_conf = _escolha_liga["linha"]
+            _entre = bool(_escolha_liga["entre_ligas"])
+            _liga_txt = "+".join([x for x in _escolha_liga["ligas"] if x]) or ""
+
+        _conf_card = _montar_conf(
+            linha_liga=_linha_conf,
+            idade_dias=_idade_medicao(_load_notas_liga(_raiz_notas).get("gerado_em")),
+            liga=_liga_txt,
+            entre_ligas=_entre,
+            ajuste_do_confronto=float((_conf or {}).get("pipeline_adj", 0.0) or 0.0),
+            resumo_do_confronto=str((_conf or {}).get("pipeline_summary", "") or ""),
+            n_jogos_dos_times=float(st.session_state.get("_ml_team_games_min", float("nan"))),
+        )
+    except Exception as _e_conf:
+        _conf_card = {"disponivel": False, "grade": "—", "score_text": "—",
+                      "source": "nao medida", "motivo": str(_e_conf)[:120],
+                      "porque": ""}
+
     with _box_metricas:
         ccf1, ccf2, ccf3 = st.columns(3)
         with ccf1:
-            st.metric("Confianca ML", value=str(_conf_summary.get("grade", "C (Baixa)")))
+            st.metric("Confianca ML", value=str(_conf_card.get("grade", "—")))
         with ccf2:
-            st.metric("Score", value=str(_conf_summary.get("score_text", "0/100")))
+            st.metric("Score", value=str(_conf_card.get("score_text", "—")))
         with ccf3:
-            st.metric("Base", value=str(_conf_summary.get("source", "global")))
+            st.metric("Base", value=str(_conf_card.get("source", "nao medida")))
+        # O cartao explica a si mesmo. Nota sem motivo vira superstricao.
+        if _conf_card.get("disponivel"):
+            _idade = _conf_card.get("idade_dias")
+            _sufixo = (" · medida ha {:.0f} dia(s)".format(_idade)
+                       if isinstance(_idade, (int, float)) else "")
+            if str(_conf_card.get("porque") or "").strip():
+                st.caption(str(_conf_card["porque"]) + _sufixo)
+        else:
+            st.caption("Confianca nao medida: {}. {}".format(
+                _conf_card.get("motivo", ""), _conf_card.get("porque", "")))
     # Diagnósticos técnicos (Semáforo / Baseline / Camadas A/B/C / dica de
     # manutenção) removidos a pedido do usuário — ruído para o uso diário.
     # Os 3 cards acima voltaram ao topo a pedido do usuário (2026-06-10).
@@ -411,6 +480,157 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         teamA_key = _best_match(teamA, teams_imp) if teams_imp else ''
         teamB_key = _best_match(teamB, teams_imp) if teams_imp else ''
 
+        # ------------------------------------------------------------------
+        # AJUSTAR ESCALACAO — devolvido em 11/09/2026, a pedido do dono.
+        #
+        # HISTORIA, para ninguem remover de novo sem saber: esta UI foi tirada
+        # da Visao Geral em 10/06/2026, tambem a pedido dele, porque o ajuste
+        # manual era opt-in, ficava desligado e so ocupava espaco. O que ficou
+        # foi o preenchimento automatico com a ultima escalacao conhecida.
+        #
+        # O QUE MUDOU PARA JUSTIFICAR A VOLTA: em 11/09 a camada de jogadores
+        # passou a entrar na probabilidade servida (estagio players_pscore).
+        # Antes disso, mexer na escalacao nao movia odd nenhuma — por isso a
+        # UI era inutil. Agora move, e esta medido quanto:
+        #
+        #   escalacao da ultima partida (o automatico) ... +0,00402
+        #   escalacao CORRIGIDA a mao .................... +0,00577
+        #   -----------------------------------------------------------
+        #   valor de corrigir ............................ +0,00175
+        #                                   IC [+0,00119, +0,00231]
+        #
+        # Fechado por padrao, de proposito: fechado, a tela fica igual a de
+        # hoje. So abre quando o dono sabe de uma troca.
+        # ------------------------------------------------------------------
+        # BLINDAGEM (11/09/2026, com o site fora do ar): este bloco desenha
+        # widgets, e widget que levanta excecao derruba a PAGINA INTEIRA, nao
+        # so o bloco. Um ajuste de escalacao nunca pode custar o app.
+        #
+        # Nao ficou provado que foi ele que derrubou o site — as medicoes
+        # apontaram para outro lado (0,44 s e 1,4 MB por tela, nenhuma
+        # excecao no fluxo local). Mas "nao consegui reproduzir" nao e o
+        # mesmo que "nao pode acontecer", e a nuvem tem dados e versoes que
+        # a maquina daqui nao tem. Entao ele passa a falhar sozinho, calado
+        # e visivel, em vez de levar o resto junto.
+        try:
+          with st.expander("Ajustar escalação", expanded=False):
+              st.caption(
+                  "Preenchido com a última escalação conhecida de cada time. "
+                  "Corrija só quando souber de uma troca — o modelo usa estes "
+                  "cinco de cada lado para calcular o efeito dos jogadores."
+              )
+              if df_pr is None or getattr(df_pr, "empty", True):
+                  st.info("Sem dados de jogadores carregados para editar a escalação.")
+              else:
+                  _cols_ok = {"team", "pos_ml", "player_key"}.issubset(set(df_pr.columns))
+                  if not _cols_ok:
+                      st.info("A base de jogadores não tem as colunas necessárias.")
+                  else:
+                      def _opcoes_do_time(nome_time: str, pos: str) -> list:
+                          """Quem pode entrar naquela rota, do mais provavel ao menos.
+
+                          POR QUE NAO SO O TIME (conserto de 11/09/2026, no mesmo
+                          dia): a primeira versao oferecia so quem ja jogou por
+                          aquele time naquela rota. Conferido dirigindo o app: dava
+                          DUAS opcoes — o titular e o vazio. Ou seja, era impossivel
+                          colocar um substituto, que e exatamente o caso para o
+                          qual esta tela existe.
+
+                          Agora a lista vai em tres camadas, nesta ordem:
+                            1. quem ja jogou por ESTE time nesta rota (o provavel)
+                            2. quem joga a MESMA rota na mesma liga (o emprestimo,
+                               o promovido da academia, o reserva)
+                            3. o resto da rota, para o caso raro
+                          O campo e pesquisavel, entao lista longa nao atrapalha.
+                          """
+                          try:
+                              d_rota = df_pr[df_pr["pos_ml"].astype(str) == str(pos)]
+                              if "date" in d_rota.columns:
+                                  d_rota = d_rota.sort_values("date", ascending=False)
+
+                              do_time = d_rota[d_rota["team"].astype(str) == str(nome_time)]
+
+                              da_liga = d_rota.iloc[0:0]
+                              if "league" in d_rota.columns:
+                                  _ligas = set(
+                                      do_time["league"].astype(str).unique().tolist()
+                                  ) if not do_time.empty else set()
+                                  if _ligas:
+                                      da_liga = d_rota[d_rota["league"].astype(str).isin(_ligas)]
+
+                              vistos, saida = set(), []
+                              for _parte in (do_time, da_liga, d_rota):
+                                  for k in _parte["player_key"].astype(str).tolist():
+                                      if k and k not in vistos:
+                                          vistos.add(k)
+                                          saida.append(k)
+                              return saida
+                          except (KeyError, TypeError, ValueError):
+                              return []
+
+                      _nome_por_chave = {}
+                      try:
+                          if "player" in df_pr.columns:
+                              for _k, _n in zip(df_pr["player_key"].astype(str),
+                                                df_pr["player"].astype(str)):
+                                  if _k and _k not in _nome_por_chave:
+                                      _nome_por_chave[_k] = _n
+                      except (KeyError, TypeError, ValueError):
+                          _nome_por_chave = {}
+
+                      def _mostrar(chave: str) -> str:
+                          if not chave:
+                              return "— ninguém —"
+                          return _nome_por_chave.get(str(chave), str(chave))
+
+                      _mudou = False
+                      for _lado, _nome_time in (("A", teamA), ("B", teamB)):
+                          st.markdown(f"**{_nome_time}**")
+                          _cs = st.columns(len(_POS_CANON_ML))
+                          for _i, _pos in enumerate(_POS_CANON_ML):
+                              _k = f"lineup_ml_{_lado}_{_safe_key(_pos)}"
+                              _atual = str(st.session_state.get(_k, "") or "")
+                              _opts = _opcoes_do_time(_nome_time, _pos)
+                              # O valor atual TEM de estar nas opcoes, senao o
+                              # widget recusa. Jogador emprestado de outro time,
+                              # ou recem-chegado, cai neste caso.
+                              if _atual and _atual not in _opts:
+                                  _opts = [_atual] + _opts
+                              _opts = [""] + _opts
+                              with _cs[_i]:
+                                  _novo = st.selectbox(
+                                      _pos, options=_opts,
+                                      index=(_opts.index(_atual) if _atual in _opts else 0),
+                                      format_func=_mostrar,
+                                      key=f"ui_{_k}",
+                                  )
+                              if str(_novo or "") != _atual:
+                                  st.session_state[_k] = str(_novo or "")
+                                  _mudou = True
+
+                      if _mudou:
+                          # Guarda POR CONFRONTO: corrigiu Time A x Time B, fica
+                          # salvo so para esse confronto.
+                          _save_lineup_for_matchup(_lk)
+
+                      if st.button("Voltar à escalação automática", key="lineup_reset_btn"):
+                          for _lado in ("A", "B"):
+                              for _pos in _POS_CANON_ML:
+                                  st.session_state.pop(f"ui_lineup_ml_{_lado}_{_safe_key(_pos)}", None)
+                          st.session_state.pop("_lineup_autofilled_key", None)
+                          _rerun = getattr(st, "rerun", None) or getattr(st, "experimental_rerun", None)
+                          if callable(_rerun):
+                              _rerun()
+        except Exception as _e_esc:  # noqa: BLE001 - a tela vale mais que o bloco
+            try:
+                st.warning(
+                    "Não consegui montar o ajuste de escalação ({}). O resto da "
+                    "análise segue normal, com a última escalação conhecida."
+                    .format(type(_e_esc).__name__)
+                )
+            except Exception:
+                pass
+
         lineupA_sel = _get_lineup_selected('A', mode='ml' if use_ml_lineup else 'manual')
         lineupB_sel = _get_lineup_selected('B', mode='ml' if use_ml_lineup else 'manual')
 
@@ -490,6 +710,14 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             "elo_season_players_p_map_fn": _elo_season_players_p_map,
             "apply_confidence_governor_fn": core_apply_confidence_governor,
         }
+        # Calibrador com grupo (05/09/2026, divida D8). Le o bloco do
+        # params_fitted.json; SEM o bloco fica None e o app se comporta
+        # exatamente como antes. Apagar a chave do arquivo DESLIGA.
+        try:
+            _grupo_coef = ((_load_fitted_params_cached(_file_sig(str(_FIT_PARAMS_PATH))) or {})
+                           .get("postfusion_group_calibration") or None)
+        except Exception:
+            _grupo_coef = None
         _pre_engine_in = core_build_pre_engine_input(
             p_map_used=p_map_used,
             p_series_used=p_series_used,
@@ -540,6 +768,7 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             caption_fn=_vg_caption(_box_detalhes),
             warning_fn=_box_detalhes.warning,
             match_league=str(locals().get("match_league", "") or ""),
+            postfusion_grupo_coef=_grupo_coef,
         )
         _pre_live_callbacks = {
             "season_form_blend_fn": core_season_form_blend,
