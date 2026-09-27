@@ -82,6 +82,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         st.caption(carimbo)
 
     _mostrar_diario(st, raiz)
+    _mostrar_reguas_pinnacle(st, raiz)
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
                               ctx.get("ensinar_apelido"))
     _jogos_que_dao = _diagnostico_do_confronto(
@@ -284,6 +285,60 @@ def _mostrar_diario(st: Any, raiz: Path) -> None:
     with st.expander("Ultimas corridas do robo ({})".format(len(corridas))):
         for c in corridas:
             st.caption("· {}".format(resumo_da_corrida(c)))
+
+
+def reguas_pinnacle(raiz: Path) -> List[Dict[str, Any]]:
+    """As linhas do placar "modelo x Pinnacle", lidas de evidence/.
+
+    Quem grava sao as reguas (tools/regua_pinnacle_comum.py); o app so le --
+    nada aqui roda conta nem vai a rede.
+    """
+    import json as _json
+    fora: List[Dict[str, Any]] = []
+    for arq in sorted((Path(raiz) / "evidence").glob("regua_pinnacle_*.json")):
+        try:
+            d = _json.loads(arq.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for chave, conta in (("so_kills", ""), ("com_vitoria", " (com a chance de vitoria)")):
+            r = d.get(chave)
+            if not isinstance(r, dict):
+                continue
+            dif = float(r.get("diferenca") or 0.0)
+            if r.get("conclusivo"):
+                veredito = "modelo acerta mais" if dif < 0 else "Pinnacle acerta mais"
+            else:
+                veredito = "ainda nao da para concluir"
+            fora.append({
+                "mercado": str(d.get("mercado") or arq.stem) + conta,
+                "partidas": "{} de {}".format(r.get("partidas"), r.get("minimo")),
+                "nota do modelo": round(float(r.get("nota_modelo") or 0), 1),
+                "nota da Pinnacle": round(float(r.get("nota_casa") or 0), 1),
+                "quem acertou mais ate agora": "modelo" if dif < 0 else "Pinnacle",
+                "partidas em que o modelo ganhou": r.get("bateu"),
+                "conclusao": veredito,
+                "medido em": str(d.get("gerado_em") or "")[:10],
+            })
+    return fora
+
+
+def _mostrar_reguas_pinnacle(st: Any, raiz: Path) -> None:
+    """O placar "quem acerta mais: o modelo ou a Pinnacle" (25/09/2026).
+
+    Ele perguntou a nota do modelo "em relacao as notas da pinnacle". As
+    reguas ja respondiam, mas so no terminal. Mesma escala da nota do
+    projeto: 5,0 = cara ou coroa, 9,5 = elite.
+    """
+    linhas = reguas_pinnacle(raiz)
+    if not linhas:
+        return
+    with st.expander("Modelo x Pinnacle: quem acerta mais (as reguas)", expanded=False):
+        st.dataframe(linhas, hide_index=True, width="stretch")
+        st.caption(
+            "Mesmas apostas, contra o que aconteceu, com a margem da Pinnacle tirada. "
+            "Nota: 5,0 = cara ou coroa, 9,5 = elite. \"Ainda nao da para concluir\" "
+            "quer dizer que a diferenca cabe na margem de erro ou que faltam partidas "
+            "(o minimo esta ao lado).")
 
 
 def _ensinar_apelido(st: Any, sugerir: Optional[Callable[[str], List[str]]],
