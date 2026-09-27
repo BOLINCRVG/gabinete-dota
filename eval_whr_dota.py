@@ -72,7 +72,18 @@ def _fetch_tiers_df() -> pd.DataFrame:
     return pd.DataFrame(get_leagues()).rename(columns={"leagueid": "league_id"})[["league_id", "tier"]]
 
 
-def load_tiers() -> dict[int, str]:
+def load_tiers(ligas_usadas=None) -> dict[int, str]:
+    """{league_id: tier}. Renova o cache se ele estiver velho OU se faltar
+    nele alguma liga de `ligas_usadas`.
+
+    POR QUE O SEGUNDO GATILHO (27/09/2026): o prazo de 7 dias olha a data do
+    ARQUIVO, e no robo da nuvem o checkout do git cria o arquivo de novo a
+    cada rodada -- ele sempre parecia novo e nunca renovou. Ficou parado em
+    16/08 e toda liga criada depois virou "sem_tier" e sumiu do CSV calada:
+    246 partidas profissionais (PGL Wallachia S9, qualificatorias da BLAST
+    Slam...) e o CSV diario congelado em 10/09. Liga que aparece nas partidas
+    e nao esta no cache e prova de que ele esta velho, sem depender de data.
+    """
     df = None
     stale = True
     if TIERS_CACHE.exists():
@@ -85,6 +96,14 @@ def load_tiers() -> dict[int, str]:
             df = pd.read_csv(TIERS_CACHE)
         except (OSError, ValueError):
             df = None
+    if df is not None and not stale and ligas_usadas is not None:
+        try:
+            conhecidas = set(pd.to_numeric(df["league_id"], errors="coerce")
+                             .dropna().astype(int))
+            faltando = {int(x) for x in ligas_usadas if int(x) > 0} - conhecidas
+            stale = bool(faltando)
+        except (KeyError, TypeError, ValueError):
+            stale = True
     if df is None or stale:
         try:
             fresh = _fetch_tiers_df()
@@ -431,7 +450,7 @@ def load_matches() -> pd.DataFrame:
     m["win"] = pd.to_numeric(m["result"], errors="coerce").fillna(0).astype(int)
     m["league_id"] = pd.to_numeric(m["league_id"], errors="coerce").fillna(0).astype(int)
     m = m[(m["tid"] > 0) & (m["oid"] > 0) & m["dt"].notna()]
-    tiers = load_tiers()
+    tiers = load_tiers(ligas_usadas=m["league_id"].unique())
     m["tier"] = m["league_id"].map(tiers).fillna("sem_tier")
     m["day"] = m["dt"].dt.date.map(lambda d: d.toordinal())
     m = m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)

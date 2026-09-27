@@ -2293,6 +2293,17 @@ except (OSError, TypeError, ValueError, pd.errors.EmptyDataError, pd.errors.Pars
     st.error(f"Falha ao ler CSV para listar times: {e}")
     st.stop()
 
+# Data do jogo mais recente de cada time: as pecas do motor (escolha do
+# confronto, agenda, Oportunidades) ja mostram o aviso de dado velho quando
+# esta chave existe. Limites do LoL (21 / 90 dias) conferidos no CSV do Dota
+# em 27/09/2026: pausas > 21 dias sao 6,3% nos dois jogos; > 90 dias 1,1%
+# (Dota) e 0,3% (LoL) -- raras nos dois. Viaja pelo estado, como no LoL.
+try:
+    from app_core.frescor_do_time_core import ultimo_jogo_por_time as _ultimo_jogo
+    st.session_state["_ultimo_jogo_por_time"] = _ultimo_jogo(_load_team_games(csv_sig))
+except Exception:
+    st.session_state["_ultimo_jogo_por_time"] = {}
+
 # Normaliza grafias (ex.: "Dplus Kia" vs "Dplus KIA") para evitar cair na liga errada no modo auto.
 core_normalize_matchup_selection_teams(
     session_state=st.session_state,

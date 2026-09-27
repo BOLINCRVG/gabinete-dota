@@ -41,9 +41,10 @@ def pending_match_ids(df: pd.DataFrame) -> List[int]:
     baixados ANTES da extracao dos "primeiros" (first_blood ausente) — a
     re-passada preenche o First X com a mesma fila.
     """
-    tiers = load_tiers()
     m = df.drop_duplicates("match_id").copy()
     m["league_id"] = pd.to_numeric(m["league_id"], errors="coerce").fillna(0).astype(int)
+    # Liga nova fora do cache renova o cache (ver load_tiers, 27/09/2026).
+    tiers = load_tiers(ligas_usadas=m["league_id"].unique())
     m["tier"] = m["league_id"].map(tiers).fillna("sem_tier")
     prof = is_pro_tier(m["tier"])
     so_indice = m.get("source_mode").astype(str) == "opendota_list"
