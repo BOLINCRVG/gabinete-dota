@@ -11,6 +11,11 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -38,6 +43,7 @@ _EXPECTED_CORE = [
 
 
 class TestV3MarketsRegistry(unittest.TestCase):
+    @so_no_lol("linhas-padrao do LoL (kills 27,5; no Dota e 52,5)")
     def test_derived_core_matches_historical_values(self) -> None:
         from app_core.stats_config import v3_core_markets
         derived = v3_core_markets()

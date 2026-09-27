@@ -4,6 +4,11 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 def _load_tool_module(filename: str, module_name: str):
@@ -49,6 +54,7 @@ class TestPhase5HierInterSameGates(unittest.TestCase):
             rep = json.loads(out_path.read_text(encoding="utf-8"))
             return rc, rep
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_phase5c_promote_on_noninferior_with_gain(self):
         compare = {
             "rows_total": 600,
@@ -70,6 +76,7 @@ class TestPhase5HierInterSameGates(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(str(rep.get("decision")), "promote")
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_phase5c_reject_on_global_noninferior_fail(self):
         compare = {
             "rows_total": 700,
@@ -91,6 +98,7 @@ class TestPhase5HierInterSameGates(unittest.TestCase):
         self.assertEqual(rc, 2)
         self.assertEqual(str(rep.get("decision")), "reject")
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_phase5d_promote_when_global_is_neutral(self):
         compare = {
             "rows_total": 2200,
@@ -114,6 +122,7 @@ class TestPhase5HierInterSameGates(unittest.TestCase):
         gate = next((c for c in checks if str(c.get("check")) == "global_has_practical_gain_or_neutral"), {})
         self.assertTrue(bool(gate.get("ok")))
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_phase5d_shadow_when_segment_noninferior_fails(self):
         compare = {
             "rows_total": 2600,

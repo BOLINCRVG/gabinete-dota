@@ -7,6 +7,11 @@ from mlcore.artifact import MLArtifact
 from mlcore.bo import prob_win_series
 from mlcore.regression_fixtures import resolve_odds_fixture_snapshot
 from mlcore.utils import prob_to_decimal_odds
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 class OddsRegressionTest(unittest.TestCase):
@@ -60,6 +65,7 @@ class OddsRegressionTest(unittest.TestCase):
             "odd_bo5_a": float(prob_to_decimal_odds(p_bo5)),
         }
 
+    @so_no_lol("fotografia do modelo do LoL (o Dota tem outro modelo)")
     def test_snapshot_matchups(self):
         # If artifact is intentionally retrained, update fixture with the same script used by the agent.
         tol = 1e-9
@@ -73,6 +79,7 @@ class OddsRegressionTest(unittest.TestCase):
             self.assertAlmostEqual(got["p_bo5"], float(row["p_bo5"]), delta=tol)
             self.assertAlmostEqual(got["odd_bo5_a"], float(row["odd_bo5_a"]), delta=tol)
 
+    @so_no_lol("fotografia do modelo do LoL (o Dota tem outro modelo)")
     def test_probability_consistency(self):
         for row in self.fixture.get("matchups", []):
             team_a = str(row["team_a"])

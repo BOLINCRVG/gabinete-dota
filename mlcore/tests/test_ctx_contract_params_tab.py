@@ -17,6 +17,11 @@ import re
 import sys
 import unittest
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -36,6 +41,7 @@ def _nomes_do_plays_app() -> str:
 
 
 class TestCtxContract(unittest.TestCase):
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_todo_ctx_get_das_abas_existe_no_plays_app(self):
         app = _nomes_do_plays_app()
         faltando: dict[str, list[str]] = {}

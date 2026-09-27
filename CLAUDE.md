@@ -89,10 +89,18 @@ python frescor.py         # as notas são de quando?
 python dota_scorecard.py  # a nota por torneio
 ```
 
-A suíte roda 4.674 testes em ~2 min e tem **15 falhas e 30 erros conhecidos**,
-anteriores a agosto/2026. Não são regressão nova e nunca foram atacados.
+A suíte roda ~4.700 testes em ~2 min e está **VERDE desde 27/09/2026: 0 falhas,
+0 erros**. Qualquer vermelho agora é defeito de verdade.
 
-**Esse 15 só aparece com `GABINETE_VIEWER=0`.** O `.streamlit/secrets.toml`
+Os "15 falhas e 30 erros conhecidos" de antes NÃO eram defeitos do Dota: eram
+testes do LoL que vêm junto com o motor (sync_vendor copia `mlcore/`, testes
+inclusive) — procurando `plays_app.py` e ferramentas de `tools/` que só existem
+no LoL, fotografias do modelo do LoL, campeões do LoL. Hoje esses 45 levam
+`@so_no_lol("motivo")` (`mlcore/tests/_repo.py`): no LoL rodam; aqui aparecem
+como PULADOS, com o motivo. Nunca se pula um teste porque ele falhou — só
+porque ele é de outro produto.
+
+**O viewer ainda importa: rode com `GABINETE_VIEWER=0`.** O `.streamlit/secrets.toml`
 deste repo tem `GABINETE_VIEWER = "1"`, e o modo visualização bloqueia
 subprocesso — o que faz 7 testes do `run_cmd` falharem sem que nada esteja
 quebrado. Rode assim:
@@ -101,7 +109,7 @@ quebrado. Rode assim:
 set GABINETE_VIEWER=0 && python -m unittest discover -s mlcore\tests -p "test_*.py"
 ```
 
-Medido em 04/09/2026, e as quatro combinações ficam assim:
+Medido em 04/09/2026 (antes da limpeza de 27/09), as quatro combinações ficavam assim:
 
 | caminho | viewer | falhas | erros |
 |---|---|---|---|

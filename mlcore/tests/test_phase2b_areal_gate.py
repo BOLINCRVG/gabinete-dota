@@ -4,6 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 def _load_gate_module():
@@ -18,6 +23,7 @@ def _load_gate_module():
 
 
 class TestPhase2BArealGate(unittest.TestCase):
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_full_speed_report_keeps_qwl_grid_dimensions(self) -> None:
         mod = _load_gate_module()
         with tempfile.TemporaryDirectory() as td:

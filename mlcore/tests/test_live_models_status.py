@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app_core.live_models_status_core import (
     assess_freshness,
+
     build_retrain_command,
     csv_signatures,
     is_retrain_running,
@@ -15,6 +16,10 @@ from app_core.live_models_status_core import (
     update_manifest_after_training,
     write_manifest,
 )
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 def _make_fake_csv(tmpdir: Path, name: str, n_games: int = 100) -> Path:
@@ -124,6 +129,7 @@ class TestAssessFreshness(unittest.TestCase):
 
 class TestBuildRetrainCommand(unittest.TestCase):
 
+    @so_no_lol("o retreino ao vivo do Dota usa outro comando (run_phase6_live_dota.py)")
     def test_command_contains_required_args(self):
         # 2026-07: o retreino aponta pro ORQUESTRADOR (fases 6/7/8/10 + manifest),
         # nao mais pro run_phase6_live_gate isolado (--save-models-dir).

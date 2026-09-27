@@ -4,6 +4,11 @@ import shutil
 import unittest
 import uuid
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +37,7 @@ def _load_module():
 
 
 class FindCodeErrorsToolTests(unittest.TestCase):
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_syntax_errors_reports_bad_file(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -43,6 +49,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertTrue(str(issues[0]["path"]).endswith("bad.py"))
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_unbound_local_suspects_catches_simple_case(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -58,6 +65,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
         self.assertEqual(issues[0]["function"], "bad")
         self.assertEqual(issues[0]["name"], "x")
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_unbound_local_suspects_ignores_safe_function(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -71,6 +79,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
             issues = mod.find_unbound_local_suspects([path])
         self.assertEqual(issues, [])
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_undefined_name_suspects_catches_missing_global(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -86,6 +95,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
         self.assertEqual(issues[0]["scope"], "broken")
         self.assertEqual(issues[0]["name"], "missing_name")
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_undefined_name_suspects_ignores_free_variable(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -101,6 +111,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
             issues = mod.find_undefined_name_suspects([path])
         self.assertEqual(issues, [])
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_constant_branch_suspects_catches_static_if_and_while(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -119,6 +130,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
         self.assertEqual([row["kind"] for row in issues], ["if", "while"])
         self.assertEqual([row["scope"] for row in issues], ["branchy", "branchy"])
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_constant_branch_suspects_ignores_if_true_without_else(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -132,6 +144,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
             issues = mod.find_constant_branch_suspects([path])
         self.assertEqual(issues, [])
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_mutable_default_suspects_catches_list_default(self) -> None:
         mod = _load_module()
         with _tempdir() as td:
@@ -146,6 +159,7 @@ class FindCodeErrorsToolTests(unittest.TestCase):
         self.assertEqual(issues[0]["function"], "broken")
         self.assertEqual(issues[0]["name"], "items")
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_find_duplicate_dict_key_suspects_catches_literal_repeat(self) -> None:
         mod = _load_module()
         with _tempdir() as td:

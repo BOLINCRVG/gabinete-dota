@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app_core.identity_registry_core import (
     empty_identity_registry,
+
     load_identity_registry,
     normalize_identity_key,
     player_identity_candidates,
@@ -16,6 +17,10 @@ from app_core.identity_registry_core import (
     upsert_player_identity,
     upsert_team_identity,
 )
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 class IdentityRegistryCoreTests(unittest.TestCase):
@@ -23,6 +28,7 @@ class IdentityRegistryCoreTests(unittest.TestCase):
         self.assertEqual(normalize_identity_key("Los Ratones"), "losratones")
         self.assertEqual(normalize_identity_key(" Witchcraft "), "witchcraft")
 
+    @so_no_lol("registro de identidade com times do LoL")
     def test_seed_registry_matches_predecessor_name(self) -> None:
         registry = load_identity_registry("identity_registry.json")
         matches = search_identity_records(registry, query="Los Ratones", entity_type="teams")

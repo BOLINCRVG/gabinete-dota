@@ -11,6 +11,11 @@ from unittest import mock
 import pandas as pd
 
 from mlcore.tests._workspace_temp import workspace_tempdir
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 def _csv_text(n_games: int, dmax: str) -> str:
@@ -67,6 +72,7 @@ class TestOeDownload(unittest.TestCase):
                 dt.now.return_value.year = year
                 return m, m.main()
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_update_writes_atomically_when_newer(self):
         gd, _ = _fake_gdown(
             files=[_FakeEntry("2026_LoL_esports_match_data_from_OraclesElixir.csv")],
@@ -82,6 +88,7 @@ class TestOeDownload(unittest.TestCase):
             df = pd.read_csv(target)
             self.assertEqual(df["gameid"].nunique(), 10)
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_regression_keeps_current_and_fails_loud(self):
         gd, _ = _fake_gdown(
             files=[_FakeEntry("2026_LoL_esports_match_data_from_OraclesElixir.csv")],
@@ -97,6 +104,7 @@ class TestOeDownload(unittest.TestCase):
             df = pd.read_csv(target)
             self.assertEqual(df["gameid"].nunique(), 5)  # atual intocado
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_quota_is_tempfail_75(self):
         gd, exc_cls = _fake_gdown(
             files=[_FakeEntry("2026_LoL_esports_match_data_from_OraclesElixir.csv")],
@@ -111,6 +119,7 @@ class TestOeDownload(unittest.TestCase):
             _, rc = self._run(Path(td), gd2)
             self.assertEqual(rc, 75)
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_year_fallback_january(self):
         """Virada de ano: sem arquivo 2027, segue no 2026 sem falhar."""
         gd, _ = _fake_gdown(
@@ -123,6 +132,7 @@ class TestOeDownload(unittest.TestCase):
             self.assertEqual(rc, 0)
             self.assertTrue((Path(td) / "2026_LoL_esports_match_data_from_OraclesElixir.csv").exists())
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_garbage_download_is_tempfail_not_replacement(self):
         gd, _ = _fake_gdown(
             files=[_FakeEntry("2026_LoL_esports_match_data_from_OraclesElixir.csv")],

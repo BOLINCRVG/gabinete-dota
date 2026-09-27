@@ -5,6 +5,11 @@ import shutil
 import unittest
 import uuid
 from pathlib import Path
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,6 +38,7 @@ def _load_module():
 
 
 class RunStabilizationGateTests(unittest.TestCase):
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_quick_profile_runs_code_error_scan_check(self) -> None:
         mod = _load_module()
         seen_cmds: list[list[str]] = []

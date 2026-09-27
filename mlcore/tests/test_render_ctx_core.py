@@ -5,9 +5,14 @@ import unittest
 
 from app_core.render_ctx_core import (
     extract_ctx_keys,
+
     is_enforced_key,
     validate_render_ctx,
 )
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
 
 
 class TestExtractCtxKeys(unittest.TestCase):
@@ -119,10 +124,12 @@ class TestRealRenderersContract(unittest.TestCase):
         enforced = {k for k in extract_ctx_keys(src) if is_enforced_key(k)}
         return sorted(k for k in enforced if k not in g)
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_visao_core_keys_all_in_globals(self):
         missing = self._enforced_missing("app_core/visao_tab_core.py")
         self.assertEqual(missing, [], f"plays_app não importa: {missing}")
 
+    @so_no_lol("usa o plays_app.py, o app do LoL")
     def test_consistencia_core_keys_all_in_globals(self):
         missing = self._enforced_missing("app_core/consistencia_tab_core.py")
         self.assertEqual(missing, [], f"plays_app não importa: {missing}")

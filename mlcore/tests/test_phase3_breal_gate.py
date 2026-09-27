@@ -1,6 +1,11 @@
 import unittest
 from pathlib import Path
 import importlib.util
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 
 def _load_gate_module():
@@ -33,6 +38,7 @@ class TestPhase3BrealGate(unittest.TestCase):
             "quality_scale_applied": bool(scale_applied),
         }
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_shadow_when_quality_scale_not_applied_with_expected_signal(self):
         rows = [self._row(league="LCK", scale_applied=False) for _ in range(10)]
         dec, reasons, metrics, _ = self.mod._decide(rows)
@@ -41,6 +47,7 @@ class TestPhase3BrealGate(unittest.TestCase):
         self.assertEqual(int(metrics.get("quality_scale_expected_samples") or 0), 10)
         self.assertLess(float(metrics.get("quality_scale_expected_apply_rate") or 0.0), 0.60)
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_promote_when_quality_scale_applied(self):
         rows = [self._row(league="LCK", scale_applied=True) for _ in range(10)]
         dec, reasons, metrics, _ = self.mod._decide(rows)
@@ -49,6 +56,7 @@ class TestPhase3BrealGate(unittest.TestCase):
         self.assertEqual(int(metrics.get("quality_scale_expected_samples") or 0), 10)
         self.assertGreaterEqual(float(metrics.get("quality_scale_expected_apply_rate") or 0.0), 1.0)
 
+    @so_no_lol("testa uma ferramenta de tools/ que so existe no LoL")
     def test_shadow_when_b_model_not_effectively_used(self):
         rows = [self._row(league="LCK", scale_applied=True, is_b_model=False) for _ in range(10)]
         dec, reasons, metrics, _ = self.mod._decide(rows)

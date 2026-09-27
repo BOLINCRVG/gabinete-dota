@@ -10,6 +10,11 @@ import unittest
 from app_core.champion_knowledge_core import load_champion_knowledge_registry
 from app_core.comp_archetype_core import build_comp_profile
 from app_core.radar_confronto_core import ROLE_ORDER, classify_comp_archetype
+try:
+    from mlcore.tests._repo import so_no_lol
+except ImportError:  # rodado de dentro da pasta de testes
+    from _repo import so_no_lol
+
 
 _REG = load_champion_knowledge_registry()
 
@@ -21,15 +26,18 @@ def _arch(picks):
 
 class ClassificaArquetiposObviosTests(unittest.TestCase):
 
+    @so_no_lol("arquetipos de composicao com campeoes do LoL")
     def test_engage_puro_e_engage_nao_scaling(self):
         # o caso que estava errado: CC pesado / teamfight, sem dive
         self.assertEqual(_arch(["Malphite", "Amumu", "Galio", "Jinx", "Leona"]), "Engage")
         self.assertEqual(_arch(["Ornn", "Sejuani", "Orianna", "Kai'Sa", "Rakan"]), "Engage")
 
+    @so_no_lol("arquetipos de composicao com campeoes do LoL")
     def test_poke_e_poke(self):
         self.assertEqual(_arch(["Jayce", "Nidalee", "Xerath", "Ezreal", "Karma"]), "Poke")
         self.assertEqual(_arch(["Kennen", "Nidalee", "Ziggs", "Ezreal", "Lulu"]), "Poke")
 
+    @so_no_lol("arquetipos de composicao com campeoes do LoL")
     def test_scaling_e_scaling(self):
         self.assertEqual(_arch(["Kayle", "Kindred", "Azir", "Jinx", "Nami"]), "Scaling")
 
