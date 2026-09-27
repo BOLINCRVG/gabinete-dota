@@ -1,5 +1,5 @@
 {
-  "lido_em": "2026-09-27T19:32:02-03:00",
+  "lido_em": "2026-09-27T20:25:39-03:00",
   "fonte": "https://guest.api.arcadia.pinnacle.com/0.1/",
   "fuso": "America/Sao_Paulo",
   "jogos": [],
@@ -8,7 +8,7 @@
     "ao_vivo": 0,
     "filho": 0,
     "sem_mercado": 0,
-    "outro_jogo": 78,
+    "outro_jogo": 49,
     "sem_lados": 0
   }
 }
