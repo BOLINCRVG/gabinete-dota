@@ -1,4 +1,12 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+9025934049,2026-10-02T14:09:39.000Z,2026,BLAST SLAM VIII,15,LGD Gaming,8261500,Xtreme Gaming,dire,1925,0,7,36,0,9,0,2,0,6,19102.0,1790950179.0,True,26.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9025934049,2026-10-02T14:09:39.000Z,2026,BLAST SLAM VIII,8261500,Xtreme Gaming,15,LGD Gaming,radiant,1925,1,36,7,9,0,2,0,6,0,19102.0,1790950179.0,True,26.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9025923903,2026-10-02T14:07:02.000Z,2026,BLAST SLAM VIII,10182357,1win,9691969,Team Nemesis,dire,3104,1,41,17,11,5,1,2,6,0,19102.0,1790950022.0,True,35.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9025923903,2026-10-02T14:07:02.000Z,2026,BLAST SLAM VIII,9691969,Team Nemesis,10182357,1win,radiant,3104,0,17,41,5,11,2,1,0,6,19102.0,1790950022.0,True,35.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9025821355,2026-10-02T12:56:06.000Z,2026,BLAST SLAM VIII,10182357,1win,9691969,Team Nemesis,dire,2323,1,27,25,9,4,2,0,4,0,19102.0,1790945766.0,True,28.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9025821355,2026-10-02T12:56:06.000Z,2026,BLAST SLAM VIII,9691969,Team Nemesis,10182357,1win,radiant,2323,0,25,27,4,9,0,2,0,4,19102.0,1790945766.0,True,28.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9025822624,2026-10-02T12:56:00.000Z,2026,BLAST SLAM VIII,15,LGD Gaming,8261500,Xtreme Gaming,radiant,2554,1,44,9,11,4,2,0,6,0,19102.0,1790945760.0,True,33.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9025822624,2026-10-02T12:56:00.000Z,2026,BLAST SLAM VIII,8261500,Xtreme Gaming,15,LGD Gaming,dire,2554,0,9,44,4,11,0,2,0,6,19102.0,1790945760.0,True,33.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 9024842732,2026-10-01T17:48:31.000Z,2026,BLAST SLAM VIII,9467224,Aurora Gaming,2163,Team Liquid,dire,3834,1,46,38,11,6,3,2,6,0,19102.0,1790876911.0,True,40.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 9024842732,2026-10-01T17:48:31.000Z,2026,BLAST SLAM VIII,2163,Team Liquid,9467224,Aurora Gaming,radiant,3834,0,38,46,6,11,2,3,0,6,19102.0,1790876911.0,True,40.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 9024732472,2026-10-01T16:36:27.000Z,2026,BLAST SLAM VIII,9467224,Aurora Gaming,2163,Team Liquid,dire,2378,1,29,21,8,4,1,1,0,0,19102.0,1790872587.0,True,25.0,ok,,opendota_api,1.0,1.0,1.0,1.0
