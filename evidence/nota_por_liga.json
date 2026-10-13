@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-10-12T20:09:07",
+ "gerado_em": "2026-10-13T03:19:31",
  "season": 2026,
  "nota_geral": 9.04,
  "min_n": 60,
@@ -81,7 +81,7 @@
    "tier": "",
    "n": 185,
    "nota": 6.81,
-   "logloss": 0.6355,
+   "logloss": 0.6354,
    "acuracia": 0.654,
    "ece": 0.069
   },
@@ -102,6 +102,15 @@
    "logloss": 0.6186,
    "acuracia": 0.657,
    "ece": 0.068
+  },
+  {
+   "liga": "DreamLeague Season 30 Qualifiers",
+   "tier": "",
+   "n": 64,
+   "nota": 7.51,
+   "logloss": 0.6134,
+   "acuracia": 0.75,
+   "ece": 0.101
   },
   {
    "liga": "FISSURE Universe Episode 8",
@@ -149,15 +158,6 @@
    "ece": 0.105
   },
   {
-   "liga": "EPL Masters 2026",
-   "tier": "",
-   "n": 350,
-   "nota": 8.67,
-   "logloss": 0.5763,
-   "acuracia": 0.7,
-   "ece": 0.068
-  },
-  {
    "liga": "The International 2026 - Regional Qualifier Europe",
    "tier": "",
    "n": 63,
@@ -167,11 +167,20 @@
    "ece": 0.066
   },
   {
+   "liga": "EPL Masters 2026",
+   "tier": "",
+   "n": 352,
+   "nota": 8.75,
+   "logloss": 0.5738,
+   "acuracia": 0.702,
+   "ece": 0.068
+  },
+  {
    "liga": "DreamLeague Division 2 Season 4",
    "tier": "",
    "n": 170,
    "nota": 9.14,
-   "logloss": 0.5615,
+   "logloss": 0.5614,
    "acuracia": 0.706,
    "ece": 0.089
   },
@@ -207,9 +216,9 @@
    "tier": "",
    "n": 235,
    "nota": 10.0,
-   "logloss": 0.4854,
+   "logloss": 0.485,
    "acuracia": 0.745,
-   "ece": 0.044
+   "ece": 0.043
   },
   {
    "liga": "Esports World Cup 2026",
@@ -234,7 +243,7 @@
    "tier": "",
    "n": 206,
    "nota": 10.0,
-   "logloss": 0.463,
+   "logloss": 0.4632,
    "acuracia": 0.791,
    "ece": 0.073
   },
