@@ -1,11 +1,11 @@
 {
- "gerado_em": "2026-10-17T00:55:05",
+ "gerado_em": "2026-10-17T14:04:20",
  "reguas": [
   {
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 51.0,
+   "idade_dias": 51.6,
    "estado": "VELHA"
   },
   {
@@ -26,7 +26,7 @@
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.4,
+   "idade_dias": 0.5,
    "estado": "frequencia nao declarada"
   },
   {
@@ -47,7 +47,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 0.4,
+   "idade_dias": 0.5,
    "estado": "ok"
   },
   {
