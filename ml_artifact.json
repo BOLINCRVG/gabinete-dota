@@ -2452,7 +2452,7 @@
       "Xtreme Gaming #10208071": 184.66336935617923,
       "LGD.Pinghu": 136.64873576369274,
       "Team Syntax": -190.1797312131819,
-      "Team Synapse": 200.91801421949293,
+      "Team Synapse": 192.74511905553106,
       "HULIGANI #10225339": -19.0354148518746,
       "WW завозик 67": 240.05271644452537,
       "Klim Sani4": 439.46234407767344,
@@ -2485,7 +2485,7 @@
       "Team GPK": -47.95721435620948,
       "Team TpaBoMaH": -40.07764968728985,
       "Team Stray": -10.84541152702863,
-      "CyberHero": 78.44302524526566,
+      "CyberHero": 86.5041871678832,
       "Blasterbl": 88.6382564713901,
       "LEGION": 138.4994763767796,
       "Ivory #10251022": -69.34750944883473,
@@ -2528,7 +2528,7 @@
       "Team Thailand #8193681": -42.220952116792866,
       "Team Nemesis Academy": -12.783041162803103,
       "111": -27.83182918902122,
-      "ALOHADANCE Team": 19.486899335960924,
+      "ALOHADANCE Team": 19.408344645457397,
       "Gorgc Team": 63.66463383939608,
       "WhiteSails": -0.8235658867738438,
       "Mena Warriors": -58.95016753625351,
@@ -2538,7 +2538,7 @@
       "Resp Gaming": -58.33797450722647,
       "kalmychata": 65.53267620404189,
       "Nix Team": 7.066218902742476,
-      "stariy_bog Team": 3.946353987924963,
+      "stariy_bog Team": 4.0155363144290686,
       "Inner Circle x Insanity #10251974": 60.0924948888977,
       "SHADOW DANCE": 5.078217937770628,
       "zxcursed Team": -26.979875292620104,
@@ -4963,7 +4963,7 @@
       "Xtreme Gaming #10208071": 8,
       "LGD.Pinghu": 11,
       "Team Syntax": 2,
-      "Team Synapse": 51,
+      "Team Synapse": 53,
       "HULIGANI #10225339": 1,
       "WW завозик 67": 1,
       "Klim Sani4": 41,
@@ -4996,7 +4996,7 @@
       "Team GPK": 10,
       "Team TpaBoMaH": 3,
       "Team Stray": 12,
-      "CyberHero": 28,
+      "CyberHero": 30,
       "Blasterbl": 18,
       "LEGION": 19,
       "Ivory #10251022": 10,
@@ -5039,7 +5039,7 @@
       "Team Thailand #8193681": 2,
       "Team Nemesis Academy": 3,
       "111": 2,
-      "ALOHADANCE Team": 13,
+      "ALOHADANCE Team": 15,
       "Gorgc Team": 13,
       "WhiteSails": 3,
       "Mena Warriors": 13,
@@ -5049,7 +5049,7 @@
       "Resp Gaming": 7,
       "kalmychata": 15,
       "Nix Team": 15,
-      "stariy_bog Team": 18,
+      "stariy_bog Team": 20,
       "Inner Circle x Insanity #10251974": 13,
       "SHADOW DANCE": 5,
       "zxcursed Team": 12,
@@ -5094,10 +5094,10 @@
       "Team Liquid": 0.4181598083314845,
       "OG": 0.328220382681106,
       "BoomBoys": 0.3810021596869279,
-      "Team Synapse": 0.4129148277620443,
+      "Team Synapse": 0.42915879070581775,
       "HULIGANI": 0.38623205881640477,
       "Yellow Submarine": 0.3908421400022862,
-      "CyberHero": 0.47960337487567306,
+      "CyberHero": 0.4856039769827931,
       "Blasterbl": 0.47571509910240256,
       "LEGION": 0.4149422703868265,
       "Nemiga Gaming": 0.4723611469112588,
@@ -5158,7 +5158,7 @@
       "Team Nemesis Academy": 0.34732456166242187,
       "Team Lynx": 0.43814598780271535,
       "111": 0.3301484675558742,
-      "ALOHADANCE Team": 0.4372127575932112,
+      "ALOHADANCE Team": 0.4500792265044997,
       "Gorgc Team": 0.432462698866222,
       "WhiteSails": 0.3042952141797307,
       "Dawn Bulls": 0.4611576606851081,
@@ -5173,7 +5173,7 @@
       "kalmychata": 0.3864106097266229,
       "Nix Team": 0.45392051521565596,
       "_PowerRangers": 0.41014104300470716,
-      "stariy_bog Team": 0.4716526169792672,
+      "stariy_bog Team": 0.4792291234888575,
       "Amaru Gaming #10108655": 0.40691334031740295,
       "Chandogs": 0.4159451976466827,
       "Inner Circle x Insanity #10251974": 0.4295578080890217,
@@ -14790,7 +14790,7 @@
         "tier": "MINOR"
       },
       "Team Synapse": {
-        "league": "DREAMLEAGUE SEASON 30 QUALIFIERS",
+        "league": "EPL MASTERS 2026",
         "tier": "MINOR"
       },
       "HULIGANI #10225339": {
@@ -15257,14 +15257,14 @@
     "b": 0.09457146899767192
   },
   "meta": {
-    "trained_at": "2026-10-18T00:27:06+00:00",
+    "trained_at": "2026-10-18T14:17:58+00:00",
     "data_min_date": "2026-01-03",
-    "data_max_date": "2026-10-17",
-    "cutoff_date": "2026-09-17",
-    "ratings_max_date": "2026-10-17",
-    "n_games_total": 5217,
+    "data_max_date": "2026-10-18",
+    "cutoff_date": "2026-09-18",
+    "ratings_max_date": "2026-10-18",
+    "n_games_total": 5221,
     "n_games_train": 23261,
-    "n_games_holdout": 665,
+    "n_games_holdout": 669,
     "n_teams": 2459,
     "csv": [
       "CSV_HISTORICO/2025_Dota_match_data_oe_like.csv",
@@ -24743,7 +24743,7 @@
         "tier": "MINOR"
       },
       "Team Synapse": {
-        "league": "DREAMLEAGUE SEASON 30 QUALIFIERS",
+        "league": "EPL MASTERS 2026",
         "tier": "MINOR"
       },
       "HULIGANI #10225339": {
@@ -25128,18 +25128,18 @@
       }
     },
     "metrics": {
-      "holdout_n": 665,
-      "logloss_raw": 0.753457473510503,
-      "logloss_cal": 0.7040842036259292,
-      "brier_raw": 0.2651155495881344,
-      "brier_cal": 0.2520737804673786,
+      "holdout_n": 669,
+      "logloss_raw": 0.7536738639473837,
+      "logloss_cal": 0.7045123804839262,
+      "brier_raw": 0.2652645102835824,
+      "brier_cal": 0.2522892514484198,
       "calibrated": true,
       "calibration_reason": "whr_prequential_n=7088",
       "min_cal_gain": 0.0,
       "cal_a": 0.6941510375551075,
       "cal_b": 0.09457146899767192,
-      "ece_raw": 0.11407324328953937,
-      "ece_cal": 0.07682807672254266,
+      "ece_raw": 0.1157318368207648,
+      "ece_cal": 0.07861608899641738,
       "reliability_bins_raw": [
         {
           "lo": 0.0,
@@ -25184,10 +25184,10 @@
         {
           "lo": 0.5,
           "hi": 0.6,
-          "n": 222,
-          "p_mean": 0.5158477381236927,
-          "y_mean": 0.5135135135135135,
-          "gap": 0.002334224610179181
+          "n": 224,
+          "p_mean": 0.515706240461874,
+          "y_mean": 0.5089285714285714,
+          "gap": 0.006777669033302569
         },
         {
           "lo": 0.6,
@@ -25200,10 +25200,10 @@
         {
           "lo": 0.7,
           "hi": 0.8,
-          "n": 63,
-          "p_mean": 0.7565475997902951,
-          "y_mean": 0.5079365079365079,
-          "gap": 0.24861109185378716
+          "n": 65,
+          "p_mean": 0.7573598589590242,
+          "y_mean": 0.5076923076923077,
+          "gap": 0.24966755126671658
         },
         {
           "lo": 0.8,
@@ -25266,10 +25266,10 @@
         {
           "lo": 0.5,
           "hi": 0.6,
-          "n": 238,
-          "p_mean": 0.5343734319344915,
-          "y_mean": 0.5168067226890757,
-          "gap": 0.017566709245415812
+          "n": 240,
+          "p_mean": 0.5342838638487514,
+          "y_mean": 0.5125,
+          "gap": 0.021783863848751417
         },
         {
           "lo": 0.6,
@@ -25282,10 +25282,10 @@
         {
           "lo": 0.7,
           "hi": 0.8,
-          "n": 66,
-          "p_mean": 0.7512616334499712,
-          "y_mean": 0.5454545454545454,
-          "gap": 0.2058070879954258
+          "n": 68,
+          "p_mean": 0.7505810265076336,
+          "y_mean": 0.5441176470588235,
+          "gap": 0.2064633794488101
         },
         {
           "lo": 0.8,
@@ -25326,9 +25326,9 @@
       "l2": 0.0,
       "avg_coverage": 0.0,
       "cal_after_lineup": null,
-      "holdout_n_used": 665,
+      "holdout_n_used": 669,
       "n_train_games": 23261,
-      "n_holdout_games": 665,
+      "n_holdout_games": 669,
       "prior": {}
     },
     "players_pscore": {
@@ -25337,12 +25337,8 @@
     },
     "tail": {
       "n": 500,
-      "fingerprint": "7fe467e482df38958d09d2901c761e092ba64295fc58ec38a5b421e681847fc8",
+      "fingerprint": "a46bfb4ee8551fc364c1c28b43ca7cc15f040bfcde0e9a09baeb9f8182e9d6a1",
       "gameids": [
-        "DOTA_9018694650",
-        "DOTA_9018705109",
-        "DOTA_9018736585",
-        "DOTA_9018798439",
         "DOTA_9018826512",
         "DOTA_9018837779",
         "DOTA_9018969340",
@@ -25838,12 +25834,16 @@
         "DOTA_9049879128",
         "DOTA_9049945108",
         "DOTA_9049970296",
-        "DOTA_9050011537"
+        "DOTA_9050011537",
+        "DOTA_9050736370",
+        "DOTA_9050817368",
+        "DOTA_9050825299",
+        "DOTA_9050944233"
       ]
     },
     "incremental": {
-      "last_run_at": "2026-10-18T00:27:06+00:00",
-      "added_games": 665,
+      "last_run_at": "2026-10-18T14:17:58+00:00",
+      "added_games": 669,
       "csv_used": [
         "CSV_DIARIO/2026_Dota_match_data_oe_like.csv"
       ],
@@ -25854,9 +25854,9 @@
     "players_layer_update": {
       "enabled": true,
       "players_artifact": "players_artifact.json",
-      "new_games": 665,
+      "new_games": 669,
       "games_used": 0,
-      "updated_at": "2026-10-18T00:27:06Z"
+      "updated_at": "2026-10-18T14:17:58Z"
     }
   }
 }

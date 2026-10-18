@@ -1,9 +1,9 @@
 {
  "season": 2026,
  "geral": {
-  "n": 5217,
-  "nota": 8.81,
-  "logloss": 0.5721,
+  "n": 5221,
+  "nota": 8.8,
+  "logloss": 0.5722,
   "acuracia": 0.699,
   "ece": 0.017
  },
@@ -15,11 +15,11 @@
   "ece": 0.054
  },
  "pouco_conhecidos": {
-  "n": 2543,
+  "n": 2547,
   "nota": 10.0,
-  "logloss": 0.4916,
+  "logloss": 0.492,
   "acuracia": 0.759,
-  "ece": 0.042
+  "ece": 0.041
  },
  "torneios": [
   {
@@ -127,17 +127,17 @@
    "torneio": "EPL Championship 2025-2026"
   },
   {
-   "n": 410,
-   "nota": 7.93,
-   "logloss": 0.6,
-   "acuracia": 0.666,
-   "ece": 0.063,
+   "n": 412,
+   "nota": 7.91,
+   "logloss": 0.6006,
+   "acuracia": 0.665,
+   "ece": 0.057,
    "torneio": "EPL Masters 2026"
   },
   {
    "n": 226,
-   "nota": 7.96,
-   "logloss": 0.5991,
+   "nota": 7.95,
+   "logloss": 0.5992,
    "acuracia": 0.659,
    "ece": 0.054,
    "torneio": "DreamLeague Season 30 Qualifiers"

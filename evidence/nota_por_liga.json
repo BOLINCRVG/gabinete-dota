@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-10-18T00:27:33",
+ "gerado_em": "2026-10-18T14:18:24",
  "season": 2026,
- "nota_geral": 8.81,
+ "nota_geral": 8.8,
  "min_n": 60,
  "ligas": [
   {
@@ -124,18 +124,18 @@
   {
    "liga": "EPL Masters 2026",
    "tier": "",
-   "n": 410,
-   "nota": 7.93,
-   "logloss": 0.6,
-   "acuracia": 0.666,
-   "ece": 0.063
+   "n": 412,
+   "nota": 7.91,
+   "logloss": 0.6006,
+   "acuracia": 0.665,
+   "ece": 0.057
   },
   {
    "liga": "DreamLeague Season 30 Qualifiers",
    "tier": "",
    "n": 226,
-   "nota": 7.96,
-   "logloss": 0.5991,
+   "nota": 7.95,
+   "logloss": 0.5992,
    "acuracia": 0.659,
    "ece": 0.054
   },
