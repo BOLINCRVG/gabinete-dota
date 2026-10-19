@@ -165,7 +165,7 @@
       "The Covenant": -398.2360061215879,
       "MOUZ": 125.39555503724051,
       "No Packet Loss": -35.643424956704735,
-      "Nemiga Gaming": 57.92503242351581,
+      "Nemiga Gaming": 56.30352975514987,
       "Eye Gaming #9481733": -4.912547677169754,
       "No nos ganen porfavor": -174.33575240136548,
       "TEAM RPP": -433.4238836974714,
@@ -1058,7 +1058,7 @@
       "Kalmychata #9798854": 194.21113161237741,
       "Cubil gaming": -22.283434479977977,
       "La Taberna del Pollo": -281.3715657760839,
-      "TeamDk": -113.72138609488937,
+      "TeamDk": -104.63479146537924,
       "Veritas brothers": 150.68220655779302,
       "Moneyfest": -396.63981284803975,
       "Ember Enjoyers #9799439": -85.57030255321865,
@@ -2013,7 +2013,7 @@
       "1000 reasons": -322.2993969953485,
       "Silk": -201.3919933325989,
       "American Boy": -300.0592627830181,
-      "_PowerRangers": 163.37682209864815,
+      "_PowerRangers": 137.23843882114343,
       "The Outcast": -251.1573731749578,
       "Team Public #10020690": 263.8071486049204,
       "No logo just mmr": 134.93973776891414,
@@ -2073,7 +2073,7 @@
       "ACEFALOS": -615.6149556635512,
       "OnlyGuapos": -234.08410713941143,
       "Привязочники": -139.6051769078658,
-      "NEW GROWTH": -43.50012144298894,
+      "NEW GROWTH": -41.258808731604134,
       "MONKEY BUSINESS": 125.09792870740004,
       "alohasquad #10027459": -146.09765644968516,
       "Backyardigans": 124.6416823867177,
@@ -2233,7 +2233,7 @@
       "BTS Army": -421.00658114647086,
       "Team Resilience": 410.0265806144682,
       "Eoka": -222.0964601761125,
-      "Amaru Gaming #10108655": 107.43952887646667,
+      "Amaru Gaming #10108655": 98.35670260751496,
       "Team Freedom": -392.28130647112397,
       "Hokori #7119077": -159.2291316947717,
       "EEZZ": -432.18307330384414,
@@ -2452,7 +2452,7 @@
       "Xtreme Gaming #10208071": 184.66336935617923,
       "LGD.Pinghu": 136.64873576369274,
       "Team Syntax": -190.1797312131819,
-      "Team Synapse": 192.74511905553106,
+      "Team Synapse": 174.55781996448394,
       "HULIGANI #10225339": -19.0354148518746,
       "WW завозик 67": 240.05271644452537,
       "Klim Sani4": 439.46234407767344,
@@ -2485,7 +2485,7 @@
       "Team GPK": -47.95721435620948,
       "Team TpaBoMaH": -40.07764968728985,
       "Team Stray": -10.84541152702863,
-      "CyberHero": 86.5041871678832,
+      "CyberHero": 104.63563639768566,
       "Blasterbl": 88.6382564713901,
       "LEGION": 138.4994763767796,
       "Ivory #10251022": -69.34750944883473,
@@ -2528,8 +2528,8 @@
       "Team Thailand #8193681": -42.220952116792866,
       "Team Nemesis Academy": -12.783041162803103,
       "111": -27.83182918902122,
-      "ALOHADANCE Team": 19.408344645457397,
-      "Gorgc Team": 63.66463383939608,
+      "ALOHADANCE Team": 4.7875355596498625,
+      "Gorgc Team": 73.72487597468779,
       "WhiteSails": -0.8235658867738438,
       "Mena Warriors": -58.95016753625351,
       "Team by_Owl": -10.600952030632419,
@@ -2538,16 +2538,17 @@
       "Resp Gaming": -58.33797450722647,
       "kalmychata": 65.53267620404189,
       "Nix Team": 7.066218902742476,
-      "stariy_bog Team": 4.0155363144290686,
+      "stariy_bog Team": 8.489155106224226,
       "Inner Circle x Insanity #10251974": 60.0924948888977,
       "SHADOW DANCE": 5.078217937770628,
       "zxcursed Team": -26.979875292620104,
-      "salamit": 48.355797902071174,
+      "salamit": 75.8550220536726,
       "Korb3n Team": 2.767937220736704,
       "Rebeldes": 15.034253735965466,
       "LOS PERROS": -15.034253735965466,
       "LFO": 9.00452425264266,
-      "by_Owl Team": -27.089964617725144
+      "by_Owl Team": -27.089964617725144,
+      "Team Revenant": -2.2239144028124698
     },
     "games_played": {
       "Virtus Wara": 15,
@@ -2676,7 +2677,7 @@
       "The Covenant": 19,
       "MOUZ": 514,
       "No Packet Loss": 3,
-      "Nemiga Gaming": 316,
+      "Nemiga Gaming": 319,
       "Eye Gaming #9481733": 13,
       "No nos ganen porfavor": 1,
       "TEAM RPP": 1,
@@ -3569,7 +3570,7 @@
       "Kalmychata #9798854": 36,
       "Cubil gaming": 1,
       "La Taberna del Pollo": 1,
-      "TeamDk": 37,
+      "TeamDk": 40,
       "Veritas brothers": 2,
       "Moneyfest": 2,
       "Ember Enjoyers #9799439": 16,
@@ -4524,7 +4525,7 @@
       "1000 reasons": 6,
       "Silk": 3,
       "American Boy": 1,
-      "_PowerRangers": 171,
+      "_PowerRangers": 177,
       "The Outcast": 4,
       "Team Public #10020690": 13,
       "No logo just mmr": 3,
@@ -4584,7 +4585,7 @@
       "ACEFALOS": 1,
       "OnlyGuapos": 3,
       "Привязочники": 6,
-      "NEW GROWTH": 31,
+      "NEW GROWTH": 33,
       "MONKEY BUSINESS": 10,
       "alohasquad #10027459": 2,
       "Backyardigans": 11,
@@ -4744,7 +4745,7 @@
       "BTS Army": 1,
       "Team Resilience": 61,
       "Eoka": 2,
-      "Amaru Gaming #10108655": 55,
+      "Amaru Gaming #10108655": 58,
       "Team Freedom": 2,
       "Hokori #7119077": 16,
       "EEZZ": 1,
@@ -4963,7 +4964,7 @@
       "Xtreme Gaming #10208071": 8,
       "LGD.Pinghu": 11,
       "Team Syntax": 2,
-      "Team Synapse": 53,
+      "Team Synapse": 54,
       "HULIGANI #10225339": 1,
       "WW завозик 67": 1,
       "Klim Sani4": 41,
@@ -4996,7 +4997,7 @@
       "Team GPK": 10,
       "Team TpaBoMaH": 3,
       "Team Stray": 12,
-      "CyberHero": 30,
+      "CyberHero": 31,
       "Blasterbl": 18,
       "LEGION": 19,
       "Ivory #10251022": 10,
@@ -5039,8 +5040,8 @@
       "Team Thailand #8193681": 2,
       "Team Nemesis Academy": 3,
       "111": 2,
-      "ALOHADANCE Team": 15,
-      "Gorgc Team": 13,
+      "ALOHADANCE Team": 16,
+      "Gorgc Team": 18,
       "WhiteSails": 3,
       "Mena Warriors": 13,
       "Team by_Owl": 9,
@@ -5049,16 +5050,17 @@
       "Resp Gaming": 7,
       "kalmychata": 15,
       "Nix Team": 15,
-      "stariy_bog Team": 20,
+      "stariy_bog Team": 26,
       "Inner Circle x Insanity #10251974": 13,
       "SHADOW DANCE": 5,
       "zxcursed Team": 12,
-      "salamit": 9,
+      "salamit": 12,
       "Korb3n Team": 10,
       "Rebeldes": 3,
       "LOS PERROS": 3,
       "LFO": 8,
-      "by_Owl Team": 2
+      "by_Owl Team": 2,
+      "Team Revenant": 2
     },
     "team_volatility": {
       "Team Nemesis": 0.4252173916120654,
@@ -5094,13 +5096,13 @@
       "Team Liquid": 0.4181598083314845,
       "OG": 0.328220382681106,
       "BoomBoys": 0.3810021596869279,
-      "Team Synapse": 0.42915879070581775,
+      "Team Synapse": 0.44669003185890865,
       "HULIGANI": 0.38623205881640477,
       "Yellow Submarine": 0.3908421400022862,
-      "CyberHero": 0.4856039769827931,
+      "CyberHero": 0.498619603233726,
       "Blasterbl": 0.47571509910240256,
       "LEGION": 0.4149422703868265,
-      "Nemiga Gaming": 0.4723611469112588,
+      "Nemiga Gaming": 0.4713550696859975,
       "Team Kinetix": 0.38881758672885175,
       "Ivory #10251022": 0.4846777785556662,
       "KUKUYS #9595260": 0.3294529515041602,
@@ -5125,7 +5127,7 @@
       "LOS FANTASMAS": 0.2824284055526049,
       "Rottweilas #10202628": 0.4196366560616091,
       "OSESNOS FC": 0.316,
-      "NEW GROWTH": 0.4344937896727597,
+      "NEW GROWTH": 0.4477569257030384,
       "CDUB #10292588": 0.2926703291304105,
       "ZENITH": 0.35647554889288563,
       "Cloud Rising": 0.3780449279155442,
@@ -5158,8 +5160,8 @@
       "Team Nemesis Academy": 0.34732456166242187,
       "Team Lynx": 0.43814598780271535,
       "111": 0.3301484675558742,
-      "ALOHADANCE Team": 0.4500792265044997,
-      "Gorgc Team": 0.432462698866222,
+      "ALOHADANCE Team": 0.45584389234744227,
+      "Gorgc Team": 0.45582682647529954,
       "WhiteSails": 0.3042952141797307,
       "Dawn Bulls": 0.4611576606851081,
       "Mena Warriors": 0.3796757682049077,
@@ -5172,14 +5174,14 @@
       "Resp Gaming": 0.3574406179526558,
       "kalmychata": 0.3864106097266229,
       "Nix Team": 0.45392051521565596,
-      "_PowerRangers": 0.41014104300470716,
-      "stariy_bog Team": 0.4792291234888575,
-      "Amaru Gaming #10108655": 0.40691334031740295,
+      "_PowerRangers": 0.45356865519521267,
+      "stariy_bog Team": 0.48891212491426383,
+      "Amaru Gaming #10108655": 0.41020405704369667,
       "Chandogs": 0.4159451976466827,
       "Inner Circle x Insanity #10251974": 0.4295578080890217,
       "SHADOW DANCE": 0.34485770723321924,
       "zxcursed Team": 0.4355443355421781,
-      "salamit": 0.3615429658371122,
+      "salamit": 0.4057867588612129,
       "Korb3n Team": 0.426835242982245,
       "DIREBORN": 0.3888639430095192,
       "Execration": 0.41061512025897795,
@@ -5189,7 +5191,9 @@
       "Rebeldes": 0.3469613667815644,
       "LOS PERROS": 0.3469613667815644,
       "LFO": 0.3848872674981918,
-      "by_Owl Team": 0.3281167187913519
+      "by_Owl Team": 0.3281167187913519,
+      "TeamDk": 0.32695192189861877,
+      "Team Revenant": 0.33392138212401457
     },
     "league_strength": {
       "XMAS LEAGUE 2024": 0.0,
@@ -11862,7 +11866,7 @@
         "tier": "MINOR"
       },
       "TeamDk": {
-        "league": "Road To EWC 2026 Regional Qualifiers",
+        "league": "NEXUS SERIES II",
         "tier": "MINOR"
       },
       "Team Cobra": {
@@ -13062,7 +13066,7 @@
         "tier": "MINOR"
       },
       "_PowerRangers": {
-        "league": "DREAMLEAGUE SEASON 30 QUALIFIERS",
+        "league": "EPL MASTERS 2026",
         "tier": "MINOR"
       },
       "The Outcast": {
@@ -15172,10 +15176,14 @@
       "by_Owl Team": {
         "league": "1WIN STREAMERS LEAGUE #3",
         "tier": "MINOR"
+      },
+      "Team Revenant": {
+        "league": "NEXUS SERIES II",
+        "tier": "MINOR"
       }
     },
     "rank_caps_by_tier": {
-      "MINOR": 523.8748925922077,
+      "MINOR": 523.8389046468477,
       "OTHER": 419.5508157999524
     },
     "league_base_points_map": {
@@ -15257,15 +15265,15 @@
     "b": 0.09457146899767192
   },
   "meta": {
-    "trained_at": "2026-10-18T14:17:58+00:00",
+    "trained_at": "2026-10-19T00:38:22+00:00",
     "data_min_date": "2026-01-03",
     "data_max_date": "2026-10-18",
     "cutoff_date": "2026-09-18",
     "ratings_max_date": "2026-10-18",
-    "n_games_total": 5221,
+    "n_games_total": 5239,
     "n_games_train": 23261,
-    "n_games_holdout": 669,
-    "n_teams": 2459,
+    "n_games_holdout": 687,
+    "n_teams": 2460,
     "csv": [
       "CSV_HISTORICO/2025_Dota_match_data_oe_like.csv",
       "CSV_DIARIO/2026_Dota_match_data_oe_like.csv"
@@ -21815,7 +21823,7 @@
         "tier": "MINOR"
       },
       "TeamDk": {
-        "league": "Road To EWC 2026 Regional Qualifiers",
+        "league": "NEXUS SERIES II",
         "tier": "MINOR"
       },
       "Team Cobra": {
@@ -23015,7 +23023,7 @@
         "tier": "MINOR"
       },
       "_PowerRangers": {
-        "league": "DREAMLEAGUE SEASON 30 QUALIFIERS",
+        "league": "EPL MASTERS 2026",
         "tier": "MINOR"
       },
       "The Outcast": {
@@ -25125,21 +25133,25 @@
       "by_Owl Team": {
         "league": "1WIN STREAMERS LEAGUE #3",
         "tier": "MINOR"
+      },
+      "Team Revenant": {
+        "league": "NEXUS SERIES II",
+        "tier": "MINOR"
       }
     },
     "metrics": {
-      "holdout_n": 669,
-      "logloss_raw": 0.7536738639473837,
-      "logloss_cal": 0.7045123804839262,
-      "brier_raw": 0.2652645102835824,
-      "brier_cal": 0.2522892514484198,
+      "holdout_n": 687,
+      "logloss_raw": 0.754730544488778,
+      "logloss_cal": 0.7050740303951639,
+      "brier_raw": 0.26597058367195625,
+      "brier_cal": 0.2526190086742675,
       "calibrated": true,
       "calibration_reason": "whr_prequential_n=7088",
       "min_cal_gain": 0.0,
       "cal_a": 0.6941510375551075,
       "cal_b": 0.09457146899767192,
-      "ece_raw": 0.1157318368207648,
-      "ece_cal": 0.07861608899641738,
+      "ece_raw": 0.11511192721560223,
+      "ece_cal": 0.07660262717968183,
       "reliability_bins_raw": [
         {
           "lo": 0.0,
@@ -25160,10 +25172,10 @@
         {
           "lo": 0.2,
           "hi": 0.3,
-          "n": 76,
-          "p_mean": 0.23956313036447704,
-          "y_mean": 0.35526315789473684,
-          "gap": 0.11570002753025979
+          "n": 83,
+          "p_mean": 0.23878270062115559,
+          "y_mean": 0.37349397590361444,
+          "gap": 0.13471127528245885
         },
         {
           "lo": 0.3,
@@ -25176,18 +25188,18 @@
         {
           "lo": 0.4,
           "hi": 0.5,
-          "n": 46,
-          "p_mean": 0.44034734282073706,
-          "y_mean": 0.5,
-          "gap": 0.059652657179262936
+          "n": 47,
+          "p_mean": 0.44129707981195726,
+          "y_mean": 0.5106382978723404,
+          "gap": 0.06934121806038313
         },
         {
           "lo": 0.5,
           "hi": 0.6,
-          "n": 224,
-          "p_mean": 0.515706240461874,
-          "y_mean": 0.5089285714285714,
-          "gap": 0.006777669033302569
+          "n": 231,
+          "p_mean": 0.5152952938616956,
+          "y_mean": 0.5151515151515151,
+          "gap": 0.0001437787101804533
         },
         {
           "lo": 0.6,
@@ -25200,10 +25212,10 @@
         {
           "lo": 0.7,
           "hi": 0.8,
-          "n": 65,
-          "p_mean": 0.7573598589590242,
-          "y_mean": 0.5076923076923077,
-          "gap": 0.24966755126671658
+          "n": 68,
+          "p_mean": 0.7568797382799339,
+          "y_mean": 0.5147058823529411,
+          "gap": 0.2421738559269928
         },
         {
           "lo": 0.8,
@@ -25250,10 +25262,10 @@
         {
           "lo": 0.3,
           "hi": 0.4,
-          "n": 79,
-          "p_mean": 0.3393907071042777,
-          "y_mean": 0.35443037974683544,
-          "gap": 0.015039672642557733
+          "n": 86,
+          "p_mean": 0.3379901516511613,
+          "y_mean": 0.37209302325581395,
+          "gap": 0.03410287160465264
         },
         {
           "lo": 0.4,
@@ -25266,26 +25278,26 @@
         {
           "lo": 0.5,
           "hi": 0.6,
-          "n": 240,
-          "p_mean": 0.5342838638487514,
-          "y_mean": 0.5125,
-          "gap": 0.021783863848751417
+          "n": 248,
+          "p_mean": 0.5339399553408638,
+          "y_mean": 0.5201612903225806,
+          "gap": 0.013778665018283176
         },
         {
           "lo": 0.6,
           "hi": 0.7,
-          "n": 61,
-          "p_mean": 0.6585782571148503,
-          "y_mean": 0.5901639344262295,
-          "gap": 0.0684143226886208
+          "n": 63,
+          "p_mean": 0.6597205382059562,
+          "y_mean": 0.5873015873015873,
+          "gap": 0.0724189509043689
         },
         {
           "lo": 0.7,
           "hi": 0.8,
-          "n": 68,
-          "p_mean": 0.7505810265076336,
-          "y_mean": 0.5441176470588235,
-          "gap": 0.2064633794488101
+          "n": 69,
+          "p_mean": 0.7499787897582024,
+          "y_mean": 0.5507246376811594,
+          "gap": 0.199254152077043
         },
         {
           "lo": 0.8,
@@ -25326,9 +25338,9 @@
       "l2": 0.0,
       "avg_coverage": 0.0,
       "cal_after_lineup": null,
-      "holdout_n_used": 669,
+      "holdout_n_used": 687,
       "n_train_games": 23261,
-      "n_holdout_games": 669,
+      "n_holdout_games": 687,
       "prior": {}
     },
     "players_pscore": {
@@ -25337,26 +25349,8 @@
     },
     "tail": {
       "n": 500,
-      "fingerprint": "a46bfb4ee8551fc364c1c28b43ca7cc15f040bfcde0e9a09baeb9f8182e9d6a1",
+      "fingerprint": "888a6f1eac9f04c09f6e2daf3a7b5013e64e8ba1b19eddd28026d9ac9e65a6a8",
       "gameids": [
-        "DOTA_9018826512",
-        "DOTA_9018837779",
-        "DOTA_9018969340",
-        "DOTA_9019037770",
-        "DOTA_9019137960",
-        "DOTA_9019294204",
-        "DOTA_9019333057",
-        "DOTA_9019438969",
-        "DOTA_9019521053",
-        "DOTA_9021397355",
-        "DOTA_9021397264",
-        "DOTA_9021470896",
-        "DOTA_9021485923",
-        "DOTA_9021540875",
-        "DOTA_9021556632",
-        "DOTA_9021632842",
-        "DOTA_9021648212",
-        "DOTA_9021762797",
         "DOTA_9021799787",
         "DOTA_9021866654",
         "DOTA_9021939258",
@@ -25838,12 +25832,30 @@
         "DOTA_9050736370",
         "DOTA_9050817368",
         "DOTA_9050825299",
-        "DOTA_9050944233"
+        "DOTA_9050944233",
+        "DOTA_9050966034",
+        "DOTA_9051038409",
+        "DOTA_9051212593",
+        "DOTA_9051296105",
+        "DOTA_9051367680",
+        "DOTA_9051420742",
+        "DOTA_9051454022",
+        "DOTA_9051485058",
+        "DOTA_9051544982",
+        "DOTA_9051573372",
+        "DOTA_9051603938",
+        "DOTA_9051664847",
+        "DOTA_9051682783",
+        "DOTA_9051681832",
+        "DOTA_9051744853",
+        "DOTA_9051756153",
+        "DOTA_9051776535",
+        "DOTA_9051795847"
       ]
     },
     "incremental": {
-      "last_run_at": "2026-10-18T14:17:58+00:00",
-      "added_games": 669,
+      "last_run_at": "2026-10-19T00:38:22+00:00",
+      "added_games": 687,
       "csv_used": [
         "CSV_DIARIO/2026_Dota_match_data_oe_like.csv"
       ],
@@ -25854,9 +25866,9 @@
     "players_layer_update": {
       "enabled": true,
       "players_artifact": "players_artifact.json",
-      "new_games": 669,
+      "new_games": 687,
       "games_used": 0,
-      "updated_at": "2026-10-18T14:17:58Z"
+      "updated_at": "2026-10-19T00:38:22Z"
     }
   }
 }

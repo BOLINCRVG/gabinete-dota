@@ -1,4 +1,42 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+9051795847,2026-10-18T22:48:43.000Z,2026,NEXUS SERIES II,10027376,NEW GROWTH,10312452,Team Revenant,dire,3155,0,42,42,7,9,1,2,0,4,20334.0,1792363723.0,True,35.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051795847,2026-10-18T22:48:43.000Z,2026,NEXUS SERIES II,10312452,Team Revenant,10027376,NEW GROWTH,radiant,3155,1,42,42,9,7,2,1,4,0,20334.0,1792363723.0,True,35.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051776535,2026-10-18T22:24:04.000Z,2026,1win Streamers League #3,10185617,Gorgc Team,10088088,stariy_bog Team,radiant,1748,1,38,12,7,0,2,0,2,0,20406.0,1792362244.0,True,24.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051776535,2026-10-18T22:24:04.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10185617,Gorgc Team,dire,1748,0,12,38,0,7,0,2,0,2,20406.0,1792362244.0,True,24.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051756153,2026-10-18T21:54:58.000Z,2026,NEXUS SERIES II,10027376,NEW GROWTH,10312452,Team Revenant,radiant,1870,1,46,11,7,1,2,0,4,0,20334.0,1792360498.0,True,21.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051756153,2026-10-18T21:54:58.000Z,2026,NEXUS SERIES II,10312452,Team Revenant,10027376,NEW GROWTH,dire,1870,0,11,46,1,7,0,2,0,4,20334.0,1792360498.0,True,21.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051744853,2026-10-18T21:43:11.000Z,2026,EPL Masters 2026,55,_PowerRangers,10301942,salamit,dire,1908,0,5,27,0,6,0,1,0,0,19944.0,1792359791.0,True,14.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051744853,2026-10-18T21:43:11.000Z,2026,EPL Masters 2026,10301942,salamit,55,_PowerRangers,radiant,1908,1,27,5,6,0,1,0,0,0,19944.0,1792359791.0,True,14.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051681832,2026-10-18T20:35:42.000Z,2026,NEXUS SERIES II,10108655,Amaru Gaming,9799036,TeamDk,radiant,2135,1,48,14,9,1,2,0,5,0,20334.0,1792355742.0,True,25.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9051681832,2026-10-18T20:35:42.000Z,2026,NEXUS SERIES II,9799036,TeamDk,10108655,Amaru Gaming,dire,2135,0,14,48,1,9,0,2,0,5,20334.0,1792355742.0,True,25.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9051682783,2026-10-18T20:34:35.000Z,2026,EPL Masters 2026,55,_PowerRangers,10301942,salamit,dire,2268,0,17,37,2,10,0,2,0,4,19944.0,1792355675.0,True,24.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051682783,2026-10-18T20:34:35.000Z,2026,EPL Masters 2026,10301942,salamit,55,_PowerRangers,radiant,2268,1,37,17,10,2,2,0,4,0,19944.0,1792355675.0,True,24.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051664847,2026-10-18T20:20:20.000Z,2026,1win Streamers League #3,10185617,Gorgc Team,10088088,stariy_bog Team,dire,5162,1,60,44,10,9,2,2,4,3,20406.0,1792354820.0,True,42.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051664847,2026-10-18T20:20:20.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10185617,Gorgc Team,radiant,5162,0,44,60,9,10,2,2,3,4,20406.0,1792354820.0,True,42.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051603938,2026-10-18T19:33:00.000Z,2026,NEXUS SERIES II,10108655,Amaru Gaming,9799036,TeamDk,radiant,2372,0,19,40,3,8,0,2,0,3,20334.0,1792351980.0,True,31.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051603938,2026-10-18T19:33:00.000Z,2026,NEXUS SERIES II,9799036,TeamDk,10108655,Amaru Gaming,dire,2372,1,40,19,8,3,2,0,3,0,20334.0,1792351980.0,True,31.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051573372,2026-10-18T19:14:43.000Z,2026,EPL Masters 2026,55,_PowerRangers,10301942,salamit,dire,2965,1,27,33,9,4,0,3,4,0,19944.0,1792350883.0,True,31.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051573372,2026-10-18T19:14:43.000Z,2026,EPL Masters 2026,10301942,salamit,55,_PowerRangers,radiant,2965,0,33,27,4,9,3,0,0,4,19944.0,1792350883.0,True,31.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051544982,2026-10-18T18:57:23.000Z,2026,1win Streamers League #3,10185617,Gorgc Team,10088088,stariy_bog Team,radiant,2829,1,52,32,11,2,1,1,6,0,20406.0,1792349843.0,True,29.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051544982,2026-10-18T18:57:23.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10185617,Gorgc Team,dire,2829,0,32,52,2,11,1,1,0,6,20406.0,1792349843.0,True,29.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051485058,2026-10-18T18:17:08.000Z,2026,NEXUS SERIES II,10108655,Amaru Gaming,9799036,TeamDk,dire,2907,1,54,28,11,2,2,0,6,0,20334.0,1792347428.0,True,28.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051485058,2026-10-18T18:17:08.000Z,2026,NEXUS SERIES II,9799036,TeamDk,10108655,Amaru Gaming,radiant,2907,0,28,54,2,11,0,2,0,6,20334.0,1792347428.0,True,28.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051454022,2026-10-18T18:07:13.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,55,_PowerRangers,radiant,2083,0,13,25,1,11,0,2,0,6,19944.0,1792346833.0,True,27.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051454022,2026-10-18T18:07:13.000Z,2026,EPL Masters 2026,55,_PowerRangers,5014799,Nemiga Gaming,dire,2083,1,25,13,11,1,2,0,6,0,19944.0,1792346833.0,True,27.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051420742,2026-10-18T17:39:07.000Z,2026,1win Streamers League #3,10185617,Gorgc Team,10088088,stariy_bog Team,radiant,2110,0,22,43,2,11,0,1,0,6,20406.0,1792345147.0,True,29.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051420742,2026-10-18T17:39:07.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10185617,Gorgc Team,dire,2110,1,43,22,11,2,1,0,6,0,20406.0,1792345147.0,True,29.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051367680,2026-10-18T17:04:43.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,55,_PowerRangers,radiant,2091,1,37,12,7,1,1,0,2,0,19944.0,1792343083.0,True,14.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051367680,2026-10-18T17:04:43.000Z,2026,EPL Masters 2026,55,_PowerRangers,5014799,Nemiga Gaming,dire,2091,0,12,37,1,7,0,1,0,2,19944.0,1792343083.0,True,14.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9051296105,2026-10-18T16:29:35.000Z,2026,1win Streamers League #3,10185617,Gorgc Team,10088088,stariy_bog Team,dire,2141,0,21,46,2,8,0,1,0,3,20406.0,1792340975.0,True,20.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9051296105,2026-10-18T16:29:35.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10185617,Gorgc Team,radiant,2141,1,46,21,8,2,1,0,3,0,20406.0,1792340975.0,True,20.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9051212593,2026-10-18T15:45:26.000Z,2026,EPL Masters 2026,5014799,Nemiga Gaming,55,_PowerRangers,dire,2919,0,16,35,3,11,0,3,0,6,19944.0,1792338326.0,True,31.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9051212593,2026-10-18T15:45:26.000Z,2026,EPL Masters 2026,55,_PowerRangers,5014799,Nemiga Gaming,radiant,2919,1,35,16,11,3,3,0,6,0,19944.0,1792338326.0,True,31.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9051038409,2026-10-18T14:05:53.000Z,2026,EPL Masters 2026,10282069,CyberHero,10212329,Team Synapse,radiant,3971,1,65,41,11,9,3,1,6,2,19944.0,1792332353.0,True,48.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9051038409,2026-10-18T14:05:53.000Z,2026,EPL Masters 2026,10212329,Team Synapse,10282069,CyberHero,dire,3971,0,41,65,9,11,1,3,2,6,19944.0,1792332353.0,True,48.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9050966034,2026-10-18T13:26:10.000Z,2026,1win Streamers League #3,10183262,ALOHADANCE Team,10088088,stariy_bog Team,dire,2496,0,21,39,3,11,0,1,0,6,20406.0,1792329970.0,True,29.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9050966034,2026-10-18T13:26:10.000Z,2026,1win Streamers League #3,10088088,stariy_bog Team,10183262,ALOHADANCE Team,radiant,2496,1,39,21,11,3,1,0,6,0,20406.0,1792329970.0,True,29.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9050959766,2026-10-18T13:20:48.000Z,2026,奇迹杯,0,Dire,0,Radiant,dire,2419,1,43,28,9,4,1,0,4,0,20411.0,1792329648.0,True,23.0,partial,"missing_team_id,placeholder_radiant_name,placeholder_dire_name",opendota_api,1.0,1.0,1.0,1.0
+9050959766,2026-10-18T13:20:48.000Z,2026,奇迹杯,0,Radiant,0,Dire,radiant,2419,0,28,43,4,9,0,1,0,4,20411.0,1792329648.0,True,23.0,partial,"missing_team_id,placeholder_radiant_name,placeholder_dire_name",opendota_api,0.0,0.0,0.0,1.0
 9050944233,2026-10-18T13:12:25.000Z,2026,EPL Masters 2026,10282069,CyberHero,10212329,Team Synapse,dire,1643,0,16,39,0,0,0,0,0,0,19944.0,1792329145.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
 9050944233,2026-10-18T13:12:25.000Z,2026,EPL Masters 2026,10212329,Team Synapse,10282069,CyberHero,radiant,1643,1,39,16,0,0,0,0,0,0,19944.0,1792329145.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
 9050851723,2026-10-18T12:20:20.000Z,2026,奇迹杯,0,Dire,0,Radiant,dire,2267,1,42,24,11,3,1,0,6,0,20411.0,1792326020.0,True,24.0,partial,"missing_team_id,placeholder_radiant_name,placeholder_dire_name",opendota_api,1.0,1.0,1.0,1.0
