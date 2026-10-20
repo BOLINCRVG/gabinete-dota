@@ -1,4 +1,14 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+9053787295,2026-10-20T13:04:14.000Z,2026,EPL Masters 2026,9878547,Poor Rangers,9928636,Team Lynx,dire,2569,0,28,21,3,11,0,1,0,6,19944.0,1792501454.0,True,32.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9053787295,2026-10-20T13:04:14.000Z,2026,EPL Masters 2026,9928636,Team Lynx,9878547,Poor Rangers,radiant,2569,1,21,28,11,3,1,0,6,0,19944.0,1792501454.0,True,32.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9053699308,2026-10-20T12:01:41.000Z,2026,EPL Masters 2026,9928636,Team Lynx,55,_PowerRangers,radiant,1939,1,36,11,9,2,1,0,4,0,19944.0,1792497701.0,True,23.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+9053699308,2026-10-20T12:01:41.000Z,2026,EPL Masters 2026,55,_PowerRangers,9928636,Team Lynx,dire,1939,0,11,36,2,9,0,1,0,4,19944.0,1792497701.0,True,23.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+9053589944,2026-10-20T10:11:11.000Z,2026,EPL Masters 2026,10149530,HULIGANI,55,_PowerRangers,radiant,2131,1,37,13,8,3,2,0,3,0,19944.0,1792491071.0,True,24.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9053589944,2026-10-20T10:11:11.000Z,2026,EPL Masters 2026,55,_PowerRangers,10149530,HULIGANI,dire,2131,0,13,37,3,8,0,2,0,3,19944.0,1792491071.0,True,24.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9053532473,2026-10-20T09:14:29.000Z,2026,EPL Masters 2026,10149530,HULIGANI,55,_PowerRangers,dire,1836,1,22,10,8,2,1,0,4,0,19944.0,1792487669.0,True,22.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9053532473,2026-10-20T09:14:29.000Z,2026,EPL Masters 2026,55,_PowerRangers,10149530,HULIGANI,radiant,1836,0,10,22,2,8,0,1,0,4,19944.0,1792487669.0,True,22.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9053242313,2026-10-20T00:43:42.000Z,2026,NEXUS SERIES II,10122515,PIZZA HOOK,10312452,Team Revenant,radiant,2592,0,41,50,6,9,2,0,2,2,20334.0,1792457022.0,True,29.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9053242313,2026-10-20T00:43:42.000Z,2026,NEXUS SERIES II,10312452,Team Revenant,10122515,PIZZA HOOK,dire,2592,1,50,41,9,6,0,2,2,2,20334.0,1792457022.0,True,29.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 9053205166,2026-10-19T23:21:11.000Z,2026,NEXUS SERIES II,10122515,PIZZA HOOK,10312452,Team Revenant,dire,2363,0,23,42,5,11,1,1,1,5,20334.0,1792452071.0,True,33.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 9053205166,2026-10-19T23:21:11.000Z,2026,NEXUS SERIES II,10312452,Team Revenant,10122515,PIZZA HOOK,radiant,2363,1,42,23,11,5,1,1,5,1,20334.0,1792452071.0,True,33.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 9053174983,2026-10-19T22:35:10.000Z,2026,NEXUS SERIES II,10122515,PIZZA HOOK,10312452,Team Revenant,radiant,1209,1,35,8,6,0,0,0,0,0,20334.0,1792449310.0,True,11.0,ok,,opendota_api,1.0,1.0,,1.0
