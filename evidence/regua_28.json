@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-10-21T01:02:42",
+ "gerado_em": "2026-10-21T15:46:24",
  "nota": 2.0,
  "por_area": {
   "dados": 2.5,
@@ -55,7 +55,7 @@
    "n": 7,
    "item": "codigo de feature testado",
    "nota": 0.5,
-   "evidencia": "test_meta_blend_features_core.py existe, mas so roda a mao"
+   "evidencia": "test_league_transfer_features_core.py existe, mas so roda a mao"
   },
   {
    "area": "modelo",
