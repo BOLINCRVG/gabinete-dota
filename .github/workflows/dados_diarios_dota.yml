@@ -58,6 +58,11 @@ jobs:
       - name: Regenerar CSVs no schema OracleElixir-like
         run: python dota_adapter.py
 
+      # CONTRATO DE DADOS (22/10/2026): CSV quebrado nao treina. Sai != 0 se
+      # falhar; o job para antes do treino e o modelo publicado fica o antigo.
+      - name: Contrato de dados (CSV do adaptador pode treinar?)
+        run: python tools/contrato_dados_dota.py
+
       - name: Retreinar o modelo
         run: |
           python -m mlcore.train_offline \
@@ -163,6 +168,7 @@ jobs:
             git checkout HEAD -- ml_artifact.json
           fi
           git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv evidence
+          git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"
           else

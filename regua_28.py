@@ -385,8 +385,9 @@ ITENS = [
     # e bloqueia o modelo se falhar. Onde a ferramenta nao existe (Dota), vale a
     # declaracao.
     ("dados", 1, "expectativas das features num esquema",
-     v_ferramenta_ou(("tools/run_phase1_data_contract.py",),
-                     ("run_phase1_data_contract.py",), declarado("dados", 1))),
+     v_ferramenta_ou(("tools/run_phase1_data_contract.py", "tools/contrato_dados_dota.py"),
+                     ("run_phase1_data_contract.py", "contrato_dados_dota.py"),
+                     declarado("dados", 1))),
     ("dados", 2, "todas as features sao beneficas",
      declarado("dados", 2)),
     ("dados", 3, "nenhuma feature custa demais",
