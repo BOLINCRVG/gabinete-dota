@@ -2,7 +2,7 @@
 # requirements do repo LoL (testadas juntas em 2026-07). O SETUP bat instala.
 streamlit==1.51.0
 pandas==2.3.3
-numpy==2.2.6
+numpy==2.5.4
 requests==2.32.5
 scikit-learn==1.7.2
 scipy==1.16.2
