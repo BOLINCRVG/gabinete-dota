@@ -477,7 +477,14 @@ def is_training_capable_env() -> bool:
     A Streamlit Cloud tem ~1GB de RAM: o treino lá trava ou é morto (era o
     'em retreino em background' que nunca terminava). Quem treina é o robô do
     GitHub Actions ou o PC local; a nuvem só CARREGA os modelos versionados no
-    git. Por isso o auto-retreino e o botão 'Retreinar agora' são escondidos lá."""
+    git. Por isso o auto-retreino e o botão 'Retreinar agora' são escondidos lá.
+
+    GABINETE_SEM_TREINO=1 (22/10/2026) desliga tambem: a suite abre o painel ao
+    vivo, e no Dota (modelos velhos) isso disparava o retreino de VERDADE na
+    pasta do repo -- rodar os testes reescrevia os 4 modelos de producao
+    (a divida D7, que voltou por outro caminho). tools/suite_na_esteira.py liga."""
+    if os.environ.get("GABINETE_SEM_TREINO") == "1":
+        return False
     return not is_streamlit_cloud()
 
 

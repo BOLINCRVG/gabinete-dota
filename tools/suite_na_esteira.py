@@ -60,7 +60,7 @@ def ler_resultado(saida: str) -> dict:
 def main() -> int:
     raiz = _raiz()
     t0 = time.time()
-    env = dict(os.environ, PYTHONIOENCODING="utf-8", GABINETE_VIEWER="0")
+    env = dict(os.environ, PYTHONIOENCODING="utf-8", GABINETE_VIEWER="0", GABINETE_SEM_TREINO="1")
     cp = subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "mlcore/tests", "-p", "test_*.py"],
                         capture_output=True, text=True, cwd=str(raiz), env=env,
                         encoding="utf-8", errors="replace")

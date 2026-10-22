@@ -189,6 +189,25 @@ class TestAmbienteNuvem(unittest.TestCase):
     """A nuvem (Streamlit Cloud, 1GB de RAM) nao pode treinar -> is_training_capable_env
     False la, e o painel esconde retreino. Detecta por HOME=/home/appuser ou /mount/src."""
 
+    def setUp(self):
+        # 22/10/2026: estes testes medem a DETECCAO de ambiente. O interruptor
+        # GABINETE_SEM_TREINO (que a suite liga) responde antes dela, entao
+        # aqui ele sai -- senao o teste mede o interruptor, nao o ambiente.
+        import os
+        self._sem_treino = os.environ.pop("GABINETE_SEM_TREINO", None)
+
+    def tearDown(self):
+        import os
+        if self._sem_treino is not None:
+            os.environ["GABINETE_SEM_TREINO"] = self._sem_treino
+
+    def test_interruptor_sem_treino_desliga(self):
+        """A suite abre o painel ao vivo; sem isto ela retreinava os modelos de
+        producao do Dota (divida D7 por outro caminho, achada em 22/10/2026)."""
+        import app_core.live_models_status_core as m
+        with unittest.mock.patch.object(m.os, "name", "nt"),              unittest.mock.patch.dict(m.os.environ, {"GABINETE_SEM_TREINO": "1"}, clear=False):
+            self.assertFalse(m.is_training_capable_env())
+
     def test_windows_nunca_e_nuvem(self):
         import app_core.live_models_status_core as m
         with unittest.mock.patch.object(m.os, "name", "nt"):
