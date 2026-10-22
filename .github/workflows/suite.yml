@@ -43,11 +43,18 @@ jobs:
         continue-on-error: true
         run: python tools/suite_na_esteira.py
 
+      # DESEMPENHO (22/10/2026): tempo de carregar e prever o modelo + duracao da
+      # suite, com historico; regride se passar de 2x a mediana recente.
+      - name: Medir desempenho computacional
+        id: desempenho
+        continue-on-error: true
+        run: python tools/medir_desempenho.py
+
       - name: Publicar o resultado
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f evidence/suite_esteira.json
+          git add -f evidence/suite_esteira.json evidence/desempenho.json
           if git diff --cached --quiet; then
             echo "resultado igual - nada a commitar"
           else
@@ -63,4 +70,10 @@ jobs:
         if: steps.suite.outcome == 'failure'
         run: |
           echo "::error::A suite inteira FALHOU. Ver evidence/suite_esteira.json (primeiras_falhas)."
+          exit 1
+
+      - name: Falhar alto se o desempenho regrediu
+        if: steps.desempenho.outcome == 'failure'
+        run: |
+          echo "::error::Desempenho REGREDIU (tempo > 2x a mediana recente). Ver evidence/desempenho.json."
           exit 1

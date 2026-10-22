@@ -188,6 +188,74 @@ def v_suite_na_esteira(raiz: Path):
     return 1.0, f"suite inteira verde na esteira ({yml}): {d.get('testes')} testes, {idade}d"
 
 
+def v_ensaio_na_suite(ferramenta: str, teste: str, descricao: str):
+    """Ponto inteiro: a ferramenta existe, o TESTE que a exercita existe, e a
+    suite (que o robo roda todo dia) esta verde e recente. So a ferramenta:
+    meio ponto. (22/10/2026)"""
+    def verificar(raiz: Path):
+        tem_f = (raiz / ferramenta).exists()
+        tem_t = (raiz / "mlcore" / "tests" / teste).exists()
+        if tem_f and tem_t:
+            nota, txt = v_suite_na_esteira(raiz)
+            if nota >= 1.0:
+                return 1.0, f"{descricao} ({ferramenta} + {teste}, na suite verde do robo)"
+            return 0.5, f"{descricao}: existe, mas a suite nao esta verde no robo ({txt})"
+        if tem_f:
+            return 0.5, f"{ferramenta} existe, mas nenhum teste o roda sozinho"
+        return 0.0, f"{descricao}: nao existe"
+    return verificar
+
+
+def v_desempenho(raiz: Path):
+    """Desempenho computacional medido sozinho e recente? (22/10/2026) -- o robo
+    roda tools/medir_desempenho.py e grava evidence/desempenho.json; vale ponto
+    inteiro com medicao de ate 3 dias."""
+    yml = _na_esteira(raiz, "tools/medir_desempenho.py")
+    if not yml:
+        return 0.0, "tempo de treino e de resposta nao sao medidos em lugar nenhum"
+    try:
+        d = json.loads((raiz / "evidence" / "desempenho.json").read_text(encoding="utf-8"))
+        idade = (datetime.now() - datetime.fromisoformat(str(d["gerado_em"]))).days
+    except (OSError, ValueError, KeyError, TypeError):
+        return 0.5, f"{yml} mede, mas evidence/desempenho.json ainda nao foi gravado"
+    if idade > 3:
+        return 0.5, f"{yml} mede, mas a ultima medicao tem {idade} dias"
+    u = d.get("ultimo") or {}
+    return 1.0, (f"tempo medido no robo ({yml}): carregar {u.get('carregar_s')}s, "
+                 f"previsoes {u.get('prever_s')}s, suite {u.get('suite_s')}s")
+
+
+def v_dependabot(raiz: Path):
+    """Mudanca de dependencia notifica? (22/10/2026) -- .github/dependabot.yml vigiando
+    o pip. O GitHub roda sozinho e avisa por pull request: e automatico."""
+    arq = raiz / ".github" / "dependabot.yml"
+    try:
+        txt = arq.read_text(encoding="utf-8")
+    except OSError:
+        return 0.0, "nao ha dependabot nem renovate em .github/; nada notifica"
+    if 'package-ecosystem: "pip"' in txt or "package-ecosystem: pip" in txt:
+        return 1.0, "dependabot.yml vigia o pip (e as actions) toda semana"
+    return 0.5, "dependabot.yml existe, mas nao vigia o pip"
+
+
+def v_reversao(raiz: Path):
+    """Da para voltar atras, e isso e ENSAIADO sozinho? (22/10/2026)
+
+    Ponto inteiro: tools/reverter_modelo.py + o ensaio (test_reverter_modelo.py)
+    rodando na suite verde do robo. So a ferramenta antiga (rollback_baseline,
+    que le copias fora do git) ou a nova sem ensaio: meio ponto."""
+    tem_nova = (raiz / "tools" / "reverter_modelo.py").exists()
+    tem_ensaio = (raiz / "mlcore" / "tests" / "test_reverter_modelo.py").exists()
+    if tem_nova and tem_ensaio:
+        nota, txt = v_suite_na_esteira(raiz)
+        if nota >= 1.0:
+            return 1.0, "reverter_modelo.py + ensaio de reversao na suite verde do robo"
+        return 0.5, f"ferramenta e ensaio existem, mas a suite nao esta verde no robo: {txt}"
+    if tem_nova or _existe(raiz, "tools/rollback_baseline.py", "rollback_baseline.py"):
+        return 0.5, "ferramenta de reversao existe, mas sem ensaio automatico"
+    return 0.0, "ferramenta nao existe"
+
+
 def v_ferramenta(*, arquivos: tuple[str, ...], esteira: tuple[str, ...] = ()):
     """Existe a ferramenta? Roda sozinha? -> 1,0. So a mao? -> 0,5. Nao existe? 0."""
     def verificar(raiz: Path):
@@ -355,10 +423,10 @@ ITENS = [
      declarado("infra", 5)),
     ("infra", 6, "canario antes de servir",
      declarado("infra", 6)),
-    ("infra", 7, "da para reverter", v_ferramenta(arquivos=("tools/rollback_baseline.py", "rollback_baseline.py"))),
+    ("infra", 7, "da para reverter", v_reversao),
     # ---- MONITORAMENTO ----
     ("monitor", 1, "mudanca de dependencia notifica",
-     declarado("monitor", 1)),
+     v_dependabot),
     ("monitor", 2, "invariantes valem na entrada",
      declarado("monitor", 2)),
     ("monitor", 3, "treino e servico NAO divergem",
@@ -366,9 +434,10 @@ ITENS = [
     ("monitor", 4, "modelo nao esta velho demais",
      v_ferramenta(arquivos=("tools/frescor.py", "frescor.py"), esteira=("frescor.py",))),
     ("monitor", 5, "numericamente estavel",
-     declarado("monitor", 5)),
+     v_ensaio_na_suite("tools/vigia_numerico.py", "test_vigia_numerico.py",
+                       "nenhum NaN/infinito nos arquivos do modelo")),
     ("monitor", 6, "desempenho computacional nao regrediu",
-     declarado("monitor", 6)),
+     v_desempenho),
     ("monitor", 7, "qualidade de previsao nao regrediu",
      v_ferramenta(arquivos=("tools/ml_fusion_scorecard.py", "ml_fusion_scorecard.py"), esteira=("ml_fusion_scorecard.py",))),
 ]

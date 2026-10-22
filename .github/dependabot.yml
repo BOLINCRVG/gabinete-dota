@@ -1,0 +1,21 @@
+# AVISO DE DEPENDENCIA NOVA (22/10/2026) -- item "mudanca de dependencia notifica"
+# da regua das 28, que estava em zero nos dois repos.
+#
+# O Dependabot so AVISA: abre um pull request por atualizacao, e nada muda no
+# app sem alguem aceitar. Isso respeita a regra do requirements.txt ("ESPELHO do
+# venv local: ao atualizar pacote local, atualizar aqui junto").
+# FONTE (aberta em 22/10/2026): valores `pip` e `github-actions` na tabela de
+# package-ecosystem de
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
