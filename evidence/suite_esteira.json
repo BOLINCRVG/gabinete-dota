@@ -1,13 +1,13 @@
 {
- "testes": 5694,
- "segundos": 99.267,
+ "testes": 5695,
+ "segundos": 40.292,
  "status": "FAILED",
  "falhas": 3,
  "erros": 6,
  "pulados": 230,
  "ok": false,
- "gerado_em": "2026-10-22T15:44:27",
- "duracao_total_s": 103.1,
+ "gerado_em": "2026-10-22T15:50:11",
+ "duracao_total_s": 43.5,
  "primeiras_falhas": [
   "test_ml_quality_check (unittest.loader._FailedTest.test_ml_quality_check)",
   "test_model_health_report (unittest.loader._FailedTest.test_model_health_report)",
