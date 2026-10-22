@@ -1,0 +1,66 @@
+# SUITE INTEIRA NA ESTEIRA (22/10/2026)
+#
+# Ate aqui a suite so rodava a mao; na esteira rodavam 3 modulos-guarda. A nota
+# de Codigo travava em 3,0 porque a suite falhava no robo (PyYAML fora do
+# requirements) e ninguem via. O resultado vira evidence/suite_esteira.json,
+# versionado, porque o log do Actions nao e lido de fora.
+# Fonte e detalhes em tools/suite_na_esteira.py.
+name: Suite inteira
+
+on:
+  schedule:
+    - cron: "47 4 * * *"   # todo dia, longe dos minutos disputados
+  push:
+    paths:
+      - "**.py"
+      - "requirements.txt"
+      - ".github/workflows/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: suite-inteira
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install --quiet -r requirements.txt
+
+      - name: Rodar a suite inteira
+        id: suite
+        continue-on-error: true
+        run: python tools/suite_na_esteira.py
+
+      - name: Publicar o resultado
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f evidence/suite_esteira.json
+          if git diff --cached --quiet; then
+            echo "resultado igual - nada a commitar"
+          else
+            git commit -m "Robo: suite inteira rodada na esteira"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
+
+      - name: Falhar alto se a suite falhou
+        if: steps.suite.outcome == 'failure'
+        run: |
+          echo "::error::A suite inteira FALHOU. Ver evidence/suite_esteira.json (primeiras_falhas)."
+          exit 1

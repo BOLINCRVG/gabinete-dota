@@ -165,6 +165,29 @@ def v_na_esteira(*trechos: str, descricao: str):
     return verificar
 
 
+def v_suite_na_esteira(raiz: Path):
+    """A suite INTEIRA roda na esteira E deu verde ha pouco? (22/10/2026)
+
+    Casar texto no YAML nao prova que o passo roda (armadilha do CLAUDE.md).
+    A prova e o que o robo GRAVOU: evidence/suite_esteira.json, verde e com
+    no maximo 3 dias. Workflow sem resultado recente nao ganha ponto."""
+    yml = _na_esteira(raiz, "tools/suite_na_esteira.py")
+    if not yml:
+        return 0.0, "a suite inteira nao roda em esteira nenhuma"
+    arq = raiz / "evidence" / "suite_esteira.json"
+    try:
+        d = json.loads(arq.read_text(encoding="utf-8"))
+        idade = (datetime.now() - datetime.fromisoformat(str(d["gerado_em"]))).days
+    except (OSError, ValueError, KeyError, TypeError):
+        return 0.0, f"{yml} existe, mas evidence/suite_esteira.json nao foi gravado"
+    if not d.get("ok"):
+        return 0.0, (f"{yml}: a suite FALHOU na ultima rodada ({d.get('falhas')} falhas, "
+                     f"{d.get('erros')} erros)")
+    if idade > 3:
+        return 0.0, f"{yml}: ultimo resultado verde tem {idade} dias (limite 3)"
+    return 1.0, f"suite inteira verde na esteira ({yml}): {d.get('testes')} testes, {idade}d"
+
+
 def v_ferramenta(*, arquivos: tuple[str, ...], esteira: tuple[str, ...] = ()):
     """Existe a ferramenta? Roda sozinha? -> 1,0. So a mao? -> 0,5. Nao existe? 0."""
     def verificar(raiz: Path):
@@ -294,9 +317,13 @@ ITENS = [
      declarado("dados", 5)),
     ("dados", 6, "feature nova entra rapido",
      declarado("dados", 6)),
+    # 22/10/2026: a suite INTEIRA passou a rodar na esteira (suite.yml ->
+    # tools/suite_na_esteira.py, que grava evidence/suite_esteira.json). Os
+    # testes destes itens fazem parte dela, entao "roda sozinho" passa a valer.
     ("dados", 7, "codigo de feature testado",
      v_ferramenta(arquivos=("mlcore/tests/test_*features*.py",
-                            "mlcore/tests/test_*data*.py"))),
+                            "mlcore/tests/test_*data*.py"),
+                  esteira=("tools/suite_na_esteira.py",))),
     # ---- MODELO ----
     ("modelo", 1, "especificacao revisada e versionada",
      declarado("modelo", 1)),
@@ -317,11 +344,10 @@ ITENS = [
     ("infra", 1, "treino reproduzivel",
      declarado("infra", 1)),
     ("infra", 2, "especificacao com teste unitario",
-     v_ferramenta(arquivos=("mlcore/tests/test_artifact.py",))),
+     v_ferramenta(arquivos=("mlcore/tests/test_artifact.py",),
+                  esteira=("tools/suite_na_esteira.py",))),
     ("infra", 3, "pipeline com teste de integracao",
-     v_na_esteira("test_live_artifact_complete",
-                  descricao="3 modulos-guarda (artifact completo, regressao de odds) rodam "
-                            "antes de publicar — a suite INTEIRA nao roda em esteira nenhuma")),
+     v_suite_na_esteira),
     ("infra", 4, "qualidade validada ANTES de servir",
      v_na_esteira("Guardas pos-retreino", "Guardas pós-retreino",
                   descricao="guarda que barra modelo quebrado antes de publicar")),
