@@ -9,6 +9,6 @@ scipy==1.16.2
 # live/in-game ML (mesma nota do LoL: pre-jogo roda sem; necessario p/ live)
 lightgbm==4.6.0
 python-dateutil==2.9.0.post0
-pytz==2025.2
+pytz==2026.5
 tzdata==2025.2
 PyYAML==6.0.3
