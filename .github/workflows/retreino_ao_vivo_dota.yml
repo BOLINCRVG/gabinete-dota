@@ -1,0 +1,74 @@
+# ROBO DE RETREINO AO VIVO DO DOTA (22/10/2026)
+#
+# Os modelos ao vivo do Dota (estado da partida -> vitoria, minutos 10/15/20/25)
+# estavam parados desde 26/08. O codigo diz "quem treina e o robo do GitHub
+# Actions ou o PC local" (live_models_status_core.is_training_capable_env), mas
+# no Dota esse robo NAO EXISTIA -- o LoL tem retreino_ao_vivo.yml desde 23/07.
+# Sobrava o auto-retreino do painel ao vivo, que so roda quando alguem abre o app
+# do Dota no PC. A nuvem nao treina (1GB de RAM).
+#
+# Mesmo comando que o app usa (build_retrain_command): run_phase6_live_dota.py,
+# que treina E MEDE contra a previsao pre-jogo e so salva o minuto que ganha.
+# A guarda abaixo exige os 4 minutos carregando antes de commitar.
+name: Retreino ao vivo do Dota (semanal)
+
+on:
+  schedule:
+    - cron: "50 6 * * 1"   # segunda de manha, longe das janelas do robo diario
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retreino-ao-vivo-dota
+  cancel-in-progress: false
+
+jobs:
+  retreino_ao_vivo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install --quiet -r requirements.txt
+
+      - name: Retreinar os modelos ao vivo (estado -> vitoria)
+        run: python run_phase6_live_dota.py --save-models-dir live_models
+
+      - name: Guarda - os 4 minutos carregam (nunca commitar quebrado)
+        run: |
+          python - <<'PY'
+          import sys
+          from app_core.live_state_runtime_core import clear_model_cache, load_live_state_models
+          from app_core.live_models_status_core import mark_auto_retrain_attempt
+          clear_model_cache()
+          m = load_live_state_models("live_models")
+          if sorted(m) != [10, 15, 20, 25]:
+              print(f"GUARDA FALHOU: carregaram so os minutos {sorted(m)}"); sys.exit(1)
+          mark_auto_retrain_attempt("live_models")
+          print("guarda ok: 4 modelos ao vivo carregam; carimbo de retreino atualizado")
+          PY
+
+      - name: Commitar modelos ao vivo atualizados
+        run: |
+          git config user.name "Robo Gabinete Dota"
+          git config user.email "robo@gabinete.local"
+          git add live_models/ FASE6_LIVE_DOTA.json
+          git reset -q -- live_models/retrain.log live_models/retrain.pid 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "modelos ao vivo nao mudaram - nada a commitar"
+          else
+            git commit -m "Robo: modelos ao vivo do Dota atualizados (retreino semanal)"
+            for i in 1 2 3; do
+              if git push; then exit 0; fi
+              echo "push recusado (concorrencia) - rebase e retry $i/3"
+              git pull --rebase || exit 1
+            done
+            git push
+          fi
