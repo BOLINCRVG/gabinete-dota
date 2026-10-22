@@ -270,6 +270,14 @@ def v_ferramenta(*, arquivos: tuple[str, ...], esteira: tuple[str, ...] = ()):
     return verificar
 
 
+def v_ferramenta_ou(arquivos: tuple[str, ...], esteira: tuple[str, ...], senao):
+    """Ferramenta na esteira quando ela existe neste repo; senao, o verificador reserva."""
+    auto = v_ferramenta(arquivos=arquivos, esteira=esteira)
+    def verificar(raiz: Path):
+        return auto(raiz) if _existe(raiz, *arquivos) else senao(raiz)
+    return verificar
+
+
 VALIDADE_DECLARACAO_DIAS = 90
 ARQ_DECLARACOES = "evidence/regua_28_declaracoes.json"
 
@@ -373,8 +381,12 @@ def v_evidencia(nome: str, cadencia_dias: float):
 # --------------------------------------------------------------------------
 ITENS = [
     # ---- DADOS ----
+    # 22/10/2026: no LoL o contrato de dados roda no robo antes do incremental
+    # e bloqueia o modelo se falhar. Onde a ferramenta nao existe (Dota), vale a
+    # declaracao.
     ("dados", 1, "expectativas das features num esquema",
-     declarado("dados", 1)),
+     v_ferramenta_ou(("tools/run_phase1_data_contract.py",),
+                     ("run_phase1_data_contract.py",), declarado("dados", 1))),
     ("dados", 2, "todas as features sao beneficas",
      declarado("dados", 2)),
     ("dados", 3, "nenhuma feature custa demais",
