@@ -1,6 +1,6 @@
 # Dependencias do Gabinete Dota (clone do app do LoL) — versoes espelhadas do
 # requirements do repo LoL (testadas juntas em 2026-07). O SETUP bat instala.
-streamlit==1.51.0
+streamlit==1.66.0
 pandas==2.3.3
 numpy==2.2.6
 requests==2.32.5
