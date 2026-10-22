@@ -1,0 +1,22 @@
+{
+ "testes": 5694,
+ "segundos": 99.267,
+ "status": "FAILED",
+ "falhas": 3,
+ "erros": 6,
+ "pulados": 230,
+ "ok": false,
+ "gerado_em": "2026-10-22T15:44:27",
+ "duracao_total_s": 103.1,
+ "primeiras_falhas": [
+  "test_ml_quality_check (unittest.loader._FailedTest.test_ml_quality_check)",
+  "test_model_health_report (unittest.loader._FailedTest.test_model_health_report)",
+  "test_nota_honesta (unittest.loader._FailedTest.test_nota_honesta)",
+  "test_odds_delta_guardrail (unittest.loader._FailedTest.test_odds_delta_guardrail)",
+  "test_portao_retreino (unittest.loader._FailedTest.test_portao_retreino)",
+  "test_regua_pinnacle (unittest.loader._FailedTest.test_regua_pinnacle)",
+  "test_apply_reset_and_resolve_bootstrap_selection (test_csv_bootstrap_runtime_core.TestCSVBootstrapRuntimeCore.test_apply_reset_and_resolve_bootstrap_selection)",
+  "test_build_fit_params_runtime_paths (test_maintenance_runtime_core.MaintenanceRuntimeCoreTests.test_build_fit_params_runtime_paths)",
+  "test_resolve_csv_path_directory_picks_newest_csv (test_update_incremental.UpdateIncrementalTests.test_resolve_csv_path_directory_picks_newest_csv)"
+ ]
+}
