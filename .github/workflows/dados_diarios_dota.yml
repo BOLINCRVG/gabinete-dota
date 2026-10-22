@@ -98,8 +98,24 @@ jobs:
       # com cara de medicao. continue-on-error: a nota nao pode derrubar a
       # esteira de dados.
       - name: Recalcular a nota por torneio (o aviso da tela)
+        id: nota
         continue-on-error: true
         run: python dota_scorecard.py
+
+      # GUARDAS POS-RETREINO -- QUALIDADE ANTES DE PUBLICAR (22/10/2026). A guarda
+      # acima so confere que o modelo carrega e preve. Esta confere se ele esta
+      # BOM: a nota recem-medida contra a publicada (pior que moeda, queda >
+      # 0,020 ou jogos medidos caindo >10% reprovam). Reprovou: os DADOS saem,
+      # o MODELO anterior fica no ar (passo de commit abaixo). Ver a ferramenta.
+      - name: Guardas pós-retreino (qualidade antes de publicar o modelo)
+        id: portao
+        continue-on-error: true
+        run: |
+          if [ "${{ steps.nota.outcome }}" = "success" ]; then
+            python tools/portao_qualidade_dota.py
+          else
+            python tools/portao_qualidade_dota.py --nao-medida
+          fi
 
       # LIVRO-CAIXA DO SILENCIO: lista o que esta sendo tolerado, com IDADE.
       # NAO bloqueia (severidade em camadas: derrubar a esteira de DADO por
@@ -142,6 +158,10 @@ jobs:
         run: |
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
+          if [ "${{ steps.portao.outcome }}" != "success" ]; then
+            echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
+            git checkout HEAD -- ml_artifact.json
+          fi
           git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv evidence
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"
