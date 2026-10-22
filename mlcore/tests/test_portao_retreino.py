@@ -16,7 +16,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.portao_retreino_completo import conferir
+try:
+    from tools.portao_retreino_completo import conferir
+except ImportError as _sem_ferramenta:  # ferramenta so do LoL: no Dota o modulo e pulado
+    import unittest as _u
+    raise _u.SkipTest("tools.portao_retreino_completo nao existe neste repositorio: " + str(_sem_ferramenta))
 
 
 def _modelo_bom() -> dict:

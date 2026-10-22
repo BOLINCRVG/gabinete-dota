@@ -49,7 +49,11 @@ import unittest
 
 import pandas as pd
 
-from tools.nota_honesta import HistoricoPorTime, nota_de, pontuar_janela_prequencial
+try:
+    from tools.nota_honesta import HistoricoPorTime, nota_de, pontuar_janela_prequencial
+except ImportError as _sem_ferramenta:  # ferramenta so do LoL: no Dota o modulo e pulado
+    import unittest as _u
+    raise _u.SkipTest("tools.nota_honesta nao existe neste repositorio: " + str(_sem_ferramenta))
 
 
 def _jogos(datas, time="A"):

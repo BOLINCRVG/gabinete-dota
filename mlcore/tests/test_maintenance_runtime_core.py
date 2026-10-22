@@ -160,9 +160,10 @@ class MaintenanceRuntimeCoreTests(unittest.TestCase):
     def test_build_fit_params_runtime_paths(self) -> None:
         got = build_fit_params_runtime_paths(app_root="C:/repo/app", scope="manual quick")
         self.assertEqual(got["run_label"], "runtime_manual_quick")
-        self.assertTrue(got["run_root"].endswith("ops\\runtime_fit_params\\manual_quick"))
-        self.assertTrue(got["progress_path"].endswith("ops\\runtime_fit_params\\manual_quick\\fit_ml_params_progress.json"))
-        self.assertTrue(got["checkpoint_dir"].endswith("ops\\runtime_fit_params\\manual_quick\\checkpoints"))
+        _base = str(Path("ops") / "runtime_fit_params" / "manual_quick")  # separador do sistema
+        self.assertTrue(got["run_root"].endswith(_base))
+        self.assertTrue(got["progress_path"].endswith(str(Path(_base) / "fit_ml_params_progress.json")))
+        self.assertTrue(got["checkpoint_dir"].endswith(str(Path(_base) / "checkpoints")))
 
     def test_resolve_train_offline_reuse_params(self) -> None:
         class _Params:

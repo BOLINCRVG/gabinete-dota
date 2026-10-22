@@ -13,7 +13,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.regua_pinnacle_comum import resumo
+try:
+    from tools.regua_pinnacle_comum import resumo
+except ImportError as _sem_ferramenta:  # ferramenta so do LoL: no Dota o modulo e pulado
+    import unittest as _u
+    raise _u.SkipTest("tools.regua_pinnacle_comum nao existe neste repositorio: " + str(_sem_ferramenta))
 try:
     from mlcore.tests._repo import so_no_lol
 except ImportError:  # rodado de dentro da pasta de testes

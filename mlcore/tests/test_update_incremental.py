@@ -37,8 +37,12 @@ class UpdateIncrementalTests(unittest.TestCase):
             newer = root / "newer.csv"
             older.write_text("a", encoding="utf-8")
             newer.write_text("b", encoding="utf-8")
-            older.touch()
-            newer.touch()
+            # datas EXPLICITAS: criados no mesmo instante, no Linux os dois
+            # podem ter a mesma data e o "mais novo" vira sorteio
+            import os, time
+            agora = time.time()
+            os.utime(older, (agora - 100, agora - 100))
+            os.utime(newer, (agora, agora))
             self.assertEqual(_resolve_csv_path(root), newer)
 
     def test_safe_write_json_creates_backup(self) -> None:

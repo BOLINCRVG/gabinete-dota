@@ -72,7 +72,8 @@ class TestCSVBootstrapRuntimeCore(unittest.TestCase):
         daily, hist, art = resolve_ml_paths(ss, Path("C:/tmp"))
         self.assertEqual(daily, "daily.csv")
         self.assertEqual(hist, ["2014.csv", "2015.csv"])
-        self.assertEqual(art, "C:\\tmp\\ml_artifact.json")
+        # o separador e o do sistema: no robo (Linux) nao ha barra invertida
+        self.assertEqual(art, str(Path("C:/tmp") / "ml_artifact.json"))
 
         reset_bootstrap_selection(ss, show_selector=True)
         self.assertFalse(ss["cfg_auto_paths"])
