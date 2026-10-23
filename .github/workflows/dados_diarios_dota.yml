@@ -188,7 +188,7 @@ jobs:
             for i in 1 2 3; do
               if git push; then exit 0; fi
               echo "push recusado (concorrência) — rebase e retry $i/3"
-              git pull --rebase || exit 1
+              git pull --rebase --autostash || exit 1
             done
             git push
           fi
