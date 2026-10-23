@@ -240,58 +240,45 @@ def _vant(x: Any) -> str:
 def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
                                 confronto: Mapping[str, Any],
                                 resolver: Optional[Callable[[str], str]]) -> None:
-    """O bloco do topo da aba: o confronto aberto, nas tres fontes."""
-    st.markdown("#### Vencedor: modelo x Pinnacle x Polymarket")
+    """O vencedor do confronto aberto: Modelo | Pinnacle | Polymarket, no
+    desenho da Linha justa (23/10/2026: "siga a tematica do modelo + da aba")."""
+    from app_core.modelo_mercado_html_core import html_vencedor, pagina
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
-    poly_doc = carregar_polymarket(raiz)
     if not (time_a and time_b):
-        st.caption("Abra um confronto (Time 1 x Time 2) para comparar o vencedor nas tres fontes.")
-    else:
-        try:
-            bo = int(confronto.get("bo") or 1)
-        except (TypeError, ValueError):
-            bo = 1
-        p_modelo = confronto.get("p_map") if bo == 1 else confronto.get("p_series")
-        poly = achar_na_polymarket(poly_doc.get("partidas") or [], time_a, time_b, resolver)
-        if poly is not None and int(poly.get("bo") or bo) != bo:
-            st.caption(f"A Polymarket tem este confronto em BO{poly.get('bo')} e a tela esta em BO{bo}: ficou de fora.")
-            poly = None
-        pin_a, pin_b = odds_pinnacle_do_confronto(odds, time_a, time_b, resolver, bo)
-        r = comparar_vencedor(p_modelo, pin_odd_a=pin_a, pin_odd_b=pin_b, poly=poly)
-        if not r["linhas"]:
-            st.info(r.get("motivo") or "Sem numeros para comparar.")
-        else:
-            nomes = {"a": time_a, "b": time_b}
-            tabela = [{
-                "Time": nomes[l["lado"]],
-                "Modelo": _pct(l["p_modelo"]),
-                "Pinnacle (sem margem)": _pct(l["p_pinnacle"]),
-                "Polymarket": _pct(l["p_polymarket"]),
-                "Vantagem x Pinnacle": _vant(l["vant_pinnacle"]),
-                "Vantagem x Polymarket": _vant(l["vant_polymarket"]),
-                "Polymarket x Pinnacle": _vant(l["vant_entre_casas"]),
-                "Selo": ROTULO_SELO.get(l["selo"], ""),
-            } for l in r["linhas"]]
-            st.dataframe(tabela, hide_index=True, width="stretch")
-            for l in r["linhas"]:
-                if l["selo"] in ("forte", "entre casas"):
-                    st.success(f"{nomes[l['lado']]}: {ROTULO_SELO[l['selo']]}.")
-                elif l["selo"] == "suspeito":
-                    st.warning(f"{nomes[l['lado']]}: {ROTULO_SELO['suspeito']}.")
-            if r.get("casas_discordam"):
-                st.info("As duas casas discordam entre si em {:.0f} pontos: mercado dividido."
-                        .format(100 * r["diferenca_casas"]))
-            avisos = []
-            if pin_a is None:
-                avisos.append("Pinnacle sem este confronto (ou em outro BO)")
-            if poly is None:
-                avisos.append("Polymarket sem este confronto" + (
-                    f" ({poly_doc['motivo']})" if poly_doc.get("motivo") else ""))
-            elif not polymarket_vale(poly):
-                avisos.append("Polymarket com pouco dinheiro ou spread largo neste jogo: referencia fraca")
-            if avisos:
-                st.caption(" · ".join(avisos) + ".")
+        st.caption("Abra um confronto (Time 1 x Time 2) para ver o vencedor nas tres fontes.")
+        return
+    poly_doc = carregar_polymarket(raiz)
+    try:
+        bo = int(confronto.get("bo") or 1)
+    except (TypeError, ValueError):
+        bo = 1
+    p_modelo = confronto.get("p_map") if bo == 1 else confronto.get("p_series")
+    faltando = []
+    poly = achar_na_polymarket(poly_doc.get("partidas") or [], time_a, time_b, resolver)
+    if poly is not None and int(poly.get("bo") or bo) != bo:
+        faltando.append(f"Polymarket tem este confronto em BO{poly.get('bo')}, a tela esta em BO{bo}")
+        poly = None
+    pin_a, pin_b = odds_pinnacle_do_confronto(odds, time_a, time_b, resolver, bo)
+    r = comparar_vencedor(p_modelo, pin_odd_a=pin_a, pin_odd_b=pin_b, poly=poly)
+    if not r["linhas"]:
+        st.info(r.get("motivo") or "Sem numeros para comparar.")
+        return
+    if pin_a is None:
+        faltando.append("Pinnacle sem este confronto (ou em outro BO)")
+    if poly is None and not any("Polymarket" in f for f in faltando):
+        faltando.append("Polymarket sem este confronto" + (
+            f" ({poly_doc['motivo']})" if poly_doc.get("motivo") else ""))
+    elif poly is not None and not polymarket_vale(poly):
+        faltando.append("Polymarket com pouco dinheiro ou spread largo neste jogo: referencia fraca")
+    html = html_vencedor(r, time_a=time_a, time_b=time_b, bo=bo,
+                         rotulos=ROTULO_SELO, fontes_faltando=faltando)
+    extras = html.count('class="selo') + html.count('class="nota"')
+    try:
+        import streamlit.components.v1 as _componentes
+        _componentes.html(pagina(html), height=190 + 34 * extras, scrolling=False)
+    except Exception:
+        st.markdown(html, unsafe_allow_html=True)
 
 
 def render_polymarket_lista(st: Any, *, raiz: Path) -> None:

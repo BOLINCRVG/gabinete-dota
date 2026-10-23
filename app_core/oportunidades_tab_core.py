@@ -91,14 +91,6 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     completo = [x for x in (r.get("mercado_completo") or []) if isinstance(x, Mapping)]
     painel = painel_do_dia(completo)
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Jogos na Pinnacle", painel["jogos"])
-    c2.metric("Linhas com valor", painel["linhas_com_valor"],
-              help="Vantagem do modelo de 1% a 20% contra a odd que a Pinnacle paga.")
-    c3.metric("Odds da Pinnacle", "-" if sem_odds else _idade_curta(odds.get("idade_horas")),
-              help="Coletadas pelo robo de 3 em 3 horas.")
-    c4.metric("Polymarket", "-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
-              help="Coletada pelo robo de hora em hora (bloqueada no Brasil; o robo roda nos EUA).")
     if sem_odds:
         st.info("Sem odds da Pinnacle para comparar: {}.".format(odds["motivo"]))
     elif odds.get("velha"):
@@ -106,20 +98,28 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                    .format(_fmt(odds.get("idade_horas"), 1, " horas")))
     _avisar_bloqueio(st, raiz)
 
-    # ---- 2. ONDE ESTA O VALOR HOJE -----------------------------------------
-    if completo:
-        st.markdown("### Onde esta o valor hoje")
-        top = linhas_com_valor(completo, incluir_suspeitas=False)[:15]
-        if top:
+    # ---- 2. AS MELHORES APOSTAS DO DIA (no tema da Linha justa) --------------
+    from app_core.modelo_mercado_core import aposta as _aposta
+    from app_core.modelo_mercado_html_core import html_destaques, html_status, pagina
+    top = linhas_com_valor(completo, incluir_suspeitas=False)
+    st.markdown("### Melhores apostas do dia")
+    corpo = html_status(jogos=painel["jogos"], com_valor=painel["linhas_com_valor"],
+                        idade_pin="-" if sem_odds else _idade_curta(odds.get("idade_horas")),
+                        idade_poly="-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
+                        pin_velha=bool(odds.get("velha")))
+    corpo += html_destaques(top, _aposta, limite=8)
+    n_cards = min(len(top), 8)
+    try:
+        import streamlit.components.v1 as _componentes
+        _componentes.html(pagina(corpo), height=50 + 165 * max(1, (n_cards + 3) // 4), scrolling=True)
+    except Exception:
+        st.markdown(corpo, unsafe_allow_html=True)
+    if len(top) > 8:
+        with st.expander("Ver todas as {} apostas com valor".format(len(top))):
             st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
-            st.caption("Todas as linhas de todos os jogos, da maior vantagem para a menor "
-                       "(ate 15). Vantagem acima de 20% fica de fora daqui: e mais provavel "
-                       "o modelo errar -- ela aparece no jogo, marcada 'desconfie'.")
-        else:
-            st.caption("Nenhuma linha com vantagem entre 1% e 20% nesta leitura.")
 
     # ---- 3. O JOGO ESCOLHIDO -----------------------------------------------
-    st.markdown("### O jogo")
+    st.markdown("### O jogo aberto")
     render_vencedor_tres_fontes(st, raiz=raiz, odds=odds if not sem_odds else {},
                                 confronto=confronto, resolver=resolver)
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
@@ -148,11 +148,6 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
                 key="oportunidades_jogo_cmp",
             )
-            do_jogo_valor = linhas_com_valor(completo, jogo=jogo_cmp)
-            if do_jogo_valor:
-                st.markdown("#### Linhas com valor neste jogo")
-                st.dataframe(tabela_de_valor(do_jogo_valor, com_jogo=False),
-                             hide_index=True, width="stretch")
             # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
             _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
             _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
