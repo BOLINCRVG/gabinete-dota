@@ -146,9 +146,12 @@ def _render_v3_view(
         years_opt = []
     with fcols[1]:
         la_year_opts = ["", *years_opt]
-        # Prefer the latest year as default (e.g., 2026), but user can switch.
+        # Ano padrao: o do CALENDARIO, se a liga tem jogos nele; senao o mais
+        # recente. 23/10/2026: o Oracle's Elixir ja marca jogos de fim de
+        # setembro como 2027 (pre-temporada do CBLOL, LIT); "o maior ano" caia
+        # num 2027 de 10 jogos e a tela dizia "Sem jogos".
         if (str(session_state.get("lav3_year", "") or "") not in la_year_opts) and years_opt:
-            session_state["lav3_year"] = str(years_opt[-1])
+            session_state["lav3_year"] = ano_padrao(years_opt)
         normalize_select_key(session_state, "lav3_year", la_year_opts)
         v3_year = st.selectbox("Ano", la_year_opts, key="lav3_year",
                                  format_func=select_placeholder)
@@ -326,6 +329,12 @@ def _render_v3_view(
             except Exception as exc:
                 st.error(f"Falha ao renderizar Resumo: {exc}")
 
+
+def ano_padrao(anos: list[str], hoje=None) -> str:
+    """O ano do calendario se estiver na lista; senao o mais recente."""
+    from datetime import date as _date
+    atual = str((hoje or _date.today()).year)
+    return atual if atual in anos else str(anos[-1])
 
 def _render_v3_vencedor_subpanel(
     *,
