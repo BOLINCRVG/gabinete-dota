@@ -47,9 +47,9 @@
    "verificado_em": "2026-08-27"
   },
   "modelo 4": {
-   "nota": 0.0,
-   "justificativa": "impacto do envelhecimento NAO medido aqui — a medicao de 27/08 (+0.023 de logloss por calibrador velho) e do LoL e nao foi replicada no Dota",
-   "verificado_em": "2026-08-27"
+   "nota": 1.0,
+   "justificativa": "medido em 23/10/2026 (tools/envelhecimento_dota.py, evidence/envelhecimento_dota.json): modelo congelado no corte de 22/09 contra o mesmo modelo aprendendo jogo a jogo, 683 jogos: congelar custa +0.041 de logloss em media, +0.007 na 1a semana e +0.03 a +0.075 depois. Por isso o robo aplica os jogos recentes todo dia",
+   "verificado_em": "2026-10-23"
   },
   "modelo 5": {
    "nota": 1.0,

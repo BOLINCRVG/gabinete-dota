@@ -1,0 +1,45 @@
+{
+  "quando": "2026-10-23T07:46:34",
+  "corte": "2026-09-22",
+  "jogos": 683,
+  "logloss_congelado": 0.7438,
+  "logloss_em_dia": 0.7029,
+  "custo_total": 0.0409,
+  "por_semana": [
+    {
+      "semana": 1,
+      "n": 109,
+      "congelado": 0.6457,
+      "em_dia": 0.6385,
+      "custo": 0.0072
+    },
+    {
+      "semana": 2,
+      "n": 76,
+      "congelado": 0.7394,
+      "em_dia": 0.6657,
+      "custo": 0.0738
+    },
+    {
+      "semana": 3,
+      "n": 135,
+      "congelado": 0.7751,
+      "em_dia": 0.7456,
+      "custo": 0.0295
+    },
+    {
+      "semana": 4,
+      "n": 315,
+      "congelado": 0.7803,
+      "em_dia": 0.736,
+      "custo": 0.0442
+    },
+    {
+      "semana": 5,
+      "n": 48,
+      "congelado": 0.6463,
+      "em_dia": 0.571,
+      "custo": 0.0752
+    }
+  ]
+}
