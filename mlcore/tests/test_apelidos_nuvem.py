@@ -66,6 +66,12 @@ class TestApelidoVaiParaOGitHub(unittest.TestCase):
             save_schedule_aliases({}, arq, {"los": "LØS"})
             self.assertEqual(json.loads(arq.read_text(encoding="utf-8"))["los"], "LØS")
 
+    def test_na_nuvem_o_resultado_do_envio_fica_para_a_tela(self):
+        with tempfile.TemporaryDirectory() as d,                 mock.patch.dict(os.environ, {"GABINETE_VIEWER": "1"}),                 mock.patch.object(vm, "publicar_apelidos", return_value=(False, "HTTP 403")):
+            sessao = {}
+            save_schedule_aliases(sessao, Path(d) / "a.json", {"los": "LØS"})
+            self.assertEqual(sessao["_apelido_envio"], {"ok": False, "msg": "HTTP 403"})
+
     def test_o_robo_existe(self):
         raiz = Path(__file__).resolve().parents[2]
         yml = (raiz / ".github" / "workflows" / "salvar_apelidos.yml").read_text(encoding="utf-8")

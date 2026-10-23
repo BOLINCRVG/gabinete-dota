@@ -168,10 +168,17 @@ def save_schedule_aliases(session_state: MutableMapping[str, Any], alias_path: P
     alias_path.write_text(json.dumps(normalized, ensure_ascii=False, indent=2), encoding="utf-8")
     # Na nuvem o disco nao sobrevive a reinicio: manda para o GitHub tambem.
     try:
-        from app_core.viewer_mode_core import publicar_apelidos
-        publicar_apelidos(dict(normalized))
-    except Exception:
-        pass
+        from app_core.viewer_mode_core import is_viewer_mode, publicar_apelidos
+        if is_viewer_mode():
+            # O resultado fica na sessao e a tela mostra (23/10/2026): um envio
+            # que falhava calado deixou ele achando que o apelido estava salvo.
+            ok, msg = publicar_apelidos(dict(normalized))
+            session_state["_apelido_envio"] = {"ok": bool(ok), "msg": str(msg)}
+    except Exception as exc:
+        try:
+            session_state["_apelido_envio"] = {"ok": False, "msg": f"{type(exc).__name__}: {exc}"}
+        except Exception:
+            pass
     return dict(normalized)
 
 

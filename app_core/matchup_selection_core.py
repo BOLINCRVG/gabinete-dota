@@ -430,6 +430,13 @@ def render_matchup_selection(
         st.caption("Se algum estiver errado, e so escolher o time certo nas listas "
                    "de Time 1 / Time 2 -- nada foi gravado sem voce confirmar.")
 
+    _envio = session_state.pop("_apelido_envio", None) if hasattr(session_state, "pop") else None
+    if isinstance(_envio, dict):
+        if _envio.get("ok"):
+            st.success("Apelido salvo e enviado ao GitHub: sobrevive a reinicio do app.")
+        else:
+            st.error("Apelido salvo SO nesta sessao -- o envio ao GitHub falhou: {}. "
+                     "Confira os Secrets do app (GABINETE_GH_TOKEN, GABINETE_GH_REPO).".format(_envio.get("msg")))
     _nao_casou = session_state.get(_CHAVE_NAO_RESOLVIDOS) or []
     if _nao_casou:
         from pathlib import Path as _Path
