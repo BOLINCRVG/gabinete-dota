@@ -366,6 +366,16 @@ def csv_bootstrap_gate(
     _need_wf = bool(status_before.get("need_walkforward"))
     _is_critical = str(status_before.get("severity", "")).strip().lower() == "critical"
     _must_run_auto = core_should_run_bootstrap_auto_maintenance(status_before, force_maint=force_maint)
+    # NUVEM NAO FAZ MANUTENCAO NA ABERTURA (23/10/2026). Ao recriar o app na
+    # Streamlit Cloud, a primeira tela virou "Executando manutencao automatica"
+    # (params + walk-forward) em vez da escolha dos times: o clone novo traz os
+    # relatorios do git, de julho, e tudo parece "pendente". A nuvem tem ~1GB e
+    # so CARREGA o que os robos treinam (mesma regra do auto-retreino ao vivo,
+    # live_models_status_core.is_training_capable_env). Forcar a mao continua valendo.
+    if _must_run_auto and not force_maint:
+        from app_core.live_models_status_core import is_streamlit_cloud
+        if is_streamlit_cloud():
+            _must_run_auto = False
     _can_auto_now = (auto_ran_key != fp_key) or force_once
     _cache_payload = core_read_json_file_safe(_CSV_BOOTSTRAP_MAINT_CACHE_PATH)
     _cache_fp = str(_cache_payload.get("fp_key", "") or "")
