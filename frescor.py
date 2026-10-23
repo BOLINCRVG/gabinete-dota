@@ -138,6 +138,28 @@ def _carimbo(caminho: Path):
     return None
 
 
+ARQ_CADENCIA_DO_REPO = "_frescor_cadencia.json"
+
+
+def cadencia_do_repo(raiz: Path) -> dict:
+    """CADENCIA com o que ESTE repositorio declara por cima (23/10/2026, divida D4).
+
+    A tabela acima e compartilhada pelos dois repos, mas o ritmo das esteiras
+    nao e: o Dota roda 2x por dia, entao livro-caixa e frescor de la com prazo
+    de 7 dias avisavam com 14 em vez de 2. Afirmacao sobre um repositorio mora
+    no repositorio: evidence/_frescor_cadencia.json, {"arquivo.json": dias}.
+    Sem o arquivo, vale a tabela."""
+    tabela = dict(CADENCIA)
+    try:
+        doc = json.loads((raiz / "evidence" / ARQ_CADENCIA_DO_REPO).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return tabela
+    for nome, dias in (doc.get("cadencia_dias") or {}).items():
+        rotulo = tabela.get(nome, (nome, None))[0]
+        tabela[nome] = (rotulo, float(dias))
+    return tabela
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=None)
@@ -150,12 +172,13 @@ def main() -> int:
         print(f"sem pasta evidence em {raiz}")
         return 1
 
+    cadencias = cadencia_do_repo(raiz)
     agora = datetime.now()
     linhas = []
     for arq in sorted(ev.glob("*.json")):
         if arq.name.startswith("_"):
             continue
-        rotulo, cad = CADENCIA.get(arq.name, (None, None))
+        rotulo, cad = cadencias.get(arq.name, (None, None))
         c = _carimbo(arq)
         idade = None if c is None else (agora - c).total_seconds() / 86400.0
         if cad is None:

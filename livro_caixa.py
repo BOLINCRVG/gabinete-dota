@@ -201,8 +201,17 @@ def arquivos_lidos_nao_versionados(raiz: Path) -> list[dict]:
             valor = no.value.strip()
             if not valor.endswith(EXT_DADO) or len(valor) > 120 or "*" in valor:
                 continue
+            # caminho absoluto num teste ("/root/cfg.json") nao e arquivo do
+            # repo, e no Linux do robo stat() nele da PermissionError -- isso
+            # derrubava a ferramenta inteira, calada pelo continue-on-error,
+            # de 27/08 a 23/10/2026 (achado pelo prazo novo do frescor, D4).
+            if valor.startswith(("/", "\\")) or Path(valor).is_absolute():
+                continue
             alvo = raiz / valor
-            if not alvo.exists() or not alvo.is_file():
+            try:
+                if not alvo.exists() or not alvo.is_file():
+                    continue
+            except OSError:
                 continue
             chave = alvo.relative_to(raiz).as_posix()
             if any(chave.startswith(x) for x in IGNORAR_PASTAS) or chave in achados:

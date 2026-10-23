@@ -1,0 +1,7 @@
+{
+ "por_que": "Divida D4 (23/10/2026): a esteira do Dota (dados_diarios_dota.yml) roda 2x por dia (10:40 e 22:40 UTC) e regenera livro-caixa e frescor a cada rodada. Cadencia de 1 dia = atrasada com 2 dias sem rodar, velha com 3. A tabela compartilhada dizia 7.",
+ "cadencia_dias": {
+  "livro_caixa.json": 1,
+  "frescor.json": 1
+ }
+}
