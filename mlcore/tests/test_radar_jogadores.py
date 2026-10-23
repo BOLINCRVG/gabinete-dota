@@ -12,7 +12,6 @@ da mesma funcao do caminho servido, e ha teste travando isso.
 """
 from __future__ import annotations
 
-import math
 import unittest
 
 from app_core.radar_jogadores_core import (

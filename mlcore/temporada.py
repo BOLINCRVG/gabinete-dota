@@ -123,8 +123,8 @@ def aviso(diag: dict) -> str:
     if diag.get("forcada"):
         linhas.append("  (FORCADA por --season)")
         if diag.get("n", 0) < diag["min_n"]:
-            linhas.append(f"  ATENCAO: amostra ABAIXO do minimo — a nota nao "
-                          f"vai significar grande coisa.")
+            linhas.append("  ATENCAO: amostra ABAIXO do minimo — a nota nao "
+                          "vai significar grande coisa.")
     for ano, n in diag.get("descartadas", []):
         linhas.append(f"  descartada: temporada {ano} tem so {n} linha(s) — "
                       f"rotulo de temporada que mal comecou, ou erro da fonte.")

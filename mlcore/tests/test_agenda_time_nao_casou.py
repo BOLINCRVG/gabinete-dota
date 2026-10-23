@@ -66,8 +66,6 @@ class TestApelidoAprendidoResolve(unittest.TestCase):
     """Depois de ensinar uma vez, o problema nao volta."""
 
     def test_com_apelido_salvo_o_nome_passa_a_casar(self):
-        import tempfile
-        from pathlib import Path
 
         from app_core.schedule_import_core import (
             normalize_schedule_team_key,

@@ -1230,7 +1230,6 @@ def main() -> None:
             from mlcore.players_pscore_core import (
                 carregar_linhas as _ps_carregar,
                 construir as _ps_construir,
-                delta_da_escalacao as _ps_delta,
             )
 
             from mlcore.players_pscore_core import (

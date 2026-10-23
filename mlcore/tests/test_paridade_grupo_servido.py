@@ -204,7 +204,7 @@ class TestOEstagioEAlcancadoNoApp(unittest.TestCase):
 
     def test_a_reserva_fica_FORA_dos_ramos_de_escalacao(self):
         """Se ela voltar para dentro de `use_lineup`, o bug volta inteiro."""
-        import inspect, re
+        import inspect
         from app_core.ml_pre_engine_core import run_ml_pre_engine_layers
         linhas = inspect.getsource(run_ml_pre_engine_layers).split("\n")
         alvo = next(i for i, l in enumerate(linhas)

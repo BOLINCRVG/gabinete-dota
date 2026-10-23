@@ -12,7 +12,6 @@ games_played=0).
 from __future__ import annotations
 
 import unittest
-from datetime import datetime, timezone
 
 from mlcore.update_incremental import _parse_dt
 

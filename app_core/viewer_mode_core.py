@@ -231,8 +231,6 @@ def validate_csv_upload(file_bytes: bytes, current_csv_path: str) -> tuple[bool,
     cur = Path(str(current_csv_path or ""))
     if cur.exists():
         try:
-            import pandas as pd2  # noqa: F401
-
             cdf = pd.read_csv(cur, usecols=["gameid", "date"], low_memory=False)
             cur_n = int(cdf["gameid"].nunique())
             cur_dmax = str(cdf["date"].max())
