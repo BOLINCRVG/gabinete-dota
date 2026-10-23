@@ -81,6 +81,22 @@ linhas terminam em CRLF e o resto em LF — e o git não mostrava porque o cache
 `stat` dele nunca comparou o conteúdo. Não commitar por reflexo. Detalhe completo
 na dívida D7 do `RETOMAR.md` do LoL.
 
+## Modelo congelado, engenharia fechada — 22 e 23/10/2026
+
+O que entrou e o que foi medido está na seção 2-F do `RETOMAR.md` do LoL.
+Específico daqui: contrato de dados (`tools/contrato_dados_dota.py`), canário
+(`tools/canario_modelo.py`) e trava de qualidade (`tools/portao_qualidade_dota.py`)
+no `dados_diarios_dota.yml` — se o canário ou a trava barram, os DADOS saem e o
+MODELO anterior fica. Os modelos ao vivo retreinam toda segunda
+(`retreino_ao_vivo_dota.yml`). A suíte não retreina mais os modelos ao vivo de
+produção (`GABINETE_SEM_TREINO=1`).
+
+**Achado não mexido (modelo congelado):** depois do corte, a probabilidade crua
+dá logloss 0,70 mesmo aprendendo jogo a jogo, pior que moeda; congelar 30 dias
+custa +0,041 (`evidence/envelhecimento_dota.json`). A nota 0,57 do
+`dota_scorecard.py` é dentro da amostra. Primeira coisa a olhar quando a frente
+de acertividade voltar.
+
 ## Estado
 
 - **Régua das 28: 2,0.** Áreas que seguram: INFRAESTRUTURA e MONITORAMENTO.
