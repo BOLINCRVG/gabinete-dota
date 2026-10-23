@@ -54,6 +54,17 @@ def _safe_rerun() -> None:
 _CHAVE_NAO_RESOLVIDOS = "_agenda_times_nao_resolvidos"
 
 
+def eh_evento_internacional(liga_agenda: str, liga_por_time: dict) -> bool:
+    """A liga da agenda nao e liga de casa de time nenhum -> jogo entre ligas.
+
+    Sem liga na agenda, ou sem mapa de ligas, nao afirma nada (False)."""
+    liga = str(liga_agenda or "").strip().lower()
+    if not liga or not liga_por_time:
+        return False
+    casas = {str(v or "").strip().lower() for v in liga_por_time.values()}
+    return liga not in casas
+
+
 def set_pending_unresolved(session_state: Any, faltou: list) -> None:
     """Guarda o que nao deu para casar, para a tela dizer em vez de calar."""
     try:
@@ -369,6 +380,7 @@ def render_matchup_selection(
                                    if not r and str(game.get(ch, "") or "").strip()]
                         if _faltou:
                             set_pending_unresolved(session_state, _faltou)
+                        session_state["_agenda_liga_do_jogo"] = str(game.get("league", "") or "").strip()
                         if str(game.get("bo")) in {str(x) for x in BO_OPTIONS}:
                             payload["bo"] = int(game.get("bo"))
                         if isinstance(game, dict) and isinstance(game.get("lines_saved"), dict):
@@ -446,6 +458,14 @@ def render_matchup_selection(
             _companheiro = str(session_state.get(
                 "teamB" if _rot == "Time 1" else "teamA", "") or "")
             _liga_do_jogo = str(_ligas.get(_companheiro, "") or "")
+            # EVENTO INTERNACIONAL (23/10/2026). No Mundial, LOS (CBLOL) contra
+            # um time da LCK recebia "este confronto e da LCK, confira o time":
+            # a liga vinha do adversario. Se a liga que a AGENDA da ao jogo nao e
+            # a liga de casa de nenhum time do CSV ("Mundial", "MSI"...), o jogo
+            # e entre ligas e a liga do adversario nao desempata nada.
+            _liga_agenda = str(session_state.get("_agenda_liga_do_jogo", "") or "")
+            if eh_evento_internacional(_liga_agenda, _ligas):
+                _liga_do_jogo = ""
             _mesma_liga = [t for t in teams
                            if _liga_do_jogo and str(_ligas.get(t, "")) == _liga_do_jogo]
             try:
