@@ -444,8 +444,10 @@ ITENS = [
                   descricao="guarda que barra modelo quebrado antes de publicar")),
     ("infra", 5, "modelo depuravel",
      declarado("infra", 5)),
+    # 23/10/2026: o canario compara o modelo novo com o do ar nos mesmos jogos
+    # e barra antes do commit, nos robos diarios dos dois repos.
     ("infra", 6, "canario antes de servir",
-     declarado("infra", 6)),
+     v_ferramenta_ou(("tools/canario_modelo.py",), ("canario_modelo.py",), declarado("infra", 6))),
     ("infra", 7, "da para reverter", v_reversao),
     # ---- MONITORAMENTO ----
     ("monitor", 1, "mudanca de dependencia notifica",

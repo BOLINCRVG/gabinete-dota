@@ -122,6 +122,14 @@ jobs:
             python tools/portao_qualidade_dota.py --nao-medida
           fi
 
+      # CANARIO (23/10/2026): o modelo novo preve parecido com o que esta no ar,
+      # nos mesmos jogos? Barrou: igual a trava acima, os dados saem e o modelo
+      # anterior fica. Tetos medidos no historico do git (ver a ferramenta).
+      - name: Canario (modelo novo x modelo no ar)
+        id: canario
+        continue-on-error: true
+        run: python tools/canario_modelo.py
+
       # LIVRO-CAIXA DO SILENCIO: lista o que esta sendo tolerado, com IDADE.
       # NAO bloqueia (severidade em camadas: derrubar a esteira de DADO por
       # questao de contabilidade seria absurdo). Aqui ele so reporta e grava;
@@ -163,6 +171,10 @@ jobs:
         run: |
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
+          if [ "${{ steps.canario.outcome }}" != "success" ]; then
+            echo "::warning::Canario BARROU: o modelo novo mudou demais as previsoes; os dados saem, o modelo publicado continua o anterior."
+            git checkout HEAD -- ml_artifact.json
+          fi
           if [ "${{ steps.portao.outcome }}" != "success" ]; then
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
