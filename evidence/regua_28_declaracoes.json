@@ -8,8 +8,8 @@
   },
   "dados 2": {
    "nota": 1.0,
-   "justificativa": "eval_fadiga_gate, eval_totals_dota, eval_whr_anocego, gate_calibradores_dota e outros; REJECTs registrados (players, calibracao ao vivo 15/15, totais fora de kills)",
-   "verificado_em": "2026-08-27"
+   "justificativa": "10 ferramentas de gate (eval_fadiga_gate, eval_totals_dota, eval_whr_anocego, gate_calibradores_dota, tools/portao_qualidade_dota...), reconferido 23/10; REJECTs registrados (players, calibracao ao vivo 15/15, totais fora de kills)",
+   "verificado_em": "2026-10-23"
   },
   "dados 3": {
    "nota": 0.0,
@@ -17,9 +17,9 @@
    "verificado_em": "2026-08-27"
   },
   "dados 4": {
-   "nota": 0.5,
-   "justificativa": "as regras existem (premium x professional, tier) E ha testes que as forcam (mlcore/tests/test_active_teams_filter.py, test_league_context.py), mas a suite NAO roda em dados_diarios_dota.yml — so a mao",
-   "verificado_em": "2026-08-27"
+   "nota": 1.0,
+   "justificativa": "as regras existem (premium x professional, tier) e os testes que as forcam (test_active_teams_filter, test_exhibition_league, test_league_context) rodam todo dia na suite do robo (suite.yml, desde 22/10)",
+   "verificado_em": "2026-10-23"
   },
   "dados 5": {
    "nota": 0.0,
@@ -29,22 +29,22 @@
   "dados 6": {
    "nota": 0.5,
    "justificativa": "sem registro central de features nem documento de 'como adicionar'; a feature nova e ligada por bandeira (app_core/feature_flags_ui_core.py) e medida por gate, mas o caminho e manual e nunca foi cronometrado",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 1": {
    "nota": 1.0,
-   "justificativa": "tudo em git e os commits carregam o porque no corpo (282 linhas de corpo nos ultimos 20 commits); nenhuma mudanca de modelo sem gate",
-   "verificado_em": "2026-08-27"
+   "justificativa": "tudo em git e os commits carregam o porque no corpo (103 linhas de corpo nos ultimos 20 commits nao-robo, contado em 23/10); nenhuma mudanca de modelo sem gate",
+   "verificado_em": "2026-10-23"
   },
   "modelo 2": {
    "nota": 0.0,
    "justificativa": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 3": {
    "nota": 0.5,
    "justificativa": "gate_calibradores_dota.py varre 5 calibradores x 2 criterios de parada com bootstrap PAREADO, mas sem validacao cruzada em dobras e so rodando a mao",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 4": {
    "nota": 1.0,
@@ -54,12 +54,12 @@
   "modelo 5": {
    "nota": 1.0,
    "justificativa": "comparacao contra a base presente nos gates, e o simples ganhou varias vezes e foi mantido: calibrar o ao vivo perdeu 15 de 15, e nos totais so kills bate a taxa-base",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "modelo 7": {
    "nota": 1.0,
    "justificativa": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "infra 1": {
    "nota": 0.5,
@@ -69,12 +69,12 @@
   "infra 5": {
    "nota": 1.0,
    "justificativa": "session_state[_ml_trace_last] guarda o caminho da previsao (app_core/first_x_gap_core.py, flow_runtime_core.py, csv_maintenance_runner_core.py) e a aba o exibe",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "infra 6": {
    "nota": 0.0,
    "justificativa": "nao ha canario: nenhuma mudanca de modelo entrou desligada por padrao aqui",
-   "verificado_em": "2026-08-27"
+   "verificado_em": "2026-10-23"
   },
   "monitor 1": {
    "nota": 0.0,
@@ -87,9 +87,9 @@
    "verificado_em": "2026-08-27"
   },
   "monitor 3": {
-   "nota": 0.0,
-   "justificativa": "divergencia treino/servico ENCONTRADA em 26/08 (scope_meta) e corrigida a mao; nenhum vigia existe para a proxima",
-   "verificado_em": "2026-08-27"
+   "nota": 0.5,
+   "justificativa": "testes de paridade treino x servico rodam todo dia na suite do robo (suite.yml): test_ml_parity_golden, test_paridade_grupo_servido, test_pscore_servido, test_regua_vs_servido. Mas a divida D5 segue aberta (o replay da regua perde o delta de jogadores e mede so parte do caminho servido): vigia parcial, meio ponto",
+   "verificado_em": "2026-10-23"
   },
   "monitor 5": {
    "nota": 0.5,
