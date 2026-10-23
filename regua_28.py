@@ -394,8 +394,12 @@ ITENS = [
      declarado("dados", 3)),
     ("dados", 4, "features atendem requisitos de nivel superior",
      declarado("dados", 4)),
+    # 23/10/2026: so o identificador PROFISSIONAL publico entra (playerid no LoL,
+    # account_id no Dota); o vigia barra apelido Steam, nome real, pais, avatar,
+    # e-mail etc. em todo arquivo de dados, todo dia, na suite.
     ("dados", 5, "controles de privacidade no pipeline",
-     declarado("dados", 5)),
+     v_ensaio_na_suite("tools/vigia_privacidade.py", "test_vigia_privacidade.py",
+                       "nenhum dado pessoal alem do identificador profissional")),
     ("dados", 6, "feature nova entra rapido",
      declarado("dados", 6)),
     # 22/10/2026: a suite INTEIRA passou a rodar na esteira (suite.yml ->
@@ -459,7 +463,8 @@ ITENS = [
     ("monitor", 6, "desempenho computacional nao regrediu",
      v_desempenho),
     ("monitor", 7, "qualidade de previsao nao regrediu",
-     v_ferramenta(arquivos=("tools/ml_fusion_scorecard.py", "ml_fusion_scorecard.py"), esteira=("ml_fusion_scorecard.py",))),
+     v_ferramenta(arquivos=("tools/ml_fusion_scorecard.py", "ml_fusion_scorecard.py", "tools/portao_qualidade_dota.py"),
+                  esteira=("ml_fusion_scorecard.py", "portao_qualidade_dota.py"))),
 ]
 
 
