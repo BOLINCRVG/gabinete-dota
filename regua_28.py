@@ -422,8 +422,11 @@ ITENS = [
     ("modelo", 7, "testado quanto a inclusao",
      declarado("modelo", 7)),
     # ---- INFRA ----
+    # 23/10/2026: medido -- duas rodadas do treino dao o mesmo modelo (fora os
+    # carimbos de hora); o ensaio roda na suite todo dia.
     ("infra", 1, "treino reproduzivel",
-     declarado("infra", 1)),
+     v_ensaio_na_suite("mlcore/train_offline.py", "test_treino_reproduzivel.py",
+                       "treinar duas vezes no mesmo CSV da o mesmo modelo")),
     ("infra", 2, "especificacao com teste unitario",
      v_ferramenta(arquivos=("mlcore/tests/test_artifact.py",),
                   esteira=("tools/suite_na_esteira.py",))),
@@ -440,8 +443,12 @@ ITENS = [
     # ---- MONITORAMENTO ----
     ("monitor", 1, "mudanca de dependencia notifica",
      v_dependabot),
+    # 23/10/2026: o contrato de dados confere as invariantes de TODO CSV novo
+    # no robo, antes de ele chegar ao modelo (que serve do mesmo CSV).
     ("monitor", 2, "invariantes valem na entrada",
-     declarado("monitor", 2)),
+     v_ferramenta_ou(("tools/run_phase1_data_contract.py", "tools/contrato_dados_dota.py"),
+                     ("run_phase1_data_contract.py", "contrato_dados_dota.py"),
+                     declarado("monitor", 2))),
     ("monitor", 3, "treino e servico NAO divergem",
      declarado("monitor", 3)),
     ("monitor", 4, "modelo nao esta velho demais",
