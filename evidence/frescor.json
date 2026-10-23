@@ -1,11 +1,11 @@
 {
- "gerado_em": "2026-10-23T01:04:45",
+ "gerado_em": "2026-10-23T15:36:09",
  "reguas": [
   {
    "arquivo": "livro_caixa.json",
    "rotulo": "livro-caixa do silencio",
    "cadencia_dias": 7,
-   "idade_dias": 57.0,
+   "idade_dias": 57.6,
    "estado": "VELHA"
   },
   {
@@ -26,25 +26,32 @@
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.0,
+   "idade_dias": 0.6,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.3,
+   "idade_dias": 0.2,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "suite_esteira.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.3,
+   "idade_dias": 0.2,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "contrato_dados_dota.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "envelhecimento_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": null,
@@ -68,7 +75,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 7,
-   "idade_dias": 1.0,
+   "idade_dias": 0.6,
    "estado": "ok"
   },
   {
