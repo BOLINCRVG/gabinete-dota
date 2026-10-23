@@ -17,14 +17,9 @@ A VANTAGEM e sempre contra o PRECO QUE SE PAGA, nao contra a probabilidade:
   - Polymarket: p_modelo / preco_de_compra - 1, com preco_de_compra = meio +
     meio spread (o "ask": e o que custa comprar o lado).
 
-O SELO:
-  - CONFIRMADO: vantagem contra as duas, e a Polymarket com mercado que vale
-    como referencia (liquidez e spread abaixo);
-  - SO CONTRA UMA: a outra casa ja precifica parecido com o modelo;
-  - SUSPEITO: vantagem acima de VANTAGEM_SUSPEITA_PCT -- o mesmo criterio da
-    aba: mais provavel o modelo estar errado naquele confronto.
-E fora do selo, um aviso quando as DUAS CASAS discordam entre si (>5 pontos):
-mercado dividido e informacao por si so.
+O SELO tem a Pinnacle como regua (ver `selo`): forte (Polymarket barata
+contra a Pinnacle E o modelo concorda), entre casas, so do modelo, suspeito.
+E um aviso separado quando as DUAS CASAS discordam entre si (>5 pontos).
 
 O que NAO faz: nao inventa o lado que a casa nao tem. Sem Polymarket para o
 jogo, a coluna fica vazia e a tela diz por que.
@@ -129,13 +124,20 @@ def polymarket_vale(poly: Optional[Mapping[str, Any]]) -> bool:
 
 def comparar_vencedor(p_modelo_a: Any, *, pin_odd_a: Any = None, pin_odd_b: Any = None,
                       poly: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
-    """Uma linha por time, com as tres probabilidades, as vantagens e o selo. Pura."""
+    """Uma linha por time, com as tres probabilidades, as vantagens e o selo. Pura.
+
+    A PINNACLE E A REGUA (pedido dele, 23/10/2026: "a pinnacle vai ser quase
+    sempre melhor regulada"). Alem do modelo contra cada casa, mede a casa
+    contra a casa: comprar na Polymarket vale a pena SE a Pinnacle estiver
+    certa? `vant_entre_casas` = p_pinnacle_sem_margem / preco_de_compra - 1.
+    Esse valor existe sem modelo nenhum; o modelo concordando o reforca."""
     pm = _num(p_modelo_a)
     if pm is None or not (0 < pm < 1):
         return {"linhas": [], "motivo": "o modelo nao tem probabilidade para este confronto"}
     pin_a = pinnacle_sem_margem(pin_odd_a, pin_odd_b)
     poly_a = _num((poly or {}).get("p_a"))
     spread = _num((poly or {}).get("spread")) or 0.0
+    vale = polymarket_vale(poly)
     linhas = []
     for lado, p, odd, p_pin, p_poly in (
             ("a", pm, _num(pin_odd_a), pin_a, poly_a),
@@ -144,33 +146,50 @@ def comparar_vencedor(p_modelo_a: Any, *, pin_odd_a: Any = None, pin_odd_b: Any 
         v_pin = None if not odd else round(100 * (p * odd - 1), 1)
         compra = None if p_poly is None else min(0.999, p_poly + spread / 2)
         v_poly = None if not compra else round(100 * (p / compra - 1), 1)
+        v_casas = None if (not compra or p_pin is None) else round(100 * (p_pin / compra - 1), 1)
+        modelo_concorda = p_pin is not None and p > p_pin
         linhas.append({"lado": lado, "p_modelo": round(p, 4), "p_pinnacle": p_pin and round(p_pin, 4),
                        "odd_pinnacle": odd, "p_polymarket": p_poly and round(p_poly, 4),
                        "preco_compra_poly": compra and round(compra, 4),
                        "vant_pinnacle": v_pin, "vant_polymarket": v_poly,
-                       "selo": selo(v_pin, v_poly, polymarket_vale(poly))})
+                       "vant_entre_casas": v_casas,
+                       "selo": selo(v_pin, v_casas, vale, modelo_concorda)})
     discordam = (pin_a is not None and poly_a is not None and abs(pin_a - poly_a) >= CASAS_DISCORDAM)
     return {"linhas": linhas, "casas_discordam": discordam,
             "diferenca_casas": None if not discordam else round(abs(pin_a - poly_a), 4)}
 
 
-def selo(v_pin: Optional[float], v_poly: Optional[float], poly_vale: bool) -> str:
-    vs = [v for v in (v_pin, v_poly) if v is not None]
+def selo(v_pin: Optional[float], v_casas: Optional[float], poly_vale: bool,
+         modelo_concorda: bool) -> str:
+    """Do mais forte ao mais fraco, com a Pinnacle como regua.
+
+    - "forte": a Polymarket vende mais barato do que a Pinnacle acha justo E o
+      modelo tambem ve o time acima da Pinnacle -- duas fontes independentes
+      apontando o mesmo lado;
+    - "entre casas": a Polymarket esta barata contra a Pinnacle, mas o modelo
+      nao concorda (ou nao tem opiniao) -- vale pela diferenca de mercado;
+    - "modelo": so o modelo ve valor contra a odd da Pinnacle;
+    - "suspeito": qualquer vantagem acima de VANTAGEM_SUSPEITA_PCT -- no
+      modelo, mais provavel ele errar; entre casas, mais provavel preco velho.
+    Polymarket com pouco dinheiro ou spread largo nao conta como referencia."""
+    vs = [v for v in (v_pin, v_casas if poly_vale else None) if v is not None]
     if any(v > VANTAGEM_SUSPEITA_PCT for v in vs):
         return "suspeito"
-    pos_pin = v_pin is not None and v_pin > 0
-    pos_poly = v_poly is not None and v_poly > 0 and poly_vale
-    if pos_pin and pos_poly:
-        return "confirmado"
-    if pos_pin or (v_poly is not None and v_poly > 0):
-        return "so contra uma"
+    casas = poly_vale and v_casas is not None and v_casas > 0
+    if casas and modelo_concorda:
+        return "forte"
+    if casas:
+        return "entre casas"
+    if v_pin is not None and v_pin > 0:
+        return "modelo"
     return ""
 
 
 ROTULO_SELO = {
-    "confirmado": "VALOR CONFIRMADO: o modelo ve valor contra as duas casas",
-    "so contra uma": "valor so contra uma casa: a outra ja precifica parecido",
-    "suspeito": "vantagem grande demais: mais provavel o modelo errar neste confronto",
+    "forte": "VALOR FORTE: Polymarket barata contra a Pinnacle, e o modelo concorda",
+    "entre casas": "valor entre casas: Polymarket barata contra a Pinnacle (o modelo nao confirma)",
+    "modelo": "valor so do modelo contra a odd da Pinnacle",
+    "suspeito": "vantagem grande demais: confira o preco e desconfie do numero",
     "": "",
 }
 
@@ -251,12 +270,13 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
                 "Polymarket": _pct(l["p_polymarket"]),
                 "Vantagem x Pinnacle": _vant(l["vant_pinnacle"]),
                 "Vantagem x Polymarket": _vant(l["vant_polymarket"]),
+                "Polymarket x Pinnacle": _vant(l["vant_entre_casas"]),
                 "Selo": ROTULO_SELO.get(l["selo"], ""),
             } for l in r["linhas"]]
             st.dataframe(tabela, hide_index=True, width="stretch")
             for l in r["linhas"]:
-                if l["selo"] == "confirmado":
-                    st.success(f"{nomes[l['lado']]}: {ROTULO_SELO['confirmado']}.")
+                if l["selo"] in ("forte", "entre casas"):
+                    st.success(f"{nomes[l['lado']]}: {ROTULO_SELO[l['selo']]}.")
                 elif l["selo"] == "suspeito":
                     st.warning(f"{nomes[l['lado']]}: {ROTULO_SELO['suspeito']}.")
             if r.get("casas_discordam"):

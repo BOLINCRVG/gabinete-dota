@@ -55,16 +55,32 @@ class TestComparar(unittest.TestCase):
 
 class TestSelo(unittest.TestCase):
 
-    def test_confirmado_exige_as_duas_e_mercado_que_vale(self):
-        self.assertEqual(selo(5.0, 6.0, True), "confirmado")
-        self.assertEqual(selo(5.0, 6.0, False), "so contra uma")
-        self.assertEqual(selo(5.0, -2.0, True), "so contra uma")
+    def test_forte_quando_casas_e_modelo_apontam_o_mesmo_lado(self):
+        self.assertEqual(selo(5.0, 8.0, True, True), "forte")
+
+    def test_entre_casas_sem_o_modelo(self):
+        self.assertEqual(selo(-3.0, 8.0, True, False), "entre casas")
+
+    def test_polymarket_fraca_nao_conta(self):
+        self.assertEqual(selo(5.0, 8.0, False, True), "modelo")
 
     def test_vantagem_grande_demais_e_suspeita(self):
-        self.assertEqual(selo(35.0, 40.0, True), "suspeito")
+        self.assertEqual(selo(35.0, 2.0, True, True), "suspeito")
+        self.assertEqual(selo(1.0, 30.0, True, True), "suspeito")
 
     def test_sem_valor_sem_selo(self):
-        self.assertEqual(selo(-3.0, -1.0, True), "")
+        self.assertEqual(selo(-3.0, -1.0, True, False), "")
+
+
+class TestEntreCasas(unittest.TestCase):
+
+    def test_los_polymarket_barata_contra_a_pinnacle(self):
+        # Pinnacle 6.0 x 1.12 (LOS ~16% sem margem), Polymarket compra a 13%
+        r = comparar_vencedor(0.238, pin_odd_a=6.0, pin_odd_b=1.12, poly=POLY[0])
+        los = r["linhas"][0]
+        self.assertAlmostEqual(los["vant_entre_casas"], round(100 * (los["p_pinnacle"] / 0.13 - 1), 1), places=0)
+        self.assertGreater(los["vant_entre_casas"], 0)
+        self.assertLess(r["linhas"][1]["vant_entre_casas"], 0)
 
 
 class TestCarregar(unittest.TestCase):
