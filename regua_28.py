@@ -390,8 +390,11 @@ ITENS = [
                      declarado("dados", 1))),
     ("dados", 2, "todas as features sao beneficas",
      declarado("dados", 2)),
+    # 23/10/2026: tempo por previsao de cada camada e peso de cada bloco nos
+    # arquivos do modelo, medidos na suite todo dia, com teto (5 ms, 20 MB).
     ("dados", 3, "nenhuma feature custa demais",
-     declarado("dados", 3)),
+     v_ensaio_na_suite("tools/custo_por_feature.py", "test_custo_por_feature.py",
+                       "custo de cada camada medido e abaixo do teto")),
     ("dados", 4, "features atendem requisitos de nivel superior",
      declarado("dados", 4)),
     # 23/10/2026: so o identificador PROFISSIONAL publico entra (playerid no LoL,
