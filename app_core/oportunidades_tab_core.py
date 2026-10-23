@@ -53,7 +53,16 @@ def _fmt(v: Any, casas: int = 2, sufixo: str = "") -> str:
 
 
 def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
-    """Desenha a aba. `ctx` traz o caminho de PRODUCAO, nunca uma copia dele."""
+    """Desenha a aba "Modelo x Mercado". `ctx` traz o caminho de PRODUCAO.
+
+    REORGANIZADA EM 23/10/2026 (pedido dele: manter so a Linha justa como
+    estava e melhorar o resto). Ordem e motivo em app_core/modelo_mercado_core.py.
+    """
+    from app_core.mercado_vencedor_core import (
+        carregar_polymarket, render_polymarket_lista, render_vencedor_tres_fontes)
+    from app_core.modelo_mercado_core import (
+        linhas_com_valor, painel_do_dia, tabela_de_valor)
+
     raiz: Path = Path(ctx.get("raiz") or ".")
     calcular_totais: Callable[..., Any] = ctx["calcular_totais"]
     prob_over: Callable[..., Any] = ctx["prob_over"]
@@ -63,101 +72,134 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     resolver: Optional[Callable[[str], str]] = ctx.get("resolver_time")
 
     odds = carregar_odds_coletadas(raiz)
+    poly = carregar_polymarket(raiz)
+    sem_odds = bool(odds.get("motivo"))
 
-    # MODELO x MERCADO (23/10/2026): o vencedor do confronto aberto nas tres
-    # fontes, com o selo de valor cruzado. Vem antes de tudo e aparece mesmo
-    # sem odds da Pinnacle (a Polymarket sozinha ja e uma referencia).
-    from app_core.mercado_vencedor_core import render_vencedor_tres_fontes
-    render_vencedor_tres_fontes(st, raiz=raiz, odds=odds if not odds.get("motivo") else {},
+    # ---- 1. PAINEL DO DIA ------------------------------------------------
+    r: Mapping[str, Any] = {}
+    justas: List[Mapping[str, Any]] = []
+    if not sem_odds:
+        _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
+        r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
+                                 minimo_pct=0.0, jogos_por_time=jogos_por_time,
+                                 prob_de_vencedor=_vencedor,
+                                 medias_kills=ctx.get("medias_kills"),
+                                 p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+        justas = montar_linhas_justas(odds, calcular_totais, prob_over=prob_over,
+                                      medias_kills=ctx.get("medias_kills"),
+                                      p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+    completo = [x for x in (r.get("mercado_completo") or []) if isinstance(x, Mapping)]
+    painel = painel_do_dia(completo)
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Jogos na Pinnacle", painel["jogos"])
+    c2.metric("Linhas com valor", painel["linhas_com_valor"],
+              help="Vantagem do modelo de 1% a 20% contra a odd que a Pinnacle paga.")
+    c3.metric("Odds da Pinnacle", "-" if sem_odds else _idade_curta(odds.get("idade_horas")),
+              help="Coletadas pelo robo de 3 em 3 horas.")
+    c4.metric("Polymarket", "-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
+              help="Coletada pelo robo de hora em hora (bloqueada no Brasil; o robo roda nos EUA).")
+    if sem_odds:
+        st.info("Sem odds da Pinnacle para comparar: {}.".format(odds["motivo"]))
+    elif odds.get("velha"):
+        st.warning("As odds da Pinnacle tem {}. Preco muda: confira na casa antes de apostar."
+                   .format(_fmt(odds.get("idade_horas"), 1, " horas")))
+    _avisar_bloqueio(st, raiz)
+
+    # ---- 2. ONDE ESTA O VALOR HOJE -----------------------------------------
+    if completo:
+        st.markdown("### Onde esta o valor hoje")
+        top = linhas_com_valor(completo, incluir_suspeitas=False)[:15]
+        if top:
+            st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
+            st.caption("Todas as linhas de todos os jogos, da maior vantagem para a menor "
+                       "(ate 15). Vantagem acima de 20% fica de fora daqui: e mais provavel "
+                       "o modelo errar -- ela aparece no jogo, marcada 'desconfie'.")
+        else:
+            st.caption("Nenhuma linha com vantagem entre 1% e 20% nesta leitura.")
+
+    # ---- 3. O JOGO ESCOLHIDO -----------------------------------------------
+    st.markdown("### O jogo")
+    render_vencedor_tres_fontes(st, raiz=raiz, odds=odds if not sem_odds else {},
                                 confronto=confronto, resolver=resolver)
-
-    st.markdown("### Onde a Pinnacle paga mais do que o modelo acha que vale")
-    if odds.get("motivo"):
-        st.info("Sem odds para comparar: {}.".format(odds["motivo"]))
-        st.caption("Quem coleta e o robo do GitHub, de 3 em 3 horas. "
-                   "O app nunca vai ao site da casa.")
-        return
-
-    idade = odds.get("idade_horas")
-    carimbo = "lido ha {} ({})".format(
-        "menos de 1 hora" if (idade is not None and idade < 1) else _fmt(idade, 1, " horas"),
-        odds.get("lido_em") or "sem carimbo")
-    if odds.get("velha"):
-        st.warning("Estas odds tem {}. Preco de aposta muda: confira na casa "
-                   "antes de apostar.".format(_fmt(idade, 1, " horas")))
-    else:
-        st.caption(carimbo)
-
-    _mostrar_diario(st, raiz)
-    _mostrar_reguas_pinnacle(st, raiz)
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
                               ctx.get("ensinar_apelido"))
-    _jogos_que_dao = _diagnostico_do_confronto(
-        st, odds, confronto, resolver,
-        ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
+    if not sem_odds:
+        _jogos_que_dao = _diagnostico_do_confronto(
+            st, odds, confronto, resolver,
+            ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
+        todas = list(r.get("todas") or [])
+        por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
+        for a in todas:
+            por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
+        for x in justas:
+            por_jogo_cmp.setdefault(x.get("jogo"), []).append({
+                "jogo": x.get("jogo"), "liga": x.get("liga"), "casa": x.get("casa"),
+                "fora": x.get("fora"), "com_vitoria": x.get("conta") == "com vitoria",
+                "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
+                                     if v is not None] or [-999.0]),
+                "_so_resumo": True})
+        if por_jogo_cmp:
+            jogos_cmp = ordem_dos_jogos(por_jogo_cmp)
+            jogo_cmp = st.selectbox(
+                "Qual jogo",
+                jogos_cmp,
+                format_func=lambda j: _rotulo_do_jogo(
+                    [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
+                key="oportunidades_jogo_cmp",
+            )
+            do_jogo_valor = linhas_com_valor(completo, jogo=jogo_cmp)
+            if do_jogo_valor:
+                st.markdown("#### Linhas com valor neste jogo")
+                st.dataframe(tabela_de_valor(do_jogo_valor, com_jogo=False),
+                             hide_index=True, width="stretch")
+            # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
+            _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
+            _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
+            _aberto = any(a.get("metrica") == "vencedor" or a.get("com_vitoria") for a in _do_jogo)
+            from app_core.tabela_casa_core import vencedores_da_tela
+            _venc = vencedores_da_tela(
+                [l for l in (odds.get("linhas") or []) if isinstance(l, dict) and l.get("jogo") == jogo_cmp],
+                _do_jogo)
+            _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
+                             _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""),
+                             vencedores=_venc,
+                             bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
+                             casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""))
+        elif _jogos_que_dao:
+            st.info("Este painel nao conseguiu precificar nenhuma linha deste confronto.")
 
-    _vencedor = _montar_prob_de_vencedor(st, confronto, resolver)
-    r = montar_oportunidades(odds, calcular_totais, prob_over=prob_over,
-                             minimo_pct=0.0, jogos_por_time=jogos_por_time,
-                             prob_de_vencedor=_vencedor,
-                             medias_kills=ctx.get("medias_kills"),
-                             p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+    # ---- 4. DETALHES ---------------------------------------------------------
+    st.markdown("### Detalhes")
+    if not sem_odds:
+        _mostrar_mercado_completo(st, r)
+    _mostrar_reguas_pinnacle(st, raiz)
+    render_polymarket_lista(st, raiz=raiz)
+    _mostrar_diario(st, raiz)
+    if not sem_odds:
+        _o_que_ficou_de_fora(st, r, nao_casados)
 
-    todas = list(r.get("todas") or [])
 
-    # A LINHA JUSTA (pedido dele, 25/09/2026): onde o modelo poe a linha,
-    # onde a Pinnacle poe, e o que ela paga na linha do modelo.
-    justas = montar_linhas_justas(odds, calcular_totais, prob_over=prob_over,
-                                  medias_kills=ctx.get("medias_kills"),
-                                  p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+def _idade_curta(horas: Any) -> str:
+    try:
+        h = float(horas)
+    except (TypeError, ValueError):
+        return "?"
+    if h < 1:
+        return "agora ha pouco"
+    if h < 48:
+        return "ha {:.0f} h".format(h)
+    return "ha {:.0f} dias".format(h / 24)
 
-    # O JOGO ANTES DE TUDO (24/09/2026): o mercado so faz sentido dentro de UM
-    # jogo. O confronto aberto vem primeiro -- e o unico com vencedor e com a
-    # chance de vitoria nos kills.
-    por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
-    for a in todas:
-        por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
-    for x in justas:
-        por_jogo_cmp.setdefault(x.get("jogo"), []).append({
-            "jogo": x.get("jogo"), "liga": x.get("liga"), "casa": x.get("casa"),
-            "fora": x.get("fora"), "com_vitoria": x.get("conta") == "com vitoria",
-            "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
-                                 if v is not None] or [-999.0]),
-            "_so_resumo": True})
-    if por_jogo_cmp:
-        jogos_cmp = ordem_dos_jogos(por_jogo_cmp)
-        jogo_cmp = st.selectbox(
-            "Qual jogo",
-            jogos_cmp,
-            format_func=lambda j: _rotulo_do_jogo(
-                [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
-            key="oportunidades_jogo_cmp",
-        )
-        # O VENCEDOR em cima (pedido dele, 25/09/2026), no BO do confronto
-        # aberto -- o que o calendario escolheu. Para os outros jogos, o BO da
-        # casa e so a odd dela (o modelo so calculou o confronto aberto).
-        _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
-        _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
-        _aberto = any(a.get("metrica") == "vencedor" or a.get("com_vitoria") for a in _do_jogo)
-        from app_core.tabela_casa_core import vencedores_da_tela
-        _venc = vencedores_da_tela(
-            [l for l in (odds.get("linhas") or []) if isinstance(l, dict) and l.get("jogo") == jogo_cmp],
-            _do_jogo)
-        _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
-                         _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""),
-                         vencedores=_venc,
-                         bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
-                         casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""))
 
-        # "LINHA POR LINHA" SAIU (25/09/2026). Ele, vendo a tabela no formato
-        # da casa logo acima: "acho que nao precisa mais disso". A tabela nova
-        # mostra o mesmo (modelo, Pinnacle, vantagem) em qualquer linha.
-    elif _jogos_que_dao:
-        st.info("Este painel nao conseguiu precificar nenhuma linha deste "
-                "confronto.")
-
-    _mostrar_mercado_completo(st, r)
-    _o_que_ficou_de_fora(st, r, nao_casados)
+def _avisar_bloqueio(st: Any, raiz: Path) -> None:
+    """So o aviso, no topo; o diario completo fica nos detalhes."""
+    try:
+        if houve_bloqueio(carregar_diario(raiz, ultimas=6)):
+            st.warning("A casa barrou uma das ultimas leituras do robo (Pinnacle). Veja "
+                       "'Ultimas corridas do robo' nos detalhes.")
+    except Exception:
+        pass
 
 
 def ordem_dos_jogos(por_jogo: Mapping[Any, List[Mapping[str, Any]]]) -> List[Any]:
@@ -283,12 +325,6 @@ def _mostrar_diario(st: Any, raiz: Path) -> None:
     corridas = carregar_diario(raiz, ultimas=6)
     if not corridas:
         return
-    if houve_bloqueio(corridas):
-        st.warning(
-            "A casa barrou uma das ultimas leituras. Isso e diferente de "
-            "'a janela nao rodou' -- e grave, e pede espacar a coleta. "
-            "Veja o detalhe abaixo."
-        )
     with st.expander("Ultimas corridas do robo ({})".format(len(corridas))):
         for c in corridas:
             st.caption("· {}".format(resumo_da_corrida(c)))
@@ -647,7 +683,7 @@ def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str, *,
     linhas = linhas_da_tela(justas)
     if not linhas and not vencedores:
         return
-    st.markdown("### Linha justa: modelo x Pinnacle")
+    st.markdown("#### Linha justa: modelo x Pinnacle")
     try:
         import streamlit.components.v1 as _componentes
     except Exception:

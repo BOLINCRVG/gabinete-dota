@@ -241,7 +241,7 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
                                 confronto: Mapping[str, Any],
                                 resolver: Optional[Callable[[str], str]]) -> None:
     """O bloco do topo da aba: o confronto aberto, nas tres fontes."""
-    st.markdown("### Vencedor: modelo x Pinnacle x Polymarket")
+    st.markdown("#### Vencedor: modelo x Pinnacle x Polymarket")
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
     poly_doc = carregar_polymarket(raiz)
@@ -292,6 +292,11 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
                 avisos.append("Polymarket com pouco dinheiro ou spread largo neste jogo: referencia fraca")
             if avisos:
                 st.caption(" · ".join(avisos) + ".")
+
+
+def render_polymarket_lista(st: Any, *, raiz: Path) -> None:
+    """Todos os jogos de LoL abertos na Polymarket (fica nos detalhes)."""
+    poly_doc = carregar_polymarket(raiz)
     partidas = poly_doc.get("partidas") or []
     if partidas:
         with st.expander(f"Polymarket: {len(partidas)} jogo(s) de LoL abertos"
