@@ -1,0 +1,69 @@
+# APELIDOS DE TIME QUE O APP DA NUVEM SALVA (23/10/2026). O disco da Streamlit
+# Cloud some a cada reinicio; o "Esse time e qual? (fica salvo)" durava ate a
+# proxima atualizacao. O app (app_core/viewer_mode_core.publicar_apelidos)
+# acorda este robo com o dicionario inteiro; aqui ele e JUNTADO ao arquivo do
+# repositorio (o que ja existe fica, o que veio da nuvem vence no conflito) e
+# commitado. So aceita chave e valor de texto curto: nada alem de apelidos entra.
+name: Salvar apelidos de time (da nuvem)
+
+on:
+  workflow_dispatch:
+    inputs:
+      apelidos:
+        description: "JSON {chave_normalizada: nome do time no CSV}"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: salvar-apelidos
+  cancel-in-progress: false
+
+jobs:
+  salvar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Juntar os apelidos ao arquivo do repositorio
+        env:
+          APELIDOS: ${{ github.event.inputs.apelidos }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          novos = json.loads(os.environ["APELIDOS"])
+          assert isinstance(novos, dict) and len(novos) < 2000, "formato inesperado"
+          arq = Path("user_team_aliases.json")
+          atual = json.loads(arq.read_text(encoding="utf-8")) if arq.exists() else {}
+          aceitos = 0
+          for k, v in novos.items():
+              k, v = str(k), str(v)
+              if re.fullmatch(r"[a-z0-9]{1,60}", k) and 0 < len(v) <= 80 and "\n" not in v:
+                  if atual.get(k) != v:
+                      atual[k] = v
+                      aceitos += 1
+          arq.write_text(json.dumps(dict(sorted(atual.items())), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"{aceitos} apelido(s) novo(s) ou mudado(s)")
+          PY
+
+      - name: Commitar
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add user_team_aliases.json
+          if git diff --cached --quiet; then
+            echo "nada novo"
+            exit 0
+          fi
+          git commit -m "Robô: apelidos de time salvos pelo app da nuvem"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || exit 1
+          done
+          git push

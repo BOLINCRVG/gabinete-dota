@@ -185,6 +185,42 @@ def dispatch_data_workflow(*, token: str, repo: str, post_fn: Any = None) -> tup
         return False, f"Falha de rede ao acordar o robô: {type(exc).__name__}"
 
 
+def publicar_apelidos(apelidos: dict, *, post_fn: Any = None) -> tuple[bool, str]:
+    """Na nuvem, manda os apelidos de time para o GitHub (23/10/2026).
+
+    O disco da Streamlit Cloud nao sobrevive a reinicio nem a recriar o app:
+    o "Esse time e qual? (fica salvo)" ficava salvo ate a proxima atualizacao
+    e sumia -- ele notou que "nao esta salvando o nome dos times". Aqui o app
+    acorda o robo `salvar_apelidos.yml` com o dicionario inteiro; o robo junta
+    em user_team_aliases.json e commita. Usa o mesmo token do secret
+    GABINETE_GH_TOKEN (permissao Actions). Fora da nuvem, ou sem token, nao
+    faz nada: no PC o arquivo ja fica no disco."""
+    if not is_viewer_mode():
+        return False, "fora do modo visualizacao: o arquivo local basta"
+    tok, repo = _gh_dispatch_config()
+    if not tok or not repo:
+        return False, "sem GABINETE_GH_TOKEN/GABINETE_GH_REPO: o apelido fica so nesta sessao"
+    import json as _json
+    url = f"https://api.github.com/repos/{repo}/actions/workflows/salvar_apelidos.yml/dispatches"
+    try:
+        if post_fn is None:
+            import requests
+            post_fn = requests.post
+        resp = post_fn(
+            url,
+            json={"ref": ("main" if (Path(__file__).resolve().parents[1] / "dota_paths.py").exists() else "master"),
+                  "inputs": {"apelidos": _json.dumps(apelidos, ensure_ascii=False)}},
+            headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"},
+            timeout=15,
+        )
+        code = int(getattr(resp, "status_code", 0))
+        if code == 204:
+            return True, "apelido enviado ao GitHub"
+        return False, f"GitHub recusou (HTTP {code})"
+    except Exception as exc:
+        return False, f"falha de rede: {type(exc).__name__}"
+
+
 def render_update_now_button(st: Any) -> None:
     """Acompanhamento ao vivo da publicação, depois de um envio de CSV.
 

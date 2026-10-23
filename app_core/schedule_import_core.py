@@ -6,6 +6,7 @@ import difflib
 import html
 import json
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any, Iterable, List, MutableMapping, Tuple
 
@@ -15,13 +16,28 @@ from app_core.schedule_state_core import (
 )
 
 
-def normalize_schedule_team_key(value: str) -> str:
+# Letras que a decomposicao Unicode NAO separa em letra + acento (23/10/2026).
+_LETRAS_SEM_DECOMPOSICAO = {"ø": "o", "æ": "ae", "œ": "oe", "ß": "ss", "ł": "l",
+                            "đ": "d", "ð": "d", "þ": "th", "ı": "i"}
+
+
+def _chave_antiga(value: str) -> str:
+    """A normalizacao de ate 23/10/2026, mantida so para achar apelidos salvos
+    com ela. As trocas que ela tinha eram texto UTF-8 lido como latin-1 e nunca
+    casavam: letra acentuada era simplesmente APAGADA."""
     text = (value or "").strip().lower()
-    text = text.replace("Ã¡", "a").replace("Ã ", "a").replace("Ã£", "a").replace("Ã¢", "a")
-    text = text.replace("Ã©", "e").replace("Ãª", "e")
-    text = text.replace("Ã­", "i")
-    text = text.replace("Ã³", "o").replace("Ã´", "o").replace("Ãµ", "o")
-    text = text.replace("Ãº", "u")
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+
+def normalize_schedule_team_key(value: str) -> str:
+    """Chave de comparacao de nome de time: sem acento, sem espaco, minuscula.
+
+    23/10/2026: "LØS" (CSV) e "LOS" (agenda) davam "ls" e "los" -- o Ø era
+    apagado -- e o Mundial pedia para casar o time na mao, toda vez."""
+    text = (value or "").strip().lower()
+    text = "".join(_LETRAS_SEM_DECOMPOSICAO.get(c, c) for c in text)
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(c for c in text if not unicodedata.combining(c))
     return re.sub(r"[^a-z0-9]+", "", text)
 
 
@@ -150,6 +166,12 @@ def load_schedule_aliases(session_state: MutableMapping[str, Any], alias_path: P
 def save_schedule_aliases(session_state: MutableMapping[str, Any], alias_path: Path, aliases: dict[str, Any]) -> dict[str, str]:
     normalized = save_schedule_alias_state(session_state, aliases)
     alias_path.write_text(json.dumps(normalized, ensure_ascii=False, indent=2), encoding="utf-8")
+    # Na nuvem o disco nao sobrevive a reinicio: manda para o GitHub tambem.
+    try:
+        from app_core.viewer_mode_core import publicar_apelidos
+        publicar_apelidos(dict(normalized))
+    except Exception:
+        pass
     return dict(normalized)
 
 
@@ -174,8 +196,9 @@ def resolve_schedule_team(raw: str, teams_all: Iterable[str], aliases: dict[str,
     if team in teams:
         return team, True
     key = normalize_schedule_team_key(team)
-    if key in aliases and str(aliases[key]) in teams:
-        return str(aliases[key]), True
+    for k in (key, _chave_antiga(team)):
+        if k in aliases and str(aliases[k]) in teams:
+            return str(aliases[k]), True
     for known in teams:
         if normalize_schedule_team_key(known) == key:
             return known, True
