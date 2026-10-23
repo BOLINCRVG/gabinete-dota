@@ -62,9 +62,16 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     confronto: Mapping[str, Any] = ctx.get("confronto") or {}
     resolver: Optional[Callable[[str], str]] = ctx.get("resolver_time")
 
-    st.markdown("### Onde a Pinnacle paga mais do que o modelo acha que vale")
-
     odds = carregar_odds_coletadas(raiz)
+
+    # MODELO x MERCADO (23/10/2026): o vencedor do confronto aberto nas tres
+    # fontes, com o selo de valor cruzado. Vem antes de tudo e aparece mesmo
+    # sem odds da Pinnacle (a Polymarket sozinha ja e uma referencia).
+    from app_core.mercado_vencedor_core import render_vencedor_tres_fontes
+    render_vencedor_tres_fontes(st, raiz=raiz, odds=odds if not odds.get("motivo") else {},
+                                confronto=confronto, resolver=resolver)
+
+    st.markdown("### Onde a Pinnacle paga mais do que o modelo acha que vale")
     if odds.get("motivo"):
         st.info("Sem odds para comparar: {}.".format(odds["motivo"]))
         st.caption("Quem coleta e o robo do GitHub, de 3 em 3 horas. "

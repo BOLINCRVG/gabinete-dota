@@ -4,7 +4,7 @@ from typing import Dict, List
 
 TAB_ALL: List[str] = [
     "Visão Geral",
-    "Oportunidades",
+    "Modelo × Mercado",
     "Consistência das linhas",
     "Series",
     "Players",
@@ -20,7 +20,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
     # StatsCamps fica antes de Rankings em todos os modos do dia-a-dia.
     "Fluxo Rápido": [
         "Visão Geral",
-        "Oportunidades",
+        "Modelo × Mercado",
         "Análise de Linha",
         "Series",
         "Players",
@@ -30,7 +30,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
     ],
     "Mercados": [
         "Visão Geral",
-        "Oportunidades",
+        "Modelo × Mercado",
         "Análise de Linha",
         "Series",
         "Players",
@@ -40,7 +40,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
     ],
     "Análise": [
         "Visão Geral",
-        "Oportunidades",
+        "Modelo × Mercado",
         "Análise de Linha",
         "Series",
         "Campeões",

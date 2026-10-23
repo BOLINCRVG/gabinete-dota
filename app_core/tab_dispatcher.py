@@ -23,7 +23,7 @@ TAB_CAMPEOES = "Campeões"
 TAB_PLAYERS = "Players"
 TAB_IDENTIDADE = "Identidade"
 TAB_LINE_ANALYSIS = "Análise de Linha"
-TAB_OPORTUNIDADES = "Oportunidades"
+TAB_OPORTUNIDADES = "Modelo × Mercado"
 
 # Ordem canônica das tabs secundárias
 SECONDARY_TAB_ORDER: tuple[str, ...] = (
