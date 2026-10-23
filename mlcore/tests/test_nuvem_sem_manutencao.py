@@ -18,6 +18,10 @@ class TestNuvemNaoFazManutencaoNaAbertura(unittest.TestCase):
         self.assertIn("is_streamlit_cloud()", fonte)
         self.assertIn("_must_run_auto = False", fonte)
 
+    def test_nuvem_nao_tranca_a_entrada(self):
+        fonte = inspect.getsource(fluxo)
+        self.assertIn("pendencias_criticas_na_nuvem", fonte)
+
     def test_deteccao_da_nuvem(self):
         with mock.patch.object(vivo.os, "name", "posix"), \
              mock.patch.dict(vivo.os.environ, {"HOME": "/home/appuser"}):

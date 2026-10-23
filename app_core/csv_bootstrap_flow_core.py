@@ -701,6 +701,17 @@ def csv_bootstrap_gate(
             _go_decision = "GO_COM_ALERTAS"
             _go_reason = "alertas_nao_criticos"
             _go_can_enter = True
+    # NA NUVEM, PENDENCIA CRITICA AVISA MAS NAO TRANCA (23/10/2026). O NO-GO pede
+    # "corrija antes de operar", e na Streamlit Cloud nao ha como corrigir: ela
+    # nao treina (~1GB; ver o bloco da manutencao acima). Trancar ali so deixa o
+    # app inacessivel -- foi o que aconteceu ao recriar o app (Patch/Liga em
+    # REFIT, params de 97 dias). Quem corrige e o PC ou os robos.
+    if _go_decision == "NO-GO":
+        from app_core.live_models_status_core import is_streamlit_cloud
+        if is_streamlit_cloud():
+            _go_decision = "GO_COM_ALERTAS"
+            _go_reason = "pendencias_criticas_na_nuvem"
+            _go_can_enter = True
 
     st.markdown("### Decisão operacional (GO/NO-GO)")
     if _go_decision == "NO-GO":
