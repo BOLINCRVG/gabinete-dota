@@ -637,6 +637,7 @@ def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, A
             "tipo": l.get("tipo"), "periodo": l.get("periodo"),
             "lado": l.get("lado"), "time": l.get("time"),
             "pontos": l.get("pontos"), "alternativa": l.get("alternativa"),
+            "unidade": l.get("unidade"),
             "odd_casa": _num(l.get("odd")), "margem_pct": l.get("margem_pct"),
             "limite": l.get("limite"),
             "p_casa_justa": _num(l.get("p_casa_justa")),

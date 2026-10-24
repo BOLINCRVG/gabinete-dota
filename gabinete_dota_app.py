@@ -3635,6 +3635,7 @@ def _render_oportunidades_dota() -> None:
             "medias_kills": _oportunidades_medias_kills,
             "casados_sozinhos": {},
             "jogos_por_time": _oportunidades_jogos_por_time,
+            "team_games": team_games,
             "times_nao_casados": _oportunidades_times_nao_casados(),
             "resolver_time": _oportunidades_resolver_time,
             "sugerir_times": _oportunidades_sugerir_times,

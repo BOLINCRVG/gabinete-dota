@@ -70,7 +70,7 @@ CSS = """
   .nota { color:var(--fraco); font-size:11.5px; padding:8px 2px 0; line-height:1.45; }
   .lista { background:var(--painel); border:1px solid var(--borda); border-top:3px solid var(--modelo);
            border-radius:12px; overflow:hidden; }
-  .lcab, .lrow { display:grid; grid-template-columns: 2.3fr 1.7fr 1.7fr 0.8fr 0.8fr 0.9fr;
+  .lcab, .lrow { display:grid; grid-template-columns: 2.2fr 1.6fr 1.7fr 0.75fr 0.75fr 0.85fr 0.85fr;
                  align-items:center; column-gap:10px; padding:0 14px; }
   .lcab { background:var(--cab); font-weight:700; font-size:11.5px; opacity:0.85; height:34px; }
   .lrow { border-top:1px solid var(--linha); height:47px; }
@@ -79,6 +79,10 @@ CSS = """
   .lrow .fraco { color:var(--fraco); font-size:12.5px; }
   .lrow .aposta { font-weight:800; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .c { text-align:center; }
+  .e { font-weight:800; font-size:12px; border-radius:8px; padding:2px 8px; border:1px solid var(--borda); }
+  .e-sim { color:var(--boa); background:var(--verde-fundo); border-color:var(--verde-borda); }
+  .e-nao { color:var(--ruim); background:rgba(201,115,106,0.14); border-color:rgba(201,115,106,0.55); }
+  .e-meio { color:var(--fraco); }
   .lrow .badge { margin:0; }
   .faixa { display:flex; align-items:center; gap:22px; flex-wrap:wrap; background:var(--painel);
            border:1px solid var(--borda); border-left:3px solid var(--poly); border-radius:10px; padding:9px 12px; }
@@ -125,7 +129,7 @@ ALTURA_LINHA = 47
 
 def altura_destaques(n: int) -> int:
     """Altura exata do bloco: status + cabecalho + n linhas (sem vazio embaixo)."""
-    return 34 + 40 + ALTURA_LINHA * max(1, min(n, LIMITE_DESTAQUES)) + 6
+    return 34 + 40 + ALTURA_LINHA * max(1, min(n, LIMITE_DESTAQUES)) + 6 + 40
 
 
 def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = LIMITE_DESTAQUES) -> str:
@@ -137,7 +141,8 @@ def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = 
     if not linhas:
         return '<div class="nada">Nenhuma aposta com vantagem entre 1% e 20% nesta leitura.</div>'
     cab = ('<div class="lcab"><div>Jogo</div><div>Mercado</div><div>Aposta</div>'
-           '<div class="c">Pinnacle</div><div class="c">Modelo</div><div class="c">Vantagem</div></div>')
+           '<div class="c">Pinnacle</div><div class="c">Modelo</div><div class="c">Vantagem</div>'
+           '<div class="c">Estatistica</div></div>')
     corpo = []
     for x in linhas:
         v = _num(x.get("vantagem_pct"))
@@ -146,13 +151,29 @@ def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = 
             '<div class="fraco">{}</div><div class="aposta">{}</div>'
             '<div class="c"><span class="odd o-pin">{}</span></div>'
             '<div class="c"><span class="odd o-mod">{}</span></div>'
-            '<div class="c"><span class="badge">{}</span></div></div>'.format(
+            '<div class="c"><span class="badge">{}</span></div>{}</div>'.format(
                 escape(str(x.get("casa") or "?")), escape(str(x.get("fora") or "?")),
                 escape(str(x.get("liga") or "")), escape(_hora_br(x.get("inicio_utc"))),
                 escape(str(x.get("nome_pt") or x.get("mercado") or "")), escape(aposta_fn(x)),
                 _odd(x.get("odd_casa")), _odd(x.get("odd_modelo")),
-                "" if v is None else f"+{v:.1f}%".replace(".", ",")))
-    return '<div class="lista">' + cab + "".join(corpo) + "</div>"
+                "" if v is None else f"+{v:.1f}%".replace(".", ","), _cel_estat(x)))
+    return '<div class="lista">' + cab + "".join(corpo) + "</div>" + LEGENDA_ESTAT
+
+
+LEGENDA_ESTAT = ('<div class="nota"><b>Estatistica</b>: em quantos dos ultimos 10 jogos de cada time '
+                 '(somados) essa aposta teria batido. <span class="e e-sim">verde</span> concorda com o '
+                 'modelo (60% ou mais) · <span class="e e-nao">vermelho</span> discorda (40% ou menos) · '
+                 'cinza: dividida ou pouco jogo.</div>')
+
+
+def _cel_estat(x: Mapping[str, Any]) -> str:
+    e = x.get("estat") or {}
+    v = x.get("estat_veredito") or ""
+    if not e or not e.get("jogos"):
+        return '<div class="c"><span class="nada">-</span></div>'
+    classe = {"concorda": "e-sim", "discorda": "e-nao"}.get(v, "e-meio")
+    return '<div class="c" title="{}"><span class="e {}">{}/{}</span></div>'.format(
+        escape(v), classe, e.get("acertos"), e.get("jogos"))
 
 
 def _cel(odd: Any, vant: Any = None, verde: bool = False) -> str:

@@ -103,11 +103,20 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     from app_core.modelo_mercado_html_core import (
         LIMITE_DESTAQUES, altura_destaques, html_destaques, html_status, pagina)
     top = linhas_com_valor(completo, incluir_suspeitas=False)
+    # O CRUZAMENTO (24/10/2026): o modelo ve valor -- a estatistica do historico
+    # dos dois times concorda? Ver app_core/cruzamento_estatistica_core.py.
+    from app_core.cruzamento_estatistica_core import cruzar as _cruzar
+    top = _cruzar(top, ctx.get("team_games"), resolver)
+    _contra = sum(1 for x in top[:LIMITE_DESTAQUES] if x.get("estat_veredito") == "discorda")
     st.markdown("### Melhores apostas do dia")
     corpo = html_status(jogos=painel["jogos"], com_valor=painel["linhas_com_valor"],
                         idade_pin="-" if sem_odds else _idade_curta(odds.get("idade_horas")),
                         idade_poly="-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
                         pin_velha=bool(odds.get("velha")))
+    if _contra:
+        st.warning("Em {} das apostas abaixo a estatistica dos ultimos jogos discorda do "
+                   "modelo (coluna Estatistica em vermelho). Confira antes de apostar."
+                   .format(_contra))
     corpo += html_destaques(top, _aposta)
     try:
         import streamlit.components.v1 as _componentes
