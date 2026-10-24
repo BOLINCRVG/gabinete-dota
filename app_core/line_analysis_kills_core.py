@@ -539,7 +539,21 @@ def _render_v3_kills_subpanel(
     # --------- Lines list — supports multiple lines as nested tabs ----------
     lines_key = f"v3kills_lines_{market_key}_{team_a}_{team_b}"
     if lines_key not in session_state or not isinstance(session_state.get(lines_key), list) or not session_state[lines_key]:
-        session_state[lines_key] = [float(default_line)]
+        # A LINHA DO JOGO, nao a padrao (24/10/2026): a principal da Pinnacle
+        # para este confronto; sem ela, a media das medias dos dois times.
+        # Ver app_core/linha_sugerida_core.py.
+        _linha0, _origem0 = float(default_line), ""
+        if not bool(market_cfg.get("binary_market")) and not bool(market_cfg.get("handicap")):
+            try:
+                from app_core.linha_sugerida_core import linha_inicial
+                _sa = df_a[metric_col] if (df_a is not None and metric_col in getattr(df_a, "columns", [])) else None
+                _sb = df_b[metric_col] if (df_b is not None and metric_col in getattr(df_b, "columns", [])) else None
+                _linha0, _origem0 = linha_inicial(market_key, str(team_a), str(team_b), _sa, _sb,
+                                                  float(default_line))
+            except Exception:
+                _linha0, _origem0 = float(default_line), ""
+        session_state[lines_key] = [float(_linha0)]
+        session_state[lines_key + "_origem"] = _origem0
     # Defensive: ensure all entries are floats
     lines_list: list[float] = [float(x) for x in session_state[lines_key] if isinstance(x, (int, float))]
     if not lines_list:
@@ -562,6 +576,9 @@ def _render_v3_kills_subpanel(
             f"</div>",
             unsafe_allow_html=True,
         )
+        _origem_txt = str(session_state.get(lines_key + "_origem") or "")
+        if _origem_txt:
+            st.caption("Linha inicial: {}.".format(_origem_txt))
     with lc2:
         if bool(market_cfg.get("binary_market")):
             st.markdown(
