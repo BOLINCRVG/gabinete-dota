@@ -1,12 +1,12 @@
 {
- "testes": 5790,
- "segundos": 89.655,
+ "testes": 5793,
+ "segundos": 54.339,
  "status": "OK",
  "falhas": 0,
  "erros": 0,
  "pulados": 237,
  "ok": true,
- "gerado_em": "2026-10-24T17:52:17",
- "duracao_total_s": 93.9,
+ "gerado_em": "2026-10-24T18:02:18",
+ "duracao_total_s": 58.0,
  "primeiras_falhas": []
 }
