@@ -2821,6 +2821,13 @@ if flow_stage == "select":
         st.info("Clique em **Analisar Confronto** para abrir o preenchimento das linhas.")
     else:
         st.info("Escolha os times e clique **Analisar Confronto**.")
+    # A GAVETA NA TELA INICIAL (24/10/2026): os jogos que as casas tem, por
+    # dia; clicar abre o confronto ja analisado. Ver app_core/gaveta_jogos_core.py.
+    try:
+        from app_core.gaveta_jogos_core import render_gaveta_inicial as _gaveta_inicial
+        _gaveta_inicial(st, raiz=APP_ROOT, times=list(teams or []))
+    except Exception as _e_gaveta:
+        st.caption("A lista de jogos nao abriu: {}".format(type(_e_gaveta).__name__))
     st.stop()
 
 # -----------------------------

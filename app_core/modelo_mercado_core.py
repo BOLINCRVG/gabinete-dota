@@ -139,3 +139,46 @@ def tabela_de_valor(linhas: List[Mapping[str, Any]], *, com_jogo: bool) -> List[
         })
         fora.append(linha)
     return fora
+
+
+def linhas_do_jogo(completo: List[Mapping[str, Any]], jogo: Any) -> List[Mapping[str, Any]]:
+    """Para a gaveta (24/10/2026): em cada mercado do jogo, a linha mais
+    EQUILIBRADA da Pinnacle (odds dos dois lados mais proximas), com os dois
+    lados. As alternativas continuam na Linha justa logo abaixo."""
+    por_mercado: Dict[str, Dict[Any, List[Mapping[str, Any]]]] = {}
+    for x in completo or []:
+        if x.get("jogo") != jogo:
+            continue
+        # So o que o modelo precifica (24/10/2026): os outros 25 mercados da
+        # Pinnacle (primeiro a 5 abates, par ou impar...) so diziam "-" e
+        # enterravam o resto. Continuam no "mercado inteiro", nos detalhes.
+        if _num(x.get("odd_modelo")) is None:
+            continue
+        nome = str(x.get("nome_pt") or x.get("mercado") or "")
+        chave = (x.get("pontos") if str(x.get("tipo") or "") == "total" else
+                 abs(_num(x.get("pontos")) or 0.0), str(x.get("time") or ""))
+        por_mercado.setdefault(nome, {}).setdefault(chave, []).append(x)
+    fora: List[Mapping[str, Any]] = []
+    # num BO1, "Vencedor - mapa 1" e "Vencedor - serie" sao a mesma aposta
+    vencs = [n for n in por_mercado if n.lower().startswith("vencedor") and "kill" not in n.lower()]
+    if len(vencs) > 1 and any("serie" in n.lower() for n in vencs):
+        def _odds(n):
+            return sorted(_num(r.get("odd_casa")) or 0 for g in por_mercado[n].values() for r in g)
+        serie = next(n for n in vencs if "serie" in n.lower())
+        for n in vencs:
+            if n != serie and _odds(n) == _odds(serie):
+                por_mercado.pop(n)
+
+    def _ordem(nome):
+        b = nome.lower()
+        return (0 if b.startswith("vencedor") else 1 if "handicap" in b else 2, b)
+    for nome in sorted(por_mercado, key=_ordem):
+        grupos = por_mercado[nome]
+
+        def _desequilibrio(rows):
+            odds = [_num(r.get("odd_casa")) for r in rows]
+            odds = [o for o in odds if o]
+            return abs(odds[0] - odds[1]) if len(odds) == 2 else 99.0
+        melhor = min(grupos, key=lambda k: _desequilibrio(grupos[k]))
+        fora.extend(sorted(grupos[melhor], key=lambda r: str(r.get("lado") or "")))
+    return fora

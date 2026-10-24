@@ -127,14 +127,23 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         with st.expander("Ver todas as {} apostas com valor".format(len(top))):
             st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
 
-    # ---- 3. O JOGO ESCOLHIDO -----------------------------------------------
-    st.markdown("### O jogo")
+    # ---- 3. A GAVETA DE JOGOS (24/10/2026) -----------------------------------
+    # Dias como abas, um botao por jogo, e "+ Escolher times". Clicar abre o
+    # confronto. Ver app_core/gaveta_jogos_core.py.
+    from app_core.gaveta_jogos_core import render_gaveta
+    from app_core.modelo_mercado_core import linhas_do_jogo
+    st.markdown("### Jogos")
+    _tg = ctx.get("team_games")
+    _times = sorted({str(x) for x in _tg["team"].dropna().unique()}) if _tg is not None else []
+    _na_gaveta = render_gaveta(st, odds=odds if not sem_odds else {}, poly=poly,
+                               confronto=confronto, resolver=resolver, times=_times)
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
                               ctx.get("ensinar_apelido"))
+    _jogos_que_dao = False
+    if not sem_odds and _na_gaveta is None and confronto.get("teamA") and confronto.get("teamB"):
+        _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver,
+                                                   ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
     if not sem_odds:
-        _jogos_que_dao = _diagnostico_do_confronto(
-            st, odds, confronto, resolver,
-            ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
         todas = list(r.get("todas") or [])
         por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
         for a in todas:
@@ -146,20 +155,27 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                 "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
                                      if v is not None] or [-999.0]),
                 "_so_resumo": True})
-        if por_jogo_cmp:
-            jogos_cmp = ordem_dos_jogos(por_jogo_cmp)
-            jogo_cmp = st.selectbox(
-                "Qual jogo",
-                jogos_cmp,
-                format_func=lambda j: _rotulo_do_jogo(
-                    [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
-                key="oportunidades_jogo_cmp",
-            )
-            # A Polymarket: so o que ela acrescenta, colada na Linha justa.
-            if any(a.get("metrica") == "vencedor" or a.get("com_vitoria")
-                   for a in por_jogo_cmp.get(jogo_cmp) or []):
-                render_vencedor_tres_fontes(st, raiz=raiz, odds=odds, confronto=confronto,
-                                            resolver=resolver)
+        jogo_cmp = _na_gaveta.get("id") if _na_gaveta else None
+        if _na_gaveta is not None:
+            # A Polymarket: so o que ela acrescenta.
+            render_vencedor_tres_fontes(st, raiz=raiz, odds=odds, confronto=confronto,
+                                        resolver=resolver)
+        if jogo_cmp in por_jogo_cmp:
+            # AS LINHAS DO JOGO, com a estatistica (a analise de linha dele).
+            from app_core.cruzamento_estatistica_core import cruzar as _cruzar
+            from app_core.modelo_mercado_core import aposta as _aposta_j
+            from app_core.modelo_mercado_html_core import html_destaques as _html_j
+            from app_core.modelo_mercado_html_core import pagina as _pagina_j
+            _lj = _cruzar(linhas_do_jogo(completo, jogo_cmp), ctx.get("team_games"), resolver)
+            if _lj:
+                st.markdown("#### Linhas do jogo: casa x modelo x estatistica")
+                try:
+                    import streamlit.components.v1 as _cmp
+                    _cmp.html(_pagina_j(_html_j(_lj, _aposta_j, limite=40, com_jogo=False)),
+                              height=34 + 47 * min(len(_lj), 40) + 60,
+                              scrolling=False)
+                except Exception:
+                    pass
             # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
             _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
             _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
@@ -173,6 +189,8 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                              vencedores=_venc,
                              bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
                              casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""))
+        elif _na_gaveta is not None and str(_na_gaveta.get("id", "")).startswith("poly:"):
+            st.caption("A Pinnacle nao tem este jogo; so a Polymarket (vencedor).")
         elif _jogos_que_dao:
             st.info("Este painel nao conseguiu precificar nenhuma linha deste confronto.")
 

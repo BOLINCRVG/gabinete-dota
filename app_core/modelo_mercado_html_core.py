@@ -84,6 +84,9 @@ CSS = """
   .e-nao { color:var(--ruim); background:rgba(201,115,106,0.14); border-color:rgba(201,115,106,0.55); }
   .e-meio { color:var(--fraco); }
   .lrow .badge { margin:0; }
+  .lrow .badge.vazio { visibility:hidden; }
+  .lrow .badge.neg { color:var(--ruim); background:transparent; border-color:var(--borda); }
+  .sem-jogo .lcab, .sem-jogo .lrow { grid-template-columns: 1.8fr 1.9fr 0.8fr 0.8fr 0.9fr 0.9fr; }
   .faixa { display:flex; align-items:center; gap:22px; flex-wrap:wrap; background:var(--painel);
            border:1px solid var(--borda); border-left:3px solid var(--poly); border-radius:10px; padding:9px 12px; }
 </style>
@@ -132,7 +135,8 @@ def altura_destaques(n: int) -> int:
     return 34 + 40 + ALTURA_LINHA * max(1, min(n, LIMITE_DESTAQUES)) + 6 + 40
 
 
-def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = LIMITE_DESTAQUES) -> str:
+def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = LIMITE_DESTAQUES,
+                   com_jogo: bool = True) -> str:
     """As melhores apostas do dia como LISTA no painel da Linha justa (24/10/2026).
 
     Os cartoes ficavam espremidos numa linha so em tela larga (texto miudo, o
@@ -140,30 +144,33 @@ def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = 
     linhas = list(linhas)[:limite]
     if not linhas:
         return '<div class="nada">Nenhuma aposta com vantagem entre 1% e 20% nesta leitura.</div>'
-    cab = ('<div class="lcab"><div>Jogo</div><div>Mercado</div><div>Aposta</div>'
+    cab = ('<div class="lcab">' + ('<div>Jogo</div>' if com_jogo else '') + '<div>Mercado</div><div>Aposta</div>'
            '<div class="c">Pinnacle</div><div class="c">Modelo</div><div class="c">Vantagem</div>'
            '<div class="c">Estatistica</div></div>')
     corpo = []
     for x in linhas:
         v = _num(x.get("vantagem_pct"))
         corpo.append(
-            '<div class="lrow"><div><b>{} x {}</b><span class="sub">{} · {}</span></div>'
-            '<div class="fraco">{}</div><div class="aposta">{}</div>'
+            ('<div class="lrow">' + ('<div><b>{} x {}</b><span class="sub">{} · {}</span></div>' if com_jogo
+                                     else '<!--{}{}{}{}-->') +
+             '<div class="fraco">{}</div><div class="aposta">{}</div>'
             '<div class="c"><span class="odd o-pin">{}</span></div>'
             '<div class="c"><span class="odd o-mod">{}</span></div>'
-            '<div class="c"><span class="badge">{}</span></div>{}</div>'.format(
+            '<div class="c"><span class="badge{}">{}</span></div>{}</div>').format(
                 escape(str(x.get("casa") or "?")), escape(str(x.get("fora") or "?")),
                 escape(str(x.get("liga") or "")), escape(_hora_br(x.get("inicio_utc"))),
                 escape(str(x.get("nome_pt") or x.get("mercado") or "")), escape(aposta_fn(x)),
                 _odd(x.get("odd_casa")), _odd(x.get("odd_modelo")),
-                "" if v is None else f"+{v:.1f}%".replace(".", ","), _cel_estat(x)))
-    return '<div class="lista">' + cab + "".join(corpo) + "</div>" + LEGENDA_ESTAT
+                " vazio" if v is None else ("" if v > 0 else " neg"),
+                "-" if v is None else f"{v:+.1f}%".replace(".", ","), _cel_estat(x)))
+    return ('<div class="lista{}">'.format("" if com_jogo else " sem-jogo") + cab + "".join(corpo)
+            + "</div>" + LEGENDA_ESTAT)
 
 
 LEGENDA_ESTAT = ('<div class="nota"><b>Estatistica</b>: em quantos dos ultimos 10 jogos de cada time '
-                 '(somados) essa aposta teria batido. <span class="e e-sim">verde</span> concorda com o '
-                 'modelo (60% ou mais) · <span class="e e-nao">vermelho</span> discorda (40% ou menos) · '
-                 'cinza: dividida ou pouco jogo.</div>')
+                 '(somados) essa aposta teria batido. <span class="e e-sim">verde</span> bateu em 60% ou '
+                 'mais · <span class="e e-nao">vermelho</span> em 40% ou menos · cinza: dividida ou pouco '
+                 'jogo. Com vantagem do modelo, verde e o historico concordando com ele.</div>')
 
 
 def _cel_estat(x: Mapping[str, Any]) -> str:
