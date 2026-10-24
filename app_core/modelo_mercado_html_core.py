@@ -68,6 +68,18 @@ CSS = """
   .selo.forte, .selo.casas { border-color:var(--verde-borda); background:var(--verde-fundo); }
   .selo.desc { border-color:rgba(217,164,65,0.55); color:var(--pin); }
   .nota { color:var(--fraco); font-size:11.5px; padding:8px 2px 0; line-height:1.45; }
+  .lista { background:var(--painel); border:1px solid var(--borda); border-top:3px solid var(--modelo);
+           border-radius:12px; overflow:hidden; }
+  .lcab, .lrow { display:grid; grid-template-columns: 2.3fr 1.7fr 1.7fr 0.8fr 0.8fr 0.9fr;
+                 align-items:center; column-gap:10px; padding:0 14px; }
+  .lcab { background:var(--cab); font-weight:700; font-size:11.5px; opacity:0.85; height:34px; }
+  .lrow { border-top:1px solid var(--linha); height:47px; }
+  .lrow b { font-size:13.5px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lrow .sub { color:var(--fraco); font-size:11px; display:block; white-space:nowrap; }
+  .lrow .fraco { color:var(--fraco); font-size:12.5px; }
+  .lrow .aposta { font-weight:800; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .c { text-align:center; }
+  .lrow .badge { margin:0; }
   .faixa { display:flex; align-items:center; gap:22px; flex-wrap:wrap; background:var(--painel);
            border:1px solid var(--borda); border-left:3px solid var(--poly); border-radius:10px; padding:9px 12px; }
 </style>
@@ -107,26 +119,40 @@ def html_status(*, jogos: int, com_valor: int, idade_pin: str, idade_poly: str,
         jogos, com_valor, "velho" if pin_velha else "", escape(idade_pin), escape(idade_poly))
 
 
-def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = 8) -> str:
-    """Cartoes das melhores apostas do dia (ja ordenadas)."""
-    cards = []
-    for x in linhas[:limite]:
+LIMITE_DESTAQUES = 10
+ALTURA_LINHA = 47
+
+
+def altura_destaques(n: int) -> int:
+    """Altura exata do bloco: status + cabecalho + n linhas (sem vazio embaixo)."""
+    return 34 + 40 + ALTURA_LINHA * max(1, min(n, LIMITE_DESTAQUES)) + 6
+
+
+def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = LIMITE_DESTAQUES) -> str:
+    """As melhores apostas do dia como LISTA no painel da Linha justa (24/10/2026).
+
+    Os cartoes ficavam espremidos numa linha so em tela larga (texto miudo, o
+    selo da vantagem vazando). Lista com cabecalho le igual em qualquer largura."""
+    linhas = list(linhas)[:limite]
+    if not linhas:
+        return '<div class="nada">Nenhuma aposta com vantagem entre 1% e 20% nesta leitura.</div>'
+    cab = ('<div class="lcab"><div>Jogo</div><div>Mercado</div><div>Aposta</div>'
+           '<div class="c">Pinnacle</div><div class="c">Modelo</div><div class="c">Vantagem</div></div>')
+    corpo = []
+    for x in linhas:
         v = _num(x.get("vantagem_pct"))
-        cards.append(
-            '<div class="card"><div class="jogo">{} x {}</div>'
-            '<div class="meta">{} · {}</div>'
-            '<div class="merc">{}</div><div class="aposta">{}</div>'
-            '<div class="odds"><span class="rot">Pinnacle</span><span class="odd o-pin">{}</span>'
-            '<span class="rot">Modelo</span><span class="odd o-mod">{}</span>'
-            '<span class="badge">{}</span></div></div>'.format(
+        corpo.append(
+            '<div class="lrow"><div><b>{} x {}</b><span class="sub">{} · {}</span></div>'
+            '<div class="fraco">{}</div><div class="aposta">{}</div>'
+            '<div class="c"><span class="odd o-pin">{}</span></div>'
+            '<div class="c"><span class="odd o-mod">{}</span></div>'
+            '<div class="c"><span class="badge">{}</span></div></div>'.format(
                 escape(str(x.get("casa") or "?")), escape(str(x.get("fora") or "?")),
                 escape(str(x.get("liga") or "")), escape(_hora_br(x.get("inicio_utc"))),
                 escape(str(x.get("nome_pt") or x.get("mercado") or "")), escape(aposta_fn(x)),
                 _odd(x.get("odd_casa")), _odd(x.get("odd_modelo")),
                 "" if v is None else f"+{v:.1f}%".replace(".", ",")))
-    if not cards:
-        return '<div class="nada">Nenhuma aposta com vantagem entre 1% e 20% nesta leitura.</div>'
-    return '<div class="grade">' + "".join(cards) + "</div>"
+    return '<div class="lista">' + cab + "".join(corpo) + "</div>"
 
 
 def _cel(odd: Any, vant: Any = None, verde: bool = False) -> str:

@@ -100,21 +100,21 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     # ---- 2. AS MELHORES APOSTAS DO DIA (no tema da Linha justa) --------------
     from app_core.modelo_mercado_core import aposta as _aposta
-    from app_core.modelo_mercado_html_core import html_destaques, html_status, pagina
+    from app_core.modelo_mercado_html_core import (
+        LIMITE_DESTAQUES, altura_destaques, html_destaques, html_status, pagina)
     top = linhas_com_valor(completo, incluir_suspeitas=False)
     st.markdown("### Melhores apostas do dia")
     corpo = html_status(jogos=painel["jogos"], com_valor=painel["linhas_com_valor"],
                         idade_pin="-" if sem_odds else _idade_curta(odds.get("idade_horas")),
                         idade_poly="-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
                         pin_velha=bool(odds.get("velha")))
-    corpo += html_destaques(top, _aposta, limite=8)
-    n_cards = min(len(top), 8)
+    corpo += html_destaques(top, _aposta)
     try:
         import streamlit.components.v1 as _componentes
-        _componentes.html(pagina(corpo), height=50 + 165 * max(1, (n_cards + 3) // 4), scrolling=True)
+        _componentes.html(pagina(corpo), height=altura_destaques(len(top)), scrolling=False)
     except Exception:
         st.markdown(corpo, unsafe_allow_html=True)
-    if len(top) > 8:
+    if len(top) > LIMITE_DESTAQUES:
         with st.expander("Ver todas as {} apostas com valor".format(len(top))):
             st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
 
