@@ -1,60 +1,84 @@
 {
- "gerado_em": "2026-08-27T00:08:33",
+ "gerado_em": "2026-10-24T01:10:24",
  "itens": [
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Coletar serie por minuto (um pedaco por rodada)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:53",
+   "onde": ".github/workflows/dados_diarios_dota.yml:54",
    "chave": "continue_on_error|dados_diarios_dota.yml: Coletar serie por minuto (um pedaco por rodada)",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 59
   },
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:100",
+   "onde": ".github/workflows/dados_diarios_dota.yml:107",
    "chave": "continue_on_error|dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
    "visto_em": "2026-08-26",
-   "idade_dias": 1
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_cache.json",
-   "onde": "gabinete_dota_app.py:1788",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_cache.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 1
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_report.json",
-   "onde": "app_core/csv_bootstrap_flow_core.py:123",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_report.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 1
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "csv_bootstrap_maintenance_state.json",
-   "onde": "gabinete_dota_app.py:1790",
-   "chave": "lido_nao_versionado|csv_bootstrap_maintenance_state.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 1
-  },
-  {
-   "familia": "lido_nao_versionado",
-   "item": "user_schedule_store.json",
-   "onde": "gabinete_dota_app.py:2394",
-   "chave": "lido_nao_versionado|user_schedule_store.json",
-   "visto_em": "2026-08-26",
-   "idade_dias": 1
+   "idade_dias": 59
   },
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:108",
+   "onde": ".github/workflows/dados_diarios_dota.yml:138",
    "chave": "continue_on_error|dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
    "visto_em": "2026-08-27",
+   "idade_dias": 58
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:130",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:157",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Frescor das reguas (so reporta)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:145",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Frescor das reguas (so reporta)",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:117",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Regua das 28 (so reporta)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:149",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Regua das 28 (so reporta)",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Medir desempenho computacional",
+   "onde": ".github/workflows/suite.yml:50",
+   "chave": "continue_on_error|suite.yml: Medir desempenho computacional",
+   "visto_em": "2026-10-24",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "suite.yml: Rodar a suite inteira",
+   "onde": ".github/workflows/suite.yml:43",
+   "chave": "continue_on_error|suite.yml: Rodar a suite inteira",
+   "visto_em": "2026-10-24",
    "idade_dias": 0
   }
  ]

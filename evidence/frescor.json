@@ -1,13 +1,6 @@
 {
- "gerado_em": "2026-10-23T15:36:09",
+ "gerado_em": "2026-10-24T01:10:24",
  "reguas": [
-  {
-   "arquivo": "livro_caixa.json",
-   "rotulo": "livro-caixa do silencio",
-   "cadencia_dias": 7,
-   "idade_dias": 57.6,
-   "estado": "VELHA"
-  },
   {
    "arquivo": "dota_scorecard.json",
    "rotulo": "regua do Dota (esteira 2x ao dia)",
@@ -26,21 +19,21 @@
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.6,
+   "idade_dias": 0.4,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.2,
+   "idade_dias": 0.1,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "suite_esteira.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.2,
+   "idade_dias": 0.1,
    "estado": "frequencia nao declarada"
   },
   {
@@ -74,8 +67,15 @@
   {
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
-   "cadencia_dias": 7,
-   "idade_dias": 0.6,
+   "cadencia_dias": 1.0,
+   "idade_dias": 0.4,
+   "estado": "ok"
+  },
+  {
+   "arquivo": "livro_caixa.json",
+   "rotulo": "livro-caixa do silencio",
+   "cadencia_dias": 1.0,
+   "idade_dias": 0.0,
    "estado": "ok"
   },
   {
