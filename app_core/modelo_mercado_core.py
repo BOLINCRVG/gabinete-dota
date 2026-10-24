@@ -50,7 +50,8 @@ def nivel(vantagem: Any, *, suspeito: Any = None) -> str:
 
 
 def linhas_com_valor(completo: List[Mapping[str, Any]], *, jogo: Any = None,
-                     incluir_suspeitas: bool = True) -> List[Mapping[str, Any]]:
+                     incluir_suspeitas: bool = True,
+                     um_por_mercado: bool = True) -> List[Mapping[str, Any]]:
     """Linhas em que o modelo ve vantagem >= VANTAGEM_MINIMA_PCT, da maior para
     a menor. As suspeitas vao para o fim (aparecem, mas nao no topo)."""
     fora = []
@@ -64,9 +65,26 @@ def linhas_com_valor(completo: List[Mapping[str, Any]], *, jogo: Any = None,
         if susp and not incluir_suspeitas:
             continue
         fora.append(x)
-    return sorted(fora, key=lambda x: (
+    fora = sorted(fora, key=lambda x: (
         bool(x.get("suspeito")) or (_num(x.get("vantagem_pct")) or 0) > VANTAGEM_SUSPEITA_PCT,
         -(_num(x.get("vantagem_pct")) or 0)))
+    if not um_por_mercado:
+        return fora
+    # UM POR MERCADO E LADO, em cada jogo (24/10/2026, ele: "esta repetidas
+    # vezes falando a mesma coisa"). Handicap +2,5 / +3,5 / +6,5 do mesmo time
+    # sao a mesma ideia em linhas alternativas; e num BO1 vencedor do mapa 1 e
+    # da serie sao a mesma aposta. Fica a de maior vantagem; as outras linhas
+    # continuam na Linha justa do jogo.
+    vistos, unicas = set(), []
+    for x in fora:
+        tipo = str(x.get("tipo") or "")
+        mercado = "vencedor" if tipo == "moneyline" and not str(x.get("unidade") or "").strip()             else str(x.get("nome_pt") or x.get("mercado") or "")
+        chave = (x.get("jogo"), mercado, str(x.get("lado") or ""), str(x.get("time") or ""))
+        if chave in vistos:
+            continue
+        vistos.add(chave)
+        unicas.append(x)
+    return unicas
 
 
 def painel_do_dia(completo: List[Mapping[str, Any]]) -> Dict[str, Any]:

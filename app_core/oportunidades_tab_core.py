@@ -119,9 +119,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
 
     # ---- 3. O JOGO ESCOLHIDO -----------------------------------------------
-    st.markdown("### O jogo aberto")
-    render_vencedor_tres_fontes(st, raiz=raiz, odds=odds if not sem_odds else {},
-                                confronto=confronto, resolver=resolver)
+    st.markdown("### O jogo")
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
                               ctx.get("ensinar_apelido"))
     if not sem_odds:
@@ -148,6 +146,11 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
                     [y for y in por_jogo_cmp[j] if not y.get("_so_resumo")] or por_jogo_cmp[j]),
                 key="oportunidades_jogo_cmp",
             )
+            # A Polymarket: so o que ela acrescenta, colada na Linha justa.
+            if any(a.get("metrica") == "vencedor" or a.get("com_vitoria")
+                   for a in por_jogo_cmp.get(jogo_cmp) or []):
+                render_vencedor_tres_fontes(st, raiz=raiz, odds=odds, confronto=confronto,
+                                            resolver=resolver)
             # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
             _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
             _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})

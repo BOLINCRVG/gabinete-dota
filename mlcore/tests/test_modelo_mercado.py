@@ -32,6 +32,18 @@ class TestValor(unittest.TestCase):
         r = linhas_com_valor(COMPLETO)
         self.assertEqual(r[-1]["vantagem_pct"], 45.0)
 
+    def test_mesma_aposta_de_vencedor_vira_um_cartao_so(self):
+        bo1 = [_l(9, 16.6, tipo="moneyline", lado="home", odd_casa=2.59, nome_pt="Vencedor - mapa 1", pontos=None),
+               _l(9, 16.3, tipo="moneyline", lado="home", odd_casa=2.59, nome_pt="Vencedor - serie", pontos=None)]
+        self.assertEqual(len(linhas_com_valor(bo1)), 1)
+
+    def test_linhas_alternativas_do_mesmo_handicap_viram_uma(self):
+        alt = [_l(9, v, tipo="spread", lado="home", pontos=p, nome_pt="Handicap - Kills - mapa 1")
+               for v, p in ((19.6, 3.5), (19.1, 6.5), (17.2, 2.5))]
+        r = linhas_com_valor(alt)
+        self.assertEqual([x["pontos"] for x in r], [3.5])
+        self.assertEqual(len(linhas_com_valor(alt, um_por_mercado=False)), 3)
+
     def test_painel(self):
         p = painel_do_dia(COMPLETO)
         self.assertEqual((p["jogos"], p["linhas_com_valor"], p["jogos_com_valor"]), (3, 3, 2))

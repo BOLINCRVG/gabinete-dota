@@ -242,11 +242,11 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
                                 resolver: Optional[Callable[[str], str]]) -> None:
     """O vencedor do confronto aberto: Modelo | Pinnacle | Polymarket, no
     desenho da Linha justa (23/10/2026: "siga a tematica do modelo + da aba")."""
-    from app_core.modelo_mercado_html_core import html_vencedor, pagina
+    from app_core.modelo_mercado_html_core import html_faixa_polymarket, pagina
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
     if not (time_a and time_b):
-        st.caption("Abra um confronto (Time 1 x Time 2) para ver o vencedor nas tres fontes.")
+        return
         return
     poly_doc = carregar_polymarket(raiz)
     try:
@@ -262,7 +262,6 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
     pin_a, pin_b = odds_pinnacle_do_confronto(odds, time_a, time_b, resolver, bo)
     r = comparar_vencedor(p_modelo, pin_odd_a=pin_a, pin_odd_b=pin_b, poly=poly)
     if not r["linhas"]:
-        st.info(r.get("motivo") or "Sem numeros para comparar.")
         return
     if pin_a is None:
         faltando.append("Pinnacle sem este confronto (ou em outro BO)")
@@ -271,12 +270,12 @@ def render_vencedor_tres_fontes(st: Any, *, raiz: Path, odds: Mapping[str, Any],
             f" ({poly_doc['motivo']})" if poly_doc.get("motivo") else ""))
     elif poly is not None and not polymarket_vale(poly):
         faltando.append("Polymarket com pouco dinheiro ou spread largo neste jogo: referencia fraca")
-    html = html_vencedor(r, time_a=time_a, time_b=time_b, bo=bo,
-                         rotulos=ROTULO_SELO, fontes_faltando=faltando)
+    html = html_faixa_polymarket(r, time_a=time_a, time_b=time_b,
+                                 rotulos=ROTULO_SELO, fontes_faltando=faltando)
     extras = html.count('class="selo') + html.count('class="nota"')
     try:
         import streamlit.components.v1 as _componentes
-        _componentes.html(pagina(html), height=190 + 34 * extras, scrolling=False)
+        _componentes.html(pagina(html), height=56 + 40 * extras, scrolling=False)
     except Exception:
         st.markdown(html, unsafe_allow_html=True)
 

@@ -68,6 +68,8 @@ CSS = """
   .selo.forte, .selo.casas { border-color:var(--verde-borda); background:var(--verde-fundo); }
   .selo.desc { border-color:rgba(217,164,65,0.55); color:var(--pin); }
   .nota { color:var(--fraco); font-size:11.5px; padding:8px 2px 0; line-height:1.45; }
+  .faixa { display:flex; align-items:center; gap:22px; flex-wrap:wrap; background:var(--painel);
+           border:1px solid var(--borda); border-left:3px solid var(--poly); border-radius:10px; padding:9px 12px; }
 </style>
 """
 
@@ -176,6 +178,45 @@ def html_vencedor(comp: Mapping[str, Any], *, time_a: str, time_b: str, bo: int,
         html += '<div class="nota">{}.</div>'.format(escape(" · ".join(fontes_faltando)))
     html += ('<div class="nota">Odds: no modelo, a justa (1/chance); na Pinnacle, a que ela paga; '
              'na Polymarket, 1/preço de compra. Verde: o modelo vê valor nesse preço.</div>')
+    return html
+
+
+def html_faixa_polymarket(comp: Mapping[str, Any], *, time_a: str, time_b: str,
+                          rotulos: Mapping[str, str], fontes_faltando: List[str]) -> str:
+    """So o que a Polymarket ACRESCENTA a Linha justa (24/10/2026).
+
+    O vencedor em Modelo | Pinnacle ja esta na Linha justa logo abaixo; repetir
+    o bloco inteiro era a terceira vez que a tela dizia a mesma coisa. Aqui:
+    a odd da Polymarket de cada time (com a vantagem do modelo) e o selo."""
+    la, lb = (comp.get("linhas") or [{}, {}])[:2]
+
+    def _inv(p):
+        p = _num(p)
+        return None if not p else 1 / p
+
+    def _lado(l, nome):
+        v = _num(l.get("vant_polymarket"))
+        cor = "" if v is None else ' <span class="v {}">{:+.1f}%</span>'.format("b" if v > 0 else "r", v)
+        return '<span>{} <span class="odd o-poly">{}</span>{}</span>'.format(
+            escape(nome), _odd(_inv(l.get("preco_compra_poly"))), cor.replace(".", ","))
+
+    tem_poly = la.get("preco_compra_poly") is not None
+    html = '<div class="faixa"><span class="rot o-poly">Polymarket</span>'
+    if tem_poly:
+        html += _lado(la, time_a) + _lado(lb, time_b)
+    else:
+        html += '<span class="nada">{}</span>'.format(
+            escape(" · ".join(fontes_faltando) or "sem este confronto"))
+    html += "</div>"
+    classe = {"forte": "forte", "entre casas": "casas", "suspeito": "desc"}
+    for l, nome in ((la, time_a), (lb, time_b)):
+        s = l.get("selo") or ""
+        if s and rotulos.get(s):
+            html += '<div class="selo {}"><b>{}</b>: {}.</div>'.format(
+                classe.get(s, ""), escape(nome), escape(rotulos[s]))
+    if comp.get("casas_discordam"):
+        html += '<div class="nota">Pinnacle e Polymarket discordam em {:.0f} pontos: mercado dividido.</div>'.format(
+            100 * (_num(comp.get("diferenca_casas")) or 0))
     return html
 
 
