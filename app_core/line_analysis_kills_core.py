@@ -545,9 +545,9 @@ def _render_v3_kills_subpanel(
         _linha0, _origem0 = float(default_line), ""
         if not bool(market_cfg.get("binary_market")) and not bool(market_cfg.get("handicap")):
             try:
-                from app_core.linha_sugerida_core import linha_inicial
-                _sa = df_a[metric_col] if (df_a is not None and metric_col in getattr(df_a, "columns", [])) else None
-                _sb = df_b[metric_col] if (df_b is not None and metric_col in getattr(df_b, "columns", [])) else None
+                from app_core.linha_sugerida_core import linha_inicial, serie_recente
+                _sa = serie_recente(team_games, str(team_a), market_key)
+                _sb = serie_recente(team_games, str(team_b), market_key)
                 _linha0, _origem0 = linha_inicial(market_key, str(team_a), str(team_b), _sa, _sb,
                                                   float(default_line))
             except Exception:
