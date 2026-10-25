@@ -720,7 +720,7 @@ def _render_v3_kills_subpanel(
 
     # Season-wide (no split) view: same year+league, drop split filter
     try:
-        season_filters = Filters(year=int(v3_year), league=v3_league, split=None, playoffs=None)
+        season_filters = Filters(year=int(v3_year), league=(None if v3_league == "S/Camp" else v3_league), split=None, playoffs=None)
         df_season_scope = apply_filters_fn(team_games, season_filters).copy()
         df_season_scope = _augment_with_total_columns(df_season_scope)
         df_season_scope = _filter_by_map(df_season_scope)  # apply Mapa filter

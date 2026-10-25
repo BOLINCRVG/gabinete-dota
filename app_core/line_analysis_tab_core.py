@@ -50,6 +50,9 @@ from app_core.line_analysis_kills_core import (  # noqa: F401 - superficie publi
     _render_kills_line_content,
     _render_v3_kills_subpanel,
 )
+
+SEM_CAMP = "S/Camp"
+
 def _render_v3_view(
     *,
     st: Any,
@@ -76,6 +79,9 @@ def _render_v3_view(
     _league_blank = not str(session_state.get("lav3_league", "") or "").strip()
     _need_autofill = (_top_team_a and _top_team_b and
                        (_matchup_fp != _last_autofill_fp or _league_blank))
+    # "S/Camp" e escolha DELE: trocar de confronto nao volta para uma liga.
+    if str(session_state.get("lav3_league", "") or "") == SEM_CAMP:
+        _need_autofill = False
 
     def _team_match_key(value: Any) -> str:
         """Normalize a team name for cross-comparison, tolerating mojibake and
@@ -128,13 +134,18 @@ def _render_v3_view(
 
     _, _, leagues = collect_year_split_league_options(team_games)
     fcols = st.columns(4)
-    la_league_opts = ["", *leagues]
+    # "S/Camp" (25/10/2026, pedido dele): os dois times sem campeonato
+    # limitando -- todas as ligas do ano. Serve para confronto entre ligas
+    # (Mundial), em que o recorte por liga deixava um dos times sem jogo.
+    la_league_opts = ["", SEM_CAMP, *leagues]
     with fcols[0]:
         normalize_select_key(session_state, "lav3_league", la_league_opts)
         v3_league = st.selectbox("Liga", la_league_opts, key="lav3_league",
-                                   format_func=select_placeholder)
+                                   format_func=lambda x: "S/Camp (todas as ligas)" if x == SEM_CAMP
+                                   else select_placeholder(x))
+    _sem_camp = (v3_league == SEM_CAMP)
     df_ly = team_games
-    if v3_league and team_games is not None and not team_games.empty and "league" in team_games.columns:
+    if v3_league and not _sem_camp and team_games is not None and not team_games.empty and "league" in team_games.columns:
         df_ly = team_games[team_games["league"].astype(str) == str(v3_league)]
     years_opt: list[str] = []
     try:
@@ -150,11 +161,19 @@ def _render_v3_view(
         # recente. 23/10/2026: o Oracle's Elixir ja marca jogos de fim de
         # setembro como 2027 (pre-temporada do CBLOL, LIT); "o maior ano" caia
         # num 2027 de 10 jogos e a tela dizia "Sem jogos".
-        if (str(session_state.get("lav3_year", "") or "") not in la_year_opts) and years_opt:
+        # Ano vazio tambem cai no padrao (25/10/2026): trocar a liga muda a
+        # lista de anos e o Streamlit zerava o ano -- a aba travava em
+        # "Selecione liga e ano" (visto ao escolher "S/Camp").
+        _ano_atual = str(session_state.get("lav3_year", "") or "")
+        if (not _ano_atual or _ano_atual not in la_year_opts) and years_opt:
             session_state["lav3_year"] = ano_padrao(years_opt)
         normalize_select_key(session_state, "lav3_year", la_year_opts)
         v3_year = st.selectbox("Ano", la_year_opts, key="lav3_year",
                                  format_func=select_placeholder)
+        if not v3_year and years_opt:
+            # o widget pode voltar vazio no rerun em que a lista de anos mudou
+            # (troca de liga); a analise segue no ano padrao em vez de travar.
+            v3_year = ano_padrao(years_opt)
     df_lys = df_ly
     if v3_year and df_lys is not None and not df_lys.empty and "year" in df_lys.columns:
         try:
@@ -184,6 +203,8 @@ def _render_v3_view(
                     latest_split = splits_opt[-1]
     except (TypeError, ValueError, KeyError):
         splits_opt = []
+    if _sem_camp:
+        splits_opt, latest_split = [], ""   # split e de UMA liga; sem liga, nao ha split
     with fcols[2]:
         la_split_opts = ["", *splits_opt]
         # Auto-select latest split on first render OR when league/year change rotates options
@@ -198,7 +219,7 @@ def _render_v3_view(
                                   format_func=lambda x: "Todos os splits" if x == "" else x)
     # Playoffs box appears ONLY when the chosen (liga, ano, split) actually has
     # playoff games — same pattern as the other tabs (scope_has_playoffs).
-    if scope_has_playoffs(team_games, league=v3_league, year=v3_year, split=v3_split):
+    if not _sem_camp and scope_has_playoffs(team_games, league=v3_league, year=v3_year, split=v3_split):
         with fcols[3]:
             la_po_opts = ["", "Regular", "Playoffs"]
             normalize_select_key(session_state, "lav3_playoffs", la_po_opts)
@@ -214,7 +235,7 @@ def _render_v3_view(
         return
 
     sc_filters = Filters(
-        year=int(v3_year), league=v3_league,
+        year=int(v3_year), league=None if _sem_camp else v3_league,
         split=v3_split if v3_split else None,
         playoffs=None if not v3_playoffs else (v3_playoffs == "Playoffs"),
     )
@@ -421,7 +442,7 @@ def _render_v3_vencedor_subpanel(
     # mostrava numeros IDENTICOS ao "Split atual" (ex.: Gen.G 10 jogos nos dois,
     # tendo 118 no ano). Mesmo padrao do bloco que ja funciona (df_a_context_season).
     try:
-        _season_filters = Filters(year=int(v3_year), league=v3_league, split=None, playoffs=None)
+        _season_filters = Filters(year=int(v3_year), league=(None if v3_league == "S/Camp" else v3_league), split=None, playoffs=None)
         _df_season_scope = apply_filters_fn(team_games, _season_filters).copy()
         _df_season_scope = _augment_with_total_columns(_df_season_scope)
         _df_season_scope = _filter_by_map(_df_season_scope)
