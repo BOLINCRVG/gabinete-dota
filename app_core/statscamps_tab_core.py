@@ -351,12 +351,20 @@ def render_statscamps_tab(
 
     with base_cols[2]:
         normalize_statscamps_select_state(session_state, years=[str(y) for y in years_opt], splits=splits_opt)
-        sc_split = st.selectbox(
-            "Split",
-            options=["", *splits_opt],
-            key="sc_split",
-            format_func=select_placeholder,
-        )
+        if splits_opt:
+            sc_split = st.selectbox(
+                "Split",
+                options=["", *splits_opt],
+                key="sc_split",
+                format_func=select_placeholder,
+            )
+        else:
+            # CAMPEONATO SEM SPLIT (25/10/2026): o Mundial (WLDs) vem sem split
+            # no CSV; a aba pedia "Selecione um split" com a lista vazia e
+            # ficava travada. Sem split nos dados, usa todos os jogos do ano.
+            st.selectbox("Split", options=["sem split (campeonato unico)"], disabled=True,
+                         key="sc_split_vazio")
+            sc_split = ""
 
     # Playoffs box appears ONLY when the chosen (liga, ano, split) has playoff
     # games — same pattern as the other tabs (scope_has_playoffs).
@@ -380,7 +388,7 @@ def render_statscamps_tab(
     if not sc_year:
         st.info("Selecione um ano para exibir StatsCamps.")
         sc_ready = False
-    if not sc_split:
+    if not sc_split and splits_opt:
         st.info("Selecione um split para exibir StatsCamps.")
         sc_ready = False
     if not sc_ready:
