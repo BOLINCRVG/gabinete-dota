@@ -130,13 +130,14 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     # ---- 3. A GAVETA DE JOGOS (24/10/2026) -----------------------------------
     # Dias como abas, um botao por jogo, e "+ Escolher times". Clicar abre o
     # confronto. Ver app_core/gaveta_jogos_core.py.
-    from app_core.gaveta_jogos_core import render_gaveta
+    from app_core.gaveta_jogos_core import jogo_aberto
     from app_core.modelo_mercado_core import linhas_do_jogo
-    st.markdown("### Jogos")
-    _tg = ctx.get("team_games")
-    _times = sorted({str(x) for x in _tg["team"].dropna().unique()}) if _tg is not None else []
-    _na_gaveta = render_gaveta(st, odds=odds if not sem_odds else {}, poly=poly,
-                               confronto=confronto, resolver=resolver, times=_times)
+    # A gaveta (escolher jogo/dia) fica no TOPO da tela desde 25/10/2026; aqui
+    # so o jogo aberto, para as linhas dele e a Linha justa.
+    st.markdown("### O jogo aberto")
+    _na_gaveta = jogo_aberto(odds if not sem_odds else {}, poly, confronto, resolver)
+    if _na_gaveta is None and confronto.get("teamA"):
+        st.caption("Este confronto nao esta nas coletas da Pinnacle nem da Polymarket.")
     _mostrar_casados_sozinhos(st, ctx.get("casados_sozinhos") or {},
                               ctx.get("ensinar_apelido"))
     _jogos_que_dao = False

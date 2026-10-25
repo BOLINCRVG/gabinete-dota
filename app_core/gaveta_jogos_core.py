@@ -299,3 +299,28 @@ def render_gaveta_inicial(st: Any, *, raiz: Any, times: List[str]) -> None:
     st.caption("Clique num jogo para abrir o confronto, ou escolha os times acima.")
     render_gaveta(st, odds={} if odds.get("motivo") else odds, poly=poly, confronto={},
                   resolver=resolver_padrao(times, raiz), times=list(times or []))
+
+
+def jogo_aberto(odds: Mapping[str, Any], poly: Mapping[str, Any], confronto: Mapping[str, Any],
+                resolver: Optional[Callable[[str], str]]) -> Optional[Mapping[str, Any]]:
+    """O jogo das casas que e o confronto aberto (sem desenhar nada)."""
+    for g in jogos_da_gaveta(odds, poly, _agenda()):
+        if e_o_confronto_aberto(g, confronto, resolver):
+            return g
+    return None
+
+
+def render_gaveta_topo(st: Any, *, raiz: Any, times: List[str], confronto: Mapping[str, Any]) -> None:
+    """A gaveta no topo da tela do confronto (25/10/2026, ele: "seria
+    interessante nessa tela ter alguma coisa que eu consiga voltar para
+    selecionar os outros jogos/times"). O jogo aberto fica destacado; clicar
+    em outro troca o confronto."""
+    from pathlib import Path
+    from app_core.mercado_vencedor_core import carregar_polymarket
+    from app_core.odds_coletadas_core import carregar_odds_coletadas
+    odds = carregar_odds_coletadas(Path(raiz))
+    poly = carregar_polymarket(Path(raiz))
+    if odds.get("motivo") and not (poly.get("partidas") or []):
+        return
+    render_gaveta(st, odds={} if odds.get("motivo") else odds, poly=poly, confronto=confronto,
+                  resolver=resolver_padrao(times, raiz), times=list(times or []))

@@ -2830,6 +2830,17 @@ if flow_stage == "select":
         st.caption("A lista de jogos nao abriu: {}".format(type(_e_gaveta).__name__))
     st.stop()
 
+# A GAVETA NO TOPO DO CONFRONTO (25/10/2026): trocar de jogo ou de dia sem
+# voltar ao comeco. Ver app_core/gaveta_jogos_core.py.
+if flow_stage in ("lines", "results"):
+    try:
+        from app_core.gaveta_jogos_core import render_gaveta_topo as _gaveta_topo
+        with st.expander("Outros jogos (trocar de confronto)", expanded=True):
+            _gaveta_topo(st, raiz=APP_ROOT, times=list(teams or []),
+                         confronto={"teamA": teamA, "teamB": teamB})
+    except Exception as _e_gaveta_topo:
+        st.caption("A lista de jogos nao abriu: {}".format(type(_e_gaveta_topo).__name__))
+
 # -----------------------------
 # Etapa 2 — preencher linhas
 # -----------------------------
