@@ -40,6 +40,18 @@ class TestGaveta(unittest.TestCase):
         self.assertEqual(len(js), 1)
         self.assertEqual(js[0]["fontes"], ["Pinnacle", "Polymarket"])
 
+    def test_horario_da_agenda_oficial_vence(self):
+        # Pinnacle 17:15Z (+15 min), Polymarket com 1 h a mais, agenda 17:00Z = 14:00 BRT
+        odds = {"jogos": [{"id": 3, "casa": "T1", "fora": "CTBC Flying Oyster", "bo": 1,
+                           "inicio_utc": "2026-10-26T17:15:00Z"}]}
+        poly = {"partidas": [{"time_a": "T1", "time_b": "CTBC Flying Oyster",
+                              "inicio_utc": "2026-10-26 18:00:00+00", "bo": 1}]}
+        agenda = {"jogos": [{"teamA_raw": "CTBC Flying Oyster", "teamB_raw": "T1",
+                             "inicio_utc": "2026-10-26T17:00:00Z"}]}
+        js = jogos_da_gaveta(odds, poly, agenda)
+        self.assertEqual(len(js), 1)
+        self.assertEqual(js[0]["quando"].strftime("%d/%m %H:%M"), "26/10 14:00")
+
     def test_dia_pelo_horario_de_brasilia(self):
         # 25/10 00:00 UTC = 24/10 21:00 em Brasilia -> mesmo dia do TES x AL
         dias = por_dia(jogos_da_gaveta(ODDS, POLY), hoje=date(2026, 10, 24))
@@ -50,7 +62,8 @@ class TestGaveta(unittest.TestCase):
     def test_rotulos(self):
         self.assertEqual(rotulo_do_dia(date(2026, 10, 25), date(2026, 10, 24)), "Amanha 25/10")
         g = jogos_da_gaveta(ODDS, {})[0]
-        self.assertEqual(rotulo_do_jogo(g), "14:00  Top Esports x Anyone's Legend")
+        # Pinnacle registra 15 min depois do inicio: 17:00 UTC - 15 min = 13:45 em Brasilia
+        self.assertEqual(rotulo_do_jogo(g), "13:45   Top Esports  x  Anyone's Legend")
 
     def test_reconhece_o_confronto_aberto_em_qualquer_ordem(self):
         g = jogos_da_gaveta(ODDS, {})[1]

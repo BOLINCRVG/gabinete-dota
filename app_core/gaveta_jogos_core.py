@@ -59,26 +59,37 @@ def _mesmo_par(a1: Any, b1: Any, a2: Any, b2: Any) -> bool:
     return (_parecido(a1, a2) and _parecido(b1, b2)) or (_parecido(a1, b2) and _parecido(b1, a2))
 
 
-def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any]) -> List[Dict[str, Any]]:
+JANELA_MESMO_JOGO_S = 3 * 3600
+ATRASO_PINNACLE = timedelta(minutes=15)
+
+
+def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any],
+                    agenda: Optional[Mapping[str, Any]] = None) -> List[Dict[str, Any]]:
     """Os jogos da Pinnacle e os da Polymarket que a Pinnacle nao tem, com
-    data/hora de Brasilia. Pura."""
+    data/hora de Brasilia. Pura.
+
+    O HORARIO (25/10/2026): as fontes discordam. Medido no Mundial:
+      - agenda oficial (lolesports): CFO x T1 14:00;
+      - Pinnacle: 15 min DEPOIS do inicio em todos os jogos (e a hora em que
+        ela fecha a aposta) -- menos 15 min, bate com a agenda;
+      - Polymarket: as vezes 1 h ou mais fora (T1 x CFO 15:00).
+    Entao o MESMO JOGO e o mesmo par de nomes ate 3 h de distancia (antes era
+    30 min e o jogo aparecia duas vezes), e a hora mostrada e a da agenda; sem
+    ela, a da Pinnacle menos 15 min; so por ultimo a da Polymarket."""
     fora: List[Dict[str, Any]] = []
     for j in odds.get("jogos") or []:
         quando = _br(j.get("inicio_utc"))
         if quando is None:
             continue
         fora.append({"id": j.get("id"), "casa": str(j.get("casa") or ""), "fora": str(j.get("fora") or ""),
-                     "liga": str(j.get("liga") or ""), "bo": j.get("bo"), "quando": quando,
+                     "liga": str(j.get("liga") or ""), "bo": j.get("bo"), "quando": quando - ATRASO_PINNACLE,
                      "fontes": ["Pinnacle"]})
     for p in poly.get("partidas") or []:
         quando = _br(p.get("inicio_utc"))
         if quando is None:
             continue
-        # O MESMO JOGO COM OUTRO NOME (24/10/2026): a Polymarket escreve
-        # "Invictus Gaming x Team Secret Whales", a Pinnacle "Invictus x Secret
-        # Whales". Mesmo horario (ate 30 min) e os dois nomes parecidos = mesmo jogo.
         igual = next((g for g in fora if "Pinnacle" in g["fontes"]
-                      and abs((g["quando"] - quando).total_seconds()) <= 1800
+                      and abs((g["quando"] - quando).total_seconds()) <= JANELA_MESMO_JOGO_S
                       and _mesmo_par(g["casa"], g["fora"], p.get("time_a"), p.get("time_b"))), None)
         if igual is not None:
             if "Polymarket" not in igual["fontes"]:
@@ -87,6 +98,14 @@ def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any]) -> List[Di
         fora.append({"id": "poly:" + str(p.get("evento") or ""), "casa": str(p.get("time_a") or ""),
                      "fora": str(p.get("time_b") or ""), "liga": str(p.get("torneio") or ""),
                      "bo": p.get("bo"), "quando": quando, "fontes": ["Polymarket"]})
+    for a in (agenda or {}).get("jogos") or []:
+        oficial = _br(a.get("inicio_utc"))
+        if oficial is None:
+            continue
+        for g in fora:
+            if (abs((g["quando"] - oficial).total_seconds()) <= JANELA_MESMO_JOGO_S
+                    and _mesmo_par(g["casa"], g["fora"], a.get("teamA_raw"), a.get("teamB_raw"))):
+                g["quando"] = oficial
     return sorted(fora, key=lambda g: g["quando"])
 
 
@@ -99,7 +118,48 @@ def por_dia(jogos: List[Mapping[str, Any]], hoje: Optional[date] = None) -> Dict
 
 
 def rotulo_do_jogo(g: Mapping[str, Any]) -> str:
-    return "{:%H:%M}  {} x {}".format(g["quando"], g["casa"], g["fora"])
+    return "{:%H:%M}   {}  x  {}".format(g["quando"], g["casa"], g["fora"])
+
+
+def _agenda() -> Dict[str, Any]:
+    import json
+    from pathlib import Path
+    try:
+        return json.loads((Path(__file__).resolve().parents[1] / "agenda_coletada.json")
+                          .read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        return {}
+
+
+# AS ABAS (25/10/2026, ele: "esta horrivel o design"). Por baixo continua o
+# st.radio (o unico seletor que o testador do Streamlit reroda), mas com cara
+# de abas: sem a bolinha, cada opcao vira uma ficha no tema da Linha justa
+# (azul-petroleo #2daac4 no selecionado). Os seletores pegam o container pela
+# chave (st-key-...), entao nao vazam para outros radios do app.
+CSS_GAVETA = """
+<style>
+.st-key-gaveta_dias div[role="radiogroup"], .st-key-gaveta_jogos div[role="radiogroup"],
+.st-key-gaveta_jogos_sem_aberto div[role="radiogroup"] { gap: 8px; flex-wrap: wrap; }
+.st-key-gaveta_dias label, .st-key-gaveta_jogos label, .st-key-gaveta_jogos_sem_aberto label {
+  margin: 0 !important; padding: 7px 14px; border-radius: 10px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.035);
+  transition: border-color .12s, background .12s; }
+.st-key-gaveta_dias label > div:first-child, .st-key-gaveta_jogos label > div:first-child,
+.st-key-gaveta_jogos_sem_aberto label > div:first-child { display: none; }
+.st-key-gaveta_dias label p, .st-key-gaveta_jogos label p, .st-key-gaveta_jogos_sem_aberto label p {
+  font-size: 13.5px; font-weight: 600; white-space: pre; }
+.st-key-gaveta_dias label:hover, .st-key-gaveta_jogos label:hover,
+.st-key-gaveta_jogos_sem_aberto label:hover { border-color: rgba(45,170,196,0.55); }
+.st-key-gaveta_dias label:has(input:checked), .st-key-gaveta_jogos label:has(input:checked),
+.st-key-gaveta_jogos_sem_aberto label:has(input:checked) {
+  border-color: #2daac4; background: rgba(45,170,196,0.16); }
+.st-key-gaveta_dias label:has(input:checked) p, .st-key-gaveta_jogos label:has(input:checked) p { color: #2daac4; }
+.st-key-gaveta_dias { border-bottom: 1px solid rgba(255,255,255,0.10); padding-bottom: 8px; margin-bottom: 4px; }
+.st-key-gaveta_jogos_sem_aberto label:first-of-type { display: none; }
+.st-key-gaveta_jogos label:last-of-type, .st-key-gaveta_jogos_sem_aberto label:last-of-type {
+  border-style: dashed; }
+</style>
+"""
 
 
 def e_o_confronto_aberto(g: Mapping[str, Any], confronto: Mapping[str, Any],
@@ -134,7 +194,8 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
     """Desenha dias + jogos + "Escolher times". Devolve o jogo da gaveta que
     esta aberto (ou None)."""
     ss = st.session_state
-    dias = por_dia(jogos_da_gaveta(odds, poly))
+    st.markdown(CSS_GAVETA, unsafe_allow_html=True)
+    dias = por_dia(jogos_da_gaveta(odds, poly, _agenda()))
     if not dias:
         st.caption("Nenhum jogo nas coletas da Pinnacle nem da Polymarket.")
     rotulos_dias = list(dias)
@@ -148,8 +209,9 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
         # (AppTest 1.52) nao reroda tela com pills de valor unico -- e sem
         # teste o "clicar abre o jogo" ficaria sem prova.
         _i_dia = rotulos_dias.index(aberto_dia) if aberto_dia in rotulos_dias else 0
-        dia = st.radio("Dia", rotulos_dias, index=_i_dia, horizontal=True,
-                       key="gaveta_dia_" + "|".join(rotulos_dias), label_visibility="collapsed")
+        with st.container(key="gaveta_dias"):
+            dia = st.radio("Dia", rotulos_dias, index=_i_dia, horizontal=True,
+                           key="gaveta_dia_" + "|".join(rotulos_dias), label_visibility="collapsed")
         dia = dia or rotulos_dias[_i_dia]
         jogos = dias.get(dia) or []
     else:
@@ -157,7 +219,7 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
 
     opcoes = [str(g["id"]) for g in jogos] + [ESCOLHER]
     nomes = {str(g["id"]): rotulo_do_jogo(g) for g in jogos}
-    nomes[ESCOLHER] = "+ Escolher times"
+    nomes[ESCOLHER] = "+  Escolher times"
     por_id = {str(g["id"]): g for g in jogos}
     atual = str(aberto_jogo["id"]) if aberto_jogo and str(aberto_jogo["id"]) in opcoes else None
     chave = "gaveta_jogo_" + str(dia if rotulos_dias else "")
@@ -178,9 +240,10 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
     _sem = "__nenhum__"
     _opcoes_r = ([] if atual else [_sem]) + opcoes
     nomes[_sem] = "(nenhum aberto)"
-    escolha = st.radio("Jogos", _opcoes_r, index=_opcoes_r.index(atual) if atual else 0,
-                       format_func=lambda k: nomes.get(k, k), key=chave, horizontal=True,
-                       on_change=_ao_trocar, label_visibility="collapsed")
+    with st.container(key="gaveta_jogos_sem_aberto" if not atual else "gaveta_jogos"):
+        escolha = st.radio("Jogos", _opcoes_r, index=_opcoes_r.index(atual) if atual else 0,
+                           format_func=lambda k: nomes.get(k, k), key=chave, horizontal=True,
+                           on_change=_ao_trocar, label_visibility="collapsed")
     aviso = ss.pop("_gaveta_aviso", None)
     if aviso:
         st.warning(aviso)
