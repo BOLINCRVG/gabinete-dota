@@ -2824,7 +2824,14 @@ if flow_stage == "select":
     # A GAVETA NA TELA INICIAL (24/10/2026): os jogos que as casas tem, por
     # dia; clicar abre o confronto ja analisado. Ver app_core/gaveta_jogos_core.py.
     try:
-        from app_core.gaveta_jogos_core import render_gaveta_inicial as _gaveta_inicial
+        # MODULO VELHO NA MEMORIA (25/10/2026): a nuvem atualiza o script
+        # principal mas pode manter o modulo importado antes -- a funcao nova
+        # nao existia e a tela dizia "ImportError". Recarrega se faltar.
+        import importlib as _il
+        import app_core.gaveta_jogos_core as _gv
+        if not hasattr(_gv, "render_gaveta_topo"):
+            _gv = _il.reload(_gv)
+        _gaveta_inicial = _gv.render_gaveta_inicial
         _gaveta_inicial(st, raiz=APP_ROOT, times=list(teams or []))
     except Exception as _e_gaveta:
         st.caption("A lista de jogos nao abriu: {}".format(type(_e_gaveta).__name__))
@@ -2834,7 +2841,11 @@ if flow_stage == "select":
 # voltar ao comeco. Ver app_core/gaveta_jogos_core.py.
 if flow_stage in ("lines", "results"):
     try:
-        from app_core.gaveta_jogos_core import render_gaveta_topo as _gaveta_topo
+        import importlib as _il
+        import app_core.gaveta_jogos_core as _gv
+        if not hasattr(_gv, "render_gaveta_topo"):
+            _gv = _il.reload(_gv)  # modulo velho na memoria da nuvem (ver acima)
+        _gaveta_topo = _gv.render_gaveta_topo
         with st.expander("Outros jogos (trocar de confronto)", expanded=True):
             _gaveta_topo(st, raiz=APP_ROOT, times=list(teams or []),
                          confronto={"teamA": teamA, "teamB": teamB})
