@@ -53,6 +53,17 @@ class TestValor(unittest.TestCase):
                          ["", "baixo", "medio", "alto", "desconfie"])
 
 
+class TestMelhores(unittest.TestCase):
+
+    def test_odd_do_modelo_abaixo_de_1_72_em_cima_pela_vantagem(self):
+        from app_core.modelo_mercado_core import separar_melhores
+        ls = [{"odd_modelo": 2.18, "vantagem_pct": 45.1}, {"odd_modelo": 1.42, "vantagem_pct": 37.8},
+              {"odd_modelo": 1.60, "vantagem_pct": 5.0}, {"odd_modelo": 1.72, "vantagem_pct": 9.0}]
+        fortes, resto = separar_melhores(ls)
+        self.assertEqual([x["odd_modelo"] for x in fortes], [1.42, 1.60])
+        self.assertEqual([x["odd_modelo"] for x in resto], [2.18, 1.72])
+
+
 class TestTabela(unittest.TestCase):
 
     def test_aposta_legivel(self):

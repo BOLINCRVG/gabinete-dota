@@ -3652,7 +3652,7 @@ def _oportunidades_medias_kills(casa: str, fora: str):
     return medias_dc(team_games, a_csv, b_csv)
 
 
-def _render_oportunidades_dota() -> None:
+def _render_oportunidades_dota(parte: str = "jogo") -> None:
     """Protegida: o despachante do Dota nao isola falha, e uma aba com defeito
     nao pode derrubar o app inteiro."""
     try:
@@ -3675,14 +3675,18 @@ def _render_oportunidades_dota() -> None:
                 "p_map": st.session_state.get("_p_map_used", p_map_cal),
                 "p_series": st.session_state.get("_p_series_used", p_series),
             },
-        })
+        }, parte=parte)
     except Exception as _e:  # noqa: BLE001
         st.error("A aba Oportunidades falhou ({}: {}). O resto do app segue.".format(
             type(_e).__name__, _e))
 
 
 _secondary_tab_renderers = {
-    "Oportunidades": _render_oportunidades_dota,
+    # A chave tem de ser o ROTULO da aba (app_core/navigation.py). Era
+    # "Oportunidades" e a aba virou "Modelo × Mercado" em 23/10/2026: no Dota
+    # ela ficou VAZIA ate 25/10, quando isto foi visto.
+    "Modelo × Mercado": lambda: _render_oportunidades_dota("jogo"),
+    "Melhores apostas": lambda: _render_oportunidades_dota("apostas"),
     "Rankings": lambda: core_render_rankings_tab(
         st=st,
         team_games=team_games,

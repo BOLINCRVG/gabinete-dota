@@ -182,3 +182,18 @@ def linhas_do_jogo(completo: List[Mapping[str, Any]], jogo: Any) -> List[Mapping
         melhor = min(grupos, key=lambda k: _desequilibrio(grupos[k]))
         fora.extend(sorted(grupos[melhor], key=lambda r: str(r.get("lado") or "")))
     return fora
+
+
+ODD_MODELO_MAX = 1.72   # odd justa do modelo abaixo disto = chance de ~58% ou mais
+
+
+def separar_melhores(linhas: List[Mapping[str, Any]]) -> "tuple[list, list]":
+    """(melhores, resto). Melhores: odd justa do MODELO abaixo de ODD_MODELO_MAX
+    (25/10/2026, pedido dele: "so mostra as melhores, as que tem a odd menor que
+    1,72; as outras mais embaixo"), da maior vantagem para a menor."""
+    fortes, resto = [], []
+    for x in linhas:
+        o = _num(x.get("odd_modelo"))
+        (fortes if (o is not None and o < ODD_MODELO_MAX) else resto).append(x)
+    fortes.sort(key=lambda x: -(_num(x.get("vantagem_pct")) or -999.0))
+    return fortes, resto

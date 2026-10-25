@@ -24,6 +24,7 @@ TAB_PLAYERS = "Players"
 TAB_IDENTIDADE = "Identidade"
 TAB_LINE_ANALYSIS = "Análise de Linha"
 TAB_OPORTUNIDADES = "Modelo × Mercado"
+TAB_MELHORES = "Melhores apostas"
 
 # Ordem canônica das tabs secundárias
 SECONDARY_TAB_ORDER: tuple[str, ...] = (
@@ -36,6 +37,7 @@ SECONDARY_TAB_ORDER: tuple[str, ...] = (
     TAB_CAMPEOES,
     TAB_PLAYERS,
     TAB_IDENTIDADE,
+    TAB_MELHORES,
 )
 
 # Todas as tabs conhecidas (primárias + secundárias)

@@ -52,7 +52,7 @@ def _fmt(v: Any, casas: int = 2, sufixo: str = "") -> str:
     return "{:.{}f}{}".format(f, int(casas), sufixo)
 
 
-def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
+def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any], parte: str = "tudo") -> None:
     """Desenha a aba "Modelo x Mercado". `ctx` traz o caminho de PRODUCAO.
 
     REORGANIZADA EM 23/10/2026 (pedido dele: manter so a Linha justa como
@@ -60,8 +60,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     """
     from app_core.mercado_vencedor_core import (
         carregar_polymarket, render_polymarket_lista, render_vencedor_tres_fontes)
-    from app_core.modelo_mercado_core import (
-        linhas_com_valor, painel_do_dia, tabela_de_valor)
+    from app_core.modelo_mercado_core import painel_do_dia
 
     raiz: Path = Path(ctx.get("raiz") or ".")
     calcular_totais: Callable[..., Any] = ctx["calcular_totais"]
@@ -99,33 +98,13 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     _avisar_bloqueio(st, raiz)
 
     # ---- 2. AS MELHORES APOSTAS DO DIA (no tema da Linha justa) --------------
-    from app_core.modelo_mercado_core import aposta as _aposta
-    from app_core.modelo_mercado_html_core import (
-        LIMITE_DESTAQUES, altura_destaques, html_destaques, html_status, pagina)
-    top = linhas_com_valor(completo, incluir_suspeitas=False)
-    # O CRUZAMENTO (24/10/2026): o modelo ve valor -- a estatistica do historico
-    # dos dois times concorda? Ver app_core/cruzamento_estatistica_core.py.
-    from app_core.cruzamento_estatistica_core import cruzar as _cruzar
-    top = _cruzar(top, ctx.get("team_games"), resolver)
-    _contra = sum(1 for x in top[:LIMITE_DESTAQUES] if x.get("estat_veredito") == "discorda")
-    st.markdown("### Melhores apostas do dia")
-    corpo = html_status(jogos=painel["jogos"], com_valor=painel["linhas_com_valor"],
-                        idade_pin="-" if sem_odds else _idade_curta(odds.get("idade_horas")),
-                        idade_poly="-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
-                        pin_velha=bool(odds.get("velha")))
-    if _contra:
-        st.warning("Em {} das apostas abaixo a estatistica dos ultimos jogos discorda do "
-                   "modelo (coluna Estatistica em vermelho). Confira antes de apostar."
-                   .format(_contra))
-    corpo += html_destaques(top, _aposta)
-    try:
-        import streamlit.components.v1 as _componentes
-        _componentes.html(pagina(corpo), height=altura_destaques(len(top)), scrolling=False)
-    except Exception:
-        st.markdown(corpo, unsafe_allow_html=True)
-    if len(top) > LIMITE_DESTAQUES:
-        with st.expander("Ver todas as {} apostas com valor".format(len(top))):
-            st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
+    # Desde 25/10/2026 isto e a aba propria "Melhores apostas", no fim (pedido
+    # dele); a Modelo x Mercado fica so com o jogo aberto.
+    if parte in ("tudo", "apostas"):
+        _secao_melhores_apostas(st, ctx=ctx, odds=odds, poly=poly, completo=completo,
+                                painel=painel, sem_odds=sem_odds, resolver=resolver)
+    if parte == "apostas":
+        return
 
     # ---- 3. A GAVETA DE JOGOS (24/10/2026) -----------------------------------
     # Dias como abas, um botao por jogo, e "+ Escolher times". Clicar abre o
@@ -169,14 +148,31 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
             from app_core.modelo_mercado_html_core import pagina as _pagina_j
             _lj = _cruzar(linhas_do_jogo(completo, jogo_cmp), ctx.get("team_games"), resolver)
             if _lj:
+                # SO AS MELHORES EM CIMA (25/10/2026, pedido dele): aposta em que
+                # o modelo da a odd justa abaixo de ODD_MODELO_MAX (chance de
+                # ~58% ou mais), da maior vantagem para a menor. O resto fica
+                # embaixo, recolhido.
+                from app_core.modelo_mercado_core import ODD_MODELO_MAX, separar_melhores
+                _fortes, _resto = separar_melhores(_lj)
+
+                def _desenhar(linhas):
+                    try:
+                        import streamlit.components.v1 as _cmp
+                        _cmp.html(_pagina_j(_html_j(linhas, _aposta_j, limite=40, com_jogo=False)),
+                                  height=34 + 47 * min(len(linhas), 40) + 60, scrolling=False)
+                    except Exception:
+                        pass
                 st.markdown("#### Linhas do jogo: casa x modelo x estatistica")
-                try:
-                    import streamlit.components.v1 as _cmp
-                    _cmp.html(_pagina_j(_html_j(_lj, _aposta_j, limite=40, com_jogo=False)),
-                              height=34 + 47 * min(len(_lj), 40) + 60,
-                              scrolling=False)
-                except Exception:
-                    pass
+                if _fortes:
+                    st.caption("As apostas que o modelo ve como provaveis (odd justa abaixo de "
+                               "{:.2f}), da maior vantagem para a menor.".format(ODD_MODELO_MAX).replace(".", ","))
+                    _desenhar(_fortes)
+                else:
+                    st.caption("Nenhuma aposta deste jogo com odd justa do modelo abaixo de {:.2f}."
+                               .format(ODD_MODELO_MAX).replace(".", ","))
+                if _resto:
+                    with st.expander("Outras linhas deste jogo ({})".format(len(_resto))):
+                        _desenhar(_resto)
             # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
             _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
             _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
@@ -227,6 +223,42 @@ def _avisar_bloqueio(st: Any, raiz: Path) -> None:
     except Exception:
         pass
 
+
+
+def _secao_melhores_apostas(st: Any, *, ctx: Mapping[str, Any], odds: Mapping[str, Any],
+                            poly: Mapping[str, Any], completo: List[Mapping[str, Any]],
+                            painel: Mapping[str, Any], sem_odds: bool,
+                            resolver: Optional[Callable[[str], str]]) -> None:
+    """As melhores apostas do dia, cruzadas com a estatistica (a aba propria)."""
+    from app_core.modelo_mercado_core import linhas_com_valor, tabela_de_valor
+
+    from app_core.modelo_mercado_core import aposta as _aposta
+    from app_core.modelo_mercado_html_core import (
+        LIMITE_DESTAQUES, altura_destaques, html_destaques, html_status, pagina)
+    top = linhas_com_valor(completo, incluir_suspeitas=False)
+    # O CRUZAMENTO (24/10/2026): o modelo ve valor -- a estatistica do historico
+    # dos dois times concorda? Ver app_core/cruzamento_estatistica_core.py.
+    from app_core.cruzamento_estatistica_core import cruzar as _cruzar
+    top = _cruzar(top, ctx.get("team_games"), resolver)
+    _contra = sum(1 for x in top[:LIMITE_DESTAQUES] if x.get("estat_veredito") == "discorda")
+    st.markdown("### Melhores apostas do dia")
+    corpo = html_status(jogos=painel["jogos"], com_valor=painel["linhas_com_valor"],
+                        idade_pin="-" if sem_odds else _idade_curta(odds.get("idade_horas")),
+                        idade_poly="-" if poly.get("motivo") else _idade_curta(poly.get("idade_horas")),
+                        pin_velha=bool(odds.get("velha")))
+    if _contra:
+        st.warning("Em {} das apostas abaixo a estatistica dos ultimos jogos discorda do "
+                   "modelo (coluna Estatistica em vermelho). Confira antes de apostar."
+                   .format(_contra))
+    corpo += html_destaques(top, _aposta)
+    try:
+        import streamlit.components.v1 as _componentes
+        _componentes.html(pagina(corpo), height=altura_destaques(len(top)), scrolling=False)
+    except Exception:
+        st.markdown(corpo, unsafe_allow_html=True)
+    if len(top) > LIMITE_DESTAQUES:
+        with st.expander("Ver todas as {} apostas com valor".format(len(top))):
+            st.dataframe(tabela_de_valor(top, com_jogo=True), hide_index=True, width="stretch")
 
 def ordem_dos_jogos(por_jogo: Mapping[Any, List[Mapping[str, Any]]]) -> List[Any]:
     """O confronto aberto primeiro (o que tem conta com a chance de vitoria

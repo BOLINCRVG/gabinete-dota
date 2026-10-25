@@ -14,6 +14,7 @@ TAB_ALL: List[str] = [
     "Análise de Linha",
     "Parâmetros",
     "Identidade",
+    "Melhores apostas",
 ]
 
 TAB_GROUPS: Dict[str, List[str]] = {
@@ -27,6 +28,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
         "Campeões",
         "StatsCamps",
         "Rankings",
+        "Melhores apostas",
     ],
     "Mercados": [
         "Visão Geral",
@@ -37,6 +39,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
         "Campeões",
         "StatsCamps",
         "Rankings",
+        "Melhores apostas",
     ],
     "Análise": [
         "Visão Geral",
@@ -47,6 +50,7 @@ TAB_GROUPS: Dict[str, List[str]] = {
         "Players",
         "StatsCamps",
         "Rankings",
+        "Melhores apostas",
     ],
     "Completo": TAB_ALL,
     # Dev: ferramentas internas (calibração de parâmetros, mapeamento de

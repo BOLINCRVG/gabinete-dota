@@ -188,7 +188,9 @@ class TestAAbaLeOMESMONumeroQueOCard(unittest.TestCase):
         from pathlib import Path
         raiz = Path(__file__).resolve().parents[2]
         src = (raiz / "plays_app.py").read_text(encoding="utf-8")
-        corte = src.split("TAB_OPORTUNIDADES: lambda:", 1)[1][:2000]
+        # desde 25/10/2026 o contexto das abas mora em _ctx_oportunidades()
+        self.assertIn("ctx=_ctx_oportunidades()", src.split("TAB_OPORTUNIDADES: lambda:", 1)[1][:200])
+        corte = src.split("def _ctx_oportunidades()", 1)[1][:2500]
         self.assertIn('_p_map_used', corte)
         self.assertIn('_p_series_used', corte)
 
