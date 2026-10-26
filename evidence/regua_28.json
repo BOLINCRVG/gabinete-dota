@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-10-26T00:52:39",
+ "gerado_em": "2026-10-26T17:07:55",
  "nota": 5.5,
  "por_area": {
   "dados": 6.5,
@@ -125,7 +125,7 @@
    "n": 3,
    "item": "pipeline com teste de integracao",
    "nota": 1.0,
-   "evidencia": "suite inteira verde na esteira (suite.yml): 5805 testes, 0d"
+   "evidencia": "suite inteira verde na esteira (suite.yml): 5809 testes, 0d"
   },
   {
    "area": "infra",
@@ -195,7 +195,7 @@
    "n": 6,
    "item": "desempenho computacional nao regrediu",
    "nota": 1.0,
-   "evidencia": "tempo medido no robo (suite.yml): carregar 0.012s, previsoes 0.0556s, suite 52.168s"
+   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0201s, previsoes 0.1058s, suite 119.289s"
   },
   {
    "area": "monitor",
