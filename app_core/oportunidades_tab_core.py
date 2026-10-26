@@ -401,13 +401,15 @@ def reguas_pinnacle(raiz: Path) -> List[Dict[str, Any]]:
             d = _json.loads(arq.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        for chave, conta in (("so_kills", ""), ("com_vitoria", " (com a chance de vitoria)")):
+        for chave, conta in (("so_kills", ""), ("com_vitoria", " (com a chance de vitoria)"),
+                             ("polymarket_x_pinnacle", "")):
             r = d.get(chave)
             if not isinstance(r, dict):
                 continue
             dif = float(r.get("diferenca") or 0.0)
+            quem = "Polymarket" if chave == "polymarket_x_pinnacle" else "modelo"
             if r.get("conclusivo"):
-                veredito = "modelo acerta mais" if dif < 0 else "Pinnacle acerta mais"
+                veredito = (quem + " acerta mais") if dif < 0 else "Pinnacle acerta mais"
             else:
                 veredito = "ainda nao da para concluir"
             fora.append({
@@ -415,7 +417,7 @@ def reguas_pinnacle(raiz: Path) -> List[Dict[str, Any]]:
                 "partidas": "{} de {}".format(r.get("partidas"), r.get("minimo")),
                 "nota do modelo": round(float(r.get("nota_modelo") or 0), 1),
                 "nota da Pinnacle": round(float(r.get("nota_casa") or 0), 1),
-                "quem acertou mais ate agora": "modelo" if dif < 0 else "Pinnacle",
+                "quem acertou mais ate agora": quem if dif < 0 else "Pinnacle",
                 "partidas em que o modelo ganhou": r.get("bateu"),
                 "conclusao": veredito,
                 "medido em": str(d.get("gerado_em") or "")[:10],
