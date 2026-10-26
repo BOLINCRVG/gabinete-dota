@@ -58,6 +58,27 @@ from app_core.line_analysis_panels_core import (  # noqa: F401 - re-export
 )
 
 
+def adicionar_linhas(session_state, lines_key: str, txt_key: str, is_time: bool) -> None:
+    """Callback do "Adicionar linha(s)" (26/10/2026): soma as linhas digitadas a lista.
+
+    Callback e nao "if submitted": o clique so vale para UMA execucao do script;
+    clicado com o app ainda processando (reruns em cadeia ao abrir o jogo), essa
+    execucao era cortada antes do bloco das linhas e a linha sumia -- a caixa
+    limpava e nada entrava. O callback roda ANTES do script. Reproduzido e
+    corrigido num Chrome de verdade (1 linha -> 1; com o callback, 2)."""
+    txt = str(session_state.get(txt_key) or "").strip()
+    if not txt:
+        return
+    parsed = parse_time_lines_text(txt) if is_time else parse_lines_text(txt)
+    atual = [float(x) for x in (session_state.get(lines_key) or []) if isinstance(x, (int, float))]
+    merged = list(atual)
+    for v in parsed:
+        if not any(abs(float(v) - float(x)) < 1e-9 for x in merged):
+            merged.append(float(v))
+    if merged != atual:
+        # Sorted ascending so a smaller line sits to the left.
+        session_state[lines_key] = sorted(merged)
+
 
 def _render_kills_line_content(
     *,
@@ -586,32 +607,25 @@ def _render_v3_kills_subpanel(
                 "Marcação <b>sim/não</b> — sem linha para escolher.</div>",
                 unsafe_allow_html=True,
             )
-            _submitted = False
-            new_txt = ""
         else:
             # Add lines via a FORM: nothing is analyzed until you click — typing in
             # the box does NOT trigger a re-run. Accepts several lines separated by
             # comma (27.5, 28.5, 29.5), decimal with dot. Time also takes 33:30 / 33.5.
+            # Callback (adicionar_linhas), nao "if submitted": ver a docstring dela.
+            _txt_key = f"{lines_key}__novo"
+
             with st.form(key=f"{lines_key}__addform", clear_on_submit=True):
                 _ph = "ex: 33:30, 34.5" if _is_time else "ex: 27.5, 28.5, 29.5"
-                new_txt = st.text_input(
+                st.text_input(
                     "Adicionar linha(s)",
                     value="",
+                    key=_txt_key,
                     placeholder=_ph,
                     help=("Várias de uma vez separadas por vírgula. Decimal com ponto. "
                           + ("Tempo: 33:30 ou 33.5 (minutos)." if _is_time else "Ex.: 27.5, 28.5.")),
                 )
-                _submitted = st.form_submit_button("➕ Adicionar linha(s)", width="stretch")
-        if _submitted and str(new_txt or "").strip():
-            parsed = parse_time_lines_text(new_txt) if _is_time else parse_lines_text(new_txt)
-            merged = list(lines_list)
-            for v in parsed:
-                if not any(abs(float(v) - float(x)) < 1e-9 for x in merged):
-                    merged.append(float(v))
-            if merged != list(lines_list):
-                # Sorted ascending so a smaller line sits to the left.
-                session_state[lines_key] = sorted(merged)
-                st.rerun()
+                st.form_submit_button("➕ Adicionar linha(s)", width="stretch", on_click=adicionar_linhas,
+                                      args=(session_state, lines_key, _txt_key, _is_time))
     with lc3:
         st.markdown("<div style='padding-top:6px;'></div>", unsafe_allow_html=True)
         map_choice = st.radio(
