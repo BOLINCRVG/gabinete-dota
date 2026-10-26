@@ -53,6 +53,46 @@ from app_core.line_analysis_kills_core import (  # noqa: F401 - superficie publi
 
 SEM_CAMP = "S/Camp"
 
+
+def recorte_do_confronto(team_games, team_a: str, team_b: str, chave) -> "tuple | None":
+    """(liga, ano, split) do recorte inicial da Analise de Linha. Pura.
+
+    1) os dois ja se enfrentaram -> o jogo mais recente ENTRE ELES;
+    2) nunca se enfrentaram, ligas de casa diferentes -> (S/Camp, ano, "");
+    3) mesma liga -> o jogo mais recente do Time 1 (como antes)."""
+    import pandas as _pd
+    if team_games is None or team_games.empty or not {"team", "date"}.issubset(team_games.columns):
+        return None
+    ka, kb = chave(team_a), chave(team_b)
+    tk = team_games["team"].astype(str).map(chave)
+
+    def _ultimos(mask):
+        g = team_games[mask].copy()
+        g["_d"] = _pd.to_datetime(g["date"], errors="coerce")
+        return g.dropna(subset=["_d"]).sort_values("_d")
+
+    def _tupla(row, liga=None):
+        ano = str(int(row.get("year"))) if _pd.notna(row.get("year")) else ""
+        sp = row.get("split")
+        sp = "" if (sp is None or (isinstance(sp, float) and sp != sp)) else str(sp)
+        return (str(liga if liga is not None else (row.get("league") or "")), ano,
+                "" if liga == SEM_CAMP else sp)
+
+    ga = _ultimos(tk == ka)
+    gb = _ultimos(tk == kb)
+    if "opponent" in team_games.columns and not ga.empty:
+        h2h = ga[ga["opponent"].astype(str).map(chave) == kb]
+        if not h2h.empty:
+            return _tupla(h2h.iloc[-1])
+    if ga.empty and gb.empty:
+        return None
+    if ga.empty or gb.empty:
+        return _tupla((ga if not ga.empty else gb).iloc[-1])
+    la, lb = str(ga.iloc[-1].get("league") or ""), str(gb.iloc[-1].get("league") or "")
+    if la and lb and la != lb:
+        return _tupla(ga.iloc[-1], liga=SEM_CAMP)
+    return _tupla(ga.iloc[-1])
+
 def _render_v3_view(
     *,
     st: Any,
@@ -79,8 +119,10 @@ def _render_v3_view(
     _league_blank = not str(session_state.get("lav3_league", "") or "").strip()
     _need_autofill = (_top_team_a and _top_team_b and
                        (_matchup_fp != _last_autofill_fp or _league_blank))
-    # "S/Camp" e escolha DELE: trocar de confronto nao volta para uma liga.
-    if str(session_state.get("lav3_league", "") or "") == SEM_CAMP:
+    # "S/Camp" escolhido POR ELE gruda ao trocar de confronto; o que o proprio
+    # recorte escolheu (confronto entre ligas) nao gruda.
+    if (str(session_state.get("lav3_league", "") or "") == SEM_CAMP
+            and not session_state.get("_lav3_scamp_auto")):
         _need_autofill = False
 
     def _team_match_key(value: Any) -> str:
@@ -101,27 +143,18 @@ def _render_v3_view(
     if _need_autofill:
         try:
             if team_games is not None and not team_games.empty and {"team", "date"}.issubset(team_games.columns):
-                _team_keys = team_games["team"].astype(str).map(_team_match_key)
-
-                def _recent_games(_keys: set) -> pd.DataFrame:
-                    _g = team_games[_team_keys.isin(_keys)].copy()
-                    _g["_d"] = pd.to_datetime(_g["date"], errors="coerce")
-                    return _g.dropna(subset=["_d"]).sort_values("_d")
-
-                # Recorte segue o TIME 1 (teamA): num cross-league (ex.: EBL x LFL)
-                # a liga do recorte deve ser a do PRIMEIRO time, não a de quem
-                # jogou mais recentemente. Fallback p/ qualquer um dos dois se o
-                # Time 1 não tiver jogos no CSV ativo.
-                _matchup_games = _recent_games({_team_match_key(_top_team_a)})
-                if _matchup_games.empty:
-                    _matchup_games = _recent_games({_team_match_key(_top_team_a), _team_match_key(_top_team_b)})
-                if not _matchup_games.empty:
-                    _last_row = _matchup_games.iloc[-1]
-                    _last_lg = str(_last_row.get("league", "") or "")
-                    _last_yr = str(int(_last_row.get("year"))) if pd.notna(_last_row.get("year")) else ""
-                    _last_sp = str(_last_row.get("split", "") or "")
+                # O RECORTE DO CONFRONTO (26/10/2026, pedido dele): se os dois
+                # times JA SE ENFRENTARAM, o campeonato mais recente desse
+                # confronto ("LOS x T1 foi Worlds"); se nunca se enfrentaram e
+                # sao de ligas diferentes, "S/Camp" (todas as ligas); da mesma
+                # liga, essa liga. Antes: sempre a liga do Time 1 -- num jogo do
+                # Mundial, o recorte ficava na CBLOL e a T1 sem jogo nenhum.
+                _rec = recorte_do_confronto(team_games, _top_team_a, _top_team_b, _team_match_key)
+                if _rec is not None:
+                    _last_lg, _last_yr, _last_sp = _rec
                     if _last_lg:
                         session_state["lav3_league"] = _last_lg
+                        session_state["_lav3_scamp_auto"] = (_last_lg == SEM_CAMP)
                     if _last_yr:
                         session_state["lav3_year"] = _last_yr
                     if _last_sp:
