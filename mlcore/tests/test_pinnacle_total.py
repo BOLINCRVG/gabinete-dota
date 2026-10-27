@@ -251,7 +251,8 @@ class TestOsDoisRepositoriosTemOMesmoColetor(unittest.TestCase):
                     "app_core/odds_coletadas_core.py", "app_core/preco_justo_casa_core.py",
                     "app_core/casar_time_core.py", "app_core/navigation.py",
                     "mlcore/abates_por_time.py", "tools/gerar_abates_por_time.py",
-                    "mlcore/tests/test_abates_por_time.py", "app_core/tabela_casa_core.py"):
+                    "mlcore/tests/test_abates_por_time.py", "app_core/tabela_casa_core.py",
+                    "app_core/suas_casas_core.py", "mlcore/tests/test_suas_casas.py"):
             a = (RAIZ / rel).read_bytes().replace(b"\r\n", b"\n")
             b = (dota / rel).read_bytes().replace(b"\r\n", b"\n")
             self.assertEqual(a, b, "%s divergiu entre LoL e Dota" % rel)

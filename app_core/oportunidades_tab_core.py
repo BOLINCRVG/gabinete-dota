@@ -123,6 +123,11 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any], parte: str = "t
     if not sem_odds and _na_gaveta is None and confronto.get("teamA") and confronto.get("teamB"):
         _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver,
                                                    ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
+    # SUAS CASAS x PINNACLE (28/10/2026): bet365, Superbet, Estrela... pela OddsPapi.
+    # Logo depois da Polymarket quando o jogo esta na gaveta; aqui, quando nao esta.
+    from app_core.suas_casas_core import render_suas_casas
+    if sem_odds or _na_gaveta is None:
+        render_suas_casas(st, raiz=raiz, confronto=confronto, resolver=resolver)
     if not sem_odds:
         todas = list(r.get("todas") or [])
         por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
@@ -140,6 +145,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any], parte: str = "t
             # A Polymarket: so o que ela acrescenta.
             render_vencedor_tres_fontes(st, raiz=raiz, odds=odds, confronto=confronto,
                                         resolver=resolver)
+            render_suas_casas(st, raiz=raiz, confronto=confronto, resolver=resolver)
         if jogo_cmp in por_jogo_cmp:
             # AS LINHAS DO JOGO, com a estatistica (a analise de linha dele).
             from app_core.cruzamento_estatistica_core import cruzar as _cruzar
