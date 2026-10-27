@@ -1,0 +1,54 @@
+# ODDS DE OUTRAS CASAS (OddsPapi) -- Dota 2 (27/10/2026). A Pinnacle e a regua; o valor
+# esta nas casas moles dele (bet365, Superbet, Polymarket, Estrela, Blaze...).
+# Chave dele no secret ODDS_API_KEY (nunca impressa). De 3 em 3 h.
+name: Casas Dota 2 (OddsPapi)
+
+on:
+  schedule:
+    - cron: "57 */3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: casas-dota
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Ler as odds das casas
+        id: coleta
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set +e
+          python tools/coletar_casas.py dota
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::A API barrou ou a rede caiu. Nada escrito; tenta na proxima janela."
+            exit 0
+          fi
+          exit "$rc"
+      - name: Commitar
+        if: steps.coleta.outputs.rc == '0'
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f odds_casas_dota.json odds_casas_dota_historico.jsonl
+          git diff --cached --quiet && exit 0
+          git commit -m "Robô: odds de outras casas (Dota 2)"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || exit 1
+          done
+          git push
