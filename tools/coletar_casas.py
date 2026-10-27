@@ -7,8 +7,8 @@ A Pinnacle vira a REGUA (preco justo); o valor esta nas casas moles. A OddsPapi
 (plano gratis, chave dele no secret ODDS_API_KEY) junta 369 casas, inclusive as
 dele: bet365, Superbet, Polymarket, Estrela Bet (e clones), Blaze -- e Betano/Stake.
 
-Por corrida: 1 chamada de jogos (CS2, proximos 3 dias, com odds) + 1 de odds por
-jogo (no maximo MAX_JOGOS). Guarda:
+Por corrida: 1 chamada de jogos (proximos 3 dias, com odds) + 1 do catalogo de
+mercados + 1 de odds por jogo (no maximo MAX_JOGOS). Guarda:
   odds_casas_cs2.json            retrato: TODAS as casas, serie (171) e mapas 1-3
   odds_casas_cs2_historico.jsonl so as casas DELE, so o que mudou
 A chave nunca e impressa. 401/403/429 = para, sai 75, nao insiste.
@@ -75,6 +75,64 @@ def precos(odds: dict) -> dict:
     return fora
 
 
+# LINHAS (28/10/2026, pedido dele: "ver onde tem a melhor odd e a melhor linha
+# possivel... por exemplo para kills"). Do catalogo da OddsPapi (1 chamada por
+# corrida), so os mercados de MAPA (p1..p5) de total, handicap e total por time --
+# kills, torres, dragoes, barões, inibidores (Dota: kills, torres, roshans, barracks).
+# Guardadas so para as casas DELE (o retrato ja e grande com o vencedor de todas).
+_PERIODOS = {"p1": 1, "p2": 2, "p3": 3, "p4": 4, "p5": 5}
+
+
+def catalogo_de_linhas(markets) -> dict:
+    """Pura: {marketId: (unidade, tipo, mapa, pontos, (outcome A, outcome B), time)}.
+    tipo total -> (Over, Under); spread -> (time 1, time 2), pontos = handicap do time 1;
+    team_total -> (Over, Under) e qual = 1|2."""
+    fora = {}
+    for m in markets if isinstance(markets, list) else []:
+        nome = str(m.get("marketName") or "")
+        mapa = _PERIODOS.get(str(m.get("period") or ""))
+        if m.get("playerProp") or not mapa or " - " not in nome or int(m.get("marketLength") or 0) != 2:
+            continue
+        unidade, resto = nome.split(" - ", 1)
+        outs = {str(o.get("outcomeName")): str(o.get("outcomeId")) for o in m.get("outcomes") or []}
+        qual = None
+        if resto.startswith("Over Under Team 1"):
+            tipo, qual = "team_total", 1
+        elif resto.startswith("Over Under Team 2"):
+            tipo, qual = "team_total", 2
+        elif resto.startswith("Over Under"):
+            tipo = "total"
+        elif resto.startswith("Handicap"):
+            tipo = "spread"
+        else:
+            continue
+        par = (outs.get("Over"), outs.get("Under")) if tipo != "spread" else (outs.get("1"), outs.get("2"))
+        if None in par or m.get("handicap") is None:
+            continue
+        fora[str(m["marketId"])] = (unidade.lower(), tipo, mapa, float(m["handicap"]), par, qual)
+    return fora
+
+
+def linhas_das_casas(odds: dict, catalogo: dict) -> dict:
+    """Pura: {casa DELE: [[unidade, tipo, mapa, pontos, odd A, odd B, time], ...]}."""
+    fora = {}
+    for casa, b in (odds.get("bookmakerOdds") or {}).items():
+        if not e_casa_dele(casa) or not b.get("bookmakerIsActive", True) or b.get("suspended"):
+            continue
+        for mid, mk in (b.get("markets") or {}).items():
+            c = catalogo.get(str(mid))
+            if not c:
+                continue
+            outs = (mk or {}).get("outcomes") or {}
+            par = []
+            for o in c[4]:
+                pl = ((outs.get(o) or {}).get("players") or {}).get("0") or {}
+                par.append(pl.get("price") if pl.get("active", True) else None)
+            if all(isinstance(x, (int, float)) and x > 1 for x in par):
+                fora.setdefault(casa, []).append([c[0], c[1], c[2], c[3], par[0], par[1], c[5]])
+    return fora
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     chave = os.environ.get("ODDS_API_KEY", "").strip()
@@ -86,13 +144,16 @@ def main() -> int:
     try:
         fx = chamar("fixtures", chave, sportId=SPORT_ID, hasOdds="true",
                     **{"from": hoje.isoformat(), "to": (hoje + timedelta(days=3)).isoformat()})
+        time.sleep(1.0)
+        catalogo = catalogo_de_linhas(chamar("markets", chave, sportId=SPORT_ID))
         jogos = []
         for f in (fx if isinstance(fx, list) else [])[:MAX_JOGOS]:
             time.sleep(1.0)
             od = chamar("odds", chave, fixtureId=f["fixtureId"])
             jogos.append({"fixtureId": f["fixtureId"], "time1": f.get("participant1Name"),
                           "time2": f.get("participant2Name"), "torneio": f.get("tournamentName"),
-                          "inicio_utc": f.get("startTime"), "casas": precos(od)})
+                          "inicio_utc": f.get("startTime"), "casas": precos(od),
+                          "linhas": linhas_das_casas(od, catalogo)})
     except urllib.error.HTTPError as e:
         print(f"[casas {ESPORTE}] a API respondeu {e.code}: parando sem insistir")
         return RC_BLOQUEIO
@@ -122,7 +183,9 @@ def main() -> int:
                                             "mercado": MERCADOS[mid][0], "odds": par}, ensure_ascii=False) + "\n")
                         mudou += 1
     n_casas = len({c for j in jogos for c in j["casas"]})
-    print(f"[casas {ESPORTE}] {len(jogos)} jogos, {n_casas} casas com odd; {mudou} linhas das casas dele mudaram")
+    n_lin = sum(len(v) for j in jogos for v in j["linhas"].values())
+    print(f"[casas {ESPORTE}] {len(jogos)} jogos, {n_casas} casas com odd; {mudou} linhas das casas dele mudaram; "
+          f"{n_lin} linhas de mapa (kills, torres...) das casas dele; catalogo {len(catalogo)} mercados")
     return 0
 
 
