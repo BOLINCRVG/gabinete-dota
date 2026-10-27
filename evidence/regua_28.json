@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-10-26T17:07:55",
+ "gerado_em": "2026-10-27T01:46:26",
  "nota": 5.5,
  "por_area": {
   "dados": 6.5,
@@ -20,7 +20,7 @@
    "n": 2,
    "item": "todas as features sao beneficas",
    "nota": 1.0,
-   "evidencia": "10 ferramentas de gate (eval_fadiga_gate, eval_totals_dota, eval_whr_anocego, gate_calibradores_dota, tools/portao_qualidade_dota...), reconferido 23/10; REJECTs registrados (players, calibracao ao vivo 15/15, totais fora de kills) [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "10 ferramentas de gate (eval_fadiga_gate, eval_totals_dota, eval_whr_anocego, gate_calibradores_dota, tools/portao_qualidade_dota...), reconferido 23/10; REJECTs registrados (players, calibracao ao vivo 15/15, totais fora de kills) [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "dados",
@@ -34,7 +34,7 @@
    "n": 4,
    "item": "features atendem requisitos de nivel superior",
    "nota": 1.0,
-   "evidencia": "as regras existem (premium x professional, tier) e os testes que as forcam (test_active_teams_filter, test_exhibition_league, test_league_context) rodam todo dia na suite do robo (suite.yml, desde 22/10) [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "as regras existem (premium x professional, tier) e os testes que as forcam (test_active_teams_filter, test_exhibition_league, test_league_context) rodam todo dia na suite do robo (suite.yml, desde 22/10) [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "dados",
@@ -48,7 +48,7 @@
    "n": 6,
    "item": "feature nova entra rapido",
    "nota": 0.5,
-   "evidencia": "sem registro central de features nem documento de 'como adicionar'; a feature nova e ligada por bandeira (app_core/feature_flags_ui_core.py) e medida por gate, mas o caminho e manual e nunca foi cronometrado [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "sem registro central de features nem documento de 'como adicionar'; a feature nova e ligada por bandeira (app_core/feature_flags_ui_core.py) e medida por gate, mas o caminho e manual e nunca foi cronometrado [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "dados",
@@ -62,35 +62,35 @@
    "n": 1,
    "item": "especificacao revisada e versionada",
    "nota": 1.0,
-   "evidencia": "tudo em git e os commits carregam o porque no corpo (103 linhas de corpo nos ultimos 20 commits nao-robo, contado em 23/10); nenhuma mudanca de modelo sem gate [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "tudo em git e os commits carregam o porque no corpo (103 linhas de corpo nos ultimos 20 commits nao-robo, contado em 23/10); nenhuma mudanca de modelo sem gate [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "modelo",
    "n": 2,
    "item": "metricas offline e online se correlacionam",
    "nota": 0.0,
-   "evidencia": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "NAO medido: exigiria CLV, que esta fora do plano por decisao dele. E fronteira escolhida, nao falha de execucao [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "modelo",
    "n": 3,
    "item": "hiperparametros ajustados",
    "nota": 0.5,
-   "evidencia": "gate_calibradores_dota.py varre 5 calibradores x 2 criterios de parada com bootstrap PAREADO, mas sem validacao cruzada em dobras e so rodando a mao [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "gate_calibradores_dota.py varre 5 calibradores x 2 criterios de parada com bootstrap PAREADO, mas sem validacao cruzada em dobras e so rodando a mao [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "modelo",
    "n": 4,
    "item": "impacto do envelhecimento conhecido",
    "nota": 1.0,
-   "evidencia": "medido em 23/10/2026 (tools/envelhecimento_dota.py, evidence/envelhecimento_dota.json): modelo congelado no corte de 22/09 contra o mesmo modelo aprendendo jogo a jogo, 683 jogos: congelar custa +0.041 de logloss em media, +0.007 na 1a semana e +0.03 a +0.075 depois. Por isso o robo aplica os jogos recentes todo dia [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "medido em 23/10/2026 (tools/envelhecimento_dota.py, evidence/envelhecimento_dota.json): modelo congelado no corte de 22/09 contra o mesmo modelo aprendendo jogo a jogo, 683 jogos: congelar custa +0.041 de logloss em media, +0.007 na 1a semana e +0.03 a +0.075 depois. Por isso o robo aplica os jogos recentes todo dia [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "modelo",
    "n": 5,
    "item": "modelo simples nao e melhor",
    "nota": 1.0,
-   "evidencia": "comparacao contra a base presente nos gates, e o simples ganhou varias vezes e foi mantido: calibrar o ao vivo perdeu 15 de 15, e nos totais so kills bate a taxa-base [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "comparacao contra a base presente nos gates, e o simples ganhou varias vezes e foi mantido: calibrar o ao vivo perdeu 15 de 15, e nos totais so kills bate a taxa-base [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "modelo",
@@ -104,7 +104,7 @@
    "n": 7,
    "item": "testado quanto a inclusao",
    "nota": 1.0,
-   "evidencia": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "o sujeito da previsao e o TIME vencer um mapa, nao uma pessoa; nao ha grupo protegido em jogo. Declarado, nao ignorado [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "infra",
@@ -125,7 +125,7 @@
    "n": 3,
    "item": "pipeline com teste de integracao",
    "nota": 1.0,
-   "evidencia": "suite inteira verde na esteira (suite.yml): 5809 testes, 0d"
+   "evidencia": "suite inteira verde na esteira (suite.yml): 5814 testes, 0d"
   },
   {
    "area": "infra",
@@ -139,7 +139,7 @@
    "n": 5,
    "item": "modelo depuravel",
    "nota": 1.0,
-   "evidencia": "session_state[_ml_trace_last] guarda o caminho da previsao (app_core/first_x_gap_core.py, flow_runtime_core.py, csv_maintenance_runner_core.py) e a aba o exibe [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "session_state[_ml_trace_last] guarda o caminho da previsao (app_core/first_x_gap_core.py, flow_runtime_core.py, csv_maintenance_runner_core.py) e a aba o exibe [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "infra",
@@ -174,7 +174,7 @@
    "n": 3,
    "item": "treino e servico NAO divergem",
    "nota": 0.5,
-   "evidencia": "testes de paridade treino x servico rodam todo dia na suite do robo (suite.yml): test_ml_parity_golden, test_paridade_grupo_servido, test_pscore_servido, test_regua_vs_servido. Mas a divida D5 segue aberta (o replay da regua perde o delta de jogadores e mede so parte do caminho servido): vigia parcial, meio ponto [verificada em 2026-10-23, vence em 87d]"
+   "evidencia": "testes de paridade treino x servico rodam todo dia na suite do robo (suite.yml): test_ml_parity_golden, test_paridade_grupo_servido, test_pscore_servido, test_regua_vs_servido. Mas a divida D5 segue aberta (o replay da regua perde o delta de jogadores e mede so parte do caminho servido): vigia parcial, meio ponto [verificada em 2026-10-23, vence em 86d]"
   },
   {
    "area": "monitor",
@@ -195,7 +195,7 @@
    "n": 6,
    "item": "desempenho computacional nao regrediu",
    "nota": 1.0,
-   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0201s, previsoes 0.1058s, suite 119.289s"
+   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0197s, previsoes 0.1114s, suite 115.85s"
   },
   {
    "area": "monitor",
