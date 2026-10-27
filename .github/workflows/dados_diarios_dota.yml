@@ -55,6 +55,13 @@ jobs:
         timeout-minutes: 25
         run: python opendota_timeline_sync.py --budget-seconds 1200 --max-matches 1500
 
+      # ELENCOS POR TEAM_ID (27/10/2026): o raw_matches.jsonl do robo so tem as
+      # partidas do dia e nao vai para o git -- sem isto a uniao de ids pelo
+      # elenco (mesmo time com dois team_id, ex. PARIVISION) nao rodava aqui.
+      # Soma os jogadores do dia ao arquivo versionado ANTES do adapter ler.
+      - name: Atualizar elencos por time (identidade)
+        run: python tools/atualizar_elencos_dota.py
+
       - name: Regenerar CSVs no schema OracleElixir-like
         run: python dota_adapter.py
 
@@ -179,7 +186,7 @@ jobs:
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
           fi
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv evidence
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json evidence
           git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"

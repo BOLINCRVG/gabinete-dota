@@ -296,15 +296,35 @@ def ids_ativos(m: pd.DataFrame, dias: int = API_JANELA_ATIVOS_DIAS) -> set[int]:
 ROSTER_MIN_COMUM = 5      # elenco IDENTICO; com 4 entravam erros (HEROIC+LGD Gaming)
 ROSTER_ULTIMOS_N = 20     # "elenco recente" = titulares dos ultimos N jogos do id
 ROSTER_FOLGA_DIAS = 21    # sobreposicao tolerada entre as janelas de atividade
+# MESMO TIME EM DOIS IDS AO MESMO TEMPO (27/10/2026, regra dele: "historico de um
+# time partido e algo que eu nao quero que aconteca, nunca"). PARIVISION usou os
+# ids 9572001 e 9824702 juntos, com os MESMOS 5 jogadores, e a trava "ids
+# simultaneos nao se unem" partia o time (101 jogos x 437 no "TEAM VISION").
+# Excecao segura: elenco 5/5 + NUNCA se enfrentaram + nunca comecaram partidas a
+# menos de ROSTER_MESMA_HORA_MIN (os mesmos 5 nao jogam dois mapas ao mesmo tempo).
+ROSTER_MESMA_HORA_MIN = 45
+# Elencos VERSIONADOS: o raw_matches.jsonl nao vai para o git e, no robo, so tem
+# as partidas baixadas no dia -- a uniao por elenco quase nao rodava em producao.
+ELENCOS_FILE = "elencos_times_dota.json"
 
 
 def _rosters_por_team_id(caminho: Path) -> dict[int, list[tuple[float, frozenset[int]]]]:
-    """team_id -> [(instante, contas do time naquele jogo)], cronologico."""
+    """team_id -> [(instante, contas do time naquele jogo)], cronologico.
+
+    Junta o arquivo cru (quando existe) com o compacto versionado (ELENCOS_FILE,
+    mesma pasta): o robo nao tem o cru historico."""
     por_id: dict[int, list[tuple[float, frozenset[int]]]] = {}
+    compacto = Path(caminho).with_name(ELENCOS_FILE)
+    if compacto.exists():
+        try:
+            for k, lst in json.loads(compacto.read_text(encoding="utf-8")).items():
+                por_id[int(k)] = [(float(st), frozenset(int(a) for a in accs)) for st, accs in lst]
+        except (OSError, ValueError, TypeError):
+            por_id = {}
     try:
         fh = open(caminho, encoding="utf-8")
     except OSError:
-        return por_id
+        return {i: sorted(set(v), key=lambda x: x[0]) for i, v in por_id.items()}
     with fh:
         for line in fh:
             try:
@@ -325,9 +345,8 @@ def _rosters_por_team_id(caminho: Path) -> dict[int, list[tuple[float, frozenset
                         if p.get("account_id") and (p.get("isRadiant") is is_rad)}
                 if accs:
                     por_id.setdefault(tid, []).append((st, frozenset(accs)))
-    for v in por_id.values():
-        v.sort()
-    return por_id
+    # o mesmo jogo pode vir do cru e do compacto: dedupa e ordena pelo instante
+    return {i: sorted(set(v), key=lambda x: x[0]) for i, v in por_id.items()}
 
 
 def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
@@ -388,6 +407,43 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
             return True
         return (min(wa[1], wb[1]) - max(wa[0], wb[0])) > folga
 
+    # Para a excecao "mesmo time em dois ids ao mesmo tempo": quem ja se
+    # enfrentou e os instantes de inicio de cada id.
+    enfrentaram: set[tuple[int, int]] = set()
+    inicios: dict[int, list[float]] = {}
+    for r in m.itertuples(index=False):
+        x, y = int(getattr(r, "tid", 0)), int(getattr(r, "oid", 0))
+        if x > 0 and y > 0:
+            enfrentaram.add((min(x, y), max(x, y)))
+        for i in (x, y):
+            if i > 0:
+                inicios.setdefault(i, []).append(float(r.ord_key))
+    for v in inicios.values():
+        v.sort()
+    perto = ROSTER_MESMA_HORA_MIN * 60.0
+
+    def ao_mesmo_tempo(a: int, b: int) -> bool:
+        """Algum jogo de a comeca a menos de `perto` de um jogo de b?"""
+        la, lb = inicios.get(a, []), inicios.get(b, [])
+        i = j = 0
+        while i < len(la) and j < len(lb):
+            if abs(la[i] - lb[j]) < perto:
+                return True
+            if la[i] < lb[j]:
+                i += 1
+            else:
+                j += 1
+        return False
+
+    def mesmo_time_em_dois_ids(a: int, b: int) -> bool:
+        return ((min(a, b), max(a, b)) not in enfrentaram
+                and len(recente.get(a, ()) & recente.get(b, ())) >= 5
+                and not ao_mesmo_tempo(a, b))
+
+    def conflito(a: int, b: int) -> bool:
+        """Nao podem ser o mesmo time: ativos juntos E sem a prova da excecao."""
+        return simultaneos(a, b) and not mesmo_time_em_dois_ids(a, b)
+
     por_jog: dict[int, set[int]] = {}
     for i, s in recente.items():
         for a in s:
@@ -406,7 +462,7 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
     for a, b in pares:
         if len(recente.get(a, ()) & recente.get(b, ())) < ROSTER_MIN_COMUM:
             continue
-        if simultaneos(a, b):
+        if conflito(a, b):
             continue
         cand.append((jogos.get(a, 0) + jogos.get(b, 0), a, b))
     cand.sort(reverse=True)   # une primeiro o que tem mais historia em jogo
@@ -424,7 +480,7 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
         ga = grupo.get(ra, {ra})
         gb = grupo.get(rb, {rb})
         # guarda 3: nenhuma dupla entre os grupos pode ser simultanea
-        if any(simultaneos(x, y) for x in ga for y in gb):
+        if any(conflito(x, y) for x in ga for y in gb):
             continue
         novo = ga | gb
         # representante = o id com mais jogos (carrega a historia maior)
@@ -457,7 +513,7 @@ def load_matches() -> pd.DataFrame:
     return _aplicar_identidade(m)
 
 
-_IDENT_CACHE: dict[tuple, dict[int, str]] = {}
+_IDENT_CACHE: dict[tuple, tuple[dict[int, str], dict[int, int]]] = {}
 
 
 def _aplicar_identidade(m: pd.DataFrame) -> pd.DataFrame:
@@ -475,7 +531,7 @@ def _aplicar_identidade(m: pd.DataFrame) -> pd.DataFrame:
     if os.environ.get("DOTA_TEAM_IDENTITY", "1") == "0" or m.empty:
         return m
     chave = (len(m), int(m["match_id"].iloc[-1]) if "match_id" in m.columns else 0)
-    canon = _IDENT_CACHE.get(chave)
+    canon, rep = _IDENT_CACHE.get(chave, (None, {}))
     if canon is None:
         # A API responde nome e elenco ATUAIS; consulta so os ~245 ids que
         # jogaram nos ultimos 90 dias (o universo tem 2415 e nao caberia na cota).
@@ -498,12 +554,20 @@ def _aplicar_identidade(m: pd.DataFrame) -> pd.DataFrame:
         canon = canonical_team_names(m, rep, api_names=api_nomes)
         canon = {i: canon.get(rep.get(i, i), canon.get(i, "")) for i in canon}
         _IDENT_CACHE.clear()          # so a leitura corrente interessa
-        _IDENT_CACHE[chave] = canon
+        _IDENT_CACHE[chave] = (canon, rep)
     out = m.copy()
     out["teamname"] = [canon.get(int(i), str(n)) or str(n)
                        for i, n in zip(out["tid"], out["teamname"])]
     out["opp_teamname"] = [canon.get(int(i), str(n)) or str(n)
                            for i, n in zip(out["oid"], out["opp_teamname"])]
+    # O ID TAMBEM vira o do grupo (27/10/2026). Antes so o NOME era unificado: o
+    # motor do app (dota_engine) guarda nota, kills, torres e duracao POR tid, e
+    # mesmo os times "unidos" (Tundra/Iron Wing, BB/BetBoom) seguiam partidos la.
+    # O id cru fica em tid_orig/oid_orig.
+    if rep:
+        out["tid_orig"], out["oid_orig"] = out["tid"], out["oid"]
+        out["tid"] = [rep.get(int(i), int(i)) for i in out["tid"]]
+        out["oid"] = [rep.get(int(i), int(i)) for i in out["oid"]]
     return out
 
 
