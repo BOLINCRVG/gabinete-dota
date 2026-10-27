@@ -62,6 +62,16 @@ jobs:
       - name: Atualizar elencos por time (identidade)
         run: python tools/atualizar_elencos_dota.py
 
+      # ESCALACAO DE CADA PARTIDA (27/10/2026): soma as do dia (raw do robo) e busca
+      # na OpenDota as que faltam (set-out ficaram sem), ~1/s, ate 900 por corrida.
+      # continue-on-error: cota estourada nao derruba a esteira.
+      - name: Escalacoes por partida (nota por jogador)
+        continue-on-error: true
+        timeout-minutes: 25
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: python tools/escalacoes_dota.py --raw raw_matches.jsonl --backfill 900
+
       - name: Regenerar CSVs no schema OracleElixir-like
         run: python dota_adapter.py
 
@@ -113,6 +123,12 @@ jobs:
         id: nota
         continue-on-error: true
         run: python dota_scorecard.py
+
+      # NOTA POR JOGADOR (27/10/2026): forca de cada time = media das notas do elenco;
+      # o app mistura com a chance do modelo (w e c da prova cega, no proprio arquivo).
+      - name: Nota por jogador
+        continue-on-error: true
+        run: python nota_jogadores_dota.py
 
       # GUARDAS POS-RETREINO -- QUALIDADE ANTES DE PUBLICAR (22/10/2026). A guarda
       # acima so confere que o modelo carrega e preve. Esta confere se ele esta
@@ -186,7 +202,7 @@ jobs:
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
           fi
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json evidence
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
           git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"

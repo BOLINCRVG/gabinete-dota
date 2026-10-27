@@ -943,6 +943,27 @@ def run_ml_pre_engine_layers(
             p_series = _safe_prob_win_series(prob_win_series_fn, float(p_map), int(bo_i))
             delta_cur = 0.0
 
+    # NOTA POR JOGADOR (27/10/2026): a chance do mapa, ja com todas as camadas, se
+    # mistura com a forca dos ELENCOS (nota de cada jogador, que ele leva de time em
+    # time). Prova cega 01/05-16/08: 0,6345 -> 0,6218. Sem o arquivo ou sem um dos
+    # times nele, nada muda. Ver app_core/nota_jogadores_core.py.
+    try:
+        from app_core.nota_jogadores_core import p_com_jogadores
+        _nj = p_com_jogadores(str(teamA), str(teamB), float(p_map))
+        if _nj is not None:
+            _p_antes_nj = float(p_map)
+            p_map = float(_nj["p_final"])
+            p_series = _safe_prob_win_series(prob_win_series_fn, float(p_map), int(bo_i))
+            append_pipeline_step(steps=steps, stage="nota_jogadores", before=_p_antes_nj, after=p_map,
+                                 applied=abs(p_map - _p_antes_nj) > 1e-12, engine="nota_jogadores_dota",
+                                 lineup_mode=str(lineup_mode_out))
+            if ssw is not None:
+                ssw["_nota_jogadores_info"] = dict(_nj)
+    except Exception as exc:  # nunca derruba a previsao
+        append_pipeline_step(steps=steps, stage="nota_jogadores", before=p_map, after=p_map, applied=False,
+                             engine="nota_jogadores_dota", lineup_mode=str(lineup_mode_out),
+                             error=f"{type(exc).__name__}: {exc}")
+
     try:
         p_after = float(p_map) if math.isfinite(float(p_map)) else float("nan")
         ap = (
