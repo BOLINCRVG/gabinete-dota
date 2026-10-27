@@ -261,7 +261,8 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
         return None
 
     escolhido = por_id.get(str(escolha))
-    if escolhido and not e_o_confronto_aberto(escolhido, confronto, resolver):
+    # sem "Abrindo..." quando o nome nao casou: a tela dizia as duas coisas (27/10/2026)
+    if escolhido and not aviso and not e_o_confronto_aberto(escolhido, confronto, resolver):
         st.info("Abrindo {} x {}...".format(escolhido["casa"], escolhido["fora"]))
     return aberto_jogo
 

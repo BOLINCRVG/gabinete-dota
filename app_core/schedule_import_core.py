@@ -200,15 +200,25 @@ def resolve_schedule_team(raw: str, teams_all: Iterable[str], aliases: dict[str,
     teams = [str(v) for v in teams_all if str(v or "").strip()]
     if not team:
         return "", False
-    if team in teams:
-        return team, True
     key = normalize_schedule_team_key(team)
+    # APELIDO ANTES do nome exato (27/10/2026): no Dota a Pinnacle diz "PVISION",
+    # que existe no CSV -- mas e o nome ANTIGO do PARIVISION (mesmo team_id, ultimo
+    # jogo 19/07). Com o nome exato primeiro, o apelido ensinado nunca era lido.
     for k in (key, _chave_antiga(team)):
         if k in aliases and str(aliases[k]) in teams:
             return str(aliases[k]), True
+    if team in teams:
+        return team, True
     for known in teams:
         if normalize_schedule_team_key(known) == key:
             return known, True
+    # PREFIXO "TEAM" (27/10/2026): a casa diz "Liquid", "Spirit", "Yandex"; o CSV,
+    # "Team Liquid"... Casa so se houver UMA opcao -- na duvida, nao chuta.
+    alt = key[4:] if key.startswith("team") else "team" + key
+    if alt:
+        cands = sorted({known for known in teams if normalize_schedule_team_key(known) == alt})
+        if len(cands) == 1:
+            return cands[0], True
     return team, False
 
 

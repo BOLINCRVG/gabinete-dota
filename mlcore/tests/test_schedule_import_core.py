@@ -57,3 +57,23 @@ class ScheduleImportCoreTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestResolverNomesDaCasa27Out(unittest.TestCase):
+    """27/10/2026, gaveta do Dota: "Nao consegui casar PVISION x Liquid"."""
+
+    def test_prefixo_team(self):
+        from app_core.schedule_import_core import resolve_schedule_team
+        self.assertEqual(resolve_schedule_team("Liquid", ["Team Liquid", "Tundra"], {}), ("Team Liquid", True))
+        self.assertEqual(resolve_schedule_team("Team Spirit", ["Spirit"], {}), ("Spirit", True))
+
+    def test_prefixo_team_ambiguo_nao_chuta(self):
+        from app_core.schedule_import_core import resolve_schedule_team
+        # "Team Falcons" e "TEAM FALCONS": duas opcoes com prefixo -> nao escolhe
+        self.assertEqual(resolve_schedule_team("Falcons", ["Team Falcons", "TEAM FALCONS"], {})[1], False)
+
+    def test_apelido_vale_mais_que_o_nome_exato(self):
+        from app_core.schedule_import_core import resolve_schedule_team
+        times = ["PVISION", "PARIVISION"]
+        self.assertEqual(resolve_schedule_team("PVISION", times, {}), ("PVISION", True))
+        self.assertEqual(resolve_schedule_team("PVISION", times, {"pvision": "PARIVISION"}), ("PARIVISION", True))
