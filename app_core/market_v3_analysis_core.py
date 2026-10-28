@@ -189,7 +189,7 @@ def compute_window_stats(
         hits_under = int(under_mask.sum())
         trend, slope = _trend_from_series(s)
         aj, adv = -1, float("nan")
-        if metric_col == "total_kills" and sub is not None and "tend_adv_kills" in sub.columns:
+        if metric_col in ("total_kills", "mv2_total_kills") and sub is not None and "tend_adv_kills" in sub.columns:
             from app_core.cruzamento_estatistica_core import PESO_AJUSTE_KILLS
             tend = pd.to_numeric(sub.loc[s.index, "tend_adv_kills"], errors="coerce").fillna(0.0)
             aj = int(((s - PESO_AJUSTE_KILLS * tend) > float(line)).sum())

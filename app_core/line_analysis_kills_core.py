@@ -229,7 +229,7 @@ def _render_kills_line_content(
     )
     # OS 4 SINAIS DELE (28/10/2026): Historico, Medias, Adversario, StatsCamps -- geral e
     # so mapa 1. So LoL e so total de kills (app_core/sinais_linha_core.py).
-    if metric_col == "total_kills" and sinais_tg is not None:
+    if metric_col in ("total_kills", "mv2_total_kills") and sinais_tg is not None:
         try:
             from app_core.sinais_linha_core import resumo_html, sinais
             _g = sinais(sinais_tg, team_a, team_b, float(line_val))
