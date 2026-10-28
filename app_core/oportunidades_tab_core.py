@@ -123,91 +123,108 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any], parte: str = "t
     if not sem_odds and _na_gaveta is None and confronto.get("teamA") and confronto.get("teamB"):
         _jogos_que_dao = _diagnostico_do_confronto(st, odds, confronto, resolver,
                                                    ctx.get("sugerir_times"), ctx.get("ensinar_apelido"))
-    # SUAS CASAS x PINNACLE (28/10/2026): bet365, Superbet, Estrela... pela OddsPapi.
-    # Logo depois da Polymarket quando o jogo esta na gaveta; aqui, quando nao esta.
-    from app_core.suas_casas_core import render_suas_casas
+    # A ABA LIMPA (29/10/2026, ele: "esta muito poluida, varias coisas falando a mesma coisa"):
+    #   1. Suas casas x Pinnacle -- vencedor da serie e +-1,5 de mapas;
+    #   2. Linha justa -- modelo x a casa que ele escolher (Pinnacle ou qualquer casa da OddsPapi);
+    #   3. As melhores apostas do jogo (casa x modelo x estatistica), embaixo;
+    #   4. Detalhes, recolhidos.
+    from app_core.suas_casas_core import MARCAS as _MARCAS, linha_justa_da_casa, render_suas_casas
     _ctx_casas = {"calcular_totais": calcular_totais, "prob_over": prob_over,
                   "medias_kills": ctx.get("medias_kills"), "team_games": ctx.get("team_games")}
-    if sem_odds or _na_gaveta is None:
+    if confronto.get("teamA") and confronto.get("teamB"):
         render_suas_casas(st, raiz=raiz, confronto=confronto, resolver=resolver, **_ctx_casas)
-    if not sem_odds:
-        todas = list(r.get("todas") or [])
-        por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
-        for a in todas:
-            por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
-        for x in justas:
-            por_jogo_cmp.setdefault(x.get("jogo"), []).append({
-                "jogo": x.get("jogo"), "liga": x.get("liga"), "casa": x.get("casa"),
-                "fora": x.get("fora"), "com_vitoria": x.get("conta") == "com vitoria",
-                "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
-                                     if v is not None] or [-999.0]),
-                "_so_resumo": True})
-        jogo_cmp = _na_gaveta.get("id") if _na_gaveta else None
-        if _na_gaveta is not None:
-            # A Polymarket: so o que ela acrescenta.
-            render_vencedor_tres_fontes(st, raiz=raiz, odds=odds, confronto=confronto,
-                                        resolver=resolver)
-            render_suas_casas(st, raiz=raiz, confronto=confronto, resolver=resolver, **_ctx_casas)
-        if jogo_cmp in por_jogo_cmp:
-            # AS LINHAS DO JOGO, com a estatistica (a analise de linha dele).
-            from app_core.cruzamento_estatistica_core import cruzar as _cruzar
-            from app_core.modelo_mercado_core import aposta as _aposta_j
-            from app_core.modelo_mercado_html_core import html_destaques as _html_j
-            from app_core.modelo_mercado_html_core import pagina as _pagina_j
-            _lj = _cruzar(linhas_do_jogo(completo, jogo_cmp), ctx.get("team_games"), resolver)
-            if _lj:
-                # SO AS MELHORES EM CIMA (25/10/2026, pedido dele): aposta em que
-                # o modelo da a odd justa abaixo de ODD_MODELO_MAX (chance de
-                # ~58% ou mais), da maior vantagem para a menor. O resto fica
-                # embaixo, recolhido.
-                from app_core.modelo_mercado_core import ODD_MODELO_MAX, separar_melhores
-                _fortes, _resto = separar_melhores(_lj)
 
-                def _desenhar(linhas):
-                    try:
-                        import streamlit.components.v1 as _cmp
-                        _cmp.html(_pagina_j(_html_j(linhas, _aposta_j, limite=40, com_jogo=False)),
-                                  height=34 + 47 * min(len(linhas), 40) + 60, scrolling=False)
-                    except Exception:
-                        pass
-                st.markdown("#### Linhas do jogo: casa x modelo x estatistica")
-                if _fortes:
-                    st.caption("As apostas que o modelo ve como provaveis (odd justa abaixo de "
-                               "{:.2f}), da maior vantagem para a menor.".format(ODD_MODELO_MAX).replace(".", ","))
-                    _desenhar(_fortes)
-                else:
-                    st.caption("Nenhuma aposta deste jogo com odd justa do modelo abaixo de {:.2f}."
-                               .format(ODD_MODELO_MAX).replace(".", ","))
-                if _resto:
-                    with st.expander("Outras linhas deste jogo ({})".format(len(_resto))):
-                        _desenhar(_resto)
-            # A LINHA JUSTA -- intacta, como ele pediu (23/10/2026).
-            _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
-            _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
-            _aberto = any(a.get("metrica") == "vencedor" or a.get("com_vitoria") for a in _do_jogo)
-            from app_core.tabela_casa_core import vencedores_da_tela
-            _venc = vencedores_da_tela(
-                [l for l in (odds.get("linhas") or []) if isinstance(l, dict) and l.get("jogo") == jogo_cmp],
-                _do_jogo)
-            _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
-                             _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""),
-                             vencedores=_venc,
-                             bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
-                             casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""))
-        elif _na_gaveta is not None and str(_na_gaveta.get("id", "")).startswith("poly:"):
-            st.caption("A Pinnacle nao tem este jogo; so a Polymarket (vencedor).")
-        elif _jogos_que_dao:
-            st.info("Este painel nao conseguiu precificar nenhuma linha deste confronto.")
+    todas = list(r.get("todas") or []) if not sem_odds else []
+    por_jogo_cmp: Dict[Any, List[Mapping[str, Any]]] = {}
+    for a in todas:
+        por_jogo_cmp.setdefault(a.get("jogo"), []).append(a)
+    for x in justas:
+        por_jogo_cmp.setdefault(x.get("jogo"), []).append({
+            "jogo": x.get("jogo"), "liga": x.get("liga"), "casa": x.get("casa"),
+            "fora": x.get("fora"), "com_vitoria": x.get("conta") == "com vitoria",
+            "vantagem_pct": max([v for v in (x.get("vantagem_a"), x.get("vantagem_b"))
+                                 if v is not None] or [-999.0]),
+            "_so_resumo": True})
+    jogo_cmp = _na_gaveta.get("id") if _na_gaveta else None
 
-    # ---- 4. DETALHES ---------------------------------------------------------
+    # ---- 2. LINHA JUSTA: modelo x a casa escolhida -----------------------------------
+    if confronto.get("teamA") and confronto.get("teamB"):
+        st.markdown("#### Linha justa: modelo x casa")
+        _nomes_casas = ["Pinnacle"] + [n for _, n in _MARCAS if n != "Pinnacle"]
+        _casa_lj = st.selectbox("Casa da coluna da direita", _nomes_casas, key="lj_casa_escolhida",
+                                help="Pinnacle pelo robô dela; as outras pela OddsPapi (de 3 em 3 h).")
+        if _casa_lj == "Pinnacle":
+            if not sem_odds and jogo_cmp in por_jogo_cmp:
+                _do_jogo = [a for a in todas if a.get("jogo") == jogo_cmp]
+                _jg = next((j for j in (odds.get("jogos") or []) if j.get("id") == jogo_cmp), {})
+                _aberto = any(a.get("metrica") == "vencedor" or a.get("com_vitoria") for a in _do_jogo)
+                from app_core.tabela_casa_core import vencedores_da_tela
+                _venc = vencedores_da_tela(
+                    [l for l in (odds.get("linhas") or []) if isinstance(l, dict) and l.get("jogo") == jogo_cmp],
+                    _do_jogo)
+                _tabelas_da_casa(st, [x for x in justas if x.get("jogo") == jogo_cmp],
+                                 _rotulo_do_jogo(por_jogo_cmp[jogo_cmp]).replace("ABERTO: ", ""),
+                                 vencedores=_venc,
+                                 bo=(confronto.get("bo") if _aberto else None) or _jg.get("bo"),
+                                 casa=str(_jg.get("casa") or ""), fora=str(_jg.get("fora") or ""),
+                                 titulo_fixo=True)
+            else:
+                st.caption("A Pinnacle não tem este jogo na leitura atual. Escolha outra casa acima.")
+        else:
+            _jl, _vl, _mot = linha_justa_da_casa(
+                raiz=raiz, confronto=confronto, resolver=resolver, nome_casa=_casa_lj,
+                calcular_totais=calcular_totais, prob_over=prob_over, medias_kills=ctx.get("medias_kills"),
+                p_mapa_da_casa=_p_mapa_da_casa(confronto, resolver))
+            if _mot:
+                st.caption(_mot)
+            else:
+                _tabelas_da_casa(st, _jl, f"{confronto.get('teamA')} x {confronto.get('teamB')} · {_casa_lj}",
+                                 vencedores=_vl, bo=confronto.get("bo"), casa=str(confronto.get("teamA")),
+                                 fora=str(confronto.get("teamB")), nome_casa=_casa_lj, titulo_fixo=True)
+
+    # ---- 3. AS MELHORES APOSTAS DO JOGO (embaixo) ------------------------------------
+    if not sem_odds and jogo_cmp in por_jogo_cmp:
+        from app_core.cruzamento_estatistica_core import cruzar as _cruzar
+        from app_core.modelo_mercado_core import aposta as _aposta_j
+        from app_core.modelo_mercado_html_core import html_destaques as _html_j
+        from app_core.modelo_mercado_html_core import pagina as _pagina_j
+        _lj = _cruzar(linhas_do_jogo(completo, jogo_cmp), ctx.get("team_games"), resolver)
+        if _lj:
+            from app_core.modelo_mercado_core import ODD_MODELO_MAX, separar_melhores
+            _fortes, _resto = separar_melhores(_lj)
+
+            def _desenhar(linhas):
+                try:
+                    import streamlit.components.v1 as _cmp
+                    _cmp.html(_pagina_j(_html_j(linhas, _aposta_j, limite=40, com_jogo=False)),
+                              height=34 + 47 * min(len(linhas), 40) + 60, scrolling=False)
+                except Exception:
+                    pass
+            st.markdown("#### Melhores apostas deste jogo (Pinnacle x modelo x estatística)")
+            if _fortes:
+                st.caption("Odd justa do modelo abaixo de {:.2f}, da maior vantagem para a menor."
+                           .format(ODD_MODELO_MAX).replace(".", ","))
+                _desenhar(_fortes)
+            else:
+                st.caption("Nenhuma aposta deste jogo com odd justa do modelo abaixo de {:.2f}."
+                           .format(ODD_MODELO_MAX).replace(".", ","))
+            if _resto:
+                with st.expander("Outras linhas deste jogo ({})".format(len(_resto))):
+                    _desenhar(_resto)
+    elif _jogos_que_dao:
+        st.info("Este painel nao conseguiu precificar nenhuma linha deste confronto.")
+
+    # ---- 4. DETALHES (recolhidos) ---------------------------------------------
     st.markdown("### Detalhes")
-    if not sem_odds:
-        _mostrar_mercado_completo(st, r)
-    _mostrar_reguas_pinnacle(st, raiz)
-    render_polymarket_lista(st, raiz=raiz)
-    _mostrar_diario(st, raiz)
-    if not sem_odds:
-        _o_que_ficou_de_fora(st, r, nao_casados)
+    st.caption("Mercado completo da Pinnacle, réguas, Polymarket, diário do robô e o que ficou de fora.")
+    if st.toggle("Mostrar detalhes", value=False, key="mm_mostrar_detalhes"):
+        if not sem_odds:
+            _mostrar_mercado_completo(st, r)
+        _mostrar_reguas_pinnacle(st, raiz)
+        render_polymarket_lista(st, raiz=raiz)
+        _mostrar_diario(st, raiz)
+        if not sem_odds:
+            _o_que_ficou_de_fora(st, r, nao_casados)
 
 
 def _idade_curta(horas: Any) -> str:
@@ -746,17 +763,19 @@ def _o_que_ficou_de_fora(st: Any, r: Mapping[str, Any], nao_casados: List[str]) 
 
 def _tabelas_da_casa(st: Any, justas: List[Mapping[str, Any]], titulo: str, *,
                      vencedores: List[Mapping[str, Any]] = (), bo: Any = None,
-                     casa: str = "", fora: str = "") -> None:
+                     casa: str = "", fora: str = "", nome_casa: str = "Pinnacle",
+                     titulo_fixo: bool = False) -> None:
     from app_core.tabela_casa_core import altura, html_das_tabelas, linhas_da_tela
     linhas = linhas_da_tela(justas)
     if not linhas and not vencedores:
         return
-    st.markdown("#### Linha justa: modelo x Pinnacle")
+    if not titulo_fixo:
+        st.markdown(f"#### Linha justa: modelo x {nome_casa}")
     try:
         import streamlit.components.v1 as _componentes
     except Exception:
         st.info("Esta versao do Streamlit nao desenha a tabela no formato da casa.")
         return
     _componentes.html(html_das_tabelas(linhas, titulo, vencedores=vencedores, bo=bo,
-                                       casa=casa, fora=fora),
+                                       casa=casa, fora=fora, nome_casa=nome_casa),
                       height=altura(linhas), scrolling=True)

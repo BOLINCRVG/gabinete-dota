@@ -145,12 +145,16 @@ def altura(linhas: List[Mapping[str, Any]]) -> int:
 
 def html_das_tabelas(linhas: List[Mapping[str, Any]], titulo_jogo: str = "",
                      vencedores: List[Mapping[str, Any]] = (), bo: Any = None,
-                     casa: str = "", fora: str = "") -> str:
+                     casa: str = "", fora: str = "", nome_casa: str = "Pinnacle") -> str:
     dados = json.dumps(linhas, ensure_ascii=False).replace("</", "<\\/")
     venc = json.dumps({"linhas": list(vencedores), "bo": bo, "casa": casa, "fora": fora},
                       ensure_ascii=False).replace("</", "<\\/")
     from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
-    return (_MODELO_HTML.replace("__DADOS__", dados).replace("__VENCEDOR__", venc)
+    # a coluna da direita pode ser qualquer casa da OddsPapi (29/10/2026, pedido dele)
+    from html import escape as _esc
+    # "Pinnacle" com maiuscula so aparece no rotulo da coluna e na nota (a chave e "pinnacle")
+    return (_MODELO_HTML.replace("Pinnacle", _esc(str(nome_casa)))
+            .replace("__DADOS__", dados).replace("__VENCEDOR__", venc)
             .replace("__SUSPEITA__", str(float(VANTAGEM_SUSPEITA_PCT)))
             .replace("__TITULO__", escape(titulo_jogo)))
 

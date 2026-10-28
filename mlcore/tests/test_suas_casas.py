@@ -140,5 +140,28 @@ class TestMelhorLinha(unittest.TestCase):
         self.assertEqual(sc.rotulo_linha(r, "T1", "KOI"), ("Total de torres", "Mais de 10,5"))
 
 
+
+class TestHandicapDeMapasELinhaJusta(unittest.TestCase):
+    JOGO = {"time1": "T1", "time2": "KOI", "casas": {"pinnacle": {"181": [1.15, 5.0]}, "stake": {"181": [1.17, 4.4]}},
+            "linhas": {"pinnacle": [["maps", "spread", 0, -1.5, 1.60, 2.30, None]],
+                       "stake": [["maps", "spread", 0, -1.5, 1.70, 2.10, None],
+                                 ["kills", "total", 1, 27.5, 1.85, 1.90, None],
+                                 ["kills", "spread", 1, -6.5, 1.80, 1.95, None]]}}
+
+    def test_mais_menos_1_5_das_casas(self):
+        ls = sc.linhas_handicap_mapas(self.JOGO, False, "lol", p_mapa=0.7, p_serie=0.85, bo=3,
+                                      casas_dele=["Stake"])
+        st = next(l for l in ls if l["casa"] == "Stake")
+        self.assertEqual((st["handicap_a"], st["odd_a"], st["odd_b"]), (-1.5, 1.70, 2.10))
+        self.assertIsNotNone(st["valor_pin_a"])                  # a Pinnacle tem o mesmo -1,5
+
+    def test_linhas_da_casa_no_formato_da_pinnacle(self):
+        ls = sc.linhas_formato_pinnacle(self.JOGO, False, "lol", "Stake")
+        tipos = {(l["tipo"], l["mercado"]) for l in ls}
+        self.assertIn(("total", "Total - Kills - mapa 1"), tipos)
+        self.assertIn(("spread", "Handicap - Kills - mapa 1"), tipos)
+        self.assertFalse(any(l["unidade"] == "maps" for l in ls))   # o +-1,5 de mapas fica na outra tabela
+
+
 if __name__ == "__main__":
     unittest.main()

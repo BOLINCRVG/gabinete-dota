@@ -134,6 +134,48 @@ def linhas(jogo: Mapping[str, Any], invertido: bool, esp: str, *,
     return fora
 
 
+def linhas_handicap_mapas(jogo: Mapping[str, Any], invertido: bool, esp: str, *, p_mapa: Any = None,
+                          p_serie: Any = None, bo: Any = None,
+                          casas_dele: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    """+-1,5 (e +-2,5) DE MAPAS das casas dele (29/10/2026, ele: "pegar das casas o +1,5 e -1,5
+    dos times"). Uma linha por (casa, handicap do Time 1): odd_a = Time 1 com h, odd_b = Time 2
+    com -h. Valor vs a Pinnacle do mesmo retrato; o modelo pela forma do dia, coerente com o
+    ML da serie (oportunidades_core.prob_handicap_de_mapas). Pura."""
+    from app_core.oportunidades_core import prob_handicap_de_mapas
+    pares: Dict[Any, Dict[str, Any]] = {}
+    for l in linhas_de_mapa(jogo, invertido, esp, casas_dele=casas_dele):
+        if l["unidade"] != "maps" or l["tipo"] != "spread" or abs(abs(l["pontos"]) - 1.5) > 1e-9 \
+                and abs(abs(l["pontos"]) - 2.5) > 1e-9:
+            continue
+        h_a = l["pontos"] if l["lado"] == "home" else -l["pontos"]
+        pares.setdefault((l["slug"], h_a), {"casa": l["casa_aposta"], "slug": l["slug"]})[
+            "a" if l["lado"] == "home" else "b"] = l["odd"]
+    pin = {h: v for (slug, h), v in pares.items() if slug == "pinnacle" and "a" in v and "b" in v}
+    fora = []
+    for (slug, h), v in pares.items():
+        if "a" not in v or "b" not in v:
+            continue
+        p_pin = None
+        if h in pin:
+            ia, ib = 1 / pin[h]["a"], 1 / pin[h]["b"]
+            p_pin = ia / (ia + ib)
+        p_mod = None
+        try:
+            p_mod = prob_handicap_de_mapas({"lado": "home", "pontos": h}, p_map=p_mapa, casa_e_time_a=True,
+                                           bo=bo, p_series=p_serie)
+        except Exception:
+            p_mod = None
+        lin = {"mercado": f"Mapas {'+' if h > 0 else ''}{h:g}".replace(".", ","), "periodo": 0.5 + (h + 5) / 100,   # um "periodo" por handicap: o selo "melhor" compara so o mesmo h
+               "casa": v["casa"], "slug": slug, "odd_a": v["a"], "odd_b": v["b"], "handicap_a": h}
+        for lado, odd, pp, pm in (("a", v["a"], p_pin, p_mod),
+                                  ("b", v["b"], None if p_pin is None else 1 - p_pin,
+                                   None if p_mod is None else 1 - p_mod)):
+            lin[f"valor_pin_{lado}"] = None if pp is None else round((pp * odd - 1) * 100, 1)
+            lin[f"valor_mod_{lado}"] = None if pm is None else round((pm * odd - 1) * 100, 1)
+        fora.append(lin)
+    return fora
+
+
 CSS_CASAS = """
 <style>
   .tc { width:100%; border-collapse:collapse; background:var(--painel); border:1px solid var(--borda);
@@ -181,9 +223,15 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
 
     def _top(l, lado):
         return l["casa"] != "Pinnacle" and l[f"odd_{lado}"] >= melhor.get((l["periodo"], lado), 99)
+    def _merc(l):
+        if l.get("handicap_a") is None:
+            return escape(l["mercado"])
+        h = l["handicap_a"]
+        f = lambda v: f"{'+' if v > 0 else ''}{v:g}".replace(".", ",")
+        return f"Mapas<br><span style='font-size:11px'>{escape(time_a)} {f(h)} · {escape(time_b)} {f(-h)}</span>"
     corpo = "".join(
         '<tr class="{}"><td class="m">{}</td><td class="l">{}</td>{}{}</tr>'.format(
-            "pin" if l["casa"] == "Pinnacle" else "", escape(l["mercado"]), escape(l["casa"]),
+            "pin" if l["casa"] == "Pinnacle" else "", _merc(l), escape(l["casa"]),
             cel(l["odd_a"], l["valor_pin_a"], l["valor_mod_a"], l["casa"] == "Pinnacle", _top(l, "a")),
             cel(l["odd_b"], l["valor_pin_b"], l["valor_mod_b"], l["casa"] == "Pinnacle", _top(l, "b")))
         for l in sorted(lins, key=lambda l: (l["periodo"], l["casa"] != "Pinnacle", l["casa"])))
@@ -438,14 +486,14 @@ def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str,
 def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
                       resolver: Optional[Callable[[str], str]], calcular_totais: Optional[Callable] = None,
                       prob_over: Optional[Callable] = None, medias_kills: Optional[Callable] = None,
-                      team_games: Any = None) -> None:
+                      team_games: Any = None, detalhado: bool = False) -> None:
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
     if not (time_a and time_b):
         return
     doc = carregar(raiz)
     jogo, inv = achar(doc.get("jogos") or [], time_a, time_b, resolver)
-    st.markdown("#### Suas casas x Pinnacle")
+    st.markdown("#### Suas casas x Pinnacle · vencedor e ±1,5")
     nomes = [n for _, n in MARCAS if n != "Pinnacle"]
     # o padrao vai para a sessao ANTES do widget: o envelope de multiselect do app
     # (app_core/text_normalization.py) grava [] em chave nova e o `default` nunca valeria
@@ -468,10 +516,21 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     lins = linhas(jogo, inv, esporte(raiz), p_serie=p_serie, p_mapa=p_mapa, casas_dele=escolhidas)
     # SO A SERIE (28/10/2026, ele: "isso de por mapa e irreal, nao giro isso nunca")
     lins = [l for l in lins if l["periodo"] == 0]
+    # e o +-1,5 de mapas das casas dele (29/10/2026), na mesma tabela
+    try:
+        lins += linhas_handicap_mapas(jogo, inv, esporte(raiz), p_mapa=p_mapa, p_serie=confronto.get("p_series"),
+                                      bo=bo, casas_dele=escolhidas)
+    except Exception:
+        pass
     if not lins:
         st.caption("A OddsPapi tem este jogo, mas nenhuma das casas escolhidas abriu vencedor.")
     else:
         _desenhar(st, html(time_a, time_b, lins, str(doc.get("lido_em") or "")), len(lins))
+    if not detalhado:
+        # 29/10/2026, ele: "a tela esta muito poluida, varias coisas falando a mesma coisa". As
+        # linhas das casas (kills, torres...) estao na Linha justa (casa trocavel) e na Analise
+        # de Linha; aqui fica so o vencedor e o +-1,5.
+        return
     cache: dict = {}
     rs = melhores_linhas(linhas_de_mapa(jogo, inv, esporte(raiz), casas_dele=escolhidas), lambda l: chance_do_modelo(
         l, time_a=time_a, time_b=time_b, calcular_totais=calcular_totais, prob_over=prob_over,
@@ -595,3 +654,78 @@ def _desenhar(st: Any, corpo: str, n: int, linha: int = 46) -> None:
         _componentes.html(pagina(corpo), height=40 + linha * n + 60, scrolling=False)
     except Exception:
         st.markdown(CSS + corpo, unsafe_allow_html=True)
+
+
+# ---- LINHA JUSTA COM QUALQUER CASA (29/10/2026) ------------------------------------------
+# Ele: "essa ultima tela, onde diz Pinnacle, eu gostaria de conseguir mudar para a casa que eu
+# queria dentro daquelas da OddsPapi". As linhas da casa viram o MESMO formato das linhas da
+# Pinnacle e passam pela MESMA conta (oportunidades_core.montar_linhas_justas) e pela mesma
+# tabela -- so muda de onde vem a odd.
+_UNIDADE_PINNACLE = {"kills": "Kills", "turrets": "Towers", "dragons": "Dragons", "barons": "Barons",
+                     "inhibitors": "Inhibitors"}
+
+
+def linhas_formato_pinnacle(jogo: Mapping[str, Any], invertido: bool, esp: str, nome_casa: str,
+                            jogo_id: int = -1) -> List[Dict[str, Any]]:
+    """As linhas de mapa de UMA casa no formato das linhas da Pinnacle (Time 1 da tela = home). Pura."""
+    fora = []
+    for l in linhas_de_mapa(jogo, invertido, esp, casas_dele=[nome_casa]):
+        if l["casa_aposta"] != nome_casa or int(l["periodo"]) < 1:
+            continue
+        u = _UNIDADE_PINNACLE.get(l["unidade"])
+        if not u:
+            continue
+        n = int(l["periodo"])
+        base = {"jogo": jogo_id, "periodo": n, "unidade": u, "lado": l["lado"], "pontos": l["pontos"],
+                "odd": l["odd"], "alternativa": False, "time": None}
+        if l["tipo"] == "total":
+            fora.append(dict(base, tipo="total", mercado=f"Total - {u} - mapa {n}"))
+        elif l["tipo"] == "team_total" and u == "Kills":
+            fora.append(dict(base, tipo="team_total", time=l.get("time"), mercado=f"Total do time - Kills - mapa {n}"))
+        elif l["tipo"] == "spread" and u == "Kills":
+            fora.append(dict(base, tipo="spread", mercado=f"Handicap - Kills - mapa {n}"))
+    return fora
+
+
+def linha_justa_da_casa(*, raiz: Path, confronto: Mapping[str, Any], resolver: Optional[Callable[[str], str]],
+                        nome_casa: str, calcular_totais: Optional[Callable], prob_over: Optional[Callable],
+                        medias_kills: Optional[Callable], p_mapa_da_casa: Optional[Callable]):
+    """(justas, vencedores, motivo) da casa escolhida para o confronto aberto."""
+    from app_core.oportunidades_core import montar_linhas_justas
+    time_a, time_b = str(confronto.get("teamA") or ""), str(confronto.get("teamB") or "")
+    doc = carregar(raiz)
+    jogo, inv = achar(doc.get("jogos") or [], time_a, time_b, resolver)
+    if jogo is None:
+        return [], [], f"{nome_casa} não tem este jogo na leitura atual (OddsPapi)."
+    try:
+        bo = int(confronto.get("bo") or 1)
+    except (TypeError, ValueError):
+        bo = 1
+    fake = {"id": -1, "casa": time_a, "fora": time_b, "bo": bo, "liga": jogo.get("torneio")}
+    linhas_pin = linhas_formato_pinnacle(jogo, inv, esporte(raiz), nome_casa)
+    justas = []
+    if linhas_pin and calcular_totais is not None and prob_over is not None:
+        justas = montar_linhas_justas({"jogos": [fake], "linhas": linhas_pin}, calcular_totais,
+                                      prob_over=prob_over, medias_kills=medias_kills,
+                                      p_mapa_da_casa=p_mapa_da_casa)
+        for x in justas:
+            x.setdefault("casa", time_a)
+            x.setdefault("fora", time_b)
+    # vencedor: serie e mapas, a odd da casa contra o modelo do cartao
+    venc = []
+    p_map, p_ser = _num(confronto.get("p_map")), _num(confronto.get("p_series"))
+    for mid, per in mercados(esporte(raiz)).items():
+        par = None
+        for l in linhas(jogo, inv, esporte(raiz), casas_dele=[nome_casa]):
+            if l["casa"] == nome_casa and l["periodo"] == per:
+                par = (l["odd_a"], l["odd_b"])
+        if not par:
+            continue
+        p = p_ser if (per == 0 and bo > 1) else p_map
+        r = {"periodo": per, "pin_a": par[0], "pin_b": par[1]}
+        if p is not None and 0 < p < 1:
+            r.update({"modelo_a": 1 / p, "modelo_b": 1 / (1 - p),
+                      "vant_a": round((p * par[0] - 1) * 100, 1), "vant_b": round(((1 - p) * par[1] - 1) * 100, 1)})
+        venc.append(r)
+    motivo = "" if (justas or venc) else f"{nome_casa} não abriu linhas de mapa para este jogo."
+    return justas, venc, motivo
