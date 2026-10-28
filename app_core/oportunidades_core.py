@@ -671,8 +671,38 @@ def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, A
 # ---------------------------------------------------------------------------
 
 
+def prob_handicap_de_mapas(linha: Dict[str, Any], *, p_map: Any, casa_e_time_a: bool,
+                           bo: Any) -> Optional[float]:
+    """+-1,5 / +-2,5 de MAPAS da serie (29/10/2026), com a forma do dia da aba Series
+    (app_core/series_tab_core.score_probs). So onde a forma do dia foi medida (LoL):
+    no Dota KAPPA_SERIE e None e a linha continua de fora."""
+    from app_core.series_tab_core import KAPPA_SERIE, score_probs
+    if KAPPA_SERIE is None:
+        return None
+    try:
+        bo_i = int(bo or 0)
+        pontos = float(linha.get("pontos"))
+    except (TypeError, ValueError):
+        return None
+    pa = _num(p_map)
+    lado = str(linha.get("lado") or "").strip().lower()
+    if bo_i not in (3, 5) or pa is None or not (0.0 < pa < 1.0) or lado not in ("home", "away"):
+        return None
+    probs = score_probs(pa, bo_i)
+    lado_e_a = (lado == "home") == bool(casa_e_time_a)
+    p = 0.0
+    for placar, pr in probs.items():
+        quem, res = placar.split("_")
+        g, s_ = (int(x) for x in res.split("-"))
+        margem_a = (g - s_) if quem == "A" else (s_ - g)
+        margem = margem_a if lado_e_a else -margem_a
+        if margem + pontos > 0:
+            p += pr
+    return p if 0.0 < p < 1.0 else None
+
+
 def prob_do_vencedor(linha: Dict[str, Any], *, p_map: Any, p_series: Any,
-                     casa_e_time_a: bool) -> Optional[float]:
+                     casa_e_time_a: bool, bo: Any = None) -> Optional[float]:
     """A probabilidade do LADO desta linha de vencedor.
 
     `p_map` e `p_series` sao do TIME 1 da tela (mesma orientacao do card).
@@ -680,6 +710,9 @@ def prob_do_vencedor(linha: Dict[str, Any], *, p_map: Any, p_series: Any,
     sem isso, um confronto listado ao contrario faria a tela recomendar o
     lado oposto do que o modelo quis dizer.
     """
+    if (str(linha.get("tipo") or "") == "spread" and not str(linha.get("unidade") or "").strip()
+            and str(linha.get("periodo", 0) or 0) in ("0", "")):
+        return prob_handicap_de_mapas(linha, p_map=p_map, casa_e_time_a=casa_e_time_a, bo=bo)
     if str(linha.get("tipo") or "") != "moneyline":
         return None
     # "Vencedor - Kills" tambem e moneyline com lados casa/fora, mas pergunta

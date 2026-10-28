@@ -11,23 +11,61 @@ import pandas as pd
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
 
 
-def score_probs(p: float, bo: int) -> dict[str, float]:
-    q = 1.0 - float(p)
+# FORMA DO DIA (29/10/2026, ele: "a analise e muito perdida no +1.5 e no -1.5"). Os mapas
+# de uma serie NAO sao independentes: o time que esta bem no dia tende a ganhar os dois.
+# Medido no LoL (2.326 BO3 de 2026): 2-0 real acima do previsto por p*p (favorito 70-80%:
+# 61,8% previsto x 70,1% real). Correcao: a chance de cada mapa vem de uma Beta com media
+# p e concentracao KAPPA (mapas trocaveis entre si). KAPPA=3 escolhido em jan-mai/2026;
+# cego jun-out (972 series): placar da serie +0,0194 IC95 [+0,0024; +0,0355], "teve
+# 2-0?" +0,0157. So no LoL: no Dota (arquivo identico) ainda nao foi medido -> independente.
+def _kappa_padrao():
+    from pathlib import Path
+    return None if (Path(__file__).resolve().parents[1] / "dota_paths.py").exists() else 3.0
+
+
+KAPPA_SERIE = _kappa_padrao()
+
+
+def _momento(p: float, a: int, b: int, kappa: Optional[float]) -> float:
+    """E[t^a (1-t)^b] com t ~ Beta(p*kappa, (1-p)*kappa); kappa None = mapas independentes."""
+    q = 1.0 - p
+    if kappa is None:
+        return (p ** a) * (q ** b)
+    al, be = p * kappa, q * kappa
+    num = 1.0
+    for i in range(a):
+        num *= al + i
+    for j in range(b):
+        num *= be + j
+    den = 1.0
+    for k in range(a + b):
+        den *= kappa + k
+    return num / den
+
+
+def score_probs(p: float, bo: int, kappa: Optional[float] = "padrao") -> dict[str, float]:
+    """Placar da serie a partir da chance do mapa. kappa: concentracao da "forma do dia"
+    (padrao: KAPPA_SERIE; None = mapas independentes, a conta antiga)."""
+    k = KAPPA_SERIE if kappa == "padrao" else kappa
+    p = float(p)
+    if k is not None:
+        p = min(max(p, 1e-6), 1.0 - 1e-6)          # a Beta pede 0 < p < 1
+    m = lambda a, b: _momento(p, a, b, k)
     if int(bo) == 3:
         return {
-            "A_2-0": p * p,
-            "A_2-1": 2 * p * p * q,
-            "B_2-1": 2 * p * q * q,
-            "B_2-0": q * q,
+            "A_2-0": m(2, 0),
+            "A_2-1": 2 * m(2, 1),
+            "B_2-1": 2 * m(1, 2),
+            "B_2-0": m(0, 2),
         }
     if int(bo) == 5:
         return {
-            "A_3-0": p**3,
-            "A_3-1": 3 * (p**3) * q,
-            "A_3-2": 6 * (p**3) * (q**2),
-            "B_3-2": 6 * (q**3) * (p**2),
-            "B_3-1": 3 * (q**3) * p,
-            "B_3-0": q**3,
+            "A_3-0": m(3, 0),
+            "A_3-1": 3 * m(3, 1),
+            "A_3-2": 6 * m(3, 2),
+            "B_3-2": 6 * m(2, 3),
+            "B_3-1": 3 * m(1, 3),
+            "B_3-0": m(0, 3),
         }
     return {}
 
@@ -116,7 +154,11 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     fav_team = team_a_disp if fav_is_a else team_b_disp
     dog_team = team_b_disp if fav_is_a else team_a_disp
 
-    render_tab_section(st, title="Handicaps (mapas)", subtitle="Mostra as coberturas da serie derivadas do preco atual do confronto.")
+    render_tab_section(st, title="Handicaps (mapas)", subtitle=(
+        "Coberturas da serie a partir da chance do mapa, com a FORMA DO DIA: os mapas de uma serie nao "
+        "sao independentes (quem esta bem no dia tende a ganhar os dois), o que deixa o -1.5 do favorito "
+        "mais provavel que p x p." if KAPPA_SERIE is not None else
+        "Mostra as coberturas da serie derivadas do preco atual do confronto."))
     if int(bo) == 3:
         p_fav_m15 = probs.get("A_2-0") if fav_is_a else probs.get("B_2-0")
         p_dog_p15 = None if p_fav_m15 is None else max(0.0, 1.0 - float(p_fav_m15))

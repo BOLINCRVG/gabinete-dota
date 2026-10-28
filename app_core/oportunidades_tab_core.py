@@ -649,7 +649,7 @@ def _montar_prob_de_vencedor(st: Any, confronto: Mapping[str, Any],
             except (TypeError, ValueError):
                 return None
         return prob_do_vencedor(linha, p_map=p_map, p_series=p_series,
-                                casa_e_time_a=bool(lado_certo))
+                                casa_e_time_a=bool(lado_certo), bo=bo_tela)
 
     return _prob
 
