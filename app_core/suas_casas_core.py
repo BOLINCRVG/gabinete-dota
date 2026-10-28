@@ -444,6 +444,8 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     p_mapa = confronto.get("p_map")
     p_serie = p_mapa if bo == 1 else confronto.get("p_series")
     lins = linhas(jogo, inv, esporte(raiz), p_serie=p_serie, p_mapa=p_mapa, casas_dele=escolhidas)
+    # SO A SERIE (28/10/2026, ele: "isso de por mapa e irreal, nao giro isso nunca")
+    lins = [l for l in lins if l["periodo"] == 0]
     if not lins:
         st.caption("A OddsPapi tem este jogo, mas nenhuma das casas escolhidas abriu vencedor.")
     else:
