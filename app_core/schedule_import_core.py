@@ -219,7 +219,24 @@ def resolve_schedule_team(raw: str, teams_all: Iterable[str], aliases: dict[str,
         cands = sorted({known for known in teams if normalize_schedule_team_key(known) == alt})
         if len(cands) == 1:
             return cands[0], True
+    # SUFIXO "GAMING"/"ESPORTS" (28/10/2026): a OddsPapi diz "Lyon Gaming", o CSV "LYON".
+    # Mesma trava do prefixo: tira o sufixo dos DOIS lados e casa so com UMA opcao.
+    base = _sem_sufixo(key)
+    if base:
+        cands = sorted({known for known in teams if _sem_sufixo(normalize_schedule_team_key(known)) == base})
+        if len(cands) == 1:
+            return cands[0], True
     return team, False
+
+
+_SUFIXOS = ("esports", "esport", "gaming", "club", "gg")
+
+
+def _sem_sufixo(key: str) -> str:
+    for suf in _SUFIXOS:
+        if key.endswith(suf) and len(key) > len(suf) + 1:
+            return key[: -len(suf)]
+    return key
 
 
 def suggest_schedule_teams(raw: str, teams_all: Iterable[str], *, limit: int = 60,
