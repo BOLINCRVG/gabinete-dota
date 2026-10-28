@@ -185,6 +185,28 @@ def _render_kills_line_content(
                 session_state[lines_key] = current
                 st.rerun()
         with edit_cols[2]:
+            # AS CASAS COM ESTA LINHA (29/10/2026, ele: "coloque do lado da linha a casa ou casas")
+            _casas_txt = ""
+            try:
+                from pathlib import Path as _P
+                from app_core.suas_casas_core import casas_por_linha, html_casas_da_linha, jogo_das_casas
+                if sinais_tg is not None and str(market_key) in ("kills", "towers", "dragons", "barons",
+                                                                  "inhibitors", "kills_team", "handicaps"):
+                    _times = sorted({str(x) for x in sinais_tg["team"].dropna().unique()})
+                    _raiz = _P(__file__).resolve().parents[1]
+                    _jg, _inv = jogo_das_casas(_raiz, team_a, team_b, _times)
+                    _esp = "dota" if (_raiz / "dota_paths.py").exists() else "lol"
+                    _cl = casas_por_linha(_jg, _inv, _esp, str(market_key))
+                    _rot = ("cobre", "não cobre") if str(market_key) == "handicaps" else ("Mais", "Menos")
+                    _casas_txt = html_casas_da_linha(_cl, float(line_val), _rot, {"home": team_a, "away": team_b}) if _jg else \
+                        "<div style='font-size:0.82em;opacity:0.7'>As casas (OddsPapi) não têm este jogo.</div>"
+                elif str(market_key) == "time":
+                    _casas_txt = ("<div style='font-size:0.82em;opacity:0.7'>Tempo de jogo: nenhuma casa das "
+                                  "coletas oferece (nem a OddsPapi nem a Pinnacle).</div>")
+            except Exception:
+                _casas_txt = ""
+            if _casas_txt:
+                st.markdown(_casas_txt, unsafe_allow_html=True)
             st.caption("Para analisar outra linha, adicione no campo do topo (aceita várias: 27.5, 28.5, ...).")
 
     def _cyan_section_header(title: str) -> None:

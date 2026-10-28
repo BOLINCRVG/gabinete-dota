@@ -163,5 +163,13 @@ class TestHandicapDeMapasELinhaJusta(unittest.TestCase):
         self.assertFalse(any(l["unidade"] == "maps" for l in ls))   # o +-1,5 de mapas fica na outra tabela
 
 
+    def test_casas_por_linha(self):
+        cl = sc.casas_por_linha(self.JOGO, False, "lol", "kills")
+        self.assertEqual([v["casa"] for v in cl[27.5]], ["Stake"])
+        h = sc.html_casas_da_linha(cl, 27.5)
+        self.assertIn("Stake", h)
+        self.assertIn("Nenhuma casa", sc.html_casas_da_linha(cl, 31.5))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -208,7 +208,7 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
                 k = (l["periodo"], lado)
                 melhor[k] = max(melhor.get(k, 0.0), l[f"odd_{lado}"])
 
-    def cel(odd, vp, vm, pin, top):
+    def cel(odd, vp, vm, pin, top, aposta=""):
         verde = not pin and vp is not None and vp > 0
         est = " ★" if verde and vm is not None and vm > 0 else ""
         if pin:
@@ -217,9 +217,18 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
             txt = "sem Pinnacle"
         else:
             txt = "vs Pinnacle " + f"{vp:+.1f}%".replace(".", ",")
-        return ('<td class="{}"><span class="p">{:.2f}{}{}</span><span class="q">{}</span></td>'
-                .format("verde" if verde else "", odd, est,
-                        ' <span class="top">melhor</span>' if top else "", txt))
+        return ('<td class="{}">{}<span class="p">{:.2f}{}{}</span><span class="q">{}</span></td>'
+                .format("verde" if verde else "",
+                        f'<span class="q" style="font-weight:700;color:var(--texto)">{aposta}</span>' if aposta else "",
+                        odd, est, ' <span class="top">melhor</span>' if top else "", txt))
+
+    def _ap(l, lado):
+        """29/10/2026, ele: "qual e a aposta, LOS +1,5 ou Liquid -1,5?" -- escrita na celula."""
+        h = l.get("handicap_a")
+        if h is None:
+            return ""
+        v = h if lado == "a" else -h
+        return f"{escape(time_a if lado == 'a' else time_b)} {'+' if v > 0 else ''}{v:g}".replace(".", ",")
 
     def _top(l, lado):
         return l["casa"] != "Pinnacle" and l[f"odd_{lado}"] >= melhor.get((l["periodo"], lado), 99)
@@ -228,12 +237,12 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
             return escape(l["mercado"])
         h = l["handicap_a"]
         f = lambda v: f"{'+' if v > 0 else ''}{v:g}".replace(".", ",")
-        return f"Mapas<br><span style='font-size:11px'>{escape(time_a)} {f(h)} · {escape(time_b)} {f(-h)}</span>"
+        return "Handicap de mapas"
     corpo = "".join(
         '<tr class="{}"><td class="m">{}</td><td class="l">{}</td>{}{}</tr>'.format(
             "pin" if l["casa"] == "Pinnacle" else "", _merc(l), escape(l["casa"]),
-            cel(l["odd_a"], l["valor_pin_a"], l["valor_mod_a"], l["casa"] == "Pinnacle", _top(l, "a")),
-            cel(l["odd_b"], l["valor_pin_b"], l["valor_mod_b"], l["casa"] == "Pinnacle", _top(l, "b")))
+            cel(l["odd_a"], l["valor_pin_a"], l["valor_mod_a"], l["casa"] == "Pinnacle", _top(l, "a"), _ap(l, "a")),
+            cel(l["odd_b"], l["valor_pin_b"], l["valor_mod_b"], l["casa"] == "Pinnacle", _top(l, "b"), _ap(l, "b")))
         for l in sorted(lins, key=lambda l: (l["periodo"], l["casa"] != "Pinnacle", l["casa"])))
     hora = ""
     if lido_em:
@@ -729,3 +738,78 @@ def linha_justa_da_casa(*, raiz: Path, confronto: Mapping[str, Any], resolver: O
         venc.append(r)
     motivo = "" if (justas or venc) else f"{nome_casa} não abriu linhas de mapa para este jogo."
     return justas, venc, motivo
+
+
+# ---- AS CASAS QUE TEM A LINHA (29/10/2026) -------------------------------------------------
+# Ele: "quando voce pegar a linha de uma casa, coloque do lado da linha a casa ou casas (ex.:
+# 33:30 (Stake, Pinnacle...))". E "voce consegue pegar as linhas de kills, torres e tempo das
+# casas?" -- kills, torres, dragoes, baroes e inibidores sim (OddsPapi); tempo de jogo nenhuma
+# das fontes oferece (nem a OddsPapi nem o robo da Pinnacle).
+_MERCADO_ODDSPAPI = {"kills": ("kills", "total"), "towers": ("turrets", "total"), "dragons": ("dragons", "total"),
+                     "barons": ("barons", "total"), "inhibitors": ("inhibitors", "total"),
+                     "kills_team": ("kills", "team_total"), "handicaps": ("kills", "spread")}
+
+
+def casas_por_linha(jogo: Optional[Mapping[str, Any]], invertido: bool, esp: str, mercado: str,
+                    time_lado: Optional[str] = None) -> Dict[float, List[Dict[str, Any]]]:
+    """{linha: [{casa, mapa, mais, menos}]} de TODAS as casas (inclusive a Pinnacle) para o mercado
+    da Analise de Linha. Handicap: a linha e a do Time 1 da tela ("home"). Pura."""
+    alvo = _MERCADO_ODDSPAPI.get(mercado)
+    if not jogo or not alvo:
+        return {}
+    unid, tipo = alvo
+    pares: Dict[Any, Dict[str, Any]] = {}
+    for l in linhas_de_mapa(jogo, invertido, esp, casas_dele=None):
+        if l["unidade"] != unid or l["tipo"] != tipo or int(l["periodo"]) < 1:
+            continue
+        if tipo == "team_total" and time_lado and l.get("time") != time_lado:
+            continue
+        if tipo == "spread":
+            L = l["pontos"] if l["lado"] == "home" else -l["pontos"]
+            lado = "mais" if l["lado"] == "home" else "menos"
+        else:
+            L, lado = l["pontos"], ("mais" if l["lado"] == "over" else "menos")
+        k = (float(L), l["casa_aposta"], int(l["periodo"]), l.get("time"))
+        pares.setdefault(k, {"casa": l["casa_aposta"], "mapa": int(l["periodo"]), "time": l.get("time")})[lado] = l["odd"]
+    fora: Dict[float, List[Dict[str, Any]]] = {}
+    for (L, _, _, _), v in pares.items():
+        fora.setdefault(L, []).append(v)
+    for L in fora:
+        fora[L].sort(key=lambda v: (v["mapa"], v["casa"] != "Pinnacle", v["casa"]))
+    return fora
+
+
+def jogo_das_casas(raiz: Path, time_a: str, time_b: str, times: List[str]):
+    """(jogo da OddsPapi, invertido) do confronto, casando os nomes pelo resolvedor do app."""
+    import json
+    from app_core.schedule_import_core import resolve_schedule_team
+    try:
+        apelidos = json.loads((Path(raiz) / "user_team_aliases.json").read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        apelidos = {}
+
+    def _res(n):
+        r = resolve_schedule_team(str(n or ""), times, apelidos)
+        return r[0] if r[1] else n
+    return achar(carregar(raiz).get("jogos") or [], time_a, time_b, _res)
+
+
+def html_casas_da_linha(linhas_casas: Dict[float, List[Dict[str, Any]]], L: float, rotulos=("Mais", "Menos"),
+                        nomes: Optional[Mapping[str, str]] = None) -> str:
+    """'Stake M1 1,85/1,90 · Pinnacle M1 1,88/1,92' para a linha L + as outras linhas abertas."""
+    def _odd(x):
+        return "-" if x is None else f"{x:.2f}".replace(".", ",")
+    aqui = linhas_casas.get(float(L)) or []
+    if aqui:
+        def _quem(v):
+            return f" ({escape(nomes[v['time']])})" if (nomes and v.get("time") in nomes) else ""
+        txt = " · ".join(f"<b>{escape(v['casa'])}</b>{_quem(v)} M{v['mapa']} {_odd(v.get('mais'))}/{_odd(v.get('menos'))}"
+                         for v in aqui[:10])
+        topo = f"Casas com esta linha ({rotulos[0]}/{rotulos[1]}): {txt}"
+    else:
+        topo = "Nenhuma casa abriu esta linha."
+    outras = sorted(k for k in linhas_casas if abs(k - float(L)) > 1e-9)
+    if outras:
+        topo += "<br>Outras linhas nas casas: " + " · ".join(
+            f"{k:g}".replace(".", ",") + f" <span style='opacity:.6'>({len(linhas_casas[k])})</span>" for k in outras[:14])
+    return f"<div style='font-size:0.82em;line-height:1.5;opacity:0.9'>{topo}</div>"
