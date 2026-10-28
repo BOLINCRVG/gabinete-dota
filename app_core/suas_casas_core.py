@@ -813,3 +813,31 @@ def html_casas_da_linha(linhas_casas: Dict[float, List[Dict[str, Any]]], L: floa
         topo += "<br>Outras linhas nas casas: " + " · ".join(
             f"{k:g}".replace(".", ",") + f" <span style='opacity:.6'>({len(linhas_casas[k])})</span>" for k in outras[:14])
     return f"<div style='font-size:0.82em;line-height:1.5;opacity:0.9'>{topo}</div>"
+
+
+def selo_casas_da_linha(linhas_casas: Dict[float, List[Dict[str, Any]]], L: float, rotulos=("Mais", "Menos"),
+                        nomes: Optional[Mapping[str, str]] = None) -> str:
+    """Selo "3 casas" ao lado da linha; passar o mouse mostra as casas e as odds do MAPA 1
+    (29/10/2026, ele: "nao precisa de todos os mapas, so o M1"). HTML com tooltip proprio."""
+    def _odd(x):
+        return "-" if x is None else f"{x:.2f}".replace(".", ",")
+    aqui = [v for v in (linhas_casas.get(float(L)) or []) if int(v.get("mapa") or 0) == 1]
+    if not aqui:
+        return ("<span style='font-size:0.55em;font-weight:600;color:#9aa0a6;border:1px solid #9aa0a655;"
+                "border-radius:10px;padding:1px 8px'>nenhuma casa (M1)</span>")
+    itens = "".join(
+        f"<div style='display:flex;justify-content:space-between;gap:14px'><span><b>{escape(v['casa'])}</b>"
+        + (f" <span style='opacity:.6'>({escape(nomes[v['time']])})</span>" if nomes and v.get("time") in nomes else "")
+        + f"</span><span>{_odd(v.get('mais'))} / {_odd(v.get('menos'))}</span></div>"
+        for v in aqui)
+    n = len({v["casa"] for v in aqui})
+    return (
+        "<span class='selo-casas' style='position:relative;display:inline-block;cursor:help'>"
+        "<style>.selo-casas .dica{display:none} .selo-casas:hover .dica{display:block}</style>"
+        f"<span style='font-size:0.55em;font-weight:700;color:#3fb950;border:1px solid #3fb95088;"
+        f"border-radius:10px;padding:1px 8px'>● {n} casa{'s' if n != 1 else ''} (M1)</span>"
+        "<span class='dica' style='position:absolute;left:0;top:130%;z-index:50;min-width:230px;"
+        "background:#161b22;color:#e6e6e6;border:1px solid #30363d;border-radius:8px;padding:8px 10px;"
+        "font-size:0.48em;font-weight:500;line-height:1.6;box-shadow:0 6px 18px rgba(0,0,0,.4)'>"
+        f"<div style='opacity:.6;margin-bottom:3px'>Mapa 1 · {escape(rotulos[0])} / {escape(rotulos[1])}</div>"
+        f"{itens}</span></span>")

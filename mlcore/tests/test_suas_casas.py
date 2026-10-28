@@ -169,6 +169,10 @@ class TestHandicapDeMapasELinhaJusta(unittest.TestCase):
         h = sc.html_casas_da_linha(cl, 27.5)
         self.assertIn("Stake", h)
         self.assertIn("Nenhuma casa", sc.html_casas_da_linha(cl, 31.5))
+        selo = sc.selo_casas_da_linha(cl, 27.5)
+        self.assertIn("1 casa (M1)", selo)
+        self.assertIn("Stake", selo)
+        self.assertIn("nenhuma casa", sc.selo_casas_da_linha(cl, 31.5))
 
 
 if __name__ == "__main__":
