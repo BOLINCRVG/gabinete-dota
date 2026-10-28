@@ -539,7 +539,8 @@ def _sinais_fn(team_games: Any, time_a: str, time_b: str):
 
 
 def _secao_sinais(st: Any, rs: List[Mapping[str, Any]], time_a: str, time_b: str, sinais_fn, team_games) -> None:
-    """PELOS SEUS SINAIS (28/10/2026): as linhas de total de kills em que 2 ou mais dos 4
+    """PELOS SEUS SINAIS (28/10/2026; regra de 29/10: ENTRA com 3 de 4, 2 de 4 = analisar): as
+    linhas de total de kills em que 2 ou mais dos 4
     sinais dele passam -- no geral ou so no mapa 1 --, da que mais paga acima da fair do
     conjunto para a que menos. E a regra dele ("se duas passam eu ja considero entrar")."""
     from app_core.sinais_linha_core import chance, passam
@@ -560,26 +561,29 @@ def _secao_sinais(st: Any, rs: List[Mapping[str, Any]], time_a: str, time_b: str
                 melhor_v = v if melhor_v is None or (v is not None and v > melhor_v) else melhor_v
         if melhor_k >= 2:
             lista.append((melhor_v if melhor_v is not None else -999, melhor_k, r))
-    st.markdown("##### Pelos seus sinais: total de kills com 2 ou mais de 4")
+    st.markdown("##### Pelos seus sinais: total de kills com 3 de 4 (e as de 2 de 4 para analisar)")
     if not lista:
         st.caption("Nenhuma linha de total de kills das suas casas tem 2 dos 4 sinais passando "
                    "(nem no geral, nem só no mapa 1).")
         return
     lista.sort(key=lambda x: (-x[0], -x[1]))
-    pagam = [x[2] for x in lista if x[0] > 0][:12]
+    pagam = [x[2] for x in lista if x[0] > 0 and x[1] >= 3][:12]
+    analisar = [x[2] for x in lista if x[0] > 0 and x[1] == 2]
     resto = [x[2] for x in lista if x[0] <= 0]
+    if analisar:
+        with st.expander(f"2 de 4 e paga acima da fair: para analisar ({len(analisar)})"):
+            _desenhar(st, html_linhas(analisar[:30], time_a, time_b, sinais_fn), min(len(analisar), 30), linha=50)
     rows = pagam
     if not pagam:
-        st.caption("{} linha(s) com 2+ sinais, mas nenhuma paga acima da fair do conjunto "
-                   "(a casa já cobra o que os sinais dizem).".format(len(resto)))
+        st.caption("Nenhuma linha com 3 de 4 a favor pagando acima da fair do conjunto.")
     if resto:
-        with st.expander(f"Com 2+ sinais mas abaixo da fair ({len(resto)})"):
+        with st.expander(f"Com 2+ a favor mas abaixo da fair ({len(resto)})"):
             _desenhar(st, html_linhas(resto[:30], time_a, time_b, sinais_fn), min(len(resto), 30), linha=50)
     if not pagam:
         return
     st.caption("✓ passa · ✗ não passa · · sem dado. Ordem: Médias, Adversário, Histórico (5·20·10), Stats da linha. "
                "\"justa\" = fair do conjunto dos 4 sinais (medida no histórico); o % é a vantagem da odd "
-               "da casa sobre ela. Com 2+ sinais a linha bateu ~60% no histórico; contra a linha da "
+               "da casa sobre ela. Com 3 de 4 a linha bateu ~63-68% no histórico; contra a linha da "
                "Pinnacle os sinais filtram, mas não garantem lucro sozinhos.")
     _desenhar(st, html_linhas(rows, time_a, time_b, sinais_fn), len(rows), linha=50)
 
