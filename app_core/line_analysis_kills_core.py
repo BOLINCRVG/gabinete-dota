@@ -442,45 +442,11 @@ def _render_kills_line_content(
         except (KeyError, TypeError, ValueError, AttributeError, ImportError):
             pass
 
-    # ---------- ML predict chip ----------
-    try:
-        from app_core.live_markets_runtime_core import predict_market
-        # Map market_key → Fase 7 market name. Phase 7 trained: total_kills,
-        # total_towers, total_dragons, gamelength_min (barons rejected, inibs N/A).
-        _market_name_map = {
-            "kills": "total_kills", "towers": "total_towers",
-            "dragons": "total_dragons", "time": "gamelength_min",
-        }
-        _ml_market_name = _market_name_map.get(market_key)
-        res = predict_market(
-            session_state=session_state,
-            market=_ml_market_name or "total_kills",
-            minute=10, line=float(line_val),
-            p_map_pre=float(p_map) if p_map is not None else 0.5,
-            league=str(league_label or ""), bo=1, is_playoffs=False,
-        ) if _ml_market_name else {"mean": None, "p_over": None}
-        mean_v = res.get("mean")
-        p_over = res.get("p_over")
-        if mean_v is not None and p_over is not None:
-            p_under = 1.0 - float(p_over)
-            _cyan_section_header("Predição ML (complemento)")
-            st.markdown(
-                f"<div style='display:flex;gap:24px;background:rgba(45,170,196,0.08);"
-                f"border:1px solid rgba(45,170,196,0.3);border-radius:10px;"
-                f"padding:14px 18px;margin-top:8px;align-items:center;'>"
-                f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;letter-spacing:0.05em;'>Predição</div>"
-                f"<div style='font-size:1.5em;font-weight:700;'>{float(mean_v):.1f}</div></div>"
-                f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;letter-spacing:0.05em;'>P(Over {float(line_val):g})</div>"
-                f"<div style='font-size:1.5em;font-weight:700;"
-                f"color:{'#22c55e' if float(p_over) >= 0.55 else '#facc15' if float(p_over) >= 0.45 else '#ef4444'};'>"
-                f"{float(p_over)*100:.1f}%</div></div>"
-                f"<div><div style='opacity:0.65;font-size:0.78em;text-transform:uppercase;letter-spacing:0.05em;'>P(Under)</div>"
-                f"<div style='font-size:1.5em;font-weight:700;'>{float(p_under)*100:.1f}%</div></div>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-    except (TypeError, ValueError):
-        pass
+    # "PREDICAO ML (COMPLEMENTO)" REMOVIDA (29/10/2026, ele: "o que e isso?"). Era o modelo
+    # de AO VIVO chamado antes do jogo com um estado inventado (minuto 10, 0 kills, 0 de
+    # ouro) -- um jogo travado, que puxa o total para baixo (ex.: 24,9 / 62% under) sem olhar
+    # os times. Antes do jogo, o numero certo e o "modelo espera ~X para ESTE confronto"
+    # e os passos dele, logo acima. O modelo ao vivo segue onde faz sentido: durante o jogo.
 
     # ---------- Alertas ----------
     recent_a = build_recent_games(df_a_context_all, league_scope_for_panel,
