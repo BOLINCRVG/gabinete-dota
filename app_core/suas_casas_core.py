@@ -431,7 +431,7 @@ def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str,
     return (CSS_CASAS + '<table class="tc"><tr><th>Mapa</th><th style="text-align:left">Mercado</th>'
             '<th style="text-align:left">Aposta</th><th>Melhor odd</th><th style="text-align:left">'
             'Outras casas</th><th>vs Pinnacle</th><th>vs Modelo</th>'
-            + ('<th style="text-align:left">Seus sinais (Hist · Médias · Adv · Camp)</th>' if sinais_fn else '')
+            + ('<th style="text-align:left">Seus sinais (Médias · Adv · Hist · Stats)</th>' if sinais_fn else '')
             + '</tr>' + corpo + '</table>')
 
 
@@ -577,7 +577,7 @@ def _secao_sinais(st: Any, rs: List[Mapping[str, Any]], time_a: str, time_b: str
             _desenhar(st, html_linhas(resto[:30], time_a, time_b, sinais_fn), min(len(resto), 30), linha=50)
     if not pagam:
         return
-    st.caption("✓ passa · ✗ não passa · · sem dado. Ordem: Histórico, Médias, Adversário, StatsCamps. "
+    st.caption("✓ passa · ✗ não passa · · sem dado. Ordem: Médias, Adversário, Histórico (5·20·10), Stats da linha. "
                "\"justa\" = fair do conjunto dos 4 sinais (medida no histórico); o % é a vantagem da odd "
                "da casa sobre ela. Com 2+ sinais a linha bateu ~60% no histórico; contra a linha da "
                "Pinnacle os sinais filtram, mas não garantem lucro sozinhos.")

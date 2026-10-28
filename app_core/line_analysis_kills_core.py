@@ -239,7 +239,7 @@ def _render_kills_line_content(
             st.markdown(
                 "<div style='border:1px solid rgba(63,185,80,0.35);border-radius:8px;padding:8px 12px;"
                 "margin:6px 0 10px;background:rgba(63,185,80,0.05);font-size:0.92em;line-height:1.7'>"
-                "<b>Seus sinais</b> <span style='opacity:0.6'>(Histórico · Médias · Adversário · StatsCamps; "
+                "<b>Seus sinais</b> <span style='opacity:0.6'>(Médias · Adversário · Histórico 5·20·10 · Stats da linha; "
                 "2 ou mais = entra)</span><br>"
                 f"Geral &nbsp; OVER {_cel(_g, 'over')} &nbsp;|&nbsp; UNDER {_cel(_g, 'under')}<br>"
                 f"Só mapa 1 &nbsp; OVER {_cel(_m1, 'over')} &nbsp;|&nbsp; UNDER {_cel(_m1, 'under')}"
