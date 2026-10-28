@@ -227,27 +227,21 @@ def _render_kills_line_content(
         stats_a=stats_a, stats_b=stats_b, h2h=h2h_w,
         line=float(line_val),
     )
-    # OS 4 SINAIS DELE (28/10/2026): Historico, Medias, Adversario, StatsCamps -- geral e
-    # so mapa 1. So LoL e so total de kills (app_core/sinais_linha_core.py).
+    # OS PASSOS DELE (28-29/10/2026): Medias, Adversario, Historico 5/20/10, Stats da linha --
+    # Menos | Mais, com A FAVOR/CONTRA, chance, odd das casas dele e veredito. So LoL e so
+    # total de kills (app_core/seus_sinais_tab_core.py); no Dota o modulo nao existe.
     if metric_col in ("total_kills", "mv2_total_kills") and sinais_tg is not None:
         try:
-            from app_core.sinais_linha_core import resumo_html, sinais
-            _g = sinais(sinais_tg, team_a, team_b, float(line_val))
-            _m1 = sinais(sinais_tg, team_a, team_b, float(line_val), so_mapa1=True)
-            _cel = lambda sn, lado: resumo_html(sn, lado).replace("var(--boa)", "#3fb950").replace(
-                "var(--ruim)", "#c9736a").replace("var(--fraco)", "#9aa0a6")
-            st.markdown(
-                "<div style='border:1px solid rgba(63,185,80,0.35);border-radius:8px;padding:8px 12px;"
-                "margin:6px 0 10px;background:rgba(63,185,80,0.05);font-size:0.92em;line-height:1.7'>"
-                "<b>Seus sinais</b> <span style='opacity:0.6'>(Médias · Adversário · Histórico 5·20·10 · Stats da linha; "
-                "2 ou mais = entra)</span><br>"
-                f"Geral &nbsp; OVER {_cel(_g, 'over')} &nbsp;|&nbsp; UNDER {_cel(_g, 'under')}<br>"
-                f"Só mapa 1 &nbsp; OVER {_cel(_m1, 'over')} &nbsp;|&nbsp; UNDER {_cel(_m1, 'under')}"
-                "</div>", unsafe_allow_html=True)
+            from app_core.seus_sinais_tab_core import render_painel_na_analise
         except ImportError:
-            pass                       # no Dota o modulo nao existe (pesos medidos so no LoL)
-        except Exception:
-            pass
+            render_painel_na_analise = None
+        if render_painel_na_analise is not None:
+            _cyan_section_header(f"Seus passos · {float(line_val):g}")
+            try:
+                render_painel_na_analise(st=st, tg=sinais_tg, time_a=team_a, time_b=team_b,
+                                         linha=float(line_val), chave=f"{team_a}_{team_b}_{line_idx}")
+            except Exception as _exc:
+                st.caption(f"Seus passos: nao deu para calcular ({type(_exc).__name__}).")
 
     # ---------- Por mapa (panorâmica) ----------
     overall_mean_a_all = float(pd.to_numeric(df_a_all_maps[metric_col], errors="coerce").dropna().mean()) \
