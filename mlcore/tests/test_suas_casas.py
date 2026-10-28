@@ -64,6 +64,14 @@ class TestSuasCasas(unittest.TestCase):
         ls = sc.linhas_de_mapa(JOGO_LINHAS, False, "lol", casas_dele=["Stake"])
         self.assertEqual({l["slug"] for l in ls}, {"stake"})
 
+    def test_cotacao_furada_e_descartada(self):
+        jogo = {"casas": {}, "linhas": {"polymarket": [["kills", "total", 1, 27.5, 1.852, 1.042, None]],
+                                         "stake": [["kills", "total", 1, 27.5, 1.78, 1.78, None]]}}
+        ls = sc.linhas_de_mapa(jogo, False, "lol")
+        self.assertEqual({l["slug"] for l in ls}, {"stake"})      # 1,85 x 1,04 soma 150%: fora
+        self.assertTrue(sc.par_ok(1.852, 2.041))
+        self.assertFalse(sc.par_ok(1.852, 1.042))
+
     def test_mercados_por_esporte(self):
         self.assertEqual(sc.mercados("dota"), {"161": 0, "1647": 1, "1649": 2, "1651": 3})
 

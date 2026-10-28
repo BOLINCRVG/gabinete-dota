@@ -33,6 +33,17 @@ SPORT_ID = {"lol": "18", "dota": "16"}
 CASAS_PADRAO = ("Stake", "Polymarket")
 
 
+# COTACAO FURADA (28/10/2026): a Polymarket deu Mais 1,85 x Menos 1,04 no total de
+# kills (soma 150%) -- livro vazio de um lado, preco que ninguem paga. Casa de
+# verdade fica em 100-108%; acima de 115% o par e descartado.
+SOMA_MAXIMA = 1.15
+
+
+def par_ok(a: Any, b: Any) -> bool:
+    a, b = _num(a), _num(b)
+    return bool(a and b and a > 1 and b > 1 and 1 / a + 1 / b <= SOMA_MAXIMA)
+
+
 def _marcas(casas: Optional[List[str]]):
     """MARCAS filtradas pelas escolhidas (None = todas); a Pinnacle sempre."""
     if casas is None:
@@ -110,6 +121,8 @@ def linhas(jogo: Mapping[str, Any], invertido: bool, esp: str, *,
             if not slug or mid not in casas[slug]:
                 continue
             o1, o2 = casas[slug][mid][::-1] if invertido else casas[slug][mid]
+            if not par_ok(o1, o2):
+                continue
             lin = {"mercado": "Série" if per == 0 else f"Mapa {per}", "periodo": per,
                    "casa": nome, "slug": slug, "odd_a": o1, "odd_b": o2}
             for lado, odd, pp, pm in (("a", o1, p_pin, p_mod),
@@ -240,6 +253,8 @@ def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol",
                 [x for x in lista if x[1] == "spread" and x[0] == unidade and x[2] == mapa],
                 _favorito_do_mapa(jogo, esp, mapa))
         for unidade, tipo, mapa, pontos, oa, ob, qual in lista:
+            if not par_ok(oa, ob):
+                continue
             if tipo == "spread" and trocar.get((unidade, mapa)):
                 pontos = -pontos
             base = {"jogo": 1, "periodo": int(mapa), "unidade": unidade, "tipo": tipo,
