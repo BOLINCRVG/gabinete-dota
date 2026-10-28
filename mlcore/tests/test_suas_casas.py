@@ -56,6 +56,14 @@ class TestSuasCasas(unittest.TestCase):
         sem_pin = [dict(l, valor_pin_a=None, valor_pin_b=None) for l in lins if l["casa"] == "bet365"]
         self.assertIn("sem Pinnacle", sc.html("T1", "Movistar Koi", sem_pin))
 
+    def test_so_as_casas_escolhidas_e_a_pinnacle(self):
+        lins = sc.linhas(JOGO, False, "lol", casas_dele=["Stake", "Polymarket"])
+        self.assertEqual({l["casa"] for l in lins}, {"Pinnacle"})     # o JOGO nao tem Stake nem Polymarket
+        lins = sc.linhas(JOGO, False, "lol", casas_dele=["bet365"])
+        self.assertEqual({l["casa"] for l in lins}, {"Pinnacle", "bet365"})
+        ls = sc.linhas_de_mapa(JOGO_LINHAS, False, "lol", casas_dele=["Stake"])
+        self.assertEqual({l["slug"] for l in ls}, {"stake"})
+
     def test_mercados_por_esporte(self):
         self.assertEqual(sc.mercados("dota"), {"161": 0, "1647": 1, "1649": 2, "1651": 3})
 

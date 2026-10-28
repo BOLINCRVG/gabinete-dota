@@ -28,6 +28,16 @@ MARCAS = (("pinnacle", "Pinnacle"), ("bet365", "bet365"), ("superbet", "Superbet
           ("polymarket", "Polymarket"), ("estrelabet", "Estrela Bet"), ("blaze", "Blaze"),
           ("betano", "Betano"), ("stake", "Stake"))
 SPORT_ID = {"lol": "18", "dota": "16"}
+# as que ele USA hoje (28/10/2026: "so estou usando basicamente a stake e polymarket");
+# a Pinnacle entra sempre, como regua
+CASAS_PADRAO = ("Stake", "Polymarket")
+
+
+def _marcas(casas: Optional[List[str]]):
+    """MARCAS filtradas pelas escolhidas (None = todas); a Pinnacle sempre."""
+    if casas is None:
+        return MARCAS
+    return tuple((m, n) for m, n in MARCAS if n == "Pinnacle" or n in casas)
 
 
 def esporte(raiz: Path) -> str:
@@ -84,7 +94,7 @@ def achar(jogos: List[Mapping[str, Any]], time_a: str, time_b: str,
 
 
 def linhas(jogo: Mapping[str, Any], invertido: bool, esp: str, *,
-           p_serie: Any = None, p_mapa: Any = None) -> List[Dict[str, Any]]:
+           p_serie: Any = None, p_mapa: Any = None, casas_dele: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     """Uma linha por (mercado, casa dele), na orientacao do Time 1 da tela. Pura.
     p_serie / p_mapa: chance do Time 1 pelo modelo (None = sem opiniao)."""
     casas = jogo.get("casas") or {}
@@ -95,7 +105,7 @@ def linhas(jogo: Mapping[str, Any], invertido: bool, esp: str, *,
         if mid in (casas.get("pinnacle") or {}):
             o1, o2 = casas["pinnacle"][mid][::-1] if invertido else casas["pinnacle"][mid]
             p_pin = (1 / o1) / (1 / o1 + 1 / o2)
-        for marca, nome in MARCAS:
+        for marca, nome in _marcas(casas_dele):
             slug = versao_da_marca(casas, marca)
             if not slug or mid not in casas[slug]:
                 continue
@@ -213,13 +223,14 @@ def _handicap_trocado(lista: List[Any], fav: Optional[int]) -> bool:
     return abs(pontos) >= 1.5 and (pontos > 0) == (fav > 0)
 
 
-def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol") -> List[Dict[str, Any]]:
+def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol",
+                   casas_dele: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     """Pura: cada lado de cada linha das casas dele, no formato da Pinnacle, com o
     Time 1 da tela como "home". Pontos do handicap = os do lado apostado. So a versao
     da casa que ele usa (estrelabet.bet.br, senao a global) -- nada de bet365-nj, betano.de."""
     fora = []
     todas = jogo.get("linhas") or {}
-    usar = [versao_da_marca(todas, m) for m, _ in MARCAS]
+    usar = [versao_da_marca(todas, m) for m, _ in _marcas(casas_dele)]
     for slug in [u for u in usar if u]:
         lista = todas[slug]
         nome = _nome_da_casa(slug)
@@ -413,6 +424,15 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     doc = carregar(raiz)
     jogo, inv = achar(doc.get("jogos") or [], time_a, time_b, resolver)
     st.markdown("#### Suas casas x Pinnacle")
+    nomes = [n for _, n in MARCAS if n != "Pinnacle"]
+    # o padrao vai para a sessao ANTES do widget: o envelope de multiselect do app
+    # (app_core/text_normalization.py) grava [] em chave nova e o `default` nunca valeria
+    try:
+        st.session_state.setdefault("suas_casas_escolhidas", [n for n in CASAS_PADRAO if n in nomes])
+    except Exception:
+        pass
+    escolhidas = st.multiselect("Casas que você usa (a Pinnacle entra sempre, como régua)", nomes,
+                                key="suas_casas_escolhidas")
     if jogo is None:
         st.caption("Nenhuma das suas casas tem este jogo na leitura atual (OddsPapi)"
                    + (f": {doc['motivo']}." if doc.get("motivo") else "."))
@@ -423,13 +443,13 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
         bo = 1
     p_mapa = confronto.get("p_map")
     p_serie = p_mapa if bo == 1 else confronto.get("p_series")
-    lins = linhas(jogo, inv, esporte(raiz), p_serie=p_serie, p_mapa=p_mapa)
+    lins = linhas(jogo, inv, esporte(raiz), p_serie=p_serie, p_mapa=p_mapa, casas_dele=escolhidas)
     if not lins:
-        st.caption("A OddsPapi tem este jogo, mas nenhuma das suas casas abriu vencedor.")
+        st.caption("A OddsPapi tem este jogo, mas nenhuma das casas escolhidas abriu vencedor.")
     else:
         _desenhar(st, html(time_a, time_b, lins, str(doc.get("lido_em") or "")), len(lins))
     cache: dict = {}
-    rs = melhores_linhas(linhas_de_mapa(jogo, inv, esporte(raiz)), lambda l: chance_do_modelo(
+    rs = melhores_linhas(linhas_de_mapa(jogo, inv, esporte(raiz), casas_dele=escolhidas), lambda l: chance_do_modelo(
         l, time_a=time_a, time_b=time_b, calcular_totais=calcular_totais, prob_over=prob_over,
         medias_kills=medias_kills, p_casa=p_mapa, _cache=cache))
     st.markdown("#### Melhor odd e melhor linha: kills, torres, "
