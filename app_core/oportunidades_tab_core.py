@@ -127,7 +127,7 @@ def render_oportunidades_tab(*, st: Any, ctx: Mapping[str, Any], parte: str = "t
     # Logo depois da Polymarket quando o jogo esta na gaveta; aqui, quando nao esta.
     from app_core.suas_casas_core import render_suas_casas
     _ctx_casas = {"calcular_totais": calcular_totais, "prob_over": prob_over,
-                  "medias_kills": ctx.get("medias_kills")}
+                  "medias_kills": ctx.get("medias_kills"), "team_games": ctx.get("team_games")}
     if sem_odds or _na_gaveta is None:
         render_suas_casas(st, raiz=raiz, confronto=confronto, resolver=resolver, **_ctx_casas)
     if not sem_odds:

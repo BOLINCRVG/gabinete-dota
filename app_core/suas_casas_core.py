@@ -394,7 +394,8 @@ def rotulo_linha(r: Mapping[str, Any], time_a: str, time_b: str) -> tuple:
     return f"Total de {uni.lower()}", f"{lado} {pts}"
 
 
-def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str) -> str:
+def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str,
+                sinais_fn: Optional[Callable[[Mapping[str, Any]], Optional[str]]] = None) -> str:
     if not rs:
         return ""
 
@@ -416,9 +417,12 @@ def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str) -> str:
     for r in rs:
         merc, aposta = rotulo_linha(r, time_a, time_b)
         outras = " · ".join(f"{escape(c)} {o:.2f}" for c, o in r["outras"][:4])
+        sin = ""
+        if sinais_fn is not None:
+            sin = '<td class="esq" style="font-size:12px">{}</td>'.format(sinais_fn(r) or '<span class="q">-</span>')
         corpo += ('<tr class="{}"><td class="m">Mapa {}</td><td class="esq">{}</td><td class="esq"><b>{}</b>{}</td>'
                   '<td><span class="p">{:.2f}</span><span class="q">{}</span></td>'
-                  '<td class="esq outras">{}</td><td>{}</td><td>{}</td></tr>').format(
+                  '<td class="esq outras">{}</td><td>{}</td><td>{}</td>' + sin + '</tr>').format(
             "melhor-linha" if r["melhor_linha"] else "", r["periodo"], escape(merc),
             escape(aposta), ' <span class="top">melhor linha</span>' if r["melhor_linha"] else "",
             r["odd"], escape(r["casa"]), outras or "-",
@@ -426,12 +430,15 @@ def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str) -> str:
             _cel(r["valor_mod"], r["p_modelo"], "não precifica"))
     return (CSS_CASAS + '<table class="tc"><tr><th>Mapa</th><th style="text-align:left">Mercado</th>'
             '<th style="text-align:left">Aposta</th><th>Melhor odd</th><th style="text-align:left">'
-            'Outras casas</th><th>vs Pinnacle</th><th>vs Modelo</th></tr>' + corpo + '</table>')
+            'Outras casas</th><th>vs Pinnacle</th><th>vs Modelo</th>'
+            + ('<th style="text-align:left">Seus sinais (Hist · Médias · Adv · Camp)</th>' if sinais_fn else '')
+            + '</tr>' + corpo + '</table>')
 
 
 def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
                       resolver: Optional[Callable[[str], str]], calcular_totais: Optional[Callable] = None,
-                      prob_over: Optional[Callable] = None, medias_kills: Optional[Callable] = None) -> None:
+                      prob_over: Optional[Callable] = None, medias_kills: Optional[Callable] = None,
+                      team_games: Any = None) -> None:
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
     if not (time_a and time_b):
@@ -481,6 +488,10 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
     # O DESTAQUE segue o resumo: so aposta provavel (justa < 1,72), a melhor linha de
     # cada mercado, com valor; os suspeitos vao para o fim, como na Linha justa
+    sinais_fn = _sinais_fn(team_games, time_a, time_b) if esporte(raiz) == "lol" else None
+    alt = 50
+    if sinais_fn is not None:
+        _secao_sinais(st, rs, time_a, time_b, sinais_fn, team_games)
     destaque = [r for r in rs if r["melhor_linha"] and (valor(r) or 0) > 0]
     destaque = sorted(destaque, key=lambda r: (valor(r) > VANTAGEM_SUSPEITA_PCT, -valor(r)))[:12]
     _justa = "{:.2f}".format(ODD_MODELO_MAX).replace(".", ",")
@@ -488,15 +499,89 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
         st.caption("As melhores: odd justa abaixo de {} (chance de ~58% ou mais), a melhor linha de cada "
                    "mercado, na casa que paga mais, da maior vantagem para a menor. ⚠ = acima de {:.0f}%: "
                    "desconfie do modelo antes da casa.".format(_justa, VANTAGEM_SUSPEITA_PCT))
-        _desenhar(st, html_linhas(destaque, time_a, time_b), len(destaque), linha=50)
+        _desenhar(st, html_linhas(destaque, time_a, time_b, sinais_fn), len(destaque), linha=alt)
     else:
         st.caption("Nenhuma linha provável (odd justa abaixo de {}) das suas casas paga mais do que o "
                    "justo.".format(_justa))
     with st.expander(f"Todas as linhas das suas casas neste jogo ({len(rs)})"):
-        _desenhar(st, html_linhas(rs, time_a, time_b), len(rs), linha=50)
+        _desenhar(st, html_linhas(rs, time_a, time_b, sinais_fn), len(rs), linha=alt)
     st.caption("Melhor odd = a maior entre as suas casas para aquela aposta. vs Pinnacle: só quando a "
                "Pinnacle tem a MESMA linha (sem margem). vs Modelo: a mesma conta da Linha justa. "
                "Melhor linha = em cada mercado e lado, entre as de odd justa abaixo de 1,72, a de maior valor.")
+
+
+def _sinais_fn(team_games: Any, time_a: str, time_b: str):
+    """Celula "Seus sinais" para as linhas de TOTAL DE KILLS (so LoL; os pesos sao do LoL):
+    geral e so mapa 1. Ver app_core/sinais_linha_core.py."""
+    if team_games is None or getattr(team_games, "empty", True):
+        return None
+    from app_core.sinais_linha_core import resumo_html, sinais
+    cache: dict = {}
+
+    def _sn(L, m1):
+        k = (float(L), bool(m1))
+        if k not in cache:
+            try:
+                cache[k] = sinais(team_games, time_a, time_b, float(L), so_mapa1=bool(m1))
+            except Exception:
+                cache[k] = None
+        return cache[k]
+
+    def fn(r):
+        if r.get("unidade") != "kills" or r.get("tipo") != "total":
+            return None
+        geral = resumo_html(_sn(r["pontos"], False), r["lado"], "Geral ", r.get("odd"))
+        if int(r.get("periodo") or 0) != 1:
+            return geral                  # o recorte "so mapa 1" so vale para a aposta do mapa 1
+        return geral + "<br>" + resumo_html(_sn(r["pontos"], True), r["lado"], "Só mapa 1 ", r.get("odd"))
+    fn.sinais = _sn
+    return fn
+
+
+def _secao_sinais(st: Any, rs: List[Mapping[str, Any]], time_a: str, time_b: str, sinais_fn, team_games) -> None:
+    """PELOS SEUS SINAIS (28/10/2026): as linhas de total de kills em que 2 ou mais dos 4
+    sinais dele passam -- no geral ou so no mapa 1 --, da que mais paga acima da fair do
+    conjunto para a que menos. E a regra dele ("se duas passam eu ja considero entrar")."""
+    from app_core.sinais_linha_core import chance, passam
+    lista = []
+    for r in rs:
+        if r.get("unidade") != "kills" or r.get("tipo") != "total":
+            continue
+        melhor_k, melhor_v = 0, None
+        for m1 in ((False, True) if int(r.get("periodo") or 0) == 1 else (False,)):
+            sn = sinais_fn.sinais(r["pontos"], m1)
+            if not sn:
+                continue
+            k = sum(1 for v in passam(sn, r["lado"]) if v)
+            p = chance(sn, r["lado"])
+            v = None if not p else (p * float(r["odd"]) - 1) * 100
+            if k >= 2:
+                melhor_k = max(melhor_k, k)
+                melhor_v = v if melhor_v is None or (v is not None and v > melhor_v) else melhor_v
+        if melhor_k >= 2:
+            lista.append((melhor_v if melhor_v is not None else -999, melhor_k, r))
+    st.markdown("##### Pelos seus sinais: total de kills com 2 ou mais de 4")
+    if not lista:
+        st.caption("Nenhuma linha de total de kills das suas casas tem 2 dos 4 sinais passando "
+                   "(nem no geral, nem só no mapa 1).")
+        return
+    lista.sort(key=lambda x: (-x[0], -x[1]))
+    pagam = [x[2] for x in lista if x[0] > 0][:12]
+    resto = [x[2] for x in lista if x[0] <= 0]
+    rows = pagam
+    if not pagam:
+        st.caption("{} linha(s) com 2+ sinais, mas nenhuma paga acima da fair do conjunto "
+                   "(a casa já cobra o que os sinais dizem).".format(len(resto)))
+    if resto:
+        with st.expander(f"Com 2+ sinais mas abaixo da fair ({len(resto)})"):
+            _desenhar(st, html_linhas(resto[:30], time_a, time_b, sinais_fn), min(len(resto), 30), linha=50)
+    if not pagam:
+        return
+    st.caption("✓ passa · ✗ não passa · · sem dado. Ordem: Histórico, Médias, Adversário, StatsCamps. "
+               "\"justa\" = fair do conjunto dos 4 sinais (medida no histórico); o % é a vantagem da odd "
+               "da casa sobre ela. Com 2+ sinais a linha bateu ~60% no histórico; contra a linha da "
+               "Pinnacle os sinais filtram, mas não garantem lucro sozinhos.")
+    _desenhar(st, html_linhas(rows, time_a, time_b, sinais_fn), len(rows), linha=50)
 
 
 def _desenhar(st: Any, corpo: str, n: int, linha: int = 46) -> None:

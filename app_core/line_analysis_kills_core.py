@@ -102,6 +102,7 @@ def _render_kills_line_content(
     df_b_all_maps: pd.DataFrame,
     df_a_full_year: pd.DataFrame = None,
     df_b_full_year: pd.DataFrame = None,
+    sinais_tg: pd.DataFrame = None,
     league_scope_for_panel: pd.DataFrame,
     league_scope_a: pd.DataFrame = None,
     league_scope_b: pd.DataFrame = None,
@@ -226,6 +227,27 @@ def _render_kills_line_content(
         stats_a=stats_a, stats_b=stats_b, h2h=h2h_w,
         line=float(line_val),
     )
+    # OS 4 SINAIS DELE (28/10/2026): Historico, Medias, Adversario, StatsCamps -- geral e
+    # so mapa 1. So LoL e so total de kills (app_core/sinais_linha_core.py).
+    if metric_col == "total_kills" and sinais_tg is not None:
+        try:
+            from app_core.sinais_linha_core import resumo_html, sinais
+            _g = sinais(sinais_tg, team_a, team_b, float(line_val))
+            _m1 = sinais(sinais_tg, team_a, team_b, float(line_val), so_mapa1=True)
+            _cel = lambda sn, lado: resumo_html(sn, lado).replace("var(--boa)", "#3fb950").replace(
+                "var(--ruim)", "#c9736a").replace("var(--fraco)", "#9aa0a6")
+            st.markdown(
+                "<div style='border:1px solid rgba(63,185,80,0.35);border-radius:8px;padding:8px 12px;"
+                "margin:6px 0 10px;background:rgba(63,185,80,0.05);font-size:0.92em;line-height:1.7'>"
+                "<b>Seus sinais</b> <span style='opacity:0.6'>(Histórico · Médias · Adversário · StatsCamps; "
+                "2 ou mais = entra)</span><br>"
+                f"Geral &nbsp; OVER {_cel(_g, 'over')} &nbsp;|&nbsp; UNDER {_cel(_g, 'under')}<br>"
+                f"Só mapa 1 &nbsp; OVER {_cel(_m1, 'over')} &nbsp;|&nbsp; UNDER {_cel(_m1, 'under')}"
+                "</div>", unsafe_allow_html=True)
+        except ImportError:
+            pass                       # no Dota o modulo nao existe (pesos medidos so no LoL)
+        except Exception:
+            pass
 
     # ---------- Por mapa (panorâmica) ----------
     overall_mean_a_all = float(pd.to_numeric(df_a_all_maps[metric_col], errors="coerce").dropna().mean()) \
@@ -851,6 +873,7 @@ def _render_v3_kills_subpanel(
         df_h2h_year_b=df_h2h_year_b,
         df_a_all_maps=df_a_all_maps, df_b_all_maps=df_b_all_maps,
         df_a_full_year=df_a_full_year, df_b_full_year=df_b_full_year,
+        sinais_tg=_full_aug,
         league_scope_for_panel=league_scope_for_panel,
         league_scope_a=league_scope_a, league_scope_b=league_scope_b,
         cross_league=_cross_league,
