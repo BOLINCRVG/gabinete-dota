@@ -236,6 +236,20 @@ def _render_kills_line_content(
         from app_core.seus_sinais_tab_core import render_painel_na_analise
     except ImportError:
         _COL_MET, render_painel_na_analise = {}, None
+    # ML + TOTAL (29/10/2026): a odd justa da COMBINADA, com o total lido dado quem vence
+    # onde isso foi medido (tempo, torres, dragoes). So LoL (app_core/combinadas_core.py).
+    if str(market_key) == "ml_totals" and sinais_tg is not None:
+        try:
+            from app_core.combinadas_core import render_combinadas
+        except ImportError:
+            render_combinadas = None
+        if render_combinadas is not None:
+            _cyan_section_header(f"Combinadas · vence + total · {float(line_val):g}")
+            try:
+                render_combinadas(st=st, tg=sinais_tg, time_a=team_a, time_b=team_b, linha=float(line_val),
+                                  p_vence_a=p_map, chave=f"{team_a}_{team_b}_{line_idx}")
+            except Exception as _exc:
+                st.caption(f"Combinadas: nao deu para calcular ({type(_exc).__name__}).")
     _met = _COL_MET.get(str(metric_col))
     if _met and sinais_tg is not None and str(market_key) not in ("handicaps", "ml_totals"):
         if render_painel_na_analise is not None:
