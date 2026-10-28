@@ -23,11 +23,21 @@ jogos somados = pouco dado (nao afirma nada). Os cortes sao de leitura
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import pandas as pd
 
 JANELA = 10
+# AJUSTE PELO ADVERSARIO (28/10/2026, pedido dele: "se eu sei que aquele time jogou
+# contra times over, eu sei que aqueles numeros estao inflados"). Medido: o jogo
+# seguinte devolve ~METADE do excesso dos adversarios (inclinacao -0,47 em kills,
+# torres e dragoes, 2025-2026). Cego 2026 (9.070 jogos, peso escolhido em 2025):
+# kills na linha da casa +0,0041 IC95 [+0,0016; +0,0069] PASSA; torres e dragoes
+# sem ganho -> o ajuste entra so no total de kills.
+PESO_AJUSTE_KILLS = 0.46
+JANELA_ADVERSARIO = 10
+JOGOS_LIGA = 200
 CONCORDA = 60.0
 DISCORDA = 40.0
 MINIMO = 8
@@ -44,6 +54,41 @@ def _num(x: Any) -> Optional[float]:
         return v if v == v else None
     except (TypeError, ValueError):
         return None
+
+
+_CACHE_TEND: Dict[Any, pd.DataFrame] = {}
+
+
+def com_tendencia_dos_adversarios(team_games: pd.DataFrame) -> pd.DataFrame:
+    """team_games + 'tend_adv_kills': quanto o ADVERSARIO de cada jogo costumava puxar o
+    total de kills acima da media da liga, ANTES daquele jogo (seus 10 jogos anteriores
+    menos a media dos ultimos 200 da liga)."""
+    if team_games is None or team_games.empty or "tend_adv_kills" in team_games.columns:
+        return team_games
+    if (Path(__file__).resolve().parents[1] / "dota_paths.py").exists():
+        return team_games          # medido so no LoL; no Dota a contagem segue crua
+    chave = (id(team_games), len(team_games))
+    if chave in _CACHE_TEND:
+        return _CACHE_TEND[chave]
+    try:
+        d = team_games.copy()
+        d["_d"] = pd.to_datetime(d["date"], errors="coerce")
+        d["_tot"] = pd.to_numeric(d["kills_for"], errors="coerce") + pd.to_numeric(d["kills_against"], errors="coerce")
+        d = d.sort_values(["_d", "gameid"])
+        d["_pre_time"] = d.groupby("team")["_tot"].transform(
+            lambda x: x.shift(1).rolling(JANELA_ADVERSARIO, min_periods=3).mean())
+        d["_pre_liga"] = d.groupby("league")["_tot"].transform(
+            lambda x: x.shift(1).rolling(JOGOS_LIGA, min_periods=30).mean())
+        adv = d[["gameid", "team", "_pre_time"]].drop_duplicates(["gameid", "team"]).rename(
+            columns={"team": "opponent", "_pre_time": "_pre_adv"})
+        d = d.merge(adv, on=["gameid", "opponent"], how="left")
+        d["tend_adv_kills"] = (d["_pre_adv"] - d["_pre_liga"]).fillna(0.0)
+        d = d.drop(columns=["_d", "_tot", "_pre_time", "_pre_liga", "_pre_adv"])
+    except (KeyError, TypeError, ValueError):
+        return team_games
+    _CACHE_TEND.clear()
+    _CACHE_TEND[chave] = d
+    return d
 
 
 def ultimos(team_games: pd.DataFrame, time: str, n: int = JANELA) -> pd.DataFrame:
@@ -85,10 +130,17 @@ def acertos(row: Mapping[str, Any], hist_casa: pd.DataFrame, hist_fora: pd.DataF
             return pd.Series(dtype=float)
 
     partes: List[pd.Series] = []
+    ajustadas: List[pd.Series] = []
+    tends: List[pd.Series] = []
     if tipo == "total" and lado in ("over", "under") and ponto is not None and col:
         for h in (hist_casa, hist_fora):
             tot = _serie(h, lambda d: d[f"{col}_for"] + d[f"{col}_against"])
             partes.append((tot > ponto) if lado == "over" else (tot < ponto))
+            if col == "kills" and "tend_adv_kills" in getattr(h, "columns", []):
+                tend = pd.to_numeric(h.loc[tot.index, "tend_adv_kills"], errors="coerce").fillna(0.0)
+                aj = tot - PESO_AJUSTE_KILLS * tend
+                ajustadas.append((aj > ponto) if lado == "over" else (aj < ponto))
+                tends.append(tend)
     elif tipo == "team_total" and lado in ("over", "under") and ponto is not None and col == "kills":
         time = str(row.get("time") or "").lower()
         do_time, adv = (hist_casa, hist_fora) if time == "home" else (hist_fora, hist_casa)
@@ -109,15 +161,21 @@ def acertos(row: Mapping[str, Any], hist_casa: pd.DataFrame, hist_fora: pd.DataF
     else:
         return None
     jogos = int(sum(len(p) for p in partes))
-    return {"acertos": int(sum(int(p.sum()) for p in partes)), "jogos": jogos}
+    out = {"acertos": int(sum(int(p.sum()) for p in partes)), "jogos": jogos}
+    if ajustadas and len(ajustadas) == len(partes):
+        out["acertos_ajustados"] = int(sum(int(p.sum()) for p in ajustadas))
+        t = pd.concat(tends)
+        out["adversarios_kills"] = round(float(t.mean()), 1) if len(t) else 0.0
+    return out
 
 
 def veredito(r: Optional[Mapping[str, Any]]) -> str:
+    """Com o ajuste pelo adversario quando existe (total de kills): e ele que passou."""
     if not r:
         return "sem estatistica"
     if r["jogos"] < MINIMO:
         return "pouco dado"
-    pct = 100.0 * r["acertos"] / r["jogos"]
+    pct = 100.0 * r.get("acertos_ajustados", r["acertos"]) / r["jogos"]
     if pct >= CONCORDA:
         return "concorda"
     if pct <= DISCORDA:
@@ -129,6 +187,7 @@ def cruzar(linhas: List[Mapping[str, Any]], team_games: Optional[pd.DataFrame],
            resolver: Optional[Callable[[str], str]]) -> List[Dict[str, Any]]:
     """As linhas com 'estat' = {'acertos','jogos','pct','veredito'} juntado."""
     cache: Dict[str, pd.DataFrame] = {}
+    team_games = com_tendencia_dos_adversarios(team_games)
 
     def _hist(nome: str) -> pd.DataFrame:
         if nome not in cache:

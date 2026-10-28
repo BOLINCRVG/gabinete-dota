@@ -83,7 +83,8 @@ def _render_balanced_line_analysis(
     from app_core.ui_design_core import TONE_TEXT, tone_for_pct
 
     def _cell_html(label: str, n: int, hits_over: int, hits_under: int,
-                    over_pct: float, under_pct: float, mean: float) -> str:
+                    over_pct: float, under_pct: float, mean: float,
+                    hits_over_aj: int = -1, adv: float = float("nan")) -> str:
         if n == 0:
             body = "<div style='opacity:0.45;padding:6px 0;'>— sem jogos —</div>"
         else:
@@ -110,6 +111,15 @@ def _render_balanced_line_analysis(
                 f"border-top:1px solid rgba(255,255,255,0.06);'>"
                 f"méd <b>{mean:.1f}</b></div>"
             )
+            if hits_over_aj >= 0:
+                # 28/10/2026: o mesmo quadro AJUSTADO pelos adversarios enfrentados
+                body += (
+                    f"<div style='text-align:center;font-size:0.78em;padding-top:3px;opacity:0.85;' "
+                    f"title='Desconta metade do quanto os adversarios costumavam puxar o total de kills "
+                    f"acima da media da liga (medido: o jogo seguinte devolve ~metade).'>"
+                    f"ajust. adv.: O <b>{hits_over_aj}</b> · U <b>{n - hits_over_aj}</b> "
+                    f"<span style='opacity:0.7'>(adv. {adv:+.1f})</span></div>"
+                ).replace(f"{adv:+.1f}", f"{adv:+.1f}".replace(".", ","))
         return (
             f"<div style='border:1px solid rgba(45,170,196,0.25);border-radius:8px;"
             f"padding:8px 10px;margin-bottom:6px;background:rgba(45,170,196,0.04);'>"
@@ -130,7 +140,8 @@ def _render_balanced_line_analysis(
         with col:
             st.markdown(
                 _cell_html(ws.label, ws.n, ws.hits_over, ws.hits_under,
-                            ws.over_pct, ws.under_pct, ws.mean),
+                            ws.over_pct, ws.under_pct, ws.mean,
+                            getattr(ws, "hits_over_aj", -1), getattr(ws, "adv_kills", float("nan"))),
                 unsafe_allow_html=True,
             )
 
@@ -145,7 +156,8 @@ def _render_balanced_line_analysis(
         with col:
             st.markdown(
                 _cell_html(ws.label, ws.n, ws.hits_over, ws.hits_under,
-                            ws.over_pct, ws.under_pct, ws.mean),
+                            ws.over_pct, ws.under_pct, ws.mean,
+                            getattr(ws, "hits_over_aj", -1), getattr(ws, "adv_kills", float("nan"))),
                 unsafe_allow_html=True,
             )
 

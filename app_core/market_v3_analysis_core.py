@@ -42,6 +42,9 @@ class WindowStats:
     mean: float
     trend: str  # "up" | "down" | "flat" | "na"
     trend_value: float  # slope per game (NaN if na)
+    # total de kills AJUSTADO pelo adversario (28/10/2026); -1 = nao se aplica
+    hits_over_aj: int = -1
+    adv_kills: float = float("nan")
 
 
 @dataclass(frozen=True)
@@ -185,6 +188,12 @@ def compute_window_stats(
         hits_over = int(over_mask.sum())
         hits_under = int(under_mask.sum())
         trend, slope = _trend_from_series(s)
+        aj, adv = -1, float("nan")
+        if metric_col == "total_kills" and sub is not None and "tend_adv_kills" in sub.columns:
+            from app_core.cruzamento_estatistica_core import PESO_AJUSTE_KILLS
+            tend = pd.to_numeric(sub.loc[s.index, "tend_adv_kills"], errors="coerce").fillna(0.0)
+            aj = int(((s - PESO_AJUSTE_KILLS * tend) > float(line)).sum())
+            adv = float(tend.mean())
         out.append(WindowStats(
             label=label, n=n_games,
             hits_over=hits_over, hits_under=hits_under,
@@ -192,6 +201,7 @@ def compute_window_stats(
             under_pct=100.0 * hits_under / n_games,
             mean=float(s.mean()),
             trend=trend, trend_value=slope,
+            hits_over_aj=aj, adv_kills=adv,
         ))
     return out
 

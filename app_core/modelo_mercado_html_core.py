@@ -170,7 +170,9 @@ def html_destaques(linhas: List[Mapping[str, Any]], aposta_fn, *, limite: int = 
 LEGENDA_ESTAT = ('<div class="nota"><b>Estatistica</b>: em quantos dos ultimos 10 jogos de cada time '
                  '(somados) essa aposta teria batido. <span class="e e-sim">verde</span> bateu em 60% ou '
                  'mais · <span class="e e-nao">vermelho</span> em 40% ou menos · cinza: dividida ou pouco '
-                 'jogo. Com vantagem do modelo, verde e o historico concordando com ele.</div>')
+                 'jogo. Com vantagem do modelo, verde e o historico concordando com ele. '
+                 '<b>*</b> total de kills: contagem AJUSTADA pelos adversarios enfrentados (desconta metade '
+                 'do quanto eles costumam puxar o total acima da liga; "adv." = esse quanto, em kills por jogo).</div>')
 
 
 def _cel_estat(x: Mapping[str, Any]) -> str:
@@ -179,6 +181,14 @@ def _cel_estat(x: Mapping[str, Any]) -> str:
     if not e or not e.get("jogos"):
         return '<div class="c"><span class="nada">-</span></div>'
     classe = {"concorda": "e-sim", "discorda": "e-nao"}.get(v, "e-meio")
+    if e.get("acertos_ajustados") is not None:
+        # total de kills: a contagem AJUSTADA pelo adversario manda; a crua fica no titulo
+        adv = e.get("adversarios_kills") or 0.0
+        titulo = "{} · crua {}/{} · adversarios {:+.1f} kills/jogo vs a liga".format(
+            v, e.get("acertos"), e.get("jogos"), adv)
+        sub = '<span class="sub" style="display:block">adv. {:+.1f}</span>'.format(adv).replace(".", ",")
+        return '<div class="c" title="{}"><span class="e {}">{}/{}*</span>{}</div>'.format(
+            escape(titulo), classe, e.get("acertos_ajustados"), e.get("jogos"), sub)
     return '<div class="c" title="{}"><span class="e {}">{}/{}</span></div>'.format(
         escape(v), classe, e.get("acertos"), e.get("jogos"))
 
