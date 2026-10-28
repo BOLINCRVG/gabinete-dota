@@ -60,5 +60,69 @@ class TestSuasCasas(unittest.TestCase):
         self.assertEqual(sc.mercados("dota"), {"161": 0, "1647": 1, "1649": 2, "1651": 3})
 
 
+JOGO_LINHAS = {"time1": "T1", "time2": "Movistar Koi",
+               "casas": {"pinnacle": {"1847": [1.30, 3.50]}},
+               "linhas": {
+                   # bet365 publicou o handicap com o sinal trocado (o T1, favorito, +8,5)
+                   "bet365": [["kills", "spread", 1, 8.5, 1.80, 1.80, None],
+                              ["kills", "total", 1, 26.5, 1.80, 1.80, None]],
+                   "bet365-nj": [["kills", "total", 1, 26.5, 2.50, 1.50, None]],   # espelho: fora
+                   "stake": [["kills", "spread", 1, -7.5, 1.62, 1.98, None],
+                             ["kills", "total", 1, 26.5, 1.78, 1.85, None],
+                             ["kills", "total", 1, 28.5, 2.20, 1.50, None],
+                             ["kills", "team_total", 1, 16.5, 1.80, 1.90, 2]],
+                   "superbet": [["kills", "total", 1, 26.5, 1.87, 1.82, None]]}}
+
+
+class TestMelhorLinha(unittest.TestCase):
+    def test_so_a_versao_que_ele_usa_e_o_handicap_desvirado(self):
+        ls = sc.linhas_de_mapa(JOGO_LINHAS, False, "lol")
+        self.assertNotIn("bet365-nj", {l["slug"] for l in ls})
+        b365 = {(l["lado"], l["pontos"]) for l in ls if l["slug"] == "bet365" and l["tipo"] == "spread"}
+        self.assertEqual(b365, {("home", -8.5), ("away", 8.5)})   # o T1 (favorito) DA kills
+        stake = {(l["lado"], l["pontos"]) for l in ls if l["slug"] == "stake" and l["tipo"] == "spread"}
+        self.assertEqual(stake, {("home", -7.5), ("away", 7.5)})   # ja vinha certo: intocado
+
+    def test_orientacao_invertida(self):
+        ls = sc.linhas_de_mapa(JOGO_LINHAS, True, "lol")
+        tt = [l for l in ls if l["tipo"] == "team_total"]
+        self.assertEqual({l["time"] for l in tt}, {"home"})       # time 2 da OddsPapi = Time 1 da tela
+        sp = {(l["lado"], l["pontos"]) for l in ls if l["slug"] == "stake" and l["tipo"] == "spread"}
+        self.assertEqual(sp, {("away", -7.5), ("home", 7.5)})
+
+    def test_melhor_odd_e_melhor_linha(self):
+        ls = sc.linhas_de_mapa(JOGO_LINHAS, False, "lol")
+        chances = {26.5: 0.62, 28.5: 0.40}
+
+        def chance(l):
+            if l["tipo"] != "total":
+                return None
+            p = chances[l["pontos"]]
+            return p if l["lado"] == "over" else 1 - p
+        rs = sc.melhores_linhas(ls, chance)
+        over265 = next(r for r in rs if r["tipo"] == "total" and r["lado"] == "over" and r["pontos"] == 26.5)
+        self.assertEqual((over265["casa"], over265["odd"]), ("Superbet", 1.87))
+        self.assertEqual(dict(over265["outras"]), {"bet365": 1.80, "Stake": 1.78})
+        self.assertAlmostEqual(over265["valor_mod"], round((0.62 * 1.87 - 1) * 100, 1))
+        overs = [r for r in rs if r["tipo"] == "total" and r["lado"] == "over"]
+        self.assertEqual([r["pontos"] for r in overs if r["melhor_linha"]], [26.5])
+        # o Menos de 28,5 (60%, justa 1,67) passa na regra do resumo; o Menos de 26,5
+        # (38%, justa 2,63) nao concorre a melhor linha, por maior que fosse o valor
+        unders = {r["pontos"]: r for r in rs if r["tipo"] == "total" and r["lado"] == "under"}
+        self.assertTrue(unders[28.5]["melhor_linha"])
+        self.assertFalse(unders[26.5]["melhor_linha"])
+        self.assertTrue(sc.provavel(unders[28.5]))
+        self.assertFalse(sc.provavel(unders[26.5]))
+        self.assertIsNone(over265["p_pinnacle"])            # a Pinnacle nao tem esta linha
+
+    def test_rotulos_em_portugues(self):
+        r = {"tipo": "spread", "lado": "home", "pontos": -8.5, "unidade": "kills"}
+        self.assertEqual(sc.rotulo_linha(r, "T1", "KOI"), ("Handicap de kills", "T1 -8,5"))
+        r = {"tipo": "team_total", "lado": "under", "pontos": 16.5, "unidade": "kills", "time": "away"}
+        self.assertEqual(sc.rotulo_linha(r, "T1", "KOI"), ("Kills de KOI", "Menos de 16,5"))
+        r = {"tipo": "total", "lado": "over", "pontos": 10.5, "unidade": "turrets"}
+        self.assertEqual(sc.rotulo_linha(r, "T1", "KOI"), ("Total de torres", "Mais de 10,5"))
+
+
 if __name__ == "__main__":
     unittest.main()

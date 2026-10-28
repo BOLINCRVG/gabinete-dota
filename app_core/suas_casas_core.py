@@ -121,6 +121,12 @@ CSS_CASAS = """
   .tc .p { font-weight:800; display:block; } .tc .q { color:var(--fraco); font-size:11px; display:block; }
   .tc td.verde .q { color:var(--boa); font-weight:700; }
   .tc tr.pin td.l { color:var(--pin); font-weight:700; }
+  .tc .top { font-size:10px; font-weight:800; color:var(--modelo); border:1px solid var(--modelo);
+             border-radius:6px; padding:0 4px; vertical-align:middle; }
+  .tc td.esq { text-align:left; } .tc .outras { color:var(--fraco); font-size:11.5px; }
+  .tc tr.melhor-linha td:first-child { box-shadow:inset 3px 0 0 var(--boa); }
+  .tc .v { font-weight:800; } .tc .v.b { color:var(--boa); } .tc .v.r { color:var(--ruim); }
+  .tc .v.d { color:var(--pin); }
 </style>
 """
 
@@ -129,7 +135,15 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
     if not lins:
         return ""
 
-    def cel(odd, vp, vm, pin):
+    # a MELHOR odd de cada lado, entre as casas dele (28/10/2026: "ver onde tem a melhor odd")
+    melhor = {}
+    for l in lins:
+        if l["casa"] != "Pinnacle":
+            for lado in ("a", "b"):
+                k = (l["periodo"], lado)
+                melhor[k] = max(melhor.get(k, 0.0), l[f"odd_{lado}"])
+
+    def cel(odd, vp, vm, pin, top):
         verde = not pin and vp is not None and vp > 0
         est = " ★" if verde and vm is not None and vm > 0 else ""
         if pin:
@@ -138,13 +152,17 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
             txt = "sem Pinnacle"
         else:
             txt = "vs Pinnacle " + f"{vp:+.1f}%".replace(".", ",")
-        return ('<td class="{}"><span class="p">{:.2f}{}</span><span class="q">{}</span></td>'
-                .format("verde" if verde else "", odd, est, txt))
+        return ('<td class="{}"><span class="p">{:.2f}{}{}</span><span class="q">{}</span></td>'
+                .format("verde" if verde else "", odd, est,
+                        ' <span class="top">melhor</span>' if top else "", txt))
+
+    def _top(l, lado):
+        return l["casa"] != "Pinnacle" and l[f"odd_{lado}"] >= melhor.get((l["periodo"], lado), 99)
     corpo = "".join(
         '<tr class="{}"><td class="m">{}</td><td class="l">{}</td>{}{}</tr>'.format(
             "pin" if l["casa"] == "Pinnacle" else "", escape(l["mercado"]), escape(l["casa"]),
-            cel(l["odd_a"], l["valor_pin_a"], l["valor_mod_a"], l["casa"] == "Pinnacle"),
-            cel(l["odd_b"], l["valor_pin_b"], l["valor_mod_b"], l["casa"] == "Pinnacle"))
+            cel(l["odd_a"], l["valor_pin_a"], l["valor_mod_a"], l["casa"] == "Pinnacle", _top(l, "a")),
+            cel(l["odd_b"], l["valor_pin_b"], l["valor_mod_b"], l["casa"] == "Pinnacle", _top(l, "b")))
         for l in sorted(lins, key=lambda l: (l["periodo"], l["casa"] != "Pinnacle", l["casa"])))
     hora = ""
     if lido_em:
@@ -157,8 +175,237 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
             'valor nesse preço.</div>'.format(hora))
 
 
+# ---- LINHAS DE MAPA: a melhor odd e a melhor linha (28/10/2026) ---------------
+# Ele: "seria legal ver onde tem a melhor odd e a melhor linha possivel... por
+# exemplo para kills". O robo guarda, das casas dele, total / handicap / total por
+# time de cada mapa. Aqui cada linha vira o MESMO formato das linhas da Pinnacle
+# (app_core/oportunidades_core) e a chance sai das MESMAS contas da Linha justa --
+# nao existe uma segunda conta (principio V).
+NOME_UNIDADE = {"kills": "Kills", "turrets": "Torres", "towers": "Torres", "dragons": "Dragões",
+                "barons": "Barões", "inhibitors": "Inibidores", "roshans": "Roshans",
+                "barracks": "Barracks"}
+
+
+def _nome_da_casa(slug: str) -> str:
+    return next((n for m, n in MARCAS if str(slug).startswith(m)), str(slug))
+
+
+def _favorito_do_mapa(jogo: Mapping[str, Any], esp: str, mapa: int) -> Optional[int]:
+    """+1 se o time 1 da OddsPapi e favorito claro no mapa (>= 60%), -1 se e o time 2."""
+    mid = next((m for m, per in mercados(esp).items() if per == mapa), None)
+    casas = jogo.get("casas") or {}
+    for slug in ["pinnacle"] + sorted(casas):
+        par = (casas.get(slug) or {}).get(mid)
+        if par:
+            ia, ib = 1 / par[0], 1 / par[1]
+            p1 = ia / (ia + ib)
+            return 1 if p1 >= 0.6 else (-1 if p1 <= 0.4 else None)
+    return None
+
+
+def _handicap_trocado(lista: List[Any], fav: Optional[int]) -> bool:
+    """A casa publicou o handicap com o sinal do OUTRO time? (28/10/2026: a bet365 veio na
+    OddsPapi com o T1, favorito, +8,5 a 1,80 x 1,80, e a Stake -7,5.) Olha a linha mais
+    equilibrada da casa: nela o favorito tem de DAR kills."""
+    if fav is None or not lista:
+        return False
+    _, _, _, pontos, oa, ob, _ = min(lista, key=lambda x: abs(x[4] - x[5]))
+    return abs(pontos) >= 1.5 and (pontos > 0) == (fav > 0)
+
+
+def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol") -> List[Dict[str, Any]]:
+    """Pura: cada lado de cada linha das casas dele, no formato da Pinnacle, com o
+    Time 1 da tela como "home". Pontos do handicap = os do lado apostado. So a versao
+    da casa que ele usa (estrelabet.bet.br, senao a global) -- nada de bet365-nj, betano.de."""
+    fora = []
+    todas = jogo.get("linhas") or {}
+    usar = [versao_da_marca(todas, m) for m, _ in MARCAS]
+    for slug in [u for u in usar if u]:
+        lista = todas[slug]
+        nome = _nome_da_casa(slug)
+        trocar = {}
+        for unidade, mapa in {(x[0], x[2]) for x in lista if x[1] == "spread"}:
+            trocar[(unidade, mapa)] = _handicap_trocado(
+                [x for x in lista if x[1] == "spread" and x[0] == unidade and x[2] == mapa],
+                _favorito_do_mapa(jogo, esp, mapa))
+        for unidade, tipo, mapa, pontos, oa, ob, qual in lista:
+            if tipo == "spread" and trocar.get((unidade, mapa)):
+                pontos = -pontos
+            base = {"jogo": 1, "periodo": int(mapa), "unidade": unidade, "tipo": tipo,
+                    "casa_aposta": nome, "slug": slug}
+            um, dois = ("away", "home") if invertido else ("home", "away")
+            if tipo == "spread":
+                # o handicap do catalogo e o do time 1 da OddsPapi
+                fora.append(dict(base, lado=um, pontos=float(pontos), odd=oa))
+                fora.append(dict(base, lado=dois, pontos=-float(pontos), odd=ob))
+            else:
+                extra = {"time": um if int(qual) == 1 else dois} if tipo == "team_total" else {}
+                fora.append(dict(base, lado="over", pontos=float(pontos), odd=oa, **extra))
+                fora.append(dict(base, lado="under", pontos=float(pontos), odd=ob, **extra))
+    return fora
+
+
+def _chave_linha(l: Mapping[str, Any]):
+    return (l["periodo"], l["unidade"], l["tipo"], l.get("time"), l["lado"], l["pontos"])
+
+
+def _chave_grupo(l: Mapping[str, Any]):
+    """O mesmo mercado e o mesmo lado, so mudando a linha (Mais de 27,5 / 28,5 ...)."""
+    return (l["periodo"], l["unidade"], l["tipo"], l.get("time"), l["lado"])
+
+
+def chance_do_modelo(l: Mapping[str, Any], *, time_a: str, time_b: str,
+                     calcular_totais: Optional[Callable] = None, prob_over: Optional[Callable] = None,
+                     medias_kills: Optional[Callable] = None, p_casa: Any = None,
+                     _cache: Optional[dict] = None) -> Optional[float]:
+    """A chance deste lado pela conta de PRODUCAO, ou None (o modelo nao precifica)."""
+    from app_core.oportunidades_core import (avaliar_linha, forma_de_kills_por_time,
+                                             metrica_da_linha, prob_de_kills_por_time)
+    cache = _cache if _cache is not None else {}
+    if forma_de_kills_por_time(l):
+        if medias_kills is None:
+            return None
+        if "medias" not in cache:
+            try:
+                cache["medias"] = medias_kills(time_a, time_b)
+            except Exception:
+                cache["medias"] = None
+        pc = _num(p_casa)
+        try:
+            return prob_de_kills_por_time(dict(l), cache["medias"],
+                                          p_casa=pc if pc is not None and 0 < pc < 1 else None)
+        except Exception:
+            return None
+    alvo = metrica_da_linha(l)
+    if alvo is None or calcular_totais is None or prob_over is None:
+        return None
+    k = ("totais", alvo[1])
+    if k not in cache:
+        try:
+            cache[k] = calcular_totais(time_a, time_b, alvo[1])
+        except Exception:
+            cache[k] = None
+    if cache[k] is None:
+        return None
+    r = avaliar_linha(dict(l, odd=2.0), cache[k], prob_over=prob_over)
+    return None if r is None else r["probabilidade"]
+
+
+def melhores_linhas(lins: List[Mapping[str, Any]], chance: Callable[[Mapping[str, Any]], Optional[float]]
+                    ) -> List[Dict[str, Any]]:
+    """Pura (com `chance` de fora): uma linha por (mapa, mercado, lado, pontos) com a MELHOR
+    odd entre as casas dele, a Pinnacle sem margem (quando ela tem a MESMA linha) e o
+    modelo. `melhor_linha` marca, em cada mercado+lado, a linha de maior valor."""
+    por = {}
+    for l in lins:
+        por.setdefault(_chave_linha(l), []).append(l)
+    pin = {k: l["odd"] for k, ls in por.items() for l in ls if l["slug"] == "pinnacle"}
+
+    def _oposto(k):
+        per, uni, tipo, tm, lado, pts = k
+        if tipo == "spread":
+            return (per, uni, tipo, tm, "away" if lado == "home" else "home", -pts)
+        return (per, uni, tipo, tm, "under" if lado == "over" else "over", pts)
+    fora = []
+    for k, ls in por.items():
+        casas = sorted((l for l in ls if l["slug"] != "pinnacle"), key=lambda l: -l["odd"])
+        if not casas:
+            continue
+        top = casas[0]
+        p_pin = None
+        if k in pin and _oposto(k) in pin:
+            ia, ib = 1 / pin[k], 1 / pin[_oposto(k)]
+            p_pin = ia / (ia + ib)
+        p_mod = chance(top)
+        fora.append({"periodo": k[0], "unidade": k[1], "tipo": k[2], "time": k[3], "lado": k[4],
+                     "pontos": k[5], "odd": top["odd"], "casa": top["casa_aposta"],
+                     "outras": [(l["casa_aposta"], l["odd"]) for l in casas[1:]],
+                     "p_pinnacle": p_pin, "p_modelo": p_mod,
+                     "valor_pin": None if p_pin is None else round((p_pin * top["odd"] - 1) * 100, 1),
+                     "valor_mod": None if p_mod is None else round((p_mod * top["odd"] - 1) * 100, 1),
+                     "melhor_linha": False})
+    grupos = {}
+    for r in fora:
+        grupos.setdefault(_chave_grupo(r), []).append(r)
+    # MELHOR LINHA na logica do resumo (28/10/2026, ele: "bets que tem fair menor que
+    # 1,72... eu quero os dois [valor e batida]"): so concorre linha com odd JUSTA abaixo
+    # de ODD_MODELO_MAX (~58% ou mais); entre elas, a de maior valor.
+    for rs in grupos.values():
+        com = [r for r in rs if valor(r) is not None and provavel(r)]
+        if com:
+            max(com, key=valor)["melhor_linha"] = True
+    return fora
+
+
+def chance(r: Mapping[str, Any]) -> Optional[float]:
+    """A chance que manda: a do modelo; sem modelo, a da Pinnacle sem margem."""
+    return r["p_modelo"] if r.get("p_modelo") is not None else r.get("p_pinnacle")
+
+
+def provavel(r: Mapping[str, Any]) -> bool:
+    """Odd justa abaixo de 1,72 -- a mesma regra das melhores apostas do resumo."""
+    from app_core.modelo_mercado_core import ODD_MODELO_MAX
+    p = chance(r)
+    return bool(p) and 1 / p < ODD_MODELO_MAX
+
+
+def valor(r: Mapping[str, Any]) -> Optional[float]:
+    """O valor que manda: o do modelo; sem modelo, o contra a Pinnacle."""
+    return r["valor_mod"] if r.get("valor_mod") is not None else r.get("valor_pin")
+
+
+def rotulo_linha(r: Mapping[str, Any], time_a: str, time_b: str) -> tuple:
+    """(mercado, aposta) em palavras dele."""
+    uni = NOME_UNIDADE.get(r["unidade"], str(r["unidade"]).title())
+    pts = f"{r['pontos']:g}".replace(".", ",")
+    if r["tipo"] == "spread":
+        quem = time_a if r["lado"] == "home" else time_b
+        return f"Handicap de {uni.lower()}", f"{quem} {'+' if r['pontos'] > 0 else ''}{pts}"
+    lado = "Mais de" if r["lado"] == "over" else "Menos de"
+    if r["tipo"] == "team_total":
+        quem = time_a if r.get("time") == "home" else time_b
+        return f"{uni} de {quem}", f"{lado} {pts}"
+    return f"Total de {uni.lower()}", f"{lado} {pts}"
+
+
+def html_linhas(rs: List[Mapping[str, Any]], time_a: str, time_b: str) -> str:
+    if not rs:
+        return ""
+
+    from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
+
+    def _v(x):
+        if x is None:
+            return '<span class="outras">-</span>'
+        if x > VANTAGEM_SUSPEITA_PCT:      # a mesma regra da Linha justa: desconfie do modelo
+            return '<span class="v d" title="grande demais: desconfie do numero">{} ⚠</span>'.format(
+                f"{x:+.1f}%".replace(".", ","))
+        return '<span class="v {}">{}</span>'.format("b" if x > 0 else "r", f"{x:+.1f}%".replace(".", ","))
+
+    def _cel(v, p, falta):
+        if not p:
+            return '<span class="q">{}</span>'.format(falta)
+        return '{}<span class="q">justa {:.2f}</span>'.format(_v(v), 1 / p)
+    corpo = ""
+    for r in rs:
+        merc, aposta = rotulo_linha(r, time_a, time_b)
+        outras = " · ".join(f"{escape(c)} {o:.2f}" for c, o in r["outras"][:4])
+        corpo += ('<tr class="{}"><td class="m">Mapa {}</td><td class="esq">{}</td><td class="esq"><b>{}</b>{}</td>'
+                  '<td><span class="p">{:.2f}</span><span class="q">{}</span></td>'
+                  '<td class="esq outras">{}</td><td>{}</td><td>{}</td></tr>').format(
+            "melhor-linha" if r["melhor_linha"] else "", r["periodo"], escape(merc),
+            escape(aposta), ' <span class="top">melhor linha</span>' if r["melhor_linha"] else "",
+            r["odd"], escape(r["casa"]), outras or "-",
+            _cel(r["valor_pin"], r["p_pinnacle"], "sem esta linha"),
+            _cel(r["valor_mod"], r["p_modelo"], "não precifica"))
+    return (CSS_CASAS + '<table class="tc"><tr><th>Mapa</th><th style="text-align:left">Mercado</th>'
+            '<th style="text-align:left">Aposta</th><th>Melhor odd</th><th style="text-align:left">'
+            'Outras casas</th><th>vs Pinnacle</th><th>vs Modelo</th></tr>' + corpo + '</table>')
+
+
 def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
-                      resolver: Optional[Callable[[str], str]]) -> None:
+                      resolver: Optional[Callable[[str], str]], calcular_totais: Optional[Callable] = None,
+                      prob_over: Optional[Callable] = None, medias_kills: Optional[Callable] = None) -> None:
     time_a = str(confronto.get("teamA") or "")
     time_b = str(confronto.get("teamB") or "")
     if not (time_a and time_b):
@@ -179,11 +426,46 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     lins = linhas(jogo, inv, esporte(raiz), p_serie=p_serie, p_mapa=p_mapa)
     if not lins:
         st.caption("A OddsPapi tem este jogo, mas nenhuma das suas casas abriu vencedor.")
+    else:
+        _desenhar(st, html(time_a, time_b, lins, str(doc.get("lido_em") or "")), len(lins))
+    cache: dict = {}
+    rs = melhores_linhas(linhas_de_mapa(jogo, inv, esporte(raiz)), lambda l: chance_do_modelo(
+        l, time_a=time_a, time_b=time_b, calcular_totais=calcular_totais, prob_over=prob_over,
+        medias_kills=medias_kills, p_casa=p_mapa, _cache=cache))
+    st.markdown("#### Melhor odd e melhor linha: kills, torres, "
+                + ("roshans..." if esporte(raiz) == "dota" else "dragões..."))
+    if not rs:
+        st.caption("Nenhuma das suas casas abriu linhas de mapa (kills, torres...) para este jogo "
+                   "na leitura atual.")
         return
+    rs.sort(key=lambda r: (r["periodo"], r["unidade"] != "kills", r["unidade"], r["tipo"],
+                           str(r.get("time")), r["lado"], r["pontos"]))
+    from app_core.modelo_mercado_core import ODD_MODELO_MAX
+    from app_core.oportunidades_core import VANTAGEM_SUSPEITA_PCT
+    # O DESTAQUE segue o resumo: so aposta provavel (justa < 1,72), a melhor linha de
+    # cada mercado, com valor; os suspeitos vao para o fim, como na Linha justa
+    destaque = [r for r in rs if r["melhor_linha"] and (valor(r) or 0) > 0]
+    destaque = sorted(destaque, key=lambda r: (valor(r) > VANTAGEM_SUSPEITA_PCT, -valor(r)))[:12]
+    _justa = "{:.2f}".format(ODD_MODELO_MAX).replace(".", ",")
+    if destaque:
+        st.caption("As melhores: odd justa abaixo de {} (chance de ~58% ou mais), a melhor linha de cada "
+                   "mercado, na casa que paga mais, da maior vantagem para a menor. ⚠ = acima de {:.0f}%: "
+                   "desconfie do modelo antes da casa.".format(_justa, VANTAGEM_SUSPEITA_PCT))
+        _desenhar(st, html_linhas(destaque, time_a, time_b), len(destaque), linha=50)
+    else:
+        st.caption("Nenhuma linha provável (odd justa abaixo de {}) das suas casas paga mais do que o "
+                   "justo.".format(_justa))
+    with st.expander(f"Todas as linhas das suas casas neste jogo ({len(rs)})"):
+        _desenhar(st, html_linhas(rs, time_a, time_b), len(rs), linha=50)
+    st.caption("Melhor odd = a maior entre as suas casas para aquela aposta. vs Pinnacle: só quando a "
+               "Pinnacle tem a MESMA linha (sem margem). vs Modelo: a mesma conta da Linha justa. "
+               "Melhor linha = em cada mercado e lado, entre as de odd justa abaixo de 1,72, a de maior valor.")
+
+
+def _desenhar(st: Any, corpo: str, n: int, linha: int = 46) -> None:
     from app_core.modelo_mercado_html_core import CSS, pagina
-    corpo = html(time_a, time_b, lins, str(doc.get("lido_em") or ""))
     try:
         import streamlit.components.v1 as _componentes
-        _componentes.html(pagina(corpo), height=40 + 46 * len(lins) + 60, scrolling=False)
+        _componentes.html(pagina(corpo), height=40 + linha * n + 60, scrolling=False)
     except Exception:
         st.markdown(CSS + corpo, unsafe_allow_html=True)
