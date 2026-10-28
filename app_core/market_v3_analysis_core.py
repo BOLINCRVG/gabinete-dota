@@ -157,6 +157,7 @@ def compute_window_stats(
     line: float,
     windows: Tuple[Tuple[str, Optional[int]], ...] = HISTORIC_WINDOWS,
     full_year_df: Optional[pd.DataFrame] = None,
+    fallback_df: Optional[pd.DataFrame] = None,
 ) -> List[WindowStats]:
     """One WindowStats per (label, n_last) tuple.
 
@@ -168,12 +169,25 @@ def compute_window_stats(
     """
     sorted_df = _sort_chronologically(team_df)
     sorted_full = _sort_chronologically(full_year_df) if full_year_df is not None else None
+    # 28/10/2026, ele: "porque no da LYON esta se repetindo os 5 jogos?" -- o split
+    # atual da LYON so tinha 5 jogos e o 10/20 ficava preso neles. Quando o recorte
+    # tem MENOS jogos que a janela, a janela usa `fallback_df` (a temporada do time na
+    # mesma liga, todos os splits do ano).
+    sorted_fb = _sort_chronologically(fallback_df) if fallback_df is not None else None
     out: List[WindowStats] = []
     for label, n in windows:
         if n is None and sorted_full is not None:
             sub = sorted_full  # all-year window uses the unfiltered season df
         else:
             sub = _take_last_n(sorted_df, n)
+            # recorte curto (ex.: so 5 jogos no Mundial): completa primeiro com a temporada
+            # na mesma liga; se ainda faltar, com o ano todo do time (qualquer liga)
+            if n is not None and (sorted_df is None or len(sorted_df) < n):
+                for alt in (sorted_fb, sorted_full):
+                    if alt is not None and len(alt) > (0 if sub is None else len(sub)):
+                        sub = _take_last_n(alt, n)
+                    if sub is not None and len(sub) >= n:
+                        break
         s = _safe_series(sub, metric_col).dropna()
         n_games = len(s)
         if n_games == 0:
@@ -545,8 +559,10 @@ def filter_to_active_teams(
 
 # International/aggregated tournaments — excluded when resolving a team's
 # "home league + most-recent split". They have few games and inflate averages.
+# "WLDS" (28/10/2026): o CSV escreve o Mundial "WLDs"; sem isto a LYON virava "time do
+# Mundial" (5 jogos) e as janelas 10/20 da Analise de Linha ficavam presas neles.
 INTERNATIONAL_LEAGUES: frozenset = frozenset({
-    "EWC", "MSI", "WORLDS", "FST", "IEM", "FIRST STAND",
+    "EWC", "MSI", "WORLDS", "WLDS", "FST", "IEM", "FIRST STAND",
 })
 
 

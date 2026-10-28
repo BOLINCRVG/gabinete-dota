@@ -218,9 +218,9 @@ def _render_kills_line_content(
     # "Ano todo" window uses each team's full-year df (all leagues, no filter);
     # L5/L10/L20 use the selected recorte. See compute_window_stats.
     stats_a = compute_window_stats(df_a_context_all, metric_col=metric_col, line=float(line_val),
-                                    full_year_df=df_a_full_year)
+                                    full_year_df=df_a_full_year, fallback_df=df_a_context_season)
     stats_b = compute_window_stats(df_b_context_all, metric_col=metric_col, line=float(line_val),
-                                    full_year_df=df_b_full_year)
+                                    full_year_df=df_b_full_year, fallback_df=df_b_context_season)
     h2h_w = compute_h2h_stats(df_a_context_all, team_b, metric_col=metric_col, line=float(line_val))
     _render_balanced_line_analysis(
         st=st, team_a=team_a, team_b=team_b,

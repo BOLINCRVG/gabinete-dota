@@ -101,7 +101,10 @@ def apply_competition_phases(df: pd.DataFrame, *, path: str | Path) -> pd.DataFr
 # EWC regional phases (automatic, no manual file needed)
 # ---------------------------------------------------------------------------
 
-INTERNATIONAL_LEAGUES = frozenset({"EWC", "MSI", "WORLDS", "FST", "IEM", "FIRST STAND"})
+# "WLDS" (28/10/2026): o Oracle's Elixir escreve o Mundial "WLDs" -- com so "WORLDS" a
+# LYON (5 jogos no Mundial) virava "time do Mundial" e as janelas 10/20 ficavam presas
+# nesses 5 jogos.
+INTERNATIONAL_LEAGUES = frozenset({"EWC", "MSI", "WORLDS", "WLDS", "FST", "IEM", "FIRST STAND"})
 
 # Domestic league → region. Fallback: the league code itself (so an unmapped
 # league still groups its own qualifier, just labeled by the code).
