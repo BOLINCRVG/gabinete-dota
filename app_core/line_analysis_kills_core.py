@@ -228,18 +228,22 @@ def _render_kills_line_content(
         line=float(line_val),
     )
     # OS PASSOS DELE (28-29/10/2026): Medias, Adversario, Historico 5/20/10, Stats da linha --
-    # Menos | Mais, com A FAVOR/CONTRA, chance, odd das casas dele e veredito. So LoL e so
-    # total de kills (app_core/seus_sinais_tab_core.py); no Dota o modulo nao existe.
-    if metric_col in ("total_kills", "mv2_total_kills") and sinais_tg is not None:
-        try:
-            from app_core.seus_sinais_tab_core import render_painel_na_analise
-        except ImportError:
-            render_painel_na_analise = None
+    # Menos | Mais, com A FAVOR/CONTRA, chance, odd das casas dele e veredito. So LoL; em todos
+    # os TOTAIS (kills, torres, dragoes, baroes, inibidores, tempo), cada um com os pesos
+    # medidos no proprio mercado (app_core/sinais_linha_core.py); no Dota o modulo nao existe.
+    try:
+        from app_core.sinais_linha_core import COLUNA_PARA_METRICA as _COL_MET
+        from app_core.seus_sinais_tab_core import render_painel_na_analise
+    except ImportError:
+        _COL_MET, render_painel_na_analise = {}, None
+    _met = _COL_MET.get(str(metric_col))
+    if _met and sinais_tg is not None and str(market_key) not in ("handicaps", "ml_totals"):
         if render_painel_na_analise is not None:
             _cyan_section_header(f"Seus passos · {float(line_val):g}")
             try:
                 render_painel_na_analise(st=st, tg=sinais_tg, time_a=team_a, time_b=team_b,
-                                         linha=float(line_val), chave=f"{team_a}_{team_b}_{line_idx}")
+                                         linha=float(line_val), chave=f"{_met}_{team_a}_{team_b}_{line_idx}",
+                                         metrica=_met)
             except Exception as _exc:
                 st.caption(f"Seus passos: nao deu para calcular ({type(_exc).__name__}).")
 
