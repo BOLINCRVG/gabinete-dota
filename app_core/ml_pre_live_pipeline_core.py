@@ -705,6 +705,33 @@ def _stage_season_form_blend(
     return p_map, p_series, trace_form_info
 
 
+def _stage_nota_jogadores_lol(
+    *, p_map: float, p_series: float, bo_i: int, ssw: Any, steps: list, teamA: Any, teamB: Any,
+    league_pair_ctx: Dict[str, Any], prob_win_series_fn: Callable,
+) -> tuple:
+    """Estagio nota_jogadores (so LoL). Retorna (p_map, p_series); nunca derruba a previsao."""
+    try:
+        from app_core.nota_jogadores_lol_core import p_com_jogadores
+    except ImportError:
+        return p_map, p_series
+    try:
+        entre = bool(league_pair_ctx.get("interregional") or league_pair_ctx.get("explicit_interregional"))
+        nj = p_com_jogadores(str(teamA), str(teamB), float(p_map), entre_regioes=entre)
+        antes = float(p_map)
+        if nj.get("aplicado") and math.isfinite(float(nj.get("p_final", float("nan")))):
+            p_map = float(nj["p_final"])
+            p_series = _safe_prob_win_series(prob_win_series_fn, float(p_map), int(bo_i))
+        append_pipeline_step(steps=steps, stage="nota_jogadores", before=antes, after=float(p_map),
+                             applied=bool(nj.get("aplicado")), engine="nota_jogadores_lol",
+                             reason=str(nj.get("motivo") or ""))
+        if ssw is not None:
+            ssw["_nota_jogadores_info"] = dict(nj)
+    except Exception as exc:  # nunca derruba a previsao
+        append_pipeline_step(steps=steps, stage="nota_jogadores", before=p_map, after=p_map, applied=False,
+                             engine="nota_jogadores_lol", error=f"{type(exc).__name__}: {exc}")
+    return p_map, p_series
+
+
 def _stage_hybrid_blend(
     *, p_map: float, p_series: float, bo_i: int, ss: Mapping[str, Any], steps: list,
     dfA_used: Any, dfB_used: Any, interregional_pre: bool, league_pair_ctx: Dict[str, Any],
@@ -1325,6 +1352,15 @@ def run_ml_pre_live_pipeline(
         league_pair_ctx=league_pair_ctx,
         trace_interregional_strength_info=trace_interregional_strength_info,
         hybrid_momentum_blend_fn=hybrid_momentum_blend_fn, prob_win_series_fn=prob_win_series_fn,
+    )
+
+    # NOTA POR JOGADOR do LoL (28/10/2026, aprovada por ele): logo DEPOIS do hibrido,
+    # o ponto da regua em que foi provada. So liga nacional. Ver
+    # app_core/nota_jogadores_lol_core.py. No Dota o modulo nao existe: nada acontece
+    # (la a nota por jogador entra no pre-engine, ver ml_pre_engine_core.py).
+    p_map, p_series = _stage_nota_jogadores_lol(
+        p_map=p_map, p_series=p_series, bo_i=bo_i, ssw=ssw, steps=steps, teamA=teamA, teamB=teamB,
+        league_pair_ctx=league_pair_ctx, prob_win_series_fn=prob_win_series_fn,
     )
 
     p_map, p_series, trace_conf_guard_info = _stage_confidence_guard(
