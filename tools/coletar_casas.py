@@ -91,6 +91,13 @@ def catalogo_de_linhas(markets) -> dict:
     for m in markets if isinstance(markets, list) else []:
         nome = str(m.get("marketName") or "")
         mapa = _PERIODOS.get(str(m.get("period") or ""))
+        # +-1,5 DE MAPAS da serie (29/10/2026, ele: "pegar das casas o +1,5 e -1,5 dos times"):
+        # "Maps Handicap", periodo "result" -> unidade "maps", mapa 0, pontos = handicap do time 1
+        if nome == "Maps Handicap" and str(m.get("period")) == "result" and int(m.get("marketLength") or 0) == 2:
+            outs = {str(o.get("outcomeName")): str(o.get("outcomeId")) for o in m.get("outcomes") or []}
+            if outs.get("1") and outs.get("2") and m.get("handicap") is not None:
+                fora[str(m["marketId"])] = ("maps", "spread", 0, float(m["handicap"]), (outs["1"], outs["2"]), None)
+            continue
         if m.get("playerProp") or not mapa or " - " not in nome or int(m.get("marketLength") or 0) != 2:
             continue
         unidade, resto = nome.split(" - ", 1)
