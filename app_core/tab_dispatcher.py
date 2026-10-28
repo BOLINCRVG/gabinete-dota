@@ -25,6 +25,7 @@ TAB_IDENTIDADE = "Identidade"
 TAB_LINE_ANALYSIS = "Análise de Linha"
 TAB_OPORTUNIDADES = "Modelo × Mercado"
 TAB_MELHORES = "Melhores apostas"
+TAB_SINAIS = "Seus sinais"        # 28/10/2026: a primeira aba do jogo (so LoL)
 
 # Ordem canônica das tabs secundárias
 SECONDARY_TAB_ORDER: tuple[str, ...] = (
@@ -38,6 +39,7 @@ SECONDARY_TAB_ORDER: tuple[str, ...] = (
     TAB_PLAYERS,
     TAB_IDENTIDADE,
     TAB_MELHORES,
+    TAB_SINAIS,
 )
 
 # Todas as tabs conhecidas (primárias + secundárias)
