@@ -70,6 +70,30 @@ def score_probs(p: float, bo: int, kappa: Optional[float] = "padrao") -> dict[st
     return {}
 
 
+def chance_do_mapa_coerente(p_serie: Any, bo: int, kappa: Optional[float] = "padrao") -> Optional[float]:
+    """A chance do mapa que, com a forma do dia, reproduz a chance da SERIE do proprio modelo.
+
+    29/10/2026, ele: "o -1.5 da odd 1,83 quando a MD3 e 1,10 -- essa odd nunca vai ter".
+    Era isso: a serie passa pelo ajuste de serie (gamma) e sai 1,10 (91%), mas o -1,5 saia
+    da chance CRUA do mapa (74% -> 1,83). Os dois numeros nao conversavam. Resolvendo a
+    chance do mapa que bate com os 91%, o -1,5 sai 1,27 -- coerente com o ML da serie."""
+    try:
+        ps = float(p_serie)
+    except (TypeError, ValueError):
+        return None
+    if not (0.0 < ps < 1.0) or int(bo) not in (3, 5):
+        return None
+    k = KAPPA_SERIE if kappa == "padrao" else kappa
+
+    def _serie(m):
+        return sum(v for c, v in score_probs(m, int(bo), kappa=k).items() if c.startswith("A_"))
+    lo, hi = 1e-4, 1 - 1e-4
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if _serie(mid) < ps else (lo, mid)
+    return (lo + hi) / 2
+
+
 def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     render_tab_hero(st, title="Series", subtitle="Linhas de série (totais), ML da série e handicaps de mapas.")
 
@@ -149,7 +173,15 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         )
         return
 
-    probs = score_probs(p_a_map, int(bo))
+    # o placar da serie COERENTE com o ML da serie do modelo (ver chance_do_mapa_coerente)
+    _p_serie = None
+    try:
+        _ia, _ib = 1.0 / float(odd_a_series), 1.0 / float(odd_b_series)
+        _p_serie = _ia / (_ia + _ib)
+    except (TypeError, ValueError, ZeroDivisionError):
+        _p_serie = None
+    _m = chance_do_mapa_coerente(_p_serie, int(bo)) if KAPPA_SERIE is not None else None
+    probs = score_probs(_m if _m is not None else p_a_map, int(bo))
     fav_is_a = bool(odd_a_series <= odd_b_series)
     fav_team = team_a_disp if fav_is_a else team_b_disp
     dog_team = team_b_disp if fav_is_a else team_a_disp

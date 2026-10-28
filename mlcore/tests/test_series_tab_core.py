@@ -78,5 +78,16 @@ class TestFormaDoDia(unittest.TestCase):
         self.assertAlmostEqual(b["A_3-0"], b["B_3-0"], places=9)
 
 
+    def test_menos_1_5_coerente_com_o_ml_da_serie(self):
+        # ML da serie 1,10 (91%): o -1,5 tem de sair perto de 1,27, nao 1,83
+        from app_core.series_tab_core import KAPPA_SERIE, chance_do_mapa_coerente
+        if KAPPA_SERIE is None:
+            self.skipTest("so LoL")
+        m = chance_do_mapa_coerente(1 / 1.10, 3)
+        p = score_probs(m, 3)
+        self.assertAlmostEqual(p["A_2-0"] + p["A_2-1"], 1 / 1.10, places=4)
+        self.assertLess(1 / p["A_2-0"], 1.35)
+
+
 if __name__ == "__main__":
     unittest.main()

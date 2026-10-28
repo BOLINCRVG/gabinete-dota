@@ -672,11 +672,11 @@ def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, A
 
 
 def prob_handicap_de_mapas(linha: Dict[str, Any], *, p_map: Any, casa_e_time_a: bool,
-                           bo: Any) -> Optional[float]:
+                           bo: Any, p_series: Any = None) -> Optional[float]:
     """+-1,5 / +-2,5 de MAPAS da serie (29/10/2026), com a forma do dia da aba Series
     (app_core/series_tab_core.score_probs). So onde a forma do dia foi medida (LoL):
     no Dota KAPPA_SERIE e None e a linha continua de fora."""
-    from app_core.series_tab_core import KAPPA_SERIE, score_probs
+    from app_core.series_tab_core import KAPPA_SERIE, chance_do_mapa_coerente, score_probs
     if KAPPA_SERIE is None:
         return None
     try:
@@ -688,7 +688,9 @@ def prob_handicap_de_mapas(linha: Dict[str, Any], *, p_map: Any, casa_e_time_a: 
     lado = str(linha.get("lado") or "").strip().lower()
     if bo_i not in (3, 5) or pa is None or not (0.0 < pa < 1.0) or lado not in ("home", "away"):
         return None
-    probs = score_probs(pa, bo_i)
+    # coerente com o ML da serie do modelo (o mesmo do card): ver chance_do_mapa_coerente
+    m = chance_do_mapa_coerente(p_series, bo_i)
+    probs = score_probs(m if m is not None else pa, bo_i)
     lado_e_a = (lado == "home") == bool(casa_e_time_a)
     p = 0.0
     for placar, pr in probs.items():
@@ -712,7 +714,8 @@ def prob_do_vencedor(linha: Dict[str, Any], *, p_map: Any, p_series: Any,
     """
     if (str(linha.get("tipo") or "") == "spread" and not str(linha.get("unidade") or "").strip()
             and str(linha.get("periodo", 0) or 0) in ("0", "")):
-        return prob_handicap_de_mapas(linha, p_map=p_map, casa_e_time_a=casa_e_time_a, bo=bo)
+        return prob_handicap_de_mapas(linha, p_map=p_map, casa_e_time_a=casa_e_time_a, bo=bo,
+                                      p_series=p_series)
     if str(linha.get("tipo") or "") != "moneyline":
         return None
     # "Vencedor - Kills" tambem e moneyline com lados casa/fora, mas pergunta
