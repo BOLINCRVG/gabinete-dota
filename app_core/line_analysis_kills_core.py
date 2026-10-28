@@ -250,6 +250,20 @@ def _render_kills_line_content(
                                   p_vence_a=p_map, chave=f"{team_a}_{team_b}_{line_idx}")
             except Exception as _exc:
                 st.caption(f"Combinadas: nao deu para calcular ({type(_exc).__name__}).")
+    # KILLS POR TIME e HANDICAP DE KILLS (29/10/2026): os mesmos passos, com a serie certa
+    if str(market_key) in ("kills_team", "handicaps") and sinais_tg is not None:
+        try:
+            from app_core.seus_sinais_tab_core import render_painel_time
+        except ImportError:
+            render_painel_time = None
+        if render_painel_time is not None:
+            _cyan_section_header(f"Seus passos · {float(line_val):g}")
+            try:
+                render_painel_time(st=st, tg=sinais_tg, time_a=team_a, time_b=team_b, linha=float(line_val),
+                                   chave=f"{market_key}_{team_a}_{team_b}_{line_idx}",
+                                   mercado="kills_time" if str(market_key) == "kills_team" else "handicap")
+            except Exception as _exc:
+                st.caption(f"Seus passos: nao deu para calcular ({type(_exc).__name__}).")
     _met = _COL_MET.get(str(metric_col))
     if _met and sinais_tg is not None and str(market_key) not in ("handicaps", "ml_totals"):
         if render_painel_na_analise is not None:
