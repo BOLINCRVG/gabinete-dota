@@ -3704,6 +3704,7 @@ _secondary_tab_renderers = {
     "Series": lambda: core_render_series_tab(
         st=st,
         ctx={
+            "team_games": team_games,
             "ml_info": _ml_info,
             "teamA": teamA,
             "teamB": teamB,

@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any, Mapping, Optional
 
-import numpy as np
+
 import pandas as pd
 
 from app_core.tab_ui_core import render_tab_hero, render_tab_section
@@ -94,304 +94,239 @@ def chance_do_mapa_coerente(p_serie: Any, bo: int, kappa: Optional[float] = "pad
     return (lo + hi) / 2
 
 
-def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
-    render_tab_hero(st, title="Series", subtitle="Linhas de série (totais), ML da série e handicaps de mapas.")
 
+# ---- A ABA SERIES REMODELADA (29/10/2026, ele: "remodelar de vez essa aba series") ----------
+# Uma tela so, tudo saindo do MESMO numero (o ML da serie do card) e da forma do dia:
+#   vencedor da serie -> placar exato -> handicaps de mapas -> total de mapas -> totais da serie.
+# Cada aposta: chance, justa, a melhor odd das casas dele (quando a casa oferece) e o valor.
+# Os totais da serie somam os mapas jogados com o NUMERO DE MAPAS do placar (2-0 joga 2,
+# 2-1 joga 3) -- antes a simulacao jogava os mapas como independentes e nao conversava com o
+# +-1,5. As linhas dos totais entram sozinhas (a mediana do modelo e uma de cada lado).
+DESTAQUE = 1.72                     # a regra dele: justa abaixo de 1,72
+
+
+def _phi(z: float) -> float:
+    return 0.5 * (1.0 + math.erf(z / math.sqrt(2.0)))
+
+
+def mapas_jogados(probs: Mapping[str, float]) -> dict[int, float]:
+    """{n mapas: chance} a partir do placar (2-0 = 2 mapas, 3-1 = 4...)."""
+    fora: dict[int, float] = {}
+    for k, v in probs.items():
+        a, b = k.split("_")[1].split("-")
+        n = int(a) + int(b)
+        fora[n] = fora.get(n, 0.0) + float(v)
+    return fora
+
+
+def p_mais_serie(n_mapas: Mapping[int, float], media: float, dp: float, linha: float) -> Optional[float]:
+    """P(total da serie > linha): a soma de n mapas ~ Normal(n*media, raiz(n)*dp), misturada
+    pelo numero de mapas."""
+    if not (math.isfinite(media) and math.isfinite(dp)) or dp <= 0:
+        return None
+    return float(sum(pn * (1.0 - _phi((float(linha) - n * media) / (math.sqrt(n) * dp)))
+                     for n, pn in n_mapas.items()))
+
+
+def linhas_auto_serie(n_mapas: Mapping[int, float], media: float, dp: float, passo: float) -> list[float]:
+    """A linha .5 mais perto da mediana do modelo e uma de cada lado (passo da metrica)."""
+    lo, hi = 0.0, 400.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        p = p_mais_serie(n_mapas, media, dp, mid)
+        if p is None:
+            return []
+        lo, hi = (mid, hi) if p > 0.5 else (lo, mid)
+    centro = math.floor((lo + hi) / 2) + 0.5
+    return [centro - passo, centro, centro + passo]
+
+
+def mercados_da_serie(p_serie_a: float, bo: int, nome_a: str, nome_b: str) -> list[dict[str, Any]]:
+    """Vencedor, placar, handicaps e total de mapas -- coerentes com o ML da serie. Pura."""
+    m = chance_do_mapa_coerente(p_serie_a, int(bo)) if KAPPA_SERIE is not None else None
+    if m is None:
+        # sem forma do dia (Dota): a chance do mapa que, independente, da a mesma serie
+        lo, hi = 1e-4, 1 - 1e-4
+        for _ in range(60):
+            mid = (lo + hi) / 2
+            ps = sum(v for c, v in score_probs(mid, int(bo), kappa=None).items() if c.startswith("A_"))
+            lo, hi = (mid, hi) if ps < p_serie_a else (lo, mid)
+        m = (lo + hi) / 2
+    pr = score_probs(m, int(bo))
+    pa = sum(v for c, v in pr.items() if c.startswith("A_"))
+    fora: list[dict[str, Any]] = [
+        {"secao": "Vencedor da série", "aposta": nome_a, "p": pa, "chave": "venc_A"},
+        {"secao": "Vencedor da série", "aposta": nome_b, "p": 1.0 - pa, "chave": "venc_B"},
+    ]
+    for k, v in pr.items():
+        quem, placar = k.split("_")
+        a, b = placar.split("-")
+        txt = f"{nome_a} {a}-{b}" if quem == "A" else f"{nome_b} {a}-{b}"
+        fora.append({"secao": "Placar exato", "aposta": txt, "p": float(v), "chave": f"placar_{k}"})
+    # handicaps: A -h cobre se A ganha por mais de h mapas
+    def _saldo_a(k):
+        quem, placar = k.split("_")
+        a, b = (int(x) for x in placar.split("-"))
+        return (a - b) if quem == "A" else (b - a)
+    hs = (1.5,) if int(bo) == 3 else (1.5, 2.5)
+    for h in hs:
+        p_a_menos = sum(v for k, v in pr.items() if _saldo_a(k) > h)
+        p_b_menos = sum(v for k, v in pr.items() if -_saldo_a(k) > h)
+        for nome, p, ch in ((f"{nome_a} -{h:g}", p_a_menos, f"hc_A_-{h:g}"),
+                            (f"{nome_b} +{h:g}", 1.0 - p_a_menos, f"hc_B_+{h:g}"),
+                            (f"{nome_b} -{h:g}", p_b_menos, f"hc_B_-{h:g}"),
+                            (f"{nome_a} +{h:g}", 1.0 - p_b_menos, f"hc_A_+{h:g}")):
+            fora.append({"secao": "Handicap de mapas", "aposta": nome.replace(".", ","), "p": float(p), "chave": ch})
+    nm = mapas_jogados(pr)
+    for L in ((2.5,) if int(bo) == 3 else (3.5, 4.5)):
+        p_mais = sum(v for n, v in nm.items() if n > L)
+        fora.append({"secao": "Total de mapas", "aposta": f"Mais de {L:g} mapas".replace(".", ","), "p": p_mais,
+                     "chave": f"mapas_over_{L:g}"})
+        fora.append({"secao": "Total de mapas", "aposta": f"Menos de {L:g} mapas".replace(".", ","), "p": 1 - p_mais,
+                     "chave": f"mapas_under_{L:g}"})
+    for r in fora:
+        r["n_mapas"] = nm
+    return fora
+
+
+def odds_das_casas_serie(jogo: Any, inv: bool, esp: str, casas: list) -> dict[str, tuple]:
+    """{chave: (melhor odd, casa)} -- vencedor da serie e +-1,5/2,5 de mapas das casas dele."""
+    from app_core.suas_casas_core import linhas, linhas_handicap_mapas
+    best: dict[str, tuple] = {}
+
+    def _poe(k, odd, casa):
+        if odd and float(odd) > 1.0 and (k not in best or float(odd) > best[k][0]):
+            best[k] = (float(odd), str(casa))
+    if not jogo:
+        return best
+    for l in linhas(jogo, inv, esp, casas_dele=casas):
+        if int(l.get("periodo") or 0) == 0:
+            _poe("venc_A", l["odd_a"], l["casa"])
+            _poe("venc_B", l["odd_b"], l["casa"])
+    com_pin = any("pinnacle" in str(c).lower() for c in casas)
+    for l in linhas_handicap_mapas(jogo, inv, esp, casas_dele=casas):
+        if l.get("slug") == "pinnacle" and not com_pin:      # a Pinnacle so entra como regua
+            continue
+        h = float(l["handicap_a"])
+        _poe(f"hc_A_{h:+g}", l["odd_a"], l["casa"])
+        _poe(f"hc_B_{-h:+g}", l["odd_b"], l["casa"])
+    return best
+
+
+def _tabela(st: Any, linhas_: list[dict[str, Any]], odds: Mapping[str, tuple]) -> None:
+    rows = []
+    for r in linhas_:
+        p = r.get("p")
+        if p is None or not (0.0 < p < 1.0):
+            continue
+        justa = 1.0 / p
+        casa = odds.get(r.get("chave", ""))
+        valor = None if not casa else (p * casa[0] - 1.0) * 100.0
+        rows.append({"": "★" if justa < DESTAQUE else "", "Aposta": r["aposta"], "Chance": f"{100 * p:.1f}%",
+                     "Justa": round(justa, 2), "Melhor casa": f"{casa[1]} {casa[0]:.2f}" if casa else "—",
+                     "Valor": f"{valor:+.1f}%" if valor is not None else "—"})
+    if rows:
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+
+
+def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
+    render_tab_hero(st, title="Series", subtitle="Tudo da série num lugar só, saindo do mesmo número: "
+                    "vencedor, placar, handicaps, total de mapas e totais da série.")
     ml_info = ctx["ml_info"]
-    team_a = ctx["teamA"]
-    team_b = ctx["teamB"]
-    bo = int(ctx["bo"])
+    team_a, team_b, bo = ctx["teamA"], ctx["teamB"], int(ctx["bo"])
     p_map_cal = float(ctx["p_map_cal"])
     state_get_float_fn = ctx["state_get_float_fn"]
-    state_get_int_fn = ctx["state_get_int_fn"]
-    state_get_str_fn = ctx["state_get_str_fn"]
-    winner_pricing_bundle_fn = ctx["winner_pricing_bundle_fn"]
-    prob_win_series_fn = ctx["prob_win_series_fn"]
-    odd_from_prob_fn = ctx["odd_from_prob_fn"]
-    team_with_league_label_fn = ctx["team_with_league_label_fn"]
-    format_num_fn = ctx["format_num_fn"]
-    format_pct_fn = ctx["format_pct_fn"]
-    df_contract_view_fn = ctx["df_contract_view_fn"]
     parse_lines_fn = ctx["parse_lines_fn"]
-    series_sims_cached_fn = ctx["series_sims_cached_fn"]
-    combine_mean_fn = ctx["combine_mean_fn"]
-    combine_sd_fn = ctx["combine_sd_fn"]
-    matchup_totals_cls = ctx["matchup_totals_cls"]
-    n_sims = int(ctx["n_sims"])
     totals_avg = ctx["totals_avg"]
-    profile_a = ctx["profile_a"]
-    profile_b = ctx["profile_b"]
+    profile_a, profile_b = ctx["profile_a"], ctx["profile_b"]
 
     league_a = league_b = ""
     if ml_info is not None:
         league_a = str(((ml_info.get("blue") or {}).get("league")) or "").strip()
         league_b = str(((ml_info.get("red") or {}).get("league")) or "").strip()
-    team_a_disp = team_with_league_label_fn(team_a, league_a)
-    team_b_disp = team_with_league_label_fn(team_b, league_b)
+    nome_a = ctx["team_with_league_label_fn"](team_a, league_a)
+    nome_b = ctx["team_with_league_label_fn"](team_b, league_b)
 
-    winner_pricing = winner_pricing_bundle_fn(
+    wp = ctx["winner_pricing_bundle_fn"](
         p_team_a_map=state_get_float_fn(st.session_state, "_p_map_used", float(p_map_cal)),
         p_team_a_series=state_get_float_fn(st.session_state, "_p_series_used", float("nan")),
-        bo_for_series=int(bo),
-        prob_win_series_fn=prob_win_series_fn,
-        odd_from_prob_fn=odd_from_prob_fn,
-    )
-    p_a_map = float(winner_pricing.get("pA_map", float("nan")))
-    odd_a_series = winner_pricing.get("oddA_series")
-    odd_b_series = winner_pricing.get("oddB_series")
-
-    state_get_str_fn(st.session_state, "pl_year", "")
-    state_get_str_fn(st.session_state, "pl_league", "")
-    state_get_str_fn(st.session_state, "pl_split", "")
-    state_get_str_fn(st.session_state, "pl_playoffs", "")
-
-    render_tab_section(
-        st,
-        title="Preco da serie",
-        subtitle="O ML do mapa alimenta a serie e os handicaps logo abaixo.",
-    )
-    with st.container(border=True):
-        st.markdown(f"#### {team_a_disp} vs {team_b_disp} (bo{bo})")
-        odd_a_map = winner_pricing.get("oddA_map")
-        odd_b_map = winner_pricing.get("oddB_map")
-        st.markdown(
-            f"**ML mapa:** {team_a_disp} = **{format_num_fn(odd_a_map, 2)}** ({format_pct_fn(p_a_map)})"
-            f" | {team_b_disp} = **{format_num_fn(odd_b_map, 2)}** ({format_pct_fn(1.0 - p_a_map)})"
-        )
-        st.markdown(
-            f"**ML série:** {team_a_disp} = **{format_num_fn(odd_a_series, 2)}** | {team_b_disp} = **{format_num_fn(odd_b_series, 2)}**"
-        )
-
-    if odd_a_series is None or odd_b_series is None:
-        # BO2 (Dota) ou confronto sem preço de série: tudo abaixo deriva desse
-        # preço — sem ele, avisa em vez de quebrar (TypeError visto 2026-07-10).
-        # Preço real do empate BO2 = backlog (draw pricing calibrado).
-        st.info(
-            "Sem preço de série para este formato/confronto (ex.: BO2). "
-            "Use o ML do mapa acima; handicaps/placares de série ficam "
-            "indisponíveis até haver preço de série para o formato."
-        )
+        bo_for_series=int(bo), prob_win_series_fn=ctx["prob_win_series_fn"],
+        odd_from_prob_fn=ctx["odd_from_prob_fn"])
+    o_a, o_b = wp.get("oddA_series"), wp.get("oddB_series")
+    if int(bo) not in (3, 5) or o_a is None or o_b is None:
+        st.info("Sem preço de série para este formato (BO1/BO2). Use o ML do mapa nas outras abas.")
         return
+    ia, ib = 1.0 / float(o_a), 1.0 / float(o_b)
+    p_serie_a = ia / (ia + ib)
 
-    # o placar da serie COERENTE com o ML da serie do modelo (ver chance_do_mapa_coerente)
-    _p_serie = None
+    # as casas dele
+    odds: dict[str, tuple] = {}
     try:
-        _ia, _ib = 1.0 / float(odd_a_series), 1.0 / float(odd_b_series)
-        _p_serie = _ia / (_ia + _ib)
-    except (TypeError, ValueError, ZeroDivisionError):
-        _p_serie = None
-    _m = chance_do_mapa_coerente(_p_serie, int(bo)) if KAPPA_SERIE is not None else None
-    probs = score_probs(_m if _m is not None else p_a_map, int(bo))
-    fav_is_a = bool(odd_a_series <= odd_b_series)
-    fav_team = team_a_disp if fav_is_a else team_b_disp
-    dog_team = team_b_disp if fav_is_a else team_a_disp
+        from pathlib import Path
+        from app_core.suas_casas_core import CASAS_PADRAO, jogo_das_casas
+        tg = ctx.get("team_games")
+        if tg is not None:
+            raiz = Path(__file__).resolve().parents[1]
+            esp = "dota" if (raiz / "dota_paths.py").exists() else "lol"
+            casas = list(st.session_state.get("suas_casas_escolhidas") or []) or list(CASAS_PADRAO)
+            times = sorted({str(x) for x in tg["team"].dropna().unique()})
+            jogo, inv = jogo_das_casas(raiz, str(team_a), str(team_b), times)
+            odds = odds_das_casas_serie(jogo, inv, esp, casas)
+            if not jogo:
+                st.caption("Este confronto não está na coleta das suas casas: só a justa do modelo.")
+    except Exception:
+        odds = {}
 
-    render_tab_section(st, title="Handicaps (mapas)", subtitle=(
-        "Coberturas da serie a partir da chance do mapa, com a FORMA DO DIA: os mapas de uma serie nao "
-        "sao independentes (quem esta bem no dia tende a ganhar os dois), o que deixa o -1.5 do favorito "
-        "mais provavel que p x p." if KAPPA_SERIE is not None else
-        "Mostra as coberturas da serie derivadas do preco atual do confronto."))
-    if int(bo) == 3:
-        p_fav_m15 = probs.get("A_2-0") if fav_is_a else probs.get("B_2-0")
-        p_dog_p15 = None if p_fav_m15 is None else max(0.0, 1.0 - float(p_fav_m15))
-        df_h = pd.DataFrame(
-            [
-                {
-                    "Linha": f"{fav_team} -1.5",
-                    "Prob": p_fav_m15,
-                    "Odd justa": odd_from_prob_fn(p_fav_m15) if p_fav_m15 is not None else None,
-                },
-                {
-                    "Linha": f"{dog_team} +1.5",
-                    "Prob": p_dog_p15,
-                    "Odd justa": odd_from_prob_fn(p_dog_p15) if p_dog_p15 is not None else None,
-                },
-            ]
-        )
-    elif int(bo) == 5:
-        p_sweep = probs.get("A_3-0") if fav_is_a else probs.get("B_3-0")
-        p_win31 = probs.get("A_3-1") if fav_is_a else probs.get("B_3-1")
-        p_fav_m25 = p_sweep
-        p_fav_m15 = None if (p_sweep is None or p_win31 is None) else float(p_sweep) + float(p_win31)
-        p_dog_p25 = None if p_fav_m25 is None else max(0.0, 1.0 - float(p_fav_m25))
-        p_dog_p15 = None if p_fav_m15 is None else max(0.0, 1.0 - float(p_fav_m15))
-        df_h = pd.DataFrame(
-            [
-                {
-                    "Linha": f"{fav_team} -1.5",
-                    "Prob": p_fav_m15,
-                    "Odd justa": odd_from_prob_fn(p_fav_m15) if p_fav_m15 is not None else None,
-                },
-                {
-                    "Linha": f"{fav_team} -2.5",
-                    "Prob": p_fav_m25,
-                    "Odd justa": odd_from_prob_fn(p_fav_m25) if p_fav_m25 is not None else None,
-                },
-                {
-                    "Linha": f"{dog_team} +1.5",
-                    "Prob": p_dog_p15,
-                    "Odd justa": odd_from_prob_fn(p_dog_p15) if p_dog_p15 is not None else None,
-                },
-                {
-                    "Linha": f"{dog_team} +2.5",
-                    "Prob": p_dog_p25,
-                    "Odd justa": odd_from_prob_fn(p_dog_p25) if p_dog_p25 is not None else None,
-                },
-            ]
-        )
-    else:
-        df_h = pd.DataFrame([])
+    merc = mercados_da_serie(p_serie_a, int(bo), nome_a, nome_b)
+    st.caption(f"{nome_a} x {nome_b} · BO{bo} · ★ = justa abaixo de {DESTAQUE:.2f}".replace(".", ",")
+               + (" · forma do dia ligada (os mapas da série andam juntos)" if KAPPA_SERIE is not None else ""))
+    for secao in ("Vencedor da série", "Handicap de mapas", "Placar exato", "Total de mapas"):
+        render_tab_section(st, title=secao, subtitle="")
+        _tabela(st, [r for r in merc if r["secao"] == secao], odds)
 
-    with st.container(border=True):
-        if df_h.empty:
-            st.info("Selecione BO3 ou BO5 para ver handicaps.")
-        else:
-            df_h["Prob"] = df_h["Prob"].apply(
-                lambda x: format_pct_fn(x) if x is not None and math.isfinite(float(x)) else "-"
-            )
-            df_h["Odd justa"] = df_h["Odd justa"].apply(
-                lambda x: format_num_fn(x, 2) if x is not None and math.isfinite(float(x)) else "-"
-            )
-            df_h = df_contract_view_fn(df_h, ["Linha", "Prob", "Odd justa"], context="Series > Handicaps", fill_value="-")
-            st.dataframe(df_h, width="stretch", hide_index=True)
+    # totais da serie
+    nm = merc[0]["n_mapas"]
+    render_tab_section(st, title="Totais da série", subtitle=(
+        "A soma dos mapas jogados, com o número de mapas do placar acima (2-0 joga 2, 2-1 joga 3). "
+        "As linhas entram sozinhas; adicione outras abaixo."))
+    passos = {"kills": 3.0, "towers": 2.0, "dragons": 1.0, "barons": 1.0}
+    rotulos = {"kills": "Kills", "towers": "Torres", "dragons": "Dragões", "barons": "Barões"}
+    if KAPPA_SERIE is None:                     # Dota: o "baron" do motor e o Roshan
+        rotulos["barons"] = "Roshans"
+    with st.expander("Adicionar linhas da série", expanded=False):
+        extra = {m: parse_lines_fn(st.text_input(f"{rotulos[m]} (série) — ex: 75.5", key=f"series_{m}_txt"))
+                 for m in passos}
+    linhas_tot: list[dict[str, Any]] = []
+    for m, passo in passos.items():
+        t = totals_avg.get(m) if hasattr(totals_avg, "get") else None
+        if t is None:
+            continue
+        media, dp = float(getattr(t, "mean", float("nan"))), float(getattr(t, "sd", float("nan")))
+        lins = sorted(set(linhas_auto_serie(nm, media, dp, passo)) | {float(x) for x in (extra.get(m) or [])})
+        for L in lins:
+            p = p_mais_serie(nm, media, dp, L)
+            if p is None:
+                continue
+            for lado, pp in (("Mais", p), ("Menos", 1.0 - p)):
+                linhas_tot.append({"aposta": f"{rotulos[m]} {lado} de {L:g}".replace(".", ","), "p": pp,
+                                   "chave": f"tot_{m}_{lado}_{L:g}"})
+    _tabela(st, linhas_tot, odds)
 
-    st.divider()
-    st.markdown("#### Linhas secundárias da série (totais)")
-
-    c_l1, c_l2, c_l3 = st.columns(3)
-    with st.container(border=True):
-        with c_l1:
-            kills_s_txt = st.text_input(
-                "Kills (série) - ex: 112.5, 115.5",
-                key="series_kills_txt",
-            )
-            towers_s_txt = st.text_input(
-                "Torres (série) - ex: 22.5",
-                key="series_towers_txt",
-            )
-        with c_l2:
-            dragons_s_txt = st.text_input(
-                "Dragões (série) | ex: 9.5",
-                key="series_dragons_txt",
-            )
-            barons_s_txt = st.text_input(
-                "Barões (série) | ex: 3.5",
-                key="series_barons_txt",
-            )
-        with c_l3:
-            team1_k_txt = st.text_input(
-                f"Total Kills {team_a} (série) - ex: 20.5",
-                key="series_team1_k_txt",
-            )
-            team2_k_txt = st.text_input(
-                f"Total Kills {team_b} (série) - ex: 20.5",
-                key="series_team2_k_txt",
-            )
-
-    kills_s = parse_lines_fn(kills_s_txt)
-    towers_s = parse_lines_fn(towers_s_txt)
-    dragons_s = parse_lines_fn(dragons_s_txt)
-    barons_s = parse_lines_fn(barons_s_txt)
-    team1_k = parse_lines_fn(team1_k_txt)
-    team2_k = parse_lines_fn(team2_k_txt)
-
-    if not (math.isfinite(float(p_a_map)) and int(bo) in [3, 5]):
-        st.warning("Sem p_map válido ou BO inválido.")
-        return
-
-    def _ou_from_sims(sims: np.ndarray, line: float) -> dict[str, float]:
-        if sims is None or len(sims) == 0:
-            return {"Over": float("nan"), "Under": float("nan")}
-        line_f = float(line)
-        p_over = float(np.mean(sims > line_f))
-        p_under = float(np.mean(sims < line_f))
-        return {"Over": odd_from_prob_fn(p_over), "Under": odd_from_prob_fn(p_under)}
-
-    def _render_series_lines(metric: str, lines_list: list[float], total_obj: Any) -> Optional[pd.DataFrame]:
-        if not lines_list:
-            return None
-        sims = series_sims_cached_fn(
-            int(bo),
-            float(p_a_map),
-            total_obj,
-            int(n_sims),
-            state_get_int_fn(st.session_state, "_sim_seed_series", 1337),
-        )
-        rows = []
-        for line in lines_list:
-            ou = _ou_from_sims(sims, float(line))
-            rows.append({"Linha": float(line), "Over": format_num_fn(ou["Over"], 2), "Under": format_num_fn(ou["Under"], 2)})
-        return df_contract_view_fn(pd.DataFrame(rows), ["Linha", "Over", "Under"], context=f"Series > {metric}", fill_value="-")
-
-    if kills_s:
-        dfk = _render_series_lines("kills", kills_s, totals_avg["kills"])
-        if dfk is not None:
-            st.markdown("**Kills (série)**")
-            st.dataframe(dfk, width="stretch", hide_index=True)
-    if towers_s:
-        dft = _render_series_lines("towers", towers_s, totals_avg["towers"])
-        if dft is not None:
-            st.markdown("**Torres (série)**")
-            st.dataframe(dft, width="stretch", hide_index=True)
-    if dragons_s and "dragons" in totals_avg:
-        dfd = _render_series_lines("dragons", dragons_s, totals_avg["dragons"])
-        if dfd is not None:
-            st.markdown("**Dragões (série)**")
-            st.dataframe(dfd, width="stretch", hide_index=True)
-    if barons_s and "barons" in totals_avg:
-        dfb = _render_series_lines("barons", barons_s, totals_avg["barons"])
-        if dfb is not None:
-            st.markdown("**Barões (série)**")
-            st.dataframe(dfb, width="stretch", hide_index=True)
-
-    def _team_kill_total_obj(p_for: float, p_for_sd: float, opp_against: float, opp_against_sd: float) -> Any:
-        mean = combine_mean_fn(p_for, opp_against)
-        sd = combine_sd_fn(p_for_sd, opp_against_sd)
-        return matchup_totals_cls(mean=float(mean), sd=float(max(sd, 1.0)), dist="normal")
-
-    @st.cache_data(show_spinner=False)
-    def _series_team_sims_cached(bo_: int, p_map_: float, mean: float, sd: float, n_sims_: int, seed_: int) -> np.ndarray:
-        rng = np.random.default_rng(int(seed_))
-        wins_needed = 2 if int(bo_) == 3 else 3
-        out = []
-        for _ in range(int(n_sims_)):
-            wins_a = 0
-            wins_b = 0
-            total = 0.0
-            while wins_a < wins_needed and wins_b < wins_needed:
-                x = rng.normal(float(mean), float(sd))
-                if x < 0:
-                    x = 0.0
-                total += float(x)
-                if rng.random() < float(p_map_):
-                    wins_a += 1
-                else:
-                    wins_b += 1
-            out.append(total)
-        return np.asarray(out, dtype=float)
-
+    # kills de cada time na serie
     try:
-        obj_a = _team_kill_total_obj(profile_a.kills_for, profile_a.kills_for_sd, profile_b.kills_against, profile_b.kills_against_sd)
-        obj_b = _team_kill_total_obj(profile_b.kills_for, profile_b.kills_for_sd, profile_a.kills_against, profile_a.kills_against_sd)
-        seed0 = state_get_int_fn(st.session_state, "_sim_seed_series", 1337)
-        sims_a = _series_team_sims_cached(int(bo), float(p_a_map), float(obj_a.mean), float(obj_a.sd), int(n_sims), seed0 + 11)
-        sims_b = _series_team_sims_cached(int(bo), float(1.0 - p_a_map), float(obj_b.mean), float(obj_b.sd), int(n_sims), seed0 + 29)
-
-        def _render_team_k(lines_list: list[float], sims: np.ndarray, label: str) -> None:
-            if not lines_list:
-                return
-            rows = []
-            for line in lines_list:
-                ou = _ou_from_sims(sims, float(line))
-                rows.append({"Linha": float(line), "Over": format_num_fn(ou["Over"], 2), "Under": format_num_fn(ou["Under"], 2)})
-            st.markdown(f"**{label} (série)**")
-            st.dataframe(
-                df_contract_view_fn(pd.DataFrame(rows), ["Linha", "Over", "Under"], context=f"Series > {label}", fill_value="-"),
-                width="stretch",
-                hide_index=True,
-            )
-
-        _render_team_k(team1_k, sims_a, f"Total Kills {team_a}")
-        _render_team_k(team2_k, sims_b, f"Total Kills {team_b}")
+        cm, cs = ctx["combine_mean_fn"], ctx["combine_sd_fn"]
+        tk = []
+        for nome, pf, pa_ in ((nome_a, profile_a, profile_b), (nome_b, profile_b, profile_a)):
+            media = float(cm(pf.kills_for, pa_.kills_against))
+            dp = float(max(cs(pf.kills_for_sd, pa_.kills_against_sd), 1.0))
+            for L in linhas_auto_serie(nm, media, dp, 2.0):
+                p = p_mais_serie(nm, media, dp, L)
+                if p is None:
+                    continue
+                for lado, pp in (("Mais", p), ("Menos", 1.0 - p)):
+                    tk.append({"aposta": f"Kills {nome} {lado} de {L:g}".replace(".", ","), "p": pp, "chave": ""})
+        if tk:
+            render_tab_section(st, title="Kills de cada time na série", subtitle="")
+            _tabela(st, tk, odds)
     except Exception:
         pass
