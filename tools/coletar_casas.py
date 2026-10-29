@@ -140,6 +140,40 @@ def linhas_das_casas(odds: dict, catalogo: dict) -> dict:
     return fora
 
 
+def resumo_do_catalogo(markets, odds_por_jogo) -> list:
+    """Pura: os mercados do catalogo que as casas DELE cotam, agrupados por (nome, periodo, de jogador):
+    quantas linhas, exemplos de handicap, nomes dos outcomes, casas e chaves de jogador.
+    (29/10/2026: para achar os nomes da duracao do mapa e das linhas de jogador.)"""
+    por_id = {str(m.get("marketId")): m for m in (markets if isinstance(markets, list) else [])}
+    grupos: dict = {}
+    for od in odds_por_jogo:
+        for casa, b in (od.get("bookmakerOdds") or {}).items():
+            if not e_casa_dele(casa):
+                continue
+            for mid, mk in (b.get("markets") or {}).items():
+                m = por_id.get(str(mid))
+                if not m:
+                    continue
+                k = (str(m.get("marketName")), str(m.get("period")), bool(m.get("playerProp")))
+                g = grupos.setdefault(k, {"nome": k[0], "periodo": k[1], "jogador": k[2], "linhas": 0,
+                                          "handicaps": set(), "outcomes": set(), "casas": set(), "chaves": set()})
+                g["linhas"] += 1
+                if m.get("handicap") is not None:
+                    g["handicaps"].add(float(m["handicap"]))
+                g["casas"].add(str(casa).split(".")[0])
+                nomes = {str(x.get("outcomeId")): str(x.get("outcomeName")) for x in m.get("outcomes") or []}
+                for oid, o in ((mk or {}).get("outcomes") or {}).items():
+                    g["outcomes"].add(nomes.get(str(oid), str(oid)))
+                    for pk, pv in ((o or {}).get("players") or {}).items():
+                        if len(g["chaves"]) < 4:
+                            g["chaves"].add(f"{pk}:{(pv or {}).get('playerName', '')}")
+    fora = []
+    for g in grupos.values():
+        fora.append({**g, "handicaps": sorted(g["handicaps"])[:12], "outcomes": sorted(g["outcomes"])[:6],
+                     "casas": sorted(g["casas"]), "chaves": sorted(g["chaves"])})
+    return sorted(fora, key=lambda g: (-g["linhas"], g["nome"]))
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     chave = os.environ.get("ODDS_API_KEY", "").strip()
@@ -152,11 +186,14 @@ def main() -> int:
         fx = chamar("fixtures", chave, sportId=SPORT_ID, hasOdds="true",
                     **{"from": hoje.isoformat(), "to": (hoje + timedelta(days=3)).isoformat()})
         time.sleep(1.0)
-        catalogo = catalogo_de_linhas(chamar("markets", chave, sportId=SPORT_ID))
+        bruto = chamar("markets", chave, sportId=SPORT_ID)
+        catalogo = catalogo_de_linhas(bruto)
         jogos = []
+        odds_brutas = []
         for f in (fx if isinstance(fx, list) else [])[:MAX_JOGOS]:
             time.sleep(1.0)
             od = chamar("odds", chave, fixtureId=f["fixtureId"])
+            odds_brutas.append(od)
             jogos.append({"fixtureId": f["fixtureId"], "time1": f.get("participant1Name"),
                           "time2": f.get("participant2Name"), "torneio": f.get("tournamentName"),
                           "inicio_utc": f.get("startTime"), "casas": precos(od),
@@ -167,6 +204,13 @@ def main() -> int:
     except (urllib.error.URLError, OSError) as e:
         print(f"[casas {ESPORTE}] rede: {type(e).__name__}")
         return RC_BLOQUEIO
+    try:
+        (RAIZ / f"catalogo_casas_{ESPORTE}.json").write_text(
+            json.dumps({"lido_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "mercados": resumo_do_catalogo(bruto, odds_brutas)}, ensure_ascii=False, indent=1),
+            encoding="utf-8")
+    except (OSError, TypeError, ValueError) as e:
+        print(f"[casas {ESPORTE}] resumo do catalogo falhou: {type(e).__name__}")
     anterior = {}
     if ATUAL.exists():
         try:
