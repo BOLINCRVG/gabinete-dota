@@ -169,6 +169,31 @@ def _render_rating_comparison(
         st.caption(f"{_verdict} (força ML core v2 = Elo residual + força de liga/tier + conquistas; comparável entre ligas).")
 
 
+def liga_de_casa(team_games: pd.DataFrame, dias: int = 365) -> dict:
+    """{time normalizado: a liga em que ele MAIS jogou no ultimo ano}. 29/10/2026: a tabela
+    mostrava a liga do ULTIMO jogo -- KT Rolster, BNK FEARX, JD Gaming apareciam como "DCGI"
+    (copa) e sumiam do filtro da LCK/LPL."""
+    if team_games is None or team_games.empty or not {"team", "league"}.issubset(team_games.columns):
+        return {}
+    d = team_games
+    if "date" in d.columns:
+        dt = pd.to_datetime(d["date"], errors="coerce")
+        if dt.notna().any():
+            d = d[dt >= dt.max() - pd.Timedelta(days=int(dias))]
+    chave = d["team"].astype(str).map(_norm_team_key)
+    cont = d.assign(_k=chave).groupby(["_k", "league"]).size().reset_index(name="n")
+    cont = cont.sort_values(["_k", "n"], ascending=[True, False]).drop_duplicates("_k")
+    return {str(k): str(l) for k, l in zip(cont["_k"], cont["league"])}
+
+
+def _com_liga_de_casa(df: pd.DataFrame, casa: dict) -> pd.DataFrame:
+    if df is None or df.empty or not casa or "team" not in df.columns or "league" not in df.columns:
+        return df
+    out = df.copy()
+    out["league"] = [casa.get(_norm_team_key(t), lg) for t, lg in zip(out["team"].astype(str), out["league"])]
+    return out
+
+
 def render_rankings_tab(
     *,
     st: Any,
@@ -322,7 +347,9 @@ def render_rankings_tab(
             out = out[out["tier"].astype(str).isin(_tiers_sel)].copy()
         if int(_min_games) > 0 and _games_by_team:
             _g = {str(k): int(v) for k, v in dict(_games_by_team).items()}
-            out = out[out["team"].astype(str).map(lambda t: _g.get(str(t), 0)) >= int(_min_games)].copy()
+            # a contagem e por nome NORMALIZADO ("topesports"); procurar pelo nome cru zerava todo
+            # mundo e a tabela principal abria vazia (29/10/2026, ele: "o ranking ainda e pessimo")
+            out = out[out["team"].astype(str).map(lambda t: _g.get(_norm_team_key(t), 0)) >= int(_min_games)].copy()
         if rank_league and ("league" in out.columns):
             out = out[out["league"].astype(str) == str(rank_league)].copy()
         if rank_year and ("year" in out.columns):
@@ -370,8 +397,14 @@ def render_rankings_tab(
     except Exception:
         _movement, _games_by_team = None, None  # nunca derruba a aba
 
+    try:
+        _casa = liga_de_casa(team_games)
+    except Exception:
+        _casa = {}
+
     if rank_source == "v2":
-        df_v2 = _apply_recorte(mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=int(max(int(top_n), 600))))
+        df_v2 = _apply_recorte(_com_liga_de_casa(
+            mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=int(max(int(top_n), 600))), _casa))
         if df_v2.empty:
             st.info("ML core v2 sem dados nesse recorte. Troque para **Elo** na fonte acima, ou ajuste o recorte.")
         else:
@@ -404,7 +437,7 @@ def render_rankings_tab(
     # Tabela COMPLETA (todos os times do artefato, sem corte de Top N) — base
     # para a busca e a comparação. Times novos/fracos (ex.: Magaza, ~691º) não
     # aparecem no Top N mas EXISTEM no modelo; aqui dá p/ achá-los e compará-los.
-    df_all = mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=0)
+    df_all = _com_liga_de_casa(mlcore_rank_table_v2_fn(artifact_path, as_of=as_of_date, top_n=0), _casa)
 
     st.divider()
     render_tab_section(
