@@ -98,7 +98,28 @@ def catalogo_de_linhas(markets) -> dict:
             if outs.get("1") and outs.get("2") and m.get("handicap") is not None:
                 fora[str(m["marketId"])] = ("maps", "spread", 0, float(m["handicap"]), (outs["1"], outs["2"]), None)
             continue
-        if m.get("playerProp") or not mapa or " - " not in nome or int(m.get("marketLength") or 0) != 2:
+        # MERCADOS DA SERIE (29/10/2026, achados no resumo do catalogo): total de mapas, placar
+        # exato e os "Kills - ..." do periodo "result" (kills da serie, de cada time, handicap).
+        if str(m.get("period")) == "result":
+            outs = {str(o.get("outcomeName")): str(o.get("outcomeId")) for o in m.get("outcomes") or []}
+            if nome == "Total Maps Over Under" and outs.get("Over") and outs.get("Under") \
+                    and m.get("handicap") is not None:
+                fora[str(m["marketId"])] = ("maps", "total", 0, float(m["handicap"]),
+                                            (outs["Over"], outs["Under"]), None)
+                continue
+            if nome == "Correct Map Score":
+                # um par por diferenca de mapas: (time 1 a:b, time 2 a:b), pontos = a - b
+                pares = []
+                for o in outs:
+                    a, _, b = o.partition(":")
+                    if a.isdigit() and b.isdigit() and int(a) > int(b) and f"{b}:{a}" in outs:
+                        pares.append(("maps", "placar", 0, float(int(a) - int(b)),
+                                      (outs[o], outs[f"{b}:{a}"]), None))
+                if pares:
+                    fora[str(m["marketId"])] = pares
+                continue
+            mapa = 0
+        if m.get("playerProp") or mapa is None or " - " not in nome or int(m.get("marketLength") or 0) != 2:
             continue
         unidade, resto = nome.split(" - ", 1)
         outs = {str(o.get("outcomeName")): str(o.get("outcomeId")) for o in m.get("outcomes") or []}
@@ -127,16 +148,17 @@ def linhas_das_casas(odds: dict, catalogo: dict) -> dict:
         if not e_casa_dele(casa) or not b.get("bookmakerIsActive", True) or b.get("suspended"):
             continue
         for mid, mk in (b.get("markets") or {}).items():
-            c = catalogo.get(str(mid))
-            if not c:
+            cs = catalogo.get(str(mid))
+            if not cs:
                 continue
             outs = (mk or {}).get("outcomes") or {}
-            par = []
-            for o in c[4]:
-                pl = ((outs.get(o) or {}).get("players") or {}).get("0") or {}
-                par.append(pl.get("price") if pl.get("active", True) else None)
-            if all(isinstance(x, (int, float)) and x > 1 for x in par):
-                fora.setdefault(casa, []).append([c[0], c[1], c[2], c[3], par[0], par[1], c[5]])
+            for c in (cs if isinstance(cs, list) else [cs]):      # o placar exato tem varios pares
+                par = []
+                for o in c[4]:
+                    pl = ((outs.get(o) or {}).get("players") or {}).get("0") or {}
+                    par.append(pl.get("price") if pl.get("active", True) else None)
+                if all(isinstance(x, (int, float)) and x > 1 for x in par):
+                    fora.setdefault(casa, []).append([c[0], c[1], c[2], c[3], par[0], par[1], c[5]])
     return fora
 
 

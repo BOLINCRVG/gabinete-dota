@@ -310,6 +310,8 @@ def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol",
                 [x for x in lista if x[1] == "spread" and x[0] == unidade and x[2] == mapa],
                 _favorito_do_mapa(jogo, esp, mapa))
         for unidade, tipo, mapa, pontos, oa, ob, qual in lista:
+            if tipo == "placar":              # placar exato (serie): lido em series_tab_core
+                continue
             if not par_ok(oa, ob):
                 continue
             if tipo == "spread" and trocar.get((unidade, mapa)):
@@ -541,7 +543,8 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
         # de Linha; aqui fica so o vencedor e o +-1,5.
         return
     cache: dict = {}
-    rs = melhores_linhas(linhas_de_mapa(jogo, inv, esporte(raiz), casas_dele=escolhidas), lambda l: chance_do_modelo(
+    rs = melhores_linhas([l for l in linhas_de_mapa(jogo, inv, esporte(raiz), casas_dele=escolhidas)
+                          if int(l["periodo"]) >= 1], lambda l: chance_do_modelo(
         l, time_a=time_a, time_b=time_b, calcular_totais=calcular_totais, prob_over=prob_over,
         medias_kills=medias_kills, p_casa=p_mapa, _cache=cache))
     st.markdown("#### Melhor odd e melhor linha: kills, torres, "

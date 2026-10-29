@@ -210,7 +210,50 @@ def odds_das_casas_serie(jogo: Any, inv: bool, esp: str, casas: list) -> dict[st
         h = float(l["handicap_a"])
         _poe(f"hc_A_{h:+g}", l["odd_a"], l["casa"])
         _poe(f"hc_B_{-h:+g}", l["odd_b"], l["casa"])
+    # totais da serie (mapa 0): mapas, kills da serie, kills de cada time
+    from app_core.suas_casas_core import _marcas, linhas_de_mapa, versao_da_marca
+    rot = {"over": "Mais", "under": "Menos"}
+    linhas_casa: dict[str, set] = {}
+    for l in linhas_de_mapa(jogo, inv, esp, casas_dele=casas):
+        if int(l["periodo"]) != 0 or l["lado"] not in rot or (l["slug"] == "pinnacle" and not com_pin):
+            continue
+        L = float(l["pontos"])
+        if l["unidade"] == "maps" and l["tipo"] == "total":
+            _poe(f"mapas_{l['lado']}_{L:g}", l["odd"], l["casa_aposta"])
+        elif l["unidade"] == "kills" and l["tipo"] == "total":
+            _poe(f"tot_kills_{rot[l['lado']]}_{L:g}", l["odd"], l["casa_aposta"])
+            linhas_casa.setdefault("kills", set()).add(L)
+        elif l["unidade"] == "kills" and l["tipo"] == "team_total":
+            q = "A" if l.get("time") == "home" else "B"
+            _poe(f"tk_{q}_{rot[l['lado']]}_{L:g}", l["odd"], l["casa_aposta"])
+            linhas_casa.setdefault(f"tk_{q}", set()).add(L)
+    # placar exato: (diferenca de mapas, time 1 da OddsPapi, time 2) -> placar_A_2-0 ...
+    todas = jogo.get("linhas") or {}
+    for marca, nome in _marcas(casas):
+        slug = versao_da_marca(todas, marca)
+        if not slug:
+            continue
+        for unidade, tipo, mapa, pontos, oa, ob, _q in todas[slug]:
+            if tipo != "placar":
+                continue
+            d = int(round(float(pontos)))
+            for quem, odd in ((("B", "A") if inv else ("A", "B"))[0], oa), ((("B", "A") if inv else ("A", "B"))[1], ob):
+                best_k = [f"placar_{quem}_{w}-{w - d}" for w in (2, 3) if w - d >= 0]
+                for k in best_k:
+                    _poe(k, odd, nome)
+    best["_linhas"] = {k: sorted(v) for k, v in linhas_casa.items()}
     return best
+
+
+def _linhas_da_casa(odds: Mapping[str, Any], chave_linhas: str, prefixo: str) -> list[float]:
+    """As linhas da serie que as casas dele abriram com os DOIS lados pagando entre 1,50 e 2,60
+    (a principal e as vizinhas; as alternativas de 1,10 x 6,00 ficam de fora)."""
+    fora = []
+    for L in (odds.get("_linhas") or {}).get(chave_linhas, []):
+        mais, menos = odds.get(f"{prefixo}_Mais_{L:g}"), odds.get(f"{prefixo}_Menos_{L:g}")
+        if mais and menos and 1.50 <= mais[0] <= 2.60 and 1.50 <= menos[0] <= 2.60:
+            fora.append(float(L))
+    return fora
 
 
 def _tabela(st: Any, linhas_: list[dict[str, Any]], odds: Mapping[str, tuple]) -> None:
@@ -302,7 +345,8 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         if t is None:
             continue
         media, dp = float(getattr(t, "mean", float("nan"))), float(getattr(t, "sd", float("nan")))
-        lins = sorted(set(linhas_auto_serie(nm, media, dp, passo)) | {float(x) for x in (extra.get(m) or [])})
+        lins = sorted(set(linhas_auto_serie(nm, media, dp, passo)) | {float(x) for x in (extra.get(m) or [])}
+                      | set(_linhas_da_casa(odds, m, f"tot_{m}")))
         for L in lins:
             p = p_mais_serie(nm, media, dp, L)
             if p is None:
@@ -316,15 +360,16 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     try:
         cm, cs = ctx["combine_mean_fn"], ctx["combine_sd_fn"]
         tk = []
-        for nome, pf, pa_ in ((nome_a, profile_a, profile_b), (nome_b, profile_b, profile_a)):
+        for q, nome, pf, pa_ in (("A", nome_a, profile_a, profile_b), ("B", nome_b, profile_b, profile_a)):
             media = float(cm(pf.kills_for, pa_.kills_against))
             dp = float(max(cs(pf.kills_for_sd, pa_.kills_against_sd), 1.0))
-            for L in linhas_auto_serie(nm, media, dp, 2.0):
+            for L in sorted(set(linhas_auto_serie(nm, media, dp, 2.0)) | set(_linhas_da_casa(odds, f"tk_{q}", f"tk_{q}"))):
                 p = p_mais_serie(nm, media, dp, L)
                 if p is None:
                     continue
                 for lado, pp in (("Mais", p), ("Menos", 1.0 - p)):
-                    tk.append({"aposta": f"Kills {nome} {lado} de {L:g}".replace(".", ","), "p": pp, "chave": ""})
+                    tk.append({"aposta": f"Kills {nome} {lado} de {L:g}".replace(".", ","), "p": pp,
+                               "chave": f"tk_{q}_{lado}_{L:g}"})
         if tk:
             render_tab_section(st, title="Kills de cada time na série", subtitle="")
             _tabela(st, tk, odds)

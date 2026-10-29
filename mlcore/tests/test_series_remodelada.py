@@ -30,6 +30,25 @@ class TestSeriesRemodelada(unittest.TestCase):
         self.assertGreater(s.p_mais_serie(nm, 28.0, 7.5, 55.5), p)
         self.assertIsNone(s.p_mais_serie(nm, 28.0, 0.0, 55.5))
 
+    def test_odds_das_casas_da_serie(self):
+        jogo = {"casas": {}, "linhas": {"stake": [
+            ["maps", "total", 0, 2.5, 2.40, 1.55, None],
+            ["kills", "total", 0, 55.5, 1.85, 1.85, None],
+            ["kills", "total", 0, 48.5, 1.10, 6.00, None],          # alternativa: nao vira linha
+            ["maps", "placar", 0, 2.0, 2.10, 6.50, None],
+            ["maps", "placar", 0, 1.0, 4.00, 5.00, None],
+            ["kills", "total", 1, 27.5, 1.83, 1.87, None],          # mapa 1: fora da serie
+        ]}}
+        o = s.odds_das_casas_serie(jogo, False, "lol", ["Stake"])
+        self.assertEqual(o["mapas_over_2.5"], (2.40, "Stake"))
+        self.assertEqual(o["tot_kills_Menos_55.5"][0], 1.85)
+        self.assertEqual(o["placar_A_2-0"], (2.10, "Stake"))
+        self.assertEqual(o["placar_B_2-1"], (5.00, "Stake"))
+        self.assertNotIn("tot_kills_Mais_27.5", o)
+        self.assertEqual(s._linhas_da_casa(o, "kills", "tot_kills"), [55.5])
+        inv = s.odds_das_casas_serie(jogo, True, "lol", ["Stake"])        # Time 1 da tela e o time 2 da casa
+        self.assertEqual(inv["placar_B_2-0"], (2.10, "Stake"))
+
     def test_odds_das_casas_sem_jogo(self):
         self.assertEqual(s.odds_das_casas_serie(None, False, "lol", ["Stake"]), {})
 
