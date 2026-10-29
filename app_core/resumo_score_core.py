@@ -387,8 +387,12 @@ def score_candidate(
     except (TypeError, ValueError):
         odd_hist = None
 
+    # 29/10/2026: com o metodo dele, a chance e a do metodo (resumo_metodo_core).
+    p_met = row.get("_p_metodo")
+    if p_met is not None:
+        odd_hist = 1.0 / float(p_met)
     oc = oc_map.get(row_key)
-    p_hist = odd_to_prob(odd_hist)
+    p_hist = float(p_met) if p_met is not None else odd_to_prob(odd_hist)
     e_hist = edge_pct(p_hist, oc) if (p_hist and oc) else None
 
     k_frac = kelly_stake_fraction(p_hist, oc, fraction=0.25) if (p_hist and oc and e_hist and e_hist > 0) else None
@@ -410,6 +414,19 @@ def score_candidate(
         tb = TemporalProfile(team=team_b, windows=empty_w, trend="insufficient",
                               trend_label="Combo — sem temporal", trend_score=0.0,
                               summary_line="—")
+
+    if p_met is not None:
+        from app_core.resumo_metodo_core import pontos, pros_e_contras
+        pt = pontos(row, e_hist)
+        pros_m, cons_m = pros_e_contras(row, e_hist, oc)
+        return CandidateScore(
+            row=row, temporal_a=ta, temporal_b=tb, total=int(round(pt["total"])),
+            conf_pts=pt["chance"], edge_pts=pt["valor"], roi_pts=pt["passos"],
+            trend_bonus=0.0, anti_loss_penalty=0.0,
+            edge_hist=e_hist, odd_hist=odd_hist, odd_casa=oc,
+            stake_units=float(stake_u) if stake_u is not None else None,
+            pros=pros_m, cons=cons_m,
+        )
 
     # Score components.
     c_pts  = _conf_pts(row)
@@ -514,7 +531,10 @@ def rank_candidates(
     elif sb in ("gestao", "gestão", "stake"):
         scored.sort(key=lambda c: (c.stake_units is None, -(c.stake_units or 0.0)))
     else:
-        scored.sort(key=lambda c: -c.total)
+        # 29/10/2026, a regra dele: ENTRA (3+ passos e valor) primeiro, depois ANALISAR / falta odd,
+        # depois sem valor; dentro de cada faixa, o score.
+        from app_core.resumo_metodo_core import faixa
+        scored.sort(key=lambda c: (faixa(c.row, c.edge_hist), -c.total))
     return scored[:int(top_n)]
 
 

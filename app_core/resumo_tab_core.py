@@ -275,7 +275,7 @@ def _render_candidate_cards(
             with oc1:
                 hist_txt = f"{c.odd_hist:.2f}" if c.odd_hist else "—"
                 st.markdown(
-                    _col_label("Hist (ref.)")
+                    _col_label("Fair (método)" if row.get("_p_metodo") is not None else "Hist (ref.)")
                     + f"<div style='color:#2daac4;font-weight:700;font-size:1.3em;'>{hist_txt}</div>",
                     unsafe_allow_html=True,
                 )
@@ -378,7 +378,25 @@ def _render_candidate_cards(
             )
 
             # Score decomposition bar.
-            st.markdown(
+            if row.get("_p_metodo") is not None:
+                from app_core.resumo_metodo_core import veredito_do_metodo
+                _vd = veredito_do_metodo(row, c.edge_hist)
+                _vc = "#22c55e" if _vd == "ENTRA" else ("#facc15" if _vd.startswith(("ANALISAR", "3+")) else "#9ca3af")
+                _k = row.get("_passos")
+                st.markdown(
+                    f"<div style='font-size:0.92em;opacity:0.85;margin:6px 0 4px;"
+                    f"padding:5px 10px;background:rgba(45,170,196,0.05);border-radius:6px;'>"
+                    f"<span style='opacity:0.7;'>Chance</span> <b>{c.conf_pts:.0f}</b>"
+                    f" + <span style='opacity:0.7;'>Passos{f' ({_k}/4)' if _k is not None else ''}</span> <b>{c.roi_pts:+.0f}</b>"
+                    f" + <span style='opacity:0.7;'>Valor</span> <b>{c.edge_pts:+.0f}</b>"
+                    f" = <b style='color:#2daac4;font-size:1.05em;'>{c.total}</b>"
+                    f" &nbsp;·&nbsp; <b style='color:{_vc};'>{escape_html(_vd)}</b>"
+                    + (f" <span style='opacity:0.6;'>({escape_html(str(row.get('_casa_nome')))})</span>" if row.get("_casa_nome") else "")
+                    + "</div>",
+                    unsafe_allow_html=True,
+                )
+            else:
+              st.markdown(
                 f"<div style='font-size:0.92em;opacity:0.75;margin:6px 0 4px;"
                 f"padding:5px 10px;background:rgba(45,170,196,0.05);border-radius:6px;'>"
                 f"<span style='opacity:0.7;'>Conf</span> <b>{c.conf_pts:.0f}</b>"
@@ -1018,6 +1036,34 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         )
     )
 
+    # A LOGICA DO METODO DELE (29/10/2026): a fair de cada aposta e a do metodo medido (totais),
+    # o vencedor e o da SERIE, as combinadas saem da condicional medida, e a odd das casas dele
+    # entra sozinha. Ver app_core/resumo_metodo_core.py. Sem o motor (Dota) nada muda.
+    try:
+        from pathlib import Path as _P
+        from app_core.resumo_metodo_core import COMBINADAS, aplicar_metodo, combinadas_rows, odds_das_casas
+        from app_core.suas_casas_core import CASAS_PADRAO
+        _odds_c = None
+        try:
+            _casas_c = list(session_state.get("suas_casas_escolhidas") or []) or list(CASAS_PADRAO)
+            _odds_c = odds_das_casas(_P(__file__).resolve().parents[1], team_games, team_a, team_b, _casas_c)
+        except Exception:
+            _odds_c = None
+        _bo_c = int(ctx.get("bo") or 1)
+        _ps_c = session_state.get("_p_series_used") if _bo_c > 1 else p_ml_row
+        try:
+            _ps_c = float(_ps_c)
+        except (TypeError, ValueError):
+            _ps_c = None
+        _n_antes = len(rows)
+        rows = aplicar_metodo(rows, tg=team_games, team_a=team_a, team_b=team_b, p_serie_a=_ps_c,
+                              bo=_bo_c, odds=_odds_c)
+        if len(rows) != _n_antes or any(r.get("_p_metodo") is not None for r in rows):
+            _lin_c = {m: ensure_lines(m, lines_by_metric.get(m)) for m in COMBINADAS}
+            rows.extend(combinadas_rows(team_games, team_a, team_b, p_ml_combo, _lin_c, fmt_line_disp))
+    except Exception:
+        pass
+
     rows = enrich_resumo_rows_with_stats_detail(
         rows,
         df_scope=df_sc_display,
@@ -1109,15 +1155,17 @@ def render_resumo_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
     except (TypeError, ValueError):
         _mx_teto = None
     if _mx_teto is not None and _mx_teto > 0:
-        def _odd_dentro_do_teto(r: dict) -> bool:
-            for campo in ("Odd (Hist)", "Odd (Modelo)"):
-                try:
-                    if float(r.get(campo)) <= float(_mx_teto):
-                        return True
-                except (TypeError, ValueError):
-                    continue
-            return False
-        rows = [r for r in rows if _odd_dentro_do_teto(r)]
+        # 29/10/2026: com o metodo, o teto vale sobre a FAIR do metodo (a regra dele: justa ate
+        # 1,72); sem o metodo, a regra antiga (modelo OU hist no teto).
+        from app_core.resumo_metodo_core import dentro_do_teto
+        rows = [r for r in rows if dentro_do_teto(r, float(_mx_teto))]
+
+    # A odd das casas dele ja entra em "Sua odd" (ele pode trocar; apagou = fica apagada).
+    for _r in rows:
+        if isinstance(_r, dict) and _r.get("_casa_odd"):
+            _rk = f"{_r.get('Mercado','')}|{_r.get('Lado','')}|{_r.get('Linha','')}"
+            if _rk not in oc_map_cur and f"{oc_key_prefix}{_rk}" not in session_state:
+                oc_map_cur[_rk] = float(_r["_casa_odd"])
 
     # df_a_win/df_b_win/df_a_full/df_b_full vêm do bloco de escopo lá de cima
     # (regra cross-league) — mesmos frames que alimentam as fatias da Odd Hist,
