@@ -173,7 +173,7 @@ def _render_kills_line_content(
                 from pathlib import Path as _P
                 from app_core.suas_casas_core import casas_por_linha, jogo_das_casas, selo_casas_da_linha
                 if sinais_tg is not None and str(market_key) in ("kills", "towers", "dragons", "barons",
-                                                                  "inhibitors", "kills_team", "handicaps"):
+                                                                  "inhibitors", "inibs", "kills_team", "handicaps"):
                     _times = sorted({str(x) for x in sinais_tg["team"].dropna().unique()})
                     _raiz = _P(__file__).resolve().parents[1]
                     _jg, _inv = jogo_das_casas(_raiz, team_a, team_b, _times)
@@ -608,6 +608,26 @@ def _render_v3_kills_subpanel(
                 _linha0, _origem0 = float(default_line), ""
         session_state[lines_key] = [float(_linha0)]
         session_state[lines_key + "_origem"] = _origem0
+        # AS LINHAS DAS CASAS (29/10/2026, regra dele): menor e maior linha em que o favorito ainda
+        # paga 1,60+, e a principal (a que mais se repete com odd ~1,85); torres 10,5/11,5/12,5;
+        # dragoes, baroes, inibidores: a principal. Mapa 1, melhor odd entre as casas (OddsPapi).
+        if str(market_key) in ("kills", "towers", "dragons", "barons", "inhibitors", "inibs"):
+            try:
+                from pathlib import Path as _P
+                from app_core.suas_casas_core import casas_por_linha, jogo_das_casas, linhas_automaticas
+                _raiz = _P(__file__).resolve().parents[1]
+                _times = sorted({str(x) for x in team_games["team"].dropna().unique()})
+                _jg, _inv = jogo_das_casas(_raiz, str(team_a), str(team_b), _times)
+                if _jg:
+                    _esp = "dota" if (_raiz / "dota_paths.py").exists() else "lol"
+                    _auto = linhas_automaticas(casas_por_linha(_jg, _inv, _esp, str(market_key)), str(market_key))
+                    if _auto:
+                        session_state[lines_key] = [float(x) for x in _auto]
+                        session_state[lines_key + "_origem"] = (
+                            "das casas, mapa 1 (menor e maior em que o favorito ainda paga 1,60+, e a principal)"
+                            if str(market_key) == "kills" else "das casas, mapa 1")
+            except Exception:
+                pass
     # Defensive: ensure all entries are floats
     lines_list: list[float] = [float(x) for x in session_state[lines_key] if isinstance(x, (int, float))]
     if not lines_list:

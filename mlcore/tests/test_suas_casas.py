@@ -175,5 +175,19 @@ class TestHandicapDeMapasELinhaJusta(unittest.TestCase):
         self.assertIn("nenhuma casa", sc.selo_casas_da_linha(cl, 31.5))
 
 
+    def test_linhas_automaticas_regra_dele(self):
+        # kills IG x LYON (29/10/2026): 25,5 (Mais 1,63) · 27,5 (principal) · 28,5 (Menos 1,70)
+        v = lambda c, a, b: {"casa": c, "mapa": 1, "mais": a, "menos": b}
+        cl = {24.5: [v("Pinnacle", 1.50, 2.42)], 25.5: [v("Pinnacle", 1.632, 2.2), v("Stake", 1.50, 2.2)],
+              26.5: [v("Pinnacle", 1.78, 1.99)], 27.5: [v("Pinnacle", 1.96, 1.81), v("Betano", 1.87, 1.87),
+                                                         v("bet365", 1.80, 1.80)],
+              28.5: [v("Betano", 2.05, 1.70)], 29.5: [v("Pinnacle", 2.34, 1.561)]}
+        self.assertEqual(sc.linhas_automaticas(cl, "kills"), [25.5, 27.5, 28.5])
+        torres = {10.5: [v("Stake", 1.38, 2.8)], 11.5: [v("Estrela", 1.83, 1.83)], 12.5: [v("Stake", 3.2, 1.3)]}
+        self.assertEqual(sc.linhas_automaticas(torres, "towers"), [10.5, 11.5, 12.5])
+        self.assertEqual(sc.linhas_automaticas({4.5: [v("Stake", 1.85, 1.85)]}, "dragons"), [4.5])
+        self.assertEqual(sc.linhas_automaticas({}, "kills"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

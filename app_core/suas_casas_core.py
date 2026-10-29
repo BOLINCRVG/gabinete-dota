@@ -747,6 +747,7 @@ def linha_justa_da_casa(*, raiz: Path, confronto: Mapping[str, Any], resolver: O
 # das fontes oferece (nem a OddsPapi nem o robo da Pinnacle).
 _MERCADO_ODDSPAPI = {"kills": ("kills", "total"), "towers": ("turrets", "total"), "dragons": ("dragons", "total"),
                      "barons": ("barons", "total"), "inhibitors": ("inhibitors", "total"),
+                     "inibs": ("inhibitors", "total"),       # a chave da Analise de Linha
                      "kills_team": ("kills", "team_total"), "handicaps": ("kills", "spread")}
 
 
@@ -841,3 +842,54 @@ def selo_casas_da_linha(linhas_casas: Dict[float, List[Dict[str, Any]]], L: floa
         "font-size:0.48em;font-weight:500;line-height:1.6;box-shadow:0 6px 18px rgba(0,0,0,.4)'>"
         f"<div style='opacity:.6;margin-bottom:3px'>Mapa 1 · {escape(rotulos[0])} / {escape(rotulos[1])}</div>"
         f"{itens}</span></span>")
+
+
+# ---- AS LINHAS QUE ENTRAM SOZINHAS (29/10/2026, regra dele) --------------------------------
+# "a menor linha com uma odd ate 1,60, a maior linha com uma odd ate 1,60 e a linha que mais se
+# repete com a odd even (1,83, 1,85)" -- leitura confirmada por ele: a menor/maior linha em que o
+# lado favorito AINDA paga 1,60 ou mais. "Torres: majoritariamente 10,5 11,5 e 12,5; dragoes 4,5;
+# inibidores 1,5, nunca vi diferente". Tudo do MAPA 1, melhor odd entre as casas.
+ODD_MINIMA_FAVORITO = 1.60
+
+
+def linha_principal_das_casas(m1: Dict[float, List[Dict[str, Any]]]) -> Optional[float]:
+    """A linha que mais casas abrem com odd ~even (os dois lados entre 1,70 e 2,05); empate -> a
+    mais equilibrada."""
+    melhor, chave = None, None
+    for L, vs in m1.items():
+        even = [v for v in vs if v.get("mais") and v.get("menos") and 1.70 <= v["mais"] <= 2.05
+                and 1.70 <= v["menos"] <= 2.05]
+        if not even:
+            continue
+        equil = min(abs(v["mais"] - v["menos"]) for v in even)
+        k = (len(even), -equil)
+        if chave is None or k > chave:
+            melhor, chave = L, k
+    return melhor
+
+
+def linhas_automaticas(linhas_casas: Dict[float, List[Dict[str, Any]]], mercado: str) -> List[float]:
+    """As linhas que a Analise de Linha abre sozinha para o mercado. [] = sem casa. Pura."""
+    m1 = {L: [v for v in vs if int(v.get("mapa") or 0) == 1] for L, vs in (linhas_casas or {}).items()}
+    m1 = {L: vs for L, vs in m1.items() if vs}
+    if not m1:
+        return []
+    principal = linha_principal_das_casas(m1)
+    if principal is None:
+        return []
+    if mercado in ("dragons", "barons", "inhibitors", "inibs"):
+        return [principal]
+    if mercado == "towers":
+        return sorted(L for L in m1 if abs(L - principal) <= 1.0 + 1e-9)
+    if mercado != "kills":
+        return [principal]
+    melhor_mais = {L: max((v.get("mais") or 0) for v in vs) for L, vs in m1.items()}
+    melhor_menos = {L: max((v.get("menos") or 0) for v in vs) for L, vs in m1.items()}
+    baixas = [L for L in m1 if L < principal and melhor_mais[L] >= ODD_MINIMA_FAVORITO]
+    altas = [L for L in m1 if L > principal and melhor_menos[L] >= ODD_MINIMA_FAVORITO]
+    out = [principal]
+    if baixas:
+        out.insert(0, min(baixas))
+    if altas:
+        out.append(max(altas))
+    return out
