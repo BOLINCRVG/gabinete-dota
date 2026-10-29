@@ -530,6 +530,8 @@ def _render_props_table(
     norm_pos_fn: Any,
     mu_gap: float,
     format_num_fn: Any,
+    df_all: Any = None,
+    p_time_a: Any = None,
 ) -> None:
     """Tabela de props dos 10 jogadores + resumo com filtro de atropelo.
 
@@ -560,6 +562,28 @@ def _render_props_table(
         st.info("Sem K/D/A por jogador neste recorte (o CSV precisa das colunas kills/deaths/assists).")
         return
 
+    # 29/10/2026: a projecao PELO CONFRONTO (fatia do jogador x kills do time neste jogo), medida
+    # no cego -- ver app_core/player_props_confronto_core.py. Sem o ML do confronto: a antiga.
+    novo = None
+    try:
+        from app_core import player_props_confronto_core as ppc
+        from pathlib import Path as _P
+        _pa = float(p_time_a) if p_time_a is not None else float("nan")
+        _lol = not (_P(__file__).resolve().parents[1] / "dota_paths.py").exists()   # medido so no LoL
+        if _lol and df_all is not None and not df_all.empty and 0.0 < _pa < 1.0:
+            _tot = ppc.total_do_confronto(df_all, team_a, team_b)
+            if _tot:
+                novo = {"m": ppc, "tot": _tot, "pa": _pa, "priors": ppc.priors_por_rota(df_all)}
+    except Exception:
+        novo = None
+    if novo:
+        st.caption(
+            f"Projeção pelo CONFRONTO: a fatia de cada jogador nas kills/mortes do time (últimos 20 jogos, "
+            f"qualquer liga) × o que o time deve fazer NESTE jogo (ritmo {format_num_fn(novo['tot'], 1)} kills, "
+            f"chance do mapa {100 * novo['pa']:.0f}% x {100 * (1 - novo['pa']):.0f}%). Assim o domínio na liga "
+            "de casa não infla a projeção. As casas não mandam linha de jogador pela OddsPapi: a célula mostra "
+            "a linha justa; digite a da casa.")
+
     linhas_calc: list[dict] = []
     cab = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
     for c, t in zip(cab, ("Jogador", "Rota", "Kills", "Deaths", "Assists")):
@@ -568,6 +592,12 @@ def _render_props_table(
 
     for tm, pos, pl in lineup:
         tx = taxas.get(str(pl)) or {}
+        tx_novo = None
+        if novo:
+            try:
+                tx_novo = novo["m"].taxas_do_jogador(df_all, pl, pos, novo["priors"])
+            except Exception:
+                tx_novo = None
         # o gap entra com sinal: positivo p/ o time A, negativo p/ o B
         gap_do_time = float(mu_gap) if tm == team_a else -float(mu_gap)
         cols = st.columns([1.5, 0.7, 1.3, 1.3, 1.3])
@@ -585,9 +615,14 @@ def _render_props_table(
                     line = float(str(txt).replace(",", ".").strip()) if str(txt).strip() else None
                 except ValueError:
                     line = None
-                r = build_prop_row(player=pl, role=pos, team=tm, stat=stat,
-                                   line=(line if line is not None else base),
-                                   base_rate=base, mu_gap=gap_do_time)
+                if tx_novo:
+                    _pt = novo["pa"] if tm == team_a else 1.0 - novo["pa"]
+                    r = novo["m"].linha_de_prop(jogador=pl, rota=pos, time=tm, stat=stat, linha=line,
+                                                taxas=tx_novo, total=novo["tot"], p_time=_pt)
+                else:
+                    r = build_prop_row(player=pl, role=pos, team=tm, stat=stat,
+                                       line=(line if line is not None else base),
+                                       base_rate=base, mu_gap=gap_do_time)
                 if not r.get("ok"):
                     continue
                 if line is not None:
@@ -601,6 +636,11 @@ def _render_props_table(
                         f"<span style='color:{cor};font-weight:700;'>{100*r['p_over']:.0f}%</span> · "
                         f"odd {format_num_fn(r['odd_justa_over'], 2)}{selo}</div>",
                         unsafe_allow_html=True)
+                elif r.get("linha_justa") is not None:
+                    st.markdown(f"<div style='font-size:0.78em;opacity:0.7;margin-top:-6px;'>"
+                                f"proj <b>{format_num_fn(r['proj'], 1)}</b> · justa {format_num_fn(r['linha_justa'], 1)}"
+                                f" <span style='opacity:0.6'>(média {format_num_fn(base, 1)})</span></div>",
+                                unsafe_allow_html=True)
                 else:
                     st.markdown(f"<div style='font-size:0.78em;opacity:0.5;margin-top:-6px;'>"
                                 f"média {format_num_fn(base, 1)}</div>", unsafe_allow_html=True)
@@ -610,7 +650,8 @@ def _render_props_table(
         return
 
     limpas, atropelo = separar_por_atropelo(linhas_calc)
-    limpas.sort(key=lambda r: -float(r.get("p_over") or 0.0))
+    # o lado mais provavel primeiro (Mais ou Menos), como no resto do app
+    limpas.sort(key=lambda r: -max(float(r.get("p_over") or 0.0), 1.0 - float(r.get("p_over") or 0.0)))
     cyan_section_header(st, "Resumo — melhores oportunidades")
 
     def _tabela(rows: list[dict]) -> pd.DataFrame:
@@ -619,7 +660,8 @@ def _render_props_table(
             "Mercado": r["stat"].capitalize(), "Linha": format_num_fn(r["line"], 1),
             "Projeção": format_num_fn(r["proj"], 1),
             "P(Over)": f"{100*r['p_over']:.0f}%",
-            "Odd justa": format_num_fn(r["odd_justa_over"], 2),
+            "Odd justa Mais": format_num_fn(r["odd_justa_over"], 2),
+            "Odd justa Menos": format_num_fn(r.get("odd_justa_under"), 2),
         } for r in rows])
 
     if limpas:
@@ -905,6 +947,7 @@ def render_players_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         _render_props_table(
             st=st, team_a=team_a, team_b=team_b, dfb=dfb,
             norm_pos_fn=norm_pos_fn, mu_gap=float(_gap), format_num_fn=format_num_fn,
+            df_all=df_pl, p_time_a=st.session_state.get("_p_map_used"),
         )
     except (KeyError, TypeError, ValueError, AttributeError, ImportError) as _props_exc:
         st.warning(
