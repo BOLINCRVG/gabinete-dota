@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-10-29T02:21:14",
+ "gerado_em": "2026-10-29T17:37:33",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -19,14 +19,14 @@
    "arquivo": "regua_pinnacle_vencedor_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.3,
+   "idade_dias": 1.9,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.4,
+   "idade_dias": 0.6,
    "estado": "frequencia nao declarada"
   },
   {
@@ -75,7 +75,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 1.0,
-   "idade_dias": 0.4,
+   "idade_dias": 0.6,
    "estado": "ok"
   },
   {
