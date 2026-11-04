@@ -1,11 +1,230 @@
 {
- "lido_em": "2026-11-04T01:46:18+00:00",
+ "lido_em": "2026-11-04T11:46:39+00:00",
  "mercados": [
+  {
+   "nome": "Kills - Over Under First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 165,
+   "handicaps": [
+    36.5,
+    37.5,
+    38.5,
+    39.5,
+    40.5,
+    41.5,
+    42.5,
+    43.5,
+    44.5,
+    45.5,
+    46.5,
+    47.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Handicap First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 162,
+   "handicaps": [
+    -16.5,
+    -15.5,
+    -14.5,
+    -13.5,
+    -12.5,
+    -11.5,
+    -10.5,
+    -9.5,
+    -8.5,
+    -7.5,
+    -6.5,
+    -5.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Maps Handicap",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 100,
+   "handicaps": [
+    -1.5,
+    1.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "betano",
+    "blaze",
+    "pinnacle",
+    "polymarket",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2 First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 89,
+   "handicaps": [
+    11.5,
+    12.5,
+    13.5,
+    14.5,
+    15.5,
+    16.5,
+    17.5,
+    18.5,
+    19.5,
+    20.5,
+    21.5,
+    22.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 87,
+   "handicaps": [
+    45.5,
+    46.5,
+    47.5,
+    48.5,
+    49.5,
+    50.5,
+    51.5,
+    52.5,
+    53.5,
+    54.5,
+    55.5,
+    56.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 85,
+   "handicaps": [
+    46.5,
+    47.5,
+    48.5,
+    49.5,
+    50.5,
+    51.5,
+    52.5,
+    53.5,
+    54.5,
+    55.5,
+    56.5,
+    57.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 1 First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 65,
+   "handicaps": [
+    14.5,
+    15.5,
+    16.5,
+    17.5,
+    18.5,
+    19.5,
+    20.5,
+    21.5,
+    22.5,
+    23.5,
+    24.5,
+    25.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
   {
    "nome": "First Map Winner (incl. overtime)",
    "periodo": "p1",
    "jogador": false,
-   "linhas": 15,
+   "linhas": 62,
    "handicaps": [
     0.0
    ],
@@ -16,6 +235,7 @@
    "casas": [
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -28,7 +248,7 @@
    "nome": "Second Map Winner (incl. overtime)",
    "periodo": "p2",
    "jogador": false,
-   "linhas": 15,
+   "linhas": 62,
    "handicaps": [
     0.0
    ],
@@ -39,6 +259,7 @@
    "casas": [
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -51,7 +272,7 @@
    "nome": "Winner",
    "periodo": "result",
    "jogador": false,
-   "linhas": 15,
+   "linhas": 62,
    "handicaps": [
     0.0
    ],
@@ -62,6 +283,7 @@
    "casas": [
     "betano",
     "blaze",
+    "pinnacle",
     "polymarket",
     "stake",
     "superbet"
@@ -74,7 +296,7 @@
    "nome": "Third Map Winner (incl. overtime)",
    "periodo": "p3",
    "jogador": false,
-   "linhas": 14,
+   "linhas": 57,
    "handicaps": [
     0.0
    ],
@@ -85,6 +307,7 @@
    "casas": [
     "betano",
     "blaze",
+    "pinnacle",
     "stake",
     "superbet"
    ],
@@ -93,20 +316,66 @@
    ]
   },
   {
-   "nome": "Maps Handicap",
-   "periodo": "result",
+   "nome": "Kills - Handicap Second Map",
+   "periodo": "p2",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 56,
    "handicaps": [
-    -1.5,
-    1.5
+    -8.5,
+    -7.5,
+    -6.5,
+    -5.5,
+    0.5,
+    1.5,
+    2.5,
+    3.5,
+    4.5,
+    5.5,
+    6.5,
+    7.5
    ],
    "outcomes": [
     "1",
     "2"
    ],
    "casas": [
-    "blaze"
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Handicap Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 55,
+   "handicaps": [
+    -8.5,
+    -7.5,
+    -6.5,
+    -5.5,
+    0.5,
+    1.5,
+    2.5,
+    3.5,
+    4.5,
+    5.5,
+    6.5,
+    7.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "pinnacle",
+    "stake",
+    "superbet"
    ],
    "chaves": [
     "0:None"
@@ -116,7 +385,7 @@
    "nome": "Total Maps Over Under",
    "periodo": "result",
    "jogador": false,
-   "linhas": 2,
+   "linhas": 52,
    "handicaps": [
     2.5
    ],
@@ -125,8 +394,673 @@
     "Under"
    ],
    "casas": [
+    "betano",
     "blaze",
-    "polymarket"
+    "pinnacle",
+    "polymarket",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Correct Map Score",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 42,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "0:2",
+    "1:2",
+    "2:0",
+    "2:1"
+   ],
+   "casas": [
+    "betano",
+    "stake",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 33,
+   "handicaps": [
+    108.5,
+    110.5,
+    111.5,
+    112.5,
+    113.5,
+    114.5,
+    115.5,
+    116.5,
+    117.5,
+    118.5,
+    119.5,
+    120.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "blaze",
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 1 Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 27,
+   "handicaps": [
+    20.5,
+    21.5,
+    22.5,
+    25.5,
+    27.5,
+    28.5,
+    29.5,
+    30.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 1 Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 26,
+   "handicaps": [
+    20.5,
+    21.5,
+    22.5,
+    25.5,
+    27.5,
+    28.5,
+    29.5,
+    30.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2 Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 20,
+   "handicaps": [
+    25.5,
+    26.5,
+    28.5,
+    29.5,
+    30.5,
+    31.5,
+    32.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2 Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 20,
+   "handicaps": [
+    25.5,
+    26.5,
+    28.5,
+    29.5,
+    30.5,
+    31.5,
+    32.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "pinnacle",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Barracks First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Barracks Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Barracks Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Tower First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Tower Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Tower Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "blaze",
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 1",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 16,
+   "handicaps": [
+    49.5,
+    50.5,
+    51.5,
+    52.5,
+    53.5,
+    54.5,
+    55.5,
+    56.5,
+    57.5,
+    58.5,
+    59.5,
+    60.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Handicap",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 15,
+   "handicaps": [
+    0.5,
+    3.5,
+    4.5,
+    6.5,
+    9.5,
+    11.5,
+    16.5,
+    17.5,
+    18.5,
+    19.5,
+    20.5,
+    21.5
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Over Under Team 2",
+   "periodo": "result",
+   "jogador": false,
+   "linhas": 13,
+   "handicaps": [
+    61.5,
+    62.5,
+    63.5,
+    64.5,
+    65.5,
+    66.5,
+    67.5,
+    68.5,
+    69.5,
+    70.5,
+    71.5,
+    72.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Roshan First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Roshan Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "First Roshan Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Odd Even First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "Even",
+    "Odd"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Odd Even Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "Even",
+    "Odd"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Odd Even Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "Even",
+    "Odd"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Race To Kills First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    10.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Race To Kills Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    10.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Race To Kills Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 12,
+   "handicaps": [
+    10.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "superbet"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Towers - Over Under First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 3,
+   "handicaps": [
+    10.5,
+    11.5,
+    12.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Towers - Over Under Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 3,
+   "handicaps": [
+    10.5,
+    11.5,
+    12.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Towers - Over Under Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 3,
+   "handicaps": [
+    10.5,
+    11.5,
+    12.5
+   ],
+   "outcomes": [
+    "Over",
+    "Under"
+   ],
+   "casas": [
+    "stake"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet First Map",
+   "periodo": "p1",
+   "jogador": false,
+   "linhas": 1,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Second Map",
+   "periodo": "p2",
+   "jogador": false,
+   "linhas": 1,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
+   ],
+   "chaves": [
+    "0:None"
+   ]
+  },
+  {
+   "nome": "Kills - Draw No Bet Third Map",
+   "periodo": "p3",
+   "jogador": false,
+   "linhas": 1,
+   "handicaps": [
+    0.0
+   ],
+   "outcomes": [
+    "1",
+    "2"
+   ],
+   "casas": [
+    "pinnacle"
    ],
    "chaves": [
     "0:None"
