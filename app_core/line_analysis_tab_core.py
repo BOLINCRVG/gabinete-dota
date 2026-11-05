@@ -54,12 +54,15 @@ from app_core.line_analysis_kills_core import (  # noqa: F401 - superficie publi
 SEM_CAMP = "S/Camp"
 
 
+H2H_RECENTE_DIAS = 45
+
+
 def recorte_do_confronto(team_games, team_a: str, team_b: str, chave) -> "tuple | None":
     """(liga, ano, split) do recorte inicial da Analise de Linha. Pura.
 
-    1) os dois ja se enfrentaram -> o jogo mais recente ENTRE ELES;
-    2) nunca se enfrentaram, ligas de casa diferentes -> (S/Camp, ano, "");
-    3) mesma liga -> o jogo mais recente do Time 1 (como antes)."""
+    1) os dois estao no MESMO campeonato agora (ultimo jogo de cada) -> esse campeonato;
+    2) se enfrentaram ha pouco (ate H2H_RECENTE_DIAS) -> o campeonato desse confronto;
+    3) ligas diferentes -> (S/Camp, ano, "")."""
     import pandas as _pd
     if team_games is None or team_games.empty or not {"team", "date"}.issubset(team_games.columns):
         return None
@@ -80,15 +83,19 @@ def recorte_do_confronto(team_games, team_a: str, team_b: str, chave) -> "tuple 
 
     ga = _ultimos(tk == ka)
     gb = _ultimos(tk == kb)
-    if "opponent" in team_games.columns and not ga.empty:
-        h2h = ga[ga["opponent"].astype(str).map(chave) == kb]
-        if not h2h.empty:
-            return _tupla(h2h.iloc[-1])
     if ga.empty and gb.empty:
         return None
     if ga.empty or gb.empty:
         return _tupla((ga if not ga.empty else gb).iloc[-1])
     la, lb = str(ga.iloc[-1].get("league") or ""), str(gb.iloc[-1].get("league") or "")
+    # 05/11/2026 (DK x BLG no Worlds caia no EWC de julho, a BLG com 5 jogos): o campeonato que
+    # os DOIS estao jogando agora vem antes do ultimo confronto entre eles.
+    if la and la == lb:
+        return _tupla(ga.iloc[-1])
+    if "opponent" in team_games.columns:
+        h2h = ga[ga["opponent"].astype(str).map(chave) == kb]
+        if not h2h.empty and (ga["_d"].iloc[-1] - h2h["_d"].iloc[-1]).days <= H2H_RECENTE_DIAS:
+            return _tupla(h2h.iloc[-1])
     if la and lb and la != lb:
         return _tupla(ga.iloc[-1], liga=SEM_CAMP)
     return _tupla(ga.iloc[-1])
