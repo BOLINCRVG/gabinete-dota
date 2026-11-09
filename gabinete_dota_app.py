@@ -977,6 +977,12 @@ def _list_teams(csv_sig: Tuple[str, int, int]) -> List[str]:
         csv_path, _size, _mtime = csv_sig
         rows = load_team_rows(csv_path)
         teams = sorted(rows["teamname"].dropna().unique().tolist())
+    # homonimo sem historia sai do seletor (HULIGANI x "HULIGANI #10225339", 08/11/2026)
+    try:
+        from app_core.seletor_times_dota_core import times_do_seletor
+        teams = times_do_seletor(teams, _load_team_games(csv_sig))
+    except Exception:
+        pass
     return teams
 
 

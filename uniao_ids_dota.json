@@ -1,0 +1,12 @@
+{
+  "_como": "Mesmo time em dois team_id, auditado a mao (08/11/2026). Regra dele: historico partido, nunca. Prova: mesmo nome, elenco da MESMA EPOCA 4+ de 5 (ou janelas coladas), nunca se enfrentaram, nunca comecaram partidas a menos de 45 min. Fica versionado porque o robo so guarda os 30 ultimos jogos de cada id e nao conseguiria refazer a prova.",
+  "unioes": [
+    {"nome": "Zero Tenacity", "ids": [9600141, 10208035], "prova": "elenco 5/5 na epoca; id novo so na Games of the Future 2026"},
+    {"nome": "Yakult Brothers", "ids": [9351740, 10208034], "prova": "elenco 4/5 na epoca; id novo a partir da Games of the Future 2026"},
+    {"nome": "GLYPH", "ids": [10081680, 10208003], "prova": "elenco 4/5 na epoca; id novo so na Games of the Future 2026"},
+    {"nome": "The Bug", "ids": [9658086, 10170364], "prova": "elenco 4/5; janelas sem sobreposicao"},
+    {"nome": "ToLight", "ids": [9724713, 9895695], "prova": "elenco 4/5; um id termina em 25/09/2025 e o outro comeca em 26/09/2025"},
+    {"nome": "Komodo", "ids": [9939386, 9973599], "prova": "elenco 5/5 na epoca"},
+    {"nome": "Nigma Galaxy", "ids": [7554697, 10136357], "prova": "elenco 3/5; um id termina em 08/05/2026 e o outro comeca em 09/05/2026"}
+  ]
+}

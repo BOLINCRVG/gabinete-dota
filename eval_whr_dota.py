@@ -306,6 +306,19 @@ ROSTER_MESMA_HORA_MIN = 45
 # Elencos VERSIONADOS: o raw_matches.jsonl nao vai para o git e, no robo, so tem
 # as partidas baixadas no dia -- a uniao por elenco quase nao rodava em producao.
 ELENCOS_FILE = "elencos_times_dota.json"
+UNIOES_FILE = "uniao_ids_dota.json"
+
+
+def _unioes_auditadas(caminho: Path) -> list[list[int]]:
+    """[[id, id...]] da lista versionada. DOTA_UNIOES=0 desliga (uso da medicao)."""
+    import os
+    if os.environ.get("DOTA_UNIOES", "1") == "0":
+        return []
+    try:
+        dados = json.loads(Path(caminho).read_text(encoding="utf-8"))
+        return [[int(i) for i in u["ids"]] for u in dados.get("unioes", [])]
+    except (OSError, ValueError, TypeError, KeyError):
+        return []
 
 
 def _rosters_por_team_id(caminho: Path) -> dict[int, list[tuple[float, frozenset[int]]]]:
@@ -491,6 +504,20 @@ def roster_identity_map(m: pd.DataFrame, *, raw_path: Path | None = None,
         for i in (ra, rb):
             if i != rep:
                 grupo.pop(i, None)
+
+    # UNIOES AUDITADAS (08/11/2026): provadas com o elenco da mesma epoca, que o robo nao tem
+    # (so guarda os 30 ultimos jogos de cada id). Ver UNIOES_FILE.
+    for ids in _unioes_auditadas(Path(raw_path).with_name(UNIOES_FILE)):
+        raizes = {raiz(i) for i in ids if i in jogos}
+        if len(raizes) < 2:
+            continue
+        novo = set().union(*(grupo.get(r, {r}) for r in raizes))
+        rep = max(novo, key=lambda i: jogos.get(i, 0))
+        for r in raizes:
+            grupo.pop(r, None)
+        for i in novo:
+            pai[i] = rep
+        grupo[rep] = novo
     return {i: raiz(i) for i in jogos}
 
 
