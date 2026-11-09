@@ -7,6 +7,10 @@
     {"nome": "The Bug", "ids": [9658086, 10170364], "prova": "elenco 4/5; janelas sem sobreposicao"},
     {"nome": "ToLight", "ids": [9724713, 9895695], "prova": "elenco 4/5; um id termina em 25/09/2025 e o outro comeca em 26/09/2025"},
     {"nome": "Komodo", "ids": [9939386, 9973599], "prova": "elenco 5/5 na epoca"},
-    {"nome": "Nigma Galaxy", "ids": [7554697, 10136357], "prova": "elenco 3/5; um id termina em 08/05/2026 e o outro comeca em 09/05/2026"}
+    {"nome": "Nigma Galaxy", "ids": [7554697, 10136357], "prova": "elenco 3/5; um id termina em 08/05/2026 e o outro comeca em 09/05/2026"},
+    {"nome": "Yangon Galacticos", "ids": [7653080, 8944230, 9546449], "prova": "mesmos jogadores nos 3 ids, nunca se enfrentaram; o unico jogo 'na mesma hora' e o mapa seguinte da mesma serie (mesmo adversario, 22 min depois do fim do anterior)"},
+    {"nome": "Yellow Submarine", "ids": [2576071, 10207957], "prova": "o id antigo tem 1 jogo na propria Games of the Future 2026, com os mesmos 5 do id novo"},
+    {"nome": "Hokori", "ids": [1798457, 7119077], "prova": "o id antigo tem 1 jogo no mesmo qualifier da DreamLeague 29, com os mesmos 5 do id novo"},
+    {"nome": "PlayTime", "ids": [10020555, 10207983], "prova": "3 dos 5 titulares no ultimo torneio antes do id novo; o id antigo ficou parado de 19/06 a 19/09/2026, exatamente quando o novo jogou"}
   ]
 }
