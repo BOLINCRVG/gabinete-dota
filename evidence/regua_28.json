@@ -1,11 +1,11 @@
 {
- "gerado_em": "2026-11-14T03:16:19",
- "nota": 5.5,
+ "gerado_em": "2026-11-14T16:55:26",
+ "nota": 5.0,
  "por_area": {
-  "dados": 6.5,
+  "dados": 5.5,
   "modelo": 5.5,
-  "infra": 7.0,
-  "monitor": 6.5
+  "infra": 5.0,
+  "monitor": 6.0
  },
  "itens": [
   {
@@ -26,8 +26,8 @@
    "area": "dados",
    "n": 3,
    "item": "nenhuma feature custa demais",
-   "nota": 1.0,
-   "evidencia": "custo de cada camada medido e abaixo do teto (tools/custo_por_feature.py + test_custo_por_feature.py, na suite verde do robo)"
+   "nota": 0.5,
+   "evidencia": "custo de cada camada medido e abaixo do teto: existe, mas a suite nao esta verde no robo (suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros))"
   },
   {
    "area": "dados",
@@ -40,8 +40,8 @@
    "area": "dados",
    "n": 5,
    "item": "controles de privacidade no pipeline",
-   "nota": 1.0,
-   "evidencia": "nenhum dado pessoal alem do identificador profissional (tools/vigia_privacidade.py + test_vigia_privacidade.py, na suite verde do robo)"
+   "nota": 0.5,
+   "evidencia": "nenhum dado pessoal alem do identificador profissional: existe, mas a suite nao esta verde no robo (suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros))"
   },
   {
    "area": "dados",
@@ -110,8 +110,8 @@
    "area": "infra",
    "n": 1,
    "item": "treino reproduzivel",
-   "nota": 1.0,
-   "evidencia": "treinar duas vezes no mesmo CSV da o mesmo modelo (mlcore/train_offline.py + test_treino_reproduzivel.py, na suite verde do robo)"
+   "nota": 0.5,
+   "evidencia": "treinar duas vezes no mesmo CSV da o mesmo modelo: existe, mas a suite nao esta verde no robo (suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros))"
   },
   {
    "area": "infra",
@@ -124,8 +124,8 @@
    "area": "infra",
    "n": 3,
    "item": "pipeline com teste de integracao",
-   "nota": 1.0,
-   "evidencia": "suite inteira verde na esteira (suite.yml): 5872 testes, 0d"
+   "nota": 0.0,
+   "evidencia": "suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros)"
   },
   {
    "area": "infra",
@@ -152,8 +152,8 @@
    "area": "infra",
    "n": 7,
    "item": "da para reverter",
-   "nota": 1.0,
-   "evidencia": "reverter_modelo.py + ensaio de reversao na suite verde do robo"
+   "nota": 0.5,
+   "evidencia": "ferramenta e ensaio existem, mas a suite nao esta verde no robo: suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros)"
   },
   {
    "area": "monitor",
@@ -187,15 +187,15 @@
    "area": "monitor",
    "n": 5,
    "item": "numericamente estavel",
-   "nota": 1.0,
-   "evidencia": "nenhum NaN/infinito nos arquivos do modelo (tools/vigia_numerico.py + test_vigia_numerico.py, na suite verde do robo)"
+   "nota": 0.5,
+   "evidencia": "nenhum NaN/infinito nos arquivos do modelo: existe, mas a suite nao esta verde no robo (suite.yml: a suite FALHOU na ultima rodada (1 falhas, 0 erros))"
   },
   {
    "area": "monitor",
    "n": 6,
    "item": "desempenho computacional nao regrediu",
    "nota": 1.0,
-   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0192s, previsoes 0.0922s, suite 170.208s"
+   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0192s, previsoes 0.0911s, suite 186.639s"
   },
   {
    "area": "monitor",
