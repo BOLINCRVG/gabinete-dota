@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-15T02:18:38",
+ "gerado_em": "2026-11-15T17:35:08",
  "nota": 5.0,
  "por_area": {
   "dados": 5.5,
@@ -195,7 +195,7 @@
    "n": 6,
    "item": "desempenho computacional nao regrediu",
    "nota": 1.0,
-   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0192s, previsoes 0.0911s, suite 186.639s"
+   "evidencia": "tempo medido no robo (suite.yml): carregar 0.0152s, previsoes 0.0603s, suite 123.261s"
   },
   {
    "area": "monitor",
