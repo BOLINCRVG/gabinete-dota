@@ -1,0 +1,54 @@
+# PLACAR DAS APOSTAS (15/11/2026): grava as apostas com valor nas casas dele (regua: Pinnacle sem
+# margem) e fecha as que ja aconteceram pelo resultado oficial do mercado na Polymarket.
+# Ver tools/placar_apostas.py e app_core/placar_apostas_core.py.
+name: Placar das apostas
+
+on:
+  schedule:
+    - cron: "49 1,4,7,10,13,16,19,22 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apostas
+  cancel-in-progress: false
+
+jobs:
+  placar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Instalar
+        run: pip install --quiet -r requirements.txt
+      - name: Gravar e fechar as apostas
+        id: placar
+        run: |
+          set +e
+          python tools/placar_apostas.py
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::Polymarket fora do ar; as apostas novas foram gravadas, fecha na proxima."
+            exit 0
+          fi
+          exit "$rc"
+      - name: Commitar
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add -f apostas_dota.jsonl
+          git diff --cached --quiet && exit 0
+          git commit -m "Robo: placar das apostas atualizado"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || exit 1
+          done
+          git push

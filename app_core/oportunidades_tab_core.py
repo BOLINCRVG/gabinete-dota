@@ -256,6 +256,13 @@ def _secao_melhores_apostas(st: Any, *, ctx: Mapping[str, Any], odds: Mapping[st
                             resolver: Optional[Callable[[str], str]]) -> None:
     """As melhores apostas do dia, cruzadas com a estatistica (a aba propria)."""
     from app_core.modelo_mercado_core import linhas_com_valor, tabela_de_valor
+    # 15/11/2026: o valor nas casas DELE (Stake, Polymarket direta) contra a justa da Pinnacle, e o
+    # placar do que o robo ja gravou. Nunca derruba a aba.
+    try:
+        from app_core.placar_apostas_tab_core import render_valor_nas_casas
+        render_valor_nas_casas(st, Path(ctx.get("raiz") or "."))
+    except Exception as _e:  # pragma: no cover
+        st.caption(f"Valor nas suas casas indisponível agora ({type(_e).__name__}).")
 
     from app_core.modelo_mercado_core import aposta as _aposta
     from app_core.modelo_mercado_html_core import (

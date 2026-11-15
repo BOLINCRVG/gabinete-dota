@@ -123,11 +123,15 @@ def juntar(doc: Mapping[str, Any], poly: Mapping[str, Any], esp: str) -> Dict[st
                     "time2": p.get("time_b"), "torneio": p.get("torneio"), "inicio_utc": _iso(p.get("inicio_utc")),
                     "casas": {}, "linhas": {}, "so_polymarket": True}
             jogos.append(alvo)
-        elif _chave(alvo.get("time1")) != ka:
+        nomes = [p.get("time_a"), p.get("time_b")]
+        if _chave(alvo.get("time1")) != ka:
             mls, lins = _virar(mls, lins)
+            nomes = nomes[::-1]
         alvo["casas"] = dict(alvo.get("casas") or {}, polymarket=mls)
         alvo["linhas"] = dict(alvo.get("linhas") or {}, polymarket=lins)
         alvo["polymarket_direta"] = True
+        alvo["polymarket_evento"] = p.get("evento")          # por ele o placar das apostas fecha
+        alvo["polymarket_times"] = nomes                     # como a Polymarket escreve o time 1 e o 2
     fora["jogos"] = jogos
     fora["polymarket_coletado_em"] = poly.get("coletado_em")
     return fora
@@ -159,9 +163,13 @@ def enxertar(g: Mapping[str, Any], inv: bool, outros: List[Tuple[Mapping[str, An
             return dict(g), inv
     mls = dict((doador.get("casas") or {}).get("polymarket") or {})
     lins = list((doador.get("linhas") or {}).get("polymarket") or [])
+    nomes = list(doador.get("polymarket_times") or [])
     if inv_doador != inv_base:
         mls, lins = _virar(mls, lins)
+        nomes = nomes[::-1]
     novo = dict(base)
+    novo["polymarket_evento"] = doador.get("polymarket_evento")
+    novo["polymarket_times"] = nomes
     novo["casas"] = dict(base.get("casas") or {}, polymarket=mls)
     novo["linhas"] = dict(base.get("linhas") or {}, polymarket=lins)
     novo["polymarket_direta"] = True
