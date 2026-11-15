@@ -17,6 +17,7 @@ Arquivo identico no LoL e no Dota (o esporte sai de dota_paths.py).
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from html import escape
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional
@@ -61,14 +62,28 @@ def mercados(esp: str) -> Dict[str, int]:
     return {s + "1": 0, s + "47": 1, s + "49": 2, s + "51": 3}
 
 
-def carregar(raiz: Path) -> Dict[str, Any]:
+def carregar(raiz: Path, agora: Any = None) -> Dict[str, Any]:
+    """O retrato das casas (OddsPapi, uma leitura por dia) com a POLYMARKET DIRETA por cima
+    (15/11/2026: lida da API dela de hora em hora, sem gastar a cota -- polymarket_casa_core)."""
+    from app_core import polymarket_casa_core as pcc
     p = Path(raiz) / f"odds_casas_{esporte(raiz)}.json"
+    doc: Dict[str, Any]
     if not p.exists():
-        return {"jogos": [], "motivo": "o robo ainda nao coletou as suas casas"}
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {"jogos": [], "motivo": "arquivo das suas casas ilegivel"}
+        doc = {"jogos": [], "motivo": "o robo ainda nao coletou as suas casas"}
+    else:
+        try:
+            doc = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            doc = {"jogos": [], "motivo": "arquivo das suas casas ilegivel"}
+    poly = pcc.carregar_direta(Path(raiz))
+    if not poly.get("partidas"):
+        return doc
+    agora = agora or datetime.now(timezone.utc)
+    vivas = [x for x in poly["partidas"] if (pcc._quando(x.get("inicio_utc")) or agora) >= agora]
+    junto = pcc.juntar(doc, dict(poly, partidas=vivas), esporte(raiz))
+    if junto.get("jogos"):
+        junto.pop("motivo", None)
+    return junto
 
 
 def versao_da_marca(casas: Mapping[str, Any], marca: str) -> Optional[str]:
@@ -101,6 +116,9 @@ def achar(jogos: List[Mapping[str, Any]], time_a: str, time_b: str,
     if not achados:
         return None, False
     _, g, inv = min(achados, key=lambda x: x[0])
+    if len(achados) > 1:        # o mesmo jogo com nome diferente na OddsPapi e na Polymarket direta
+        from app_core.polymarket_casa_core import enxertar
+        g, inv = enxertar(g, inv, [(h, i) for _, h, i in achados])
     return g, inv
 
 
@@ -208,7 +226,7 @@ def idade_em_horas(lido_em: Any, agora: Any = None) -> Optional[float]:
     return ((agora or datetime.now(timezone.utc)) - t).total_seconds() / 3600.0
 
 
-def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str = "") -> str:
+def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str = "", poly_em: str = "") -> str:
     if not lins:
         return ""
 
@@ -266,6 +284,12 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
         if h is not None and h > 36:
             hora += (f' <b style="color:#f85149">ATENÇÃO: leitura de {int(h // 24)} dia(s) atrás '
                     f'({escape(str(lido_em)[:10])}) — odds paradas; a cota grátis do mês acabou e volta no dia 1º.</b>')
+    if poly_em:
+        from app_core.modelo_mercado_html_core import _hora_br
+        hp = idade_em_horas(poly_em)
+        hora += f" A <b>Polymarket</b> é lida direto dela, de hora em hora: {escape(_hora_br(poly_em))}, odd de compra."
+        if hp is not None and hp > 4:
+            hora += f' <b style="color:#f85149">A leitura da Polymarket está com {int(hp)} h.</b>'
     return (CSS_CASAS + '<table class="tc"><tr><th>Mercado</th><th style="text-align:left">Casa</th>'
             '<th>{}</th><th>{}</th></tr>'.format(escape(time_a), escape(time_b)) + corpo + '</table>'
             '<div class="nota">Odds das suas casas pela OddsPapi, uma leitura por dia.{} <b>Verde</b>: a casa paga MAIS '
@@ -323,7 +347,8 @@ def linhas_de_mapa(jogo: Mapping[str, Any], invertido: bool, esp: str = "lol",
         lista = todas[slug]
         nome = _nome_da_casa(slug)
         trocar = {}
-        for unidade, mapa in {(x[0], x[2]) for x in lista if x[1] == "spread"}:
+        direta = slug == "polymarket" and jogo.get("polymarket_direta")   # sinal conferido na fonte
+        for unidade, mapa in {(x[0], x[2]) for x in lista if x[1] == "spread" and not direta}:
             trocar[(unidade, mapa)] = _handicap_trocado(
                 [x for x in lista if x[1] == "spread" and x[0] == unidade and x[2] == mapa],
                 _favorito_do_mapa(jogo, esp, mapa))
@@ -554,7 +579,8 @@ def render_suas_casas(st: Any, *, raiz: Path, confronto: Mapping[str, Any],
     if not lins:
         st.caption("A OddsPapi tem este jogo, mas nenhuma das casas escolhidas abriu vencedor.")
     else:
-        _desenhar(st, html(time_a, time_b, lins, str(doc.get("lido_em") or "")), len(lins))
+        _desenhar(st, html(time_a, time_b, lins, str(doc.get("lido_em") or ""),
+                           str(doc.get("polymarket_coletado_em") or "")), len(lins))
     if not detalhado:
         # 29/10/2026, ele: "a tela esta muito poluida, varias coisas falando a mesma coisa". As
         # linhas das casas (kills, torres...) estao na Linha justa (casa trocavel) e na Analise

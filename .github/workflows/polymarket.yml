@@ -1,0 +1,52 @@
+# PRECO DA POLYMARKET (23/10/2026): segunda referencia de mercado, ao lado
+# da Pinnacle. Os dominios dela nao resolvem no Brasil; o robo (EUA) le a API
+# publica e grava polymarket_dota.json (agora) e polymarket_dota_historico.jsonl.
+name: Polymarket (preco de mercado)
+
+on:
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: polymarket
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Ler os precos
+        id: coleta
+        run: |
+          set +e
+          python tools/coletar_polymarket.py
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 75 ]; then
+            echo "::notice::Polymarket fora do ar ou rede caiu; tenta na proxima hora."
+            exit 0
+          fi
+          exit "$rc"
+      - name: Commitar
+        if: steps.coleta.outputs.rc == '0'
+        run: |
+          git config user.name "Robo Gabinete"
+          git config user.email "robo@gabinete.local"
+          git add polymarket_dota.json polymarket_dota_historico.jsonl
+          git diff --cached --quiet && exit 0
+          git commit -m "Robô: precos da Polymarket atualizados"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || exit 1
+          done
+          git push

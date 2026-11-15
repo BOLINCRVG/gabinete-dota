@@ -89,10 +89,13 @@ class TestCarregar(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             self.assertIn("motivo", carregar_polymarket(Path(d)))
 
-    def test_no_dota_diz_que_nao_coleta(self):
+    def test_no_dota_le_o_arquivo_do_dota(self):
         with tempfile.TemporaryDirectory() as d:
             (Path(d) / "dota_paths.py").write_text("", encoding="utf-8")
-            self.assertIn("Dota", carregar_polymarket(Path(d))["motivo"])
+            self.assertIn("motivo", carregar_polymarket(Path(d)))
+            (Path(d) / "polymarket_dota.json").write_text(json.dumps(
+                {"coletado_em": "2026-10-23T21:00:00+00:00", "partidas": POLY}), encoding="utf-8")
+            self.assertEqual(len(carregar_polymarket(Path(d))["partidas"]), len(POLY))
 
     def test_le_partidas(self):
         with tempfile.TemporaryDirectory() as d:

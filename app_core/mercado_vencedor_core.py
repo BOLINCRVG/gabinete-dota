@@ -59,10 +59,8 @@ def _num(x: Any) -> Optional[float]:
 
 def carregar_polymarket(raiz: Path, agora: Optional[datetime] = None) -> Dict[str, Any]:
     """{'partidas': [...], 'idade_horas', 'velha', 'motivo'}."""
-    if (Path(raiz) / "dota_paths.py").exists():
-        # Arquivo identico nos dois repos; o coletor so existe no LoL por ora.
-        return {"partidas": [], "motivo": "a Polymarket ainda nao e coletada para o Dota"}
-    p = Path(raiz) / ARQUIVO
+    # Arquivo identico nos dois repos (15/11/2026: o Dota tambem e coletado).
+    p = Path(raiz) / ("polymarket_dota.json" if (Path(raiz) / "dota_paths.py").exists() else ARQUIVO)
     if not p.exists():
         return {"partidas": [], "motivo": "o robo ainda nao coletou a Polymarket"}
     try:

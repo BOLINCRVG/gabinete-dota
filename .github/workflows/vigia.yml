@@ -20,4 +20,4 @@ jobs:
         with:
           python-version: "3.13"
       - name: Conferir a idade dos dados
-        run: python tools/vigia.py odds_pinnacle.json:lido_em:12 nota_jogadores_dota.json:gerado_em:48 odds_casas_dota.json:lido_em:48:opcional
+        run: python tools/vigia.py odds_pinnacle.json:lido_em:12 nota_jogadores_dota.json:gerado_em:48 polymarket_dota.json:coletado_em:8 odds_casas_dota.json:lido_em:48:opcional
