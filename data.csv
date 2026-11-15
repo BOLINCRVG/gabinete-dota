@@ -1,4 +1,44 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+9090701002,2026-11-15T01:00:03.000Z,2026,1win Essence III,10182357,1win,10331884,Froglings,radiant,1853,1,34,15,0,0,0,0,0,0,20486.0,1794704403.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
+9090701002,2026-11-15T01:00:03.000Z,2026,1win Essence III,10331884,Froglings,10182357,1win,dire,1853,0,15,34,0,0,0,0,0,0,20486.0,1794704403.0,False,0.0,partial,missing_objectives,opendota_api,,,,1.0
+9090631460,2026-11-14T23:18:17.000Z,2026,1win Essence III,10182357,1win,10331884,Froglings,radiant,4363,0,33,48,6,9,1,2,0,4,20486.0,1794698297.0,True,33.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9090631460,2026-11-14T23:18:17.000Z,2026,1win Essence III,10331884,Froglings,10182357,1win,dire,4363,1,48,33,9,6,2,1,4,0,20486.0,1794698297.0,True,33.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9090576268,2026-11-14T22:17:12.000Z,2026,1win Essence III,10182357,1win,10331884,Froglings,dire,1924,1,31,13,9,2,1,0,4,0,20486.0,1794694632.0,True,22.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9090576268,2026-11-14T22:17:12.000Z,2026,1win Essence III,10331884,Froglings,10182357,1win,radiant,1924,0,13,31,2,9,0,1,0,4,20486.0,1794694632.0,True,22.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9090500945,2026-11-14T21:05:07.000Z,2026,1win Essence III,9467224,Aurora Gaming,10282069,CyberHero,dire,2332,1,35,34,11,3,2,0,4,0,20486.0,1794690307.0,True,27.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9090500945,2026-11-14T21:05:07.000Z,2026,1win Essence III,10282069,CyberHero,9467224,Aurora Gaming,radiant,2332,0,34,35,3,11,0,2,0,4,20486.0,1794690307.0,True,27.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9090414768,2026-11-14T20:01:59.000Z,2026,1win Essence III,9467224,Aurora Gaming,10282069,CyberHero,dire,2276,1,31,12,9,1,1,0,4,0,20486.0,1794686519.0,True,22.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9090414768,2026-11-14T20:01:59.000Z,2026,1win Essence III,10282069,CyberHero,9467224,Aurora Gaming,radiant,2276,0,12,31,1,9,0,1,0,4,20486.0,1794686519.0,True,22.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9090331679,2026-11-14T18:59:47.000Z,2026,DreamLeague Division 2 Series 5,10020555,PlayTime,55,_PowerRangers,radiant,4635,1,39,29,11,7,3,2,6,1,20511.0,1794682787.0,True,49.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9090331679,2026-11-14T18:59:47.000Z,2026,DreamLeague Division 2 Series 5,55,_PowerRangers,10020555,PlayTime,dire,4635,0,29,39,7,11,2,3,1,6,20511.0,1794682787.0,True,49.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9090295298,2026-11-14T18:52:58.000Z,2026,1win Essence III,10291652,LEGION,2163,Team Liquid,dire,2452,1,39,18,10,3,2,0,5,0,20486.0,1794682378.0,True,27.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9090295298,2026-11-14T18:52:58.000Z,2026,1win Essence III,2163,Team Liquid,10291652,LEGION,radiant,2452,0,18,39,3,10,0,2,0,5,20486.0,1794682378.0,True,27.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9090241603,2026-11-14T18:01:50.000Z,2026,DreamLeague Division 2 Series 5,10020555,PlayTime,55,_PowerRangers,dire,1944,1,24,8,9,1,1,0,6,0,20511.0,1794679310.0,True,26.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9090241603,2026-11-14T18:01:50.000Z,2026,DreamLeague Division 2 Series 5,55,_PowerRangers,10020555,PlayTime,radiant,1944,0,8,24,1,9,0,1,0,6,20511.0,1794679310.0,True,26.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9090171021,2026-11-14T17:18:43.000Z,2026,1win Essence III,10291652,LEGION,2163,Team Liquid,dire,2950,0,13,33,4,8,1,1,0,4,20486.0,1794676723.0,True,30.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9090171021,2026-11-14T17:18:43.000Z,2026,1win Essence III,2163,Team Liquid,10291652,LEGION,radiant,2950,1,33,13,8,4,1,1,4,0,20486.0,1794676723.0,True,30.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9090050956,2026-11-14T16:02:16.000Z,2026,1win Essence III,10291652,LEGION,2163,Team Liquid,radiant,3069,1,28,23,11,5,1,1,6,0,20486.0,1794672136.0,True,36.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9090050956,2026-11-14T16:02:16.000Z,2026,1win Essence III,2163,Team Liquid,10291652,LEGION,dire,3069,0,23,28,5,11,1,1,0,6,20486.0,1794672136.0,True,36.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9090049848,2026-11-14T16:01:36.000Z,2026,DreamLeague Division 2 Series 5,10242397,Xipto,9600141,Zero Tenacity,dire,2260,0,16,51,3,9,1,0,0,5,20511.0,1794672096.0,True,25.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9090049848,2026-11-14T16:01:36.000Z,2026,DreamLeague Division 2 Series 5,9600141,Zero Tenacity,10242397,Xipto,radiant,2260,1,51,16,9,3,0,1,5,0,20511.0,1794672096.0,True,25.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9090044969,2026-11-14T15:59:33.000Z,2026,Party To Play league,10041178,Team Scorpio,9361469,МУРМУР,radiant,3721,1,74,48,10,5,3,1,4,0,16251.0,1794671973.0,True,34.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+9090044969,2026-11-14T15:59:33.000Z,2026,Party To Play league,9361469,МУРМУР,10041178,Team Scorpio,dire,3721,0,48,74,5,10,1,3,0,4,16251.0,1794671973.0,True,34.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+9089968791,2026-11-14T15:14:01.000Z,2026,Party To Play league,10143928,CRYSTALIS #1,10323560,ветмо,radiant,1339,1,43,14,6,0,0,0,0,0,16251.0,1794669241.0,True,8.0,ok,,opendota_api,0.0,1.0,,1.0
+9089968791,2026-11-14T15:14:01.000Z,2026,Party To Play league,10323560,ветмо,10143928,CRYSTALIS #1,dire,1339,0,14,43,0,6,0,0,0,0,16251.0,1794669241.0,True,8.0,ok,,opendota_api,1.0,0.0,,1.0
+9089893551,2026-11-14T14:31:23.000Z,2026,DreamLeague Division 2 Series 5,10242397,Xipto,9600141,Zero Tenacity,dire,3570,0,22,47,8,11,1,3,2,6,20511.0,1794666683.0,True,38.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9089893551,2026-11-14T14:31:23.000Z,2026,DreamLeague Division 2 Series 5,9600141,Zero Tenacity,10242397,Xipto,radiant,3570,1,47,22,11,8,3,1,6,2,20511.0,1794666683.0,True,38.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9089886596,2026-11-14T14:30:16.000Z,2026,1win Essence III,10331139,DO KONCA,2576071,Yellow Submarine,radiant,3286,1,45,23,11,5,0,3,6,0,20486.0,1794666616.0,True,31.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9089886596,2026-11-14T14:30:16.000Z,2026,1win Essence III,2576071,Yellow Submarine,10331139,DO KONCA,dire,3286,0,23,45,5,11,3,0,0,6,20486.0,1794666616.0,True,31.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9089764053,2026-11-14T13:14:21.000Z,2026,1win Essence III,10331139,DO KONCA,2576071,Yellow Submarine,dire,2972,1,29,19,9,3,3,0,5,0,20486.0,1794662061.0,True,29.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9089764053,2026-11-14T13:14:21.000Z,2026,1win Essence III,2576071,Yellow Submarine,10331139,DO KONCA,radiant,2972,0,19,29,3,9,0,3,0,5,20486.0,1794662061.0,True,29.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9089662627,2026-11-14T12:05:33.000Z,2026,DreamLeague Division 2 Series 5,10251974,Inner Circle x Insanity,5014799,Nemiga Gaming,radiant,3626,1,20,27,9,7,1,2,2,2,20511.0,1794657933.0,True,30.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9089662627,2026-11-14T12:05:33.000Z,2026,DreamLeague Division 2 Series 5,5014799,Nemiga Gaming,10251974,Inner Circle x Insanity,dire,3626,0,27,20,7,9,2,1,2,2,20511.0,1794657933.0,True,30.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9089662134,2026-11-14T12:05:10.000Z,2026,1win Essence III,10331139,DO KONCA,2576071,Yellow Submarine,radiant,2699,0,28,34,3,7,0,2,0,4,20486.0,1794657910.0,True,20.0,ok,,opendota_api,1.0,1.0,0.0,1.0
+9089662134,2026-11-14T12:05:10.000Z,2026,1win Essence III,2576071,Yellow Submarine,10331139,DO KONCA,dire,2699,1,34,28,7,3,2,0,4,0,20486.0,1794657910.0,True,20.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+9089593281,2026-11-14T11:10:05.000Z,2026,DreamLeague Division 2 Series 5,10251974,Inner Circle x Insanity,5014799,Nemiga Gaming,radiant,1998,1,21,6,7,2,2,0,1,0,20511.0,1794654605.0,True,21.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+9089593281,2026-11-14T11:10:05.000Z,2026,DreamLeague Division 2 Series 5,5014799,Nemiga Gaming,10251974,Inner Circle x Insanity,dire,1998,0,6,21,2,7,0,2,0,1,20511.0,1794654605.0,True,21.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+9089567599,2026-11-14T10:50:49.000Z,2026,1win Essence III,10291652,LEGION,15,LGD Gaming,dire,2378,0,17,27,3,9,0,1,0,4,20486.0,1794653449.0,True,25.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+9089567599,2026-11-14T10:50:49.000Z,2026,1win Essence III,15,LGD Gaming,10291652,LEGION,radiant,2378,1,27,17,9,3,1,0,4,0,20486.0,1794653449.0,True,25.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 9089520696,2026-11-14T10:07:58.000Z,2026,DreamLeague Division 2 Series 5,10251974,Inner Circle x Insanity,5014799,Nemiga Gaming,radiant,2415,0,17,42,2,9,0,1,0,6,20511.0,1794650878.0,True,22.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 9089520696,2026-11-14T10:07:58.000Z,2026,DreamLeague Division 2 Series 5,5014799,Nemiga Gaming,10251974,Inner Circle x Insanity,dire,2415,1,42,17,9,2,1,0,6,0,20511.0,1794650878.0,True,22.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 9089448051,2026-11-14T09:02:02.000Z,2026,1win Essence III,10291652,LEGION,15,LGD Gaming,radiant,3857,0,28,41,6,11,1,3,0,5,20486.0,1794646922.0,True,39.0,ok,,opendota_api,1.0,1.0,0.0,1.0
