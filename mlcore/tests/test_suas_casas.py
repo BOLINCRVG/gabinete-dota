@@ -189,5 +189,14 @@ class TestHandicapDeMapasELinhaJusta(unittest.TestCase):
         self.assertEqual(sc.linhas_automaticas({}, "kills"), [])
 
 
+    def test_leitura_velha_avisa(self):
+        from datetime import datetime, timezone
+        agora = datetime(2026, 11, 15, 12, tzinfo=timezone.utc)
+        self.assertAlmostEqual(sc.idade_em_horas("2026-11-15T06:00:00+00:00", agora), 6.0)
+        self.assertGreater(sc.idade_em_horas("2026-11-05T11:39:46+00:00", agora), 200)
+        self.assertIsNone(sc.idade_em_horas("ontem"))
+        self.assertGreater(sc.idade_em_horas("2020-01-01T00:00:00Z"), 36)
+
+
 if __name__ == "__main__":
     unittest.main()

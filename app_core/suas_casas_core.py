@@ -196,6 +196,18 @@ CSS_CASAS = """
 """
 
 
+def idade_em_horas(lido_em: Any, agora: Any = None) -> Optional[float]:
+    """Horas desde a leitura das casas (None se a data nao der para ler). Pura."""
+    from datetime import datetime, timezone
+    try:
+        t = datetime.fromisoformat(str(lido_em).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=timezone.utc)
+    return ((agora or datetime.now(timezone.utc)) - t).total_seconds() / 3600.0
+
+
 def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str = "") -> str:
     if not lins:
         return ""
@@ -248,9 +260,15 @@ def html(time_a: str, time_b: str, lins: List[Mapping[str, Any]], lido_em: str =
     if lido_em:
         from app_core.modelo_mercado_html_core import _hora_br
         hora = f" Leitura de {escape(_hora_br(lido_em))} (Brasília)."
+        # 15/11/2026: a cota gratis da OddsPapi (250 leituras/mes) acabava no dia 5 e as odds ficavam
+        # paradas sem aviso. A idade da leitura fica a vista.
+        h = idade_em_horas(lido_em)
+        if h is not None and h > 36:
+            hora += (f' <b style="color:#f85149">ATENÇÃO: leitura de {int(h // 24)} dia(s) atrás '
+                    f'({escape(str(lido_em)[:10])}) — odds paradas; a cota grátis do mês acabou e volta no dia 1º.</b>')
     return (CSS_CASAS + '<table class="tc"><tr><th>Mercado</th><th style="text-align:left">Casa</th>'
             '<th>{}</th><th>{}</th></tr>'.format(escape(time_a), escape(time_b)) + corpo + '</table>'
-            '<div class="nota">Odds das suas casas pela OddsPapi, de 3 em 3 h.{} <b>Verde</b>: a casa paga MAIS '
+            '<div class="nota">Odds das suas casas pela OddsPapi, uma leitura por dia.{} <b>Verde</b>: a casa paga MAIS '
             'que o preço justo da Pinnacle (sem margem) no mesmo instante. <b>★</b>: o modelo também vê '
             'valor nesse preço.</div>'.format(hora))
 

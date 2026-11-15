@@ -64,7 +64,12 @@ class TestOsColetadosAPARECEM(unittest.TestCase):
         Os salvos dele no dia do relato eram de 15/05, quatro meses velhos.
         Deixar os de hoje embaixo deles seria manter o problema.
         """
-        r = juntar_para_escolher([_salvo()], [_coletado()])
+        # 15/11/2026: o teste dependia do relogio (o "16/09" fixo virou passado e o salvo subiu).
+        # O coletado e um jogo POR VIR de verdade: comeca daqui a 6 h.
+        from datetime import datetime, timedelta, timezone
+        por_vir = (datetime.now(timezone.utc) + timedelta(hours=6)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        ontem = (datetime.now(timezone.utc) - timedelta(days=2)).strftime("%d/%m")
+        r = juntar_para_escolher([_salvo(date=ontem, time="00:00")], [_coletado(inicio_utc=por_vir)])
         self.assertEqual(r[0]["origem"], ORIGEM_COLETADO)
         self.assertEqual(r[-1]["origem"], ORIGEM_SALVO)
 

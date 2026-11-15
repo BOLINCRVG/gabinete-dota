@@ -5,7 +5,7 @@ name: Casas Dota 2 (OddsPapi)
 
 on:
   schedule:
-    - cron: "57 */3 * * *"
+    - cron: "57 8 * * *"   # 1 corrida por dia (cota de 250 chamadas/mes dividida entre LoL, Dota e CS)
   workflow_dispatch: {}
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add -f odds_casas_dota.json odds_casas_dota_historico.jsonl catalogo_casas_dota.json
+          git add -f odds_casas_dota.json odds_casas_dota_historico.jsonl
           git diff --cached --quiet && exit 0
           git commit -m "Robô: odds de outras casas (Dota 2)"
           for i in 1 2 3; do
