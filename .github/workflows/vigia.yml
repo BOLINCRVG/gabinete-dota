@@ -1,0 +1,23 @@
+# VIGIA (15/11/2026): falha em vermelho quando um dado do robo fica velho -- os coletores saem
+# "sucesso" quando a rede falha, e em novembro duas fontes ficaram dias paradas sem ninguem ver.
+name: Vigia dos dados (Dota)
+
+on:
+  schedule:
+    - cron: "31 11 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  vigia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Conferir a idade dos dados
+        run: python tools/vigia.py odds_pinnacle.json:lido_em:12 nota_jogadores_dota.json:gerado_em:48 odds_casas_dota.json:lido_em:48:opcional
