@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-16T16:02:33",
+ "gerado_em": "2026-11-16T19:34:29",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -75,29 +75,29 @@
   "18865": {
    "nome": "EPL World Series: Southeast Asia 2025-2026 Season",
    "tier": "excluded",
-   "partidas": 502,
+   "partidas": 609,
    "pct_pro": 64.3,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "64% das participacoes sao de times do universo profissional (502 partidas; rodada 1)"
+   "motivo": "64% das participacoes sao de times do universo profissional (609 partidas; rodada 1)"
   },
   "18866": {
    "nome": "European Pro League  2025-2026 Season",
    "tier": "excluded",
-   "partidas": 672,
-   "pct_pro": 73.7,
-   "ate": "2026-06-16",
+   "partidas": 780,
+   "pct_pro": 73.5,
+   "ate": "2026-09-25",
    "promovida": true,
-   "motivo": "74% das participacoes sao de times do universo profissional (672 partidas; rodada 1)"
+   "motivo": "74% das participacoes sao de times do universo profissional (780 partidas; rodada 1)"
   },
   "18867": {
    "nome": "Ultras Dota Pro League  2025-26",
    "tier": "excluded",
-   "partidas": 3560,
-   "pct_pro": 52.8,
+   "partidas": 3865,
+   "pct_pro": 51.2,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "53% das participacoes sao de times do universo profissional (3560 partidas; rodada 1)"
+   "motivo": "51% das participacoes sao de times do universo profissional (3865 partidas; rodada 1)"
   },
   "18940": {
    "nome": "Tennisi Stampede Champions - Season 1",
@@ -353,11 +353,11 @@
   "20026": {
    "nome": "Asgard Championship",
    "tier": "excluded",
-   "partidas": 130,
+   "partidas": 136,
    "pct_pro": 65.8,
-   "ate": "2026-11-15",
+   "ate": "2026-11-16",
    "promovida": true,
-   "motivo": "66% das participacoes sao de times do universo profissional (130 partidas; rodada 1)"
+   "motivo": "66% das participacoes sao de times do universo profissional (136 partidas; rodada 1)"
   },
   "20030": {
    "nome": "The Boris Invitational: Streamer Battles 2",
@@ -392,21 +392,21 @@
   "20206": {
    "nome": "NEXUS SERIES I",
    "tier": "excluded",
-   "partidas": 27,
-   "pct_pro": 22.2,
-   "ate": "2026-09-13",
+   "partidas": 37,
+   "pct_pro": 24.3,
+   "ate": "2026-09-15",
    "promovida": false,
-   "motivo": "liga de nível mais baixo: 22% de times profissionais (corte: 50%)",
+   "motivo": "liga de nível mais baixo: 24% de times profissionais (corte: 50%)",
    "nivel_baixo": true
   },
   "20212": {
    "nome": "Esportsprocircuit",
    "tier": "excluded",
-   "partidas": 150,
-   "pct_pro": 24.0,
-   "ate": "2026-11-15",
+   "partidas": 208,
+   "pct_pro": 22.6,
+   "ate": "2026-11-16",
    "promovida": false,
-   "motivo": "liga de nível mais baixo: 24% de times profissionais (corte: 50%)",
+   "motivo": "liga de nível mais baixo: 23% de times profissionais (corte: 50%)",
    "nivel_baixo": true
   },
   "20247": {
@@ -441,11 +441,11 @@
   "20277": {
    "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
    "tier": "excluded",
-   "partidas": 50,
-   "pct_pro": 58.0,
+   "partidas": 56,
+   "pct_pro": 59.8,
    "ate": "2026-11-16",
    "promovida": true,
-   "motivo": "58% das participacoes sao de times do universo profissional (50 partidas; rodada 2)"
+   "motivo": "60% das participacoes sao de times do universo profissional (56 partidas; rodada 2)"
   },
   "20334": {
    "nome": "NEXUS SERIES II",
@@ -2502,6 +2502,41 @@
   "20018": {
    "nome": "Phoenix Season 5 Intermediate Division",
    "ids": 17,
+   "time_pro": false
+  },
+  "20539": {
+   "nome": "UESF UKRANIAN CHAMPIONSHIP 2026 STAGE 5",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20170": {
+   "nome": "新和电竞 DOTA2 联赛 Xinhe League",
+   "ids": 65,
+   "time_pro": false
+  },
+  "20168": {
+   "nome": "Team Spirit Academy Selection 2026",
+   "ids": 3,
+   "time_pro": false
+  },
+  "20099": {
+   "nome": "lsesports.ru x MirrorShard",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20098": {
+   "nome": "杀波大会",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20068": {
+   "nome": "BCC Tournament",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20033": {
+   "nome": "InterRAO 2026",
+   "ids": 80,
    "time_pro": false
   }
  }
