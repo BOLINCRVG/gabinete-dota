@@ -43,9 +43,10 @@ class TestIdentidadeTimes(unittest.TestCase):
             (11, "Shinigami Gaming", 99, "A", 3.0),
         ]))
         self.assertNotEqual(canon[10], canon[11])
-        # o de mais jogos fica com o nome limpo
-        self.assertEqual(canon[10], "Shinigami Gaming")
-        self.assertIn("11", canon[11])
+        # 16/11/2026: o que jogou POR ULTIMO fica com o nome limpo (caso LGD: a casa chama
+        # pelo nome o time de HOJE, e o elenco antigo tinha mais jogos)
+        self.assertEqual(canon[11], "Shinigami Gaming")
+        self.assertIn("10", canon[10])
 
     def test_caixa_e_homoglifo_nao_atrapalham_quando_o_id_e_o_mesmo(self) -> None:
         """Business Club/business club e EYE Gaming/Eуе Gaming (cirilico)."""

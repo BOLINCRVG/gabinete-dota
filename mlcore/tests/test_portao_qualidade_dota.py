@@ -35,6 +35,25 @@ class TestDecisao(unittest.TestCase):
     def test_reprova_nan(self):
         self.assertFalse(decidir({"n": 5300, "logloss": float("nan")}, ANTIGO)[0])
 
+    def test_liga_nova_mais_dificil_nao_conta_como_piora(self):
+        # 16/11/2026: entraram ligas novas (mais dificeis); nos torneios comuns o modelo empatou
+        antigo_t = [{"torneio": "A", "n": 3000, "logloss": 0.57}, {"torneio": "B", "n": 2000, "logloss": 0.59}]
+        novo_t = antigo_t[:1] + [{"torneio": "B", "n": 2010, "logloss": 0.595},
+                                 {"torneio": "Nova", "n": 3500, "logloss": 0.64}]
+        ok, motivo = decidir({"n": 8510, "logloss": 0.60}, {"n": 5000, "logloss": 0.578}, novo_t, antigo_t)
+        self.assertTrue(ok, motivo)
+        self.assertIn("mesmos torneios", motivo)
+
+    def test_piora_nos_mesmos_torneios_reprova(self):
+        antigo_t = [{"torneio": "A", "n": 3000, "logloss": 0.57}]
+        novo_t = [{"torneio": "A", "n": 3000, "logloss": 0.60}]
+        self.assertFalse(decidir({"n": 3000, "logloss": 0.60}, {"n": 3000, "logloss": 0.57}, novo_t, antigo_t)[0])
+
+    def test_mesmos_torneios_com_menos_jogos_reprova(self):
+        antigo_t = [{"torneio": "A", "n": 3000, "logloss": 0.57}]
+        novo_t = [{"torneio": "A", "n": 2000, "logloss": 0.57}, {"torneio": "Nova", "n": 4000, "logloss": 0.6}]
+        self.assertFalse(decidir({"n": 6000, "logloss": 0.59}, {"n": 3000, "logloss": 0.57}, novo_t, antigo_t)[0])
+
 
 class TestEsteira(unittest.TestCase):
 

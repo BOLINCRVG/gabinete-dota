@@ -139,8 +139,12 @@ def canonical_team_names(m: pd.DataFrame,
     Chavear por team_id conserta os dois lados de uma vez.
 
     Canonico = o nome MAIS RECENTE daquele id (a tela mostra como o time se chama
-    hoje). Quando dois ids terminam com o mesmo nome, o de mais jogos fica com o
-    nome limpo e os outros recebem sufixo — senao a colisao desfaria a separacao.
+    hoje). Quando dois ids terminam com o mesmo nome, o que jogou POR ULTIMO fica
+    com o nome limpo e os outros recebem sufixo — senao a colisao desfaria a
+    separacao. (Ate 16/11/2026 era "o de mais jogos": a LGD trocou de elenco e o
+    time ATUAL, id 15, virou "LGD Gaming #15", enquanto o nome limpo ficou com o
+    elenco antigo, parado desde agosto. As casas e a agenda dizem "LGD Gaming" e o
+    app abria o time errado. Quem a casa chama pelo nome e sempre o time de hoje.)
 
     NOTA para quem mexer: o canonico muda quando a org se renomeia, entao a chave
     do modelo muda junto. Isso e seguro porque a esteira do Dota regenera o CSV
@@ -211,12 +215,17 @@ def canonical_team_names(m: pd.DataFrame,
     donos: dict[str, set[int]] = {}
     for i, n in canon.items():
         donos.setdefault(n, set()).add(_grupo(i))
+    ultimo_do_grupo: dict[int, float] = {}
+    for i, (t, _n) in melhor.items():
+        g = _grupo(i)
+        ultimo_do_grupo[g] = max(ultimo_do_grupo.get(g, float("-inf")), t)
     for n, grupos in donos.items():
         if len(grupos) < 2:
             continue
         jogos_do_grupo = {g: sum(jogos.get(i, 0) for i in canon if _grupo(i) == g)
                           for g in grupos}
-        for g in sorted(grupos, key=lambda x: -jogos_do_grupo.get(x, 0))[1:]:
+        ordem = sorted(grupos, key=lambda x: (-ultimo_do_grupo.get(x, float("-inf")), -jogos_do_grupo.get(x, 0)))
+        for g in ordem[1:]:
             for i in [k for k in canon if _grupo(k) == g]:
                 canon[i] = f"{n} #{g}"
     return canon

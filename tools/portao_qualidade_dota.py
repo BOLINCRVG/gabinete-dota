@@ -20,6 +20,13 @@ alarme do LoL, tools/ml_quality_check.py); ou o numero de jogos medidos caiu mai
 de 10% (sinal classico de CSV truncado).
 A esteira, ao reprovar, publica os DADOS e mantem o MODELO anterior no ar.
 
+O MESMO CONJUNTO DE JOGOS (16/11/2026). Em 16/11 a base passou a ter as ligas que a OpenDota marca
+"excluded" mas sao de times profissionais (ligas_dota.py): a nota foi de 5.645 para 9.196 jogos e o
+logloss geral de 0,578 para 0,600 -- e o portao reprovou. Nao era o modelo: medido as cegas nos
+MESMOS jogos, o modelo novo empatou (+0,0008, IC95 [-0,0027; +0,0042]); o que mudou foi o conjunto,
+agora com ligas mais dificeis. Por isso a comparacao com o publicado e feita nos TORNEIOS QUE
+EXISTEM NOS DOIS (media ponderada por jogos). Torneio novo entra na nota, nao na "piora".
+
 FONTE (PDF aberto em 22/10/2026): Breck et al., "The ML Test Score", item de
 infraestrutura "Model quality is validated before attempting to serve it".
 https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/aad9f93b86b7addfea4c419b9100c6cdd26cacea.pdf
@@ -40,8 +47,26 @@ QUEDA_N = 0.10
 ARQ = "evidence/dota_scorecard.json"
 
 
-def decidir(novo: dict | None, antigo: dict | None) -> tuple[bool, str]:
-    """Pura (testavel). novo/antigo = o bloco 'geral' do dota_scorecard."""
+def comuns(novo_t: list | None, antigo_t: list | None) -> tuple[dict, dict] | None:
+    """Pura: ({logloss, n} do novo, idem do antigo) so nos torneios presentes nos dois, ou None."""
+    if not novo_t or not antigo_t:
+        return None
+    a = {str(x.get("torneio")): x for x in antigo_t if x.get("n")}
+    b = {str(x.get("torneio")): x for x in novo_t if x.get("n")}
+    ks = [k for k in b if k in a]
+    if not ks:
+        return None
+
+    def _media(t):
+        n = sum(int(t[k]["n"]) for k in ks)
+        return {"logloss": sum(float(t[k]["logloss"]) * int(t[k]["n"]) for k in ks) / n, "n": n}
+    return _media(b), _media(a)
+
+
+def decidir(novo: dict | None, antigo: dict | None, novo_t: list | None = None,
+            antigo_t: list | None = None) -> tuple[bool, str]:
+    """Pura (testavel). novo/antigo = o bloco 'geral' do dota_scorecard; novo_t/antigo_t = a lista
+    'torneios' (quando vem, a piora e medida nos torneios comuns)."""
     if not novo:
         return False, "a nota nao foi medida nesta rodada"
     try:
@@ -52,6 +77,16 @@ def decidir(novo: dict | None, antigo: dict | None) -> tuple[bool, str]:
         return False, f"logloss nao e numero ({ll})"
     if ll >= MOEDA:
         return False, f"logloss {ll:.4f} e pior que moeda ({MOEDA:.4f})"
+    par = comuns(novo_t, antigo_t)
+    if antigo and par:
+        (cn, ca) = par
+        if cn["logloss"] - ca["logloss"] > FAIL_DELTA:
+            return False, (f"logloss piorou {cn['logloss'] - ca['logloss']:+.4f} nos mesmos torneios "
+                           f"(de {ca['logloss']:.4f} para {cn['logloss']:.4f}; limite {FAIL_DELTA})")
+        if cn["n"] < (1 - QUEDA_N) * ca["n"]:
+            return False, f"jogos medidos nos mesmos torneios cairam de {ca['n']} para {cn['n']} (CSV truncado?)"
+        return True, (f"ok: logloss {ll:.4f} em {n} jogos; nos mesmos torneios {ca['logloss']:.4f} -> "
+                      f"{cn['logloss']:.4f} ({cn['n']} jogos)")
     if antigo:
         try:
             ll0, n0 = float(antigo["logloss"]), int(antigo["n"])
@@ -64,26 +99,32 @@ def decidir(novo: dict | None, antigo: dict | None) -> tuple[bool, str]:
     return True, f"ok: logloss {ll:.4f} em {n} jogos"
 
 
-def _publicado() -> dict | None:
+def _publicado_doc() -> dict:
     try:
-        r = subprocess.run(["git", "show", f"HEAD:{ARQ}"], capture_output=True, text=True, timeout=60)
-        return json.loads(r.stdout).get("geral") if r.returncode == 0 else None
+        r = subprocess.run(["git", "show", f"HEAD:{ARQ}"], capture_output=True, text=True, timeout=60,
+                           encoding="utf-8")
+        return json.loads(r.stdout) if r.returncode == 0 else {}
     except (OSError, ValueError, subprocess.SubprocessError):
-        return None
+        return {}
+
+
+def _publicado() -> dict | None:
+    return _publicado_doc().get("geral")
 
 
 def main() -> int:
+    novo_t = None
     try:
-        atual_txt = Path(ARQ).read_text(encoding="utf-8")
-        novo = json.loads(atual_txt).get("geral")
+        atual = json.loads(Path(ARQ).read_text(encoding="utf-8"))
+        novo, novo_t = atual.get("geral"), atual.get("torneios")
     except (OSError, ValueError):
         novo = None
     # "a nota rodou nesta rodada?" quem sabe e a esteira (resultado do passo);
     # ela chama com --nao-medida quando o dota_scorecard falhou.
     if "--nao-medida" in sys.argv:
         novo = None
-    antigo = _publicado()
-    ok, motivo = decidir(novo, antigo)
+    pub = _publicado_doc()
+    ok, motivo = decidir(novo, pub.get("geral"), novo_t, pub.get("torneios"))
     print(f"[portao_qualidade_dota] {'APROVADO' if ok else 'REPROVADO'} -- {motivo}")
     return 0 if ok else 1
 
