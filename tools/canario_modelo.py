@@ -27,6 +27,11 @@ infraestrutura "The model is tested via a canary process before it enters
 production serving environments".
 https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/aad9f93b86b7addfea4c419b9100c6cdd26cacea.pdf
 
+LIBERACAO DATADA (16/11/2026). Mudanca grande DE PROPOSITO (ex.: entraram de uma vez milhares de
+jogos que faltavam) barraria todo dia. evidence/canario_liberacao.json = {"ate": "AAAA-MM-DD",
+"motivo": "..."}: ate a data o canario mede, imprime e DEIXA PASSAR, dizendo por que; depois volta
+a barrar sozinho. A liberacao fica versionada (quem, quando, por que).
+
 Uso: python tools/canario_modelo.py               (novo no disco x HEAD)
      python tools/canario_modelo.py --historico   (mede os tetos no git)
 """
@@ -120,6 +125,17 @@ def historico(n=15) -> int:
     return 0
 
 
+def liberacao(hoje=None) -> dict | None:
+    """A liberacao datada em vigor, ou None. Pura fora a leitura."""
+    from datetime import date
+    try:
+        d = json.loads((RAIZ / "evidence" / "canario_liberacao.json").read_text(encoding="utf-8"))
+        ate = date.fromisoformat(str(d.get("ate")))
+    except (OSError, ValueError, TypeError):
+        return None
+    return d if (hoje or date.today()) <= ate else None
+
+
 def main() -> int:
     if "--historico" in sys.argv:
         return historico()
@@ -136,6 +152,10 @@ def main() -> int:
           f"fatia > {TETO_GRANDE}: {r['fatia_grande']}, max {r.get('max')}")
     for m in r["motivos"]:
         print("BARRADO:", m)
+    lib = liberacao()
+    if not r["ok"] and lib:
+        print(f"[canario] LIBERADO ate {lib.get('ate')}: {lib.get('motivo')}")
+        return 0
     print("[canario] " + ("PASSOU" if r["ok"] else "BARROU o modelo novo"))
     return 0 if r["ok"] else 1
 

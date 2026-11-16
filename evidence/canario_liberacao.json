@@ -1,0 +1,6 @@
+{
+ "ate": "2026-11-17",
+ "autorizado_por": "ele, no chat em 16/11/2026 ('Sim', a pergunta: liberar o canario por 2 dias)",
+ "motivo": "Entraram as ligas reais que a OpenDota marca excluded (European Pro League, Ultras, CCT, Asgard...): milhares de jogos que faltavam. Nos 500 jogos do canario, 452 tem time que ganhou 5+ partidas dessas ligas: mudanca grande em 20,1% deles; nos outros 48, 6,2% (abaixo do teto de 10%). Cego (holdout de 30 dias, mesmos jogos das ligas que ja eram profissionais): modelo com as ligas +0,0008 IC95 [-0,0027; +0,0042], sem piora. O portao de qualidade (mesmos torneios) aprovou.",
+ "medicao": "scratchpad canario_explicar.py e medir_modelo_promovidas.py (16/11/2026)"
+}
