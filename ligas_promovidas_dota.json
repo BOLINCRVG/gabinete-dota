@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-15T23:00:55",
+ "gerado_em": "2026-11-16T02:44:35",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -68,11 +68,11 @@
   "18865": {
    "nome": "EPL World Series: Southeast Asia 2025-2026 Season",
    "tier": "excluded",
-   "partidas": 400,
-   "pct_pro": 68.5,
-   "ate": "2026-06-15",
+   "partidas": 436,
+   "pct_pro": 64.6,
+   "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "68% das participacoes sao de times do universo profissional (400 partidas; rodada 1)"
+   "motivo": "65% das participacoes sao de times do universo profissional (436 partidas; rodada 1)"
   },
   "18866": {
    "nome": "European Pro League  2025-2026 Season",
@@ -86,11 +86,11 @@
   "18867": {
    "nome": "Ultras Dota Pro League  2025-26",
    "tier": "excluded",
-   "partidas": 3136,
-   "pct_pro": 56.1,
-   "ate": "2026-06-10",
+   "partidas": 3221,
+   "pct_pro": 55.5,
+   "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "56% das participacoes sao de times do universo profissional (3136 partidas; rodada 1)"
+   "motivo": "56% das participacoes sao de times do universo profissional (3221 partidas; rodada 1)"
   },
   "18940": {
    "nome": "Tennisi Stampede Champions - Season 1",
@@ -329,11 +329,11 @@
   "20026": {
    "nome": "Asgard Championship",
    "tier": "excluded",
-   "partidas": 32,
-   "pct_pro": 46.9,
-   "ate": "2026-08-03",
-   "promovida": false,
-   "motivo": "so 47% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "partidas": 130,
+   "pct_pro": 65.8,
+   "ate": "2026-11-15",
+   "promovida": true,
+   "motivo": "66% das participacoes sao de times do universo profissional (130 partidas; rodada 1)"
   },
   "20030": {
    "nome": "The Boris Invitational: Streamer Battles 2",
@@ -371,14 +371,50 @@
    "promovida": false,
    "motivo": "so 22% das participacoes sao de times do universo profissional (precisa de 50%)"
   },
+  "20247": {
+   "nome": "Pakistan Dota Masters - Season 3",
+   "tier": "excluded",
+   "partidas": 32,
+   "pct_pro": 0.0,
+   "ate": "2026-11-01",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20275": {
+   "nome": "Ultras Dota Pro League  2026-2027",
+   "tier": "excluded",
+   "partidas": 200,
+   "pct_pro": 34.0,
+   "ate": "2026-11-15",
+   "promovida": false,
+   "motivo": "so 34% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20276": {
+   "nome": "European Pro League  2026-2027 Season",
+   "tier": "excluded",
+   "partidas": 22,
+   "pct_pro": 54.5,
+   "ate": "2026-11-15",
+   "promovida": true,
+   "motivo": "54% das participacoes sao de times do universo profissional (22 partidas; rodada 1)"
+  },
+  "20277": {
+   "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
+   "tier": "excluded",
+   "partidas": 49,
+   "pct_pro": 45.9,
+   "ate": "2026-11-15",
+   "promovida": false,
+   "motivo": "so 46% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
   "20334": {
    "nome": "NEXUS SERIES II",
    "tier": "excluded",
-   "partidas": 37,
-   "pct_pro": 35.1,
-   "ate": "2026-10-21",
+   "partidas": 61,
+   "pct_pro": 45.9,
+   "ate": "2026-11-01",
    "promovida": false,
-   "motivo": "so 35% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "so 46% das participacoes sao de times do universo profissional (precisa de 50%)"
   },
   "20411": {
    "nome": "奇迹杯",
@@ -388,6 +424,24 @@
    "ate": "2026-10-19",
    "promovida": false,
    "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20417": {
+   "nome": "FONBET MEDIA ELEAGUE SEASON 5 DOTA2 2026",
+   "tier": "excluded",
+   "partidas": 46,
+   "pct_pro": 0.0,
+   "ate": "2026-11-11",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20457": {
+   "nome": "IV Киберспортивный турнир Сбера по Dota 2 [5x5]",
+   "tier": "excluded",
+   "partidas": 8,
+   "pct_pro": 75.0,
+   "ate": "2026-11-01",
+   "promovida": true,
+   "motivo": "liga nova: 75% das participacoes de times profissionais"
   },
   "20471": {
    "nome": "Кубок России Сбера 2026 [3 этап]",
@@ -409,7 +463,1168 @@
    "nome": "Asgard Championship",
    "desde": "2026-11-16",
    "motivo": "times profissionais jogando nela (apontada por ele em 16/11/2026)"
+  },
+  "20457": {
+   "nome": "IV Киберспортивный турнир Сбера по Dota 2 [5x5]",
+   "desde": "2026-11-16",
+   "motivo": "time do universo profissional jogando nela (varredura)"
+  },
+  "20417": {
+   "nome": "FONBET MEDIA ELEAGUE SEASON 5 DOTA2 2026",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova de uma liga do universo profissional (pelo nome)"
+  },
+  "20389": {
+   "nome": "BLAST Slam IX China Qualifier",
+   "desde": "2026-11-16",
+   "motivo": "time do universo profissional jogando nela (varredura)"
+  },
+  "20334": {
+   "nome": "NEXUS SERIES II",
+   "desde": "2026-11-16",
+   "motivo": "time do universo profissional jogando nela (varredura)"
+  },
+  "20278": {
+   "nome": "EPL Championship 2026-2027",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova de uma liga do universo profissional (pelo nome)"
+  },
+  "20277": {
+   "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova de uma liga do universo profissional (pelo nome)"
+  },
+  "20275": {
+   "nome": "Ultras Dota Pro League  2026-2027",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova de uma liga do universo profissional (pelo nome)"
+  },
+  "20247": {
+   "nome": "Pakistan Dota Masters - Season 3",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova de uma liga do universo profissional (pelo nome)"
   }
  },
- "julgadas": {}
+ "julgadas": {
+  "65017": {
+   "nome": "Dota 2 Holiday Dream Challenge",
+   "ids": 0,
+   "time_pro": false
+  },
+  "65016": {
+   "nome": "IXDL Southeast Asian Invite League",
+   "ids": 125,
+   "time_pro": false
+  },
+  "65015": {
+   "nome": "Sri Lanka Cyber Games 2013",
+   "ids": 10,
+   "time_pro": false
+  },
+  "65014": {
+   "nome": "IXDL: Battle of the Regions",
+   "ids": 38,
+   "time_pro": false
+  },
+  "65012": {
+   "nome": "SteelSeries Malaysia Cup - October",
+   "ids": 48,
+   "time_pro": false
+  },
+  "65011": {
+   "nome": "DotaTalk SteelSeries Oceania Cup",
+   "ids": 27,
+   "time_pro": false
+  },
+  "65009": {
+   "nome": "Perfect World Dota Academy",
+   "ids": 68,
+   "time_pro": false
+  },
+  "65003": {
+   "nome": "4Players League",
+   "ids": 81,
+   "time_pro": false
+  },
+  "65000": {
+   "nome": "The Internal",
+   "ids": 91,
+   "time_pro": false
+  },
+  "20487": {
+   "nome": "喵喵练习生",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20484": {
+   "nome": "Haste Major Tournament",
+   "ids": 3,
+   "time_pro": false
+  },
+  "20483": {
+   "nome": "The Secret Shop SEA PUM",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20482": {
+   "nome": "The Secret Shop NA PUM",
+   "ids": 91,
+   "time_pro": false
+  },
+  "20480": {
+   "nome": "FEEL LIKE PRO #2 | FLP",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20478": {
+   "nome": "Bebriki League: RETURN",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20477": {
+   "nome": "MellstroyGame",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20476": {
+   "nome": "Void Forge League 2026",
+   "ids": 5,
+   "time_pro": false
+  },
+  "20474": {
+   "nome": "Vanekk NB Cup",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20471": {
+   "nome": "Кубок России Сбера 2026 [3 этап]",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20470": {
+   "nome": "Chato League — Season Zero",
+   "ids": 27,
+   "time_pro": false
+  },
+  "20469": {
+   "nome": "老FIVE恩怨情仇杯",
+   "ids": 19,
+   "time_pro": false
+  },
+  "20468": {
+   "nome": "D2AR La Liga",
+   "ids": 29,
+   "time_pro": false
+  },
+  "20467": {
+   "nome": "SNK League",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20466": {
+   "nome": "Турнир по Дота 2 от RIFTBORN 5x5",
+   "ids": 8,
+   "time_pro": false
+  },
+  "20465": {
+   "nome": "Pokut x Ritsu Army cup",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20463": {
+   "nome": "FC Queen's Crown 2026",
+   "ids": 23,
+   "time_pro": false
+  },
+  "20462": {
+   "nome": "GoD.ean League sezonul 4",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20461": {
+   "nome": "Xeno Esports Tournament",
+   "ids": 150,
+   "time_pro": false
+  },
+  "20460": {
+   "nome": "Интеррайонный Чемпионат №2",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20459": {
+   "nome": "Jimi cup",
+   "ids": 3,
+   "time_pro": false
+  },
+  "20458": {
+   "nome": "IV Киберспортивный турнир Сбера по Dota 2 [1x1]",
+   "ids": 8,
+   "time_pro": false
+  },
+  "20457": {
+   "nome": "IV Киберспортивный турнир Сбера по Dota 2 [5x5]",
+   "ids": 8,
+   "time_pro": true
+  },
+  "20456": {
+   "nome": "Creator Rumble by Ourastore",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20454": {
+   "nome": "One More: First Blood",
+   "ids": 21,
+   "time_pro": false
+  },
+  "20453": {
+   "nome": "LS CD Fastcup #8",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20452": {
+   "nome": "【遗迹】宝可梦-弗诺诺杯",
+   "ids": 52,
+   "time_pro": false
+  },
+  "20451": {
+   "nome": "Liga The Rats S11",
+   "ids": 10,
+   "time_pro": false
+  },
+  "20450": {
+   "nome": "真神杯",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20449": {
+   "nome": "DOTA老登娱乐俱乐部",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20448": {
+   "nome": "Semana FIIS 25-2",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20445": {
+   "nome": "Paralympics",
+   "ids": 15,
+   "time_pro": false
+  },
+  "20444": {
+   "nome": "FinFun Cup",
+   "ids": 277,
+   "time_pro": false
+  },
+  "20443": {
+   "nome": "ItchyBoy Season 4: Heavy is the head that wears the crown",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20442": {
+   "nome": "DotaTurik Season1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20441": {
+   "nome": "第四届和谐号宝宝杯",
+   "ids": 24,
+   "time_pro": false
+  },
+  "20439": {
+   "nome": "Lithuanian Dota league",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20438": {
+   "nome": "Beta LAN 2026",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20437": {
+   "nome": "DOTA2老登俱乐部",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20436": {
+   "nome": "老登娱乐俱乐部",
+   "ids": 252,
+   "time_pro": false
+  },
+  "20434": {
+   "nome": "1x1 random cup",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20433": {
+   "nome": "QQCUP Season 1",
+   "ids": 38,
+   "time_pro": false
+  },
+  "20432": {
+   "nome": "qqq",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20431": {
+   "nome": "BUZAR",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20430": {
+   "nome": "Carl Dota Oktober Ceria",
+   "ids": 60,
+   "time_pro": false
+  },
+  "20429": {
+   "nome": "Eclipse Test League",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20428": {
+   "nome": "武汉酒馆杯",
+   "ids": 66,
+   "time_pro": false
+  },
+  "20427": {
+   "nome": "先锋杯",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20426": {
+   "nome": "蔬菜dota联赛",
+   "ids": 19,
+   "time_pro": false
+  },
+  "20425": {
+   "nome": "Megakill Perú",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20424": {
+   "nome": "Narod streamers",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20423": {
+   "nome": "RIFTLINE OPEN",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20422": {
+   "nome": "Upstars Cyber League: Dota 2",
+   "ids": 49,
+   "time_pro": false
+  },
+  "20421": {
+   "nome": "POINT",
+   "ids": 9,
+   "time_pro": false
+  },
+  "20420": {
+   "nome": "Under Realm Championship",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20419": {
+   "nome": "Sky Fox Finals",
+   "ids": 6,
+   "time_pro": false
+  },
+  "20418": {
+   "nome": "qqq",
+   "ids": 53,
+   "time_pro": false
+  },
+  "20416": {
+   "nome": "турнир пацанов",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20415": {
+   "nome": "Highground League",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20414": {
+   "nome": "IMMORTALITY: The Second Dynasty",
+   "ids": 97,
+   "time_pro": false
+  },
+  "20413": {
+   "nome": "GGD2L season 2",
+   "ids": 20,
+   "time_pro": false
+  },
+  "20412": {
+   "nome": "Legacy League",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20411": {
+   "nome": "奇迹杯",
+   "ids": 23,
+   "time_pro": false
+  },
+  "20409": {
+   "nome": "OpenCoachDota",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20408": {
+   "nome": "REINCARNATION - D/A/CH Dota 2 by BEING ESPORTS Season 8",
+   "ids": 212,
+   "time_pro": false
+  },
+  "20407": {
+   "nome": "Copa RDC V5",
+   "ids": 40,
+   "time_pro": false
+  },
+  "20404": {
+   "nome": "Make Dota Great Again",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20403": {
+   "nome": "ATOM.KLIK.BLK",
+   "ids": 15,
+   "time_pro": false
+  },
+  "20402": {
+   "nome": "ATOM.KLIK.BLK",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20401": {
+   "nome": "CyberDZM 2026",
+   "ids": 103,
+   "time_pro": false
+  },
+  "20400": {
+   "nome": "Polish Dota League Sezon 2",
+   "ids": 25,
+   "time_pro": false
+  },
+  "20399": {
+   "nome": "Cuenkox Arena",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20398": {
+   "nome": "Skewer x Yarf Cup",
+   "ids": 15,
+   "time_pro": false
+  },
+  "20396": {
+   "nome": "新和电竞 DOTA2 联赛 Xinhe League",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20394": {
+   "nome": "ATOM.KLIK.BLK",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20392": {
+   "nome": "Make Dota Great Again",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20391": {
+   "nome": "RD2L EU Season 34 Wed",
+   "ids": 20,
+   "time_pro": false
+  },
+  "20390": {
+   "nome": "To the top",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20389": {
+   "nome": "BLAST Slam IX China Qualifier",
+   "ids": 30,
+   "time_pro": true
+  },
+  "20387": {
+   "nome": "DPL #8",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20386": {
+   "nome": "Skewer x Yarf Cup",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20384": {
+   "nome": "Cheese Inhouse League",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20383": {
+   "nome": "BPC League Season 3",
+   "ids": 52,
+   "time_pro": false
+  },
+  "20381": {
+   "nome": "RD2L EU Season 34 SUN",
+   "ids": 85,
+   "time_pro": false
+  },
+  "20380": {
+   "nome": "Nova Turnier Season 6",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20379": {
+   "nome": "BattleCoach",
+   "ids": 14,
+   "time_pro": false
+  },
+  "20378": {
+   "nome": "Papskaya Mogila",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20377": {
+   "nome": "Feel Like Pro | FLP #1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20376": {
+   "nome": "Blank league",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20374": {
+   "nome": "Eclipse Contenders IV",
+   "ids": 47,
+   "time_pro": false
+  },
+  "20372": {
+   "nome": "Pride Dota 2 — Temporada 2026/27",
+   "ids": 197,
+   "time_pro": false
+  },
+  "20371": {
+   "nome": "Megapizdilovo season 1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20370": {
+   "nome": "Liga The Rats S10",
+   "ids": 25,
+   "time_pro": false
+  },
+  "20369": {
+   "nome": "Avito Cyber Cup 2026",
+   "ids": 51,
+   "time_pro": false
+  },
+  "20367": {
+   "nome": "Efterårsturneringen",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20366": {
+   "nome": "dota2小酒馆S1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20365": {
+   "nome": "SIGNATURE FTS SCRIMS",
+   "ids": 4,
+   "time_pro": false
+  },
+  "20364": {
+   "nome": "The Final Showdown",
+   "ids": 25,
+   "time_pro": false
+  },
+  "20363": {
+   "nome": "[MGT] Fun tornament",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20362": {
+   "nome": "Father's Grave",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20361": {
+   "nome": "Внутривузовский турнир РТУ МИРЭА по Dota2",
+   "ids": 32,
+   "time_pro": false
+  },
+  "20360": {
+   "nome": "КиберПеремена",
+   "ids": 74,
+   "time_pro": false
+  },
+  "20353": {
+   "nome": "DPL Golden Crown 1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20352": {
+   "nome": "DPL #7",
+   "ids": 20,
+   "time_pro": false
+  },
+  "20351": {
+   "nome": "DPL#6",
+   "ids": 27,
+   "time_pro": false
+  },
+  "20350": {
+   "nome": "DPL#5",
+   "ids": 24,
+   "time_pro": false
+  },
+  "20349": {
+   "nome": "BEDLAM: OCTOBER FEST",
+   "ids": 36,
+   "time_pro": false
+  },
+  "20348": {
+   "nome": "深圳 DOTA2 社区联赛",
+   "ids": 110,
+   "time_pro": false
+  },
+  "20347": {
+   "nome": "RISE MIX CUP",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20346": {
+   "nome": "ICL — Season#2",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20345": {
+   "nome": "BELASTING INVITATIONAL SEASON 1",
+   "ids": 38,
+   "time_pro": false
+  },
+  "20344": {
+   "nome": "Mytona Practice League 2026",
+   "ids": 57,
+   "time_pro": false
+  },
+  "20343": {
+   "nome": "МИДАС КАП сезон 3",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20342": {
+   "nome": "МИДАС КАП сезон 2",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20340": {
+   "nome": "Copa San Pablo - Temporada 2026",
+   "ids": 39,
+   "time_pro": false
+  },
+  "20338": {
+   "nome": "5X5 Capitan Draft ROFL Edition",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20337": {
+   "nome": "Clarity League - Season 18",
+   "ids": 103,
+   "time_pro": false
+  },
+  "20336": {
+   "nome": "Liga The Rats S09",
+   "ids": 19,
+   "time_pro": false
+  },
+  "20335": {
+   "nome": "ResoAI Tournaments",
+   "ids": 9,
+   "time_pro": false
+  },
+  "20334": {
+   "nome": "NEXUS SERIES II",
+   "ids": 74,
+   "time_pro": true
+  },
+  "20332": {
+   "nome": "BOTB 9 IT LYCEUM",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20331": {
+   "nome": "Rumble in the Jungle VI",
+   "ids": 37,
+   "time_pro": false
+  },
+  "20330": {
+   "nome": "Apple pro dota league S1",
+   "ids": 37,
+   "time_pro": false
+  },
+  "20329": {
+   "nome": "WINTER CUP 2027 SEASON 3",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20328": {
+   "nome": "МИДАС КАП сезон 1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20327": {
+   "nome": "Apex Dota Circuit",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20325": {
+   "nome": "APPLE PRO DOTA LEAGUE",
+   "ids": 16,
+   "time_pro": false
+  },
+  "20324": {
+   "nome": "European Dota Community Inhouse",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20323": {
+   "nome": "Mixed Shuffle",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20322": {
+   "nome": "TRUE CUP",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20321": {
+   "nome": "BETER TEAMS CLASH: FIRST BLOOD",
+   "ids": 35,
+   "time_pro": false
+  },
+  "20320": {
+   "nome": "第一届靓仔杯国际邀请赛2026",
+   "ids": 36,
+   "time_pro": false
+  },
+  "20319": {
+   "nome": "Eclipse Contenders III",
+   "ids": 40,
+   "time_pro": false
+  },
+  "20318": {
+   "nome": "BattleStackDota2 League",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20317": {
+   "nome": "DESK CUP",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20316": {
+   "nome": "LAN-часть отборочных соревнования РТУ МИРЭА 26/27 Осень",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20315": {
+   "nome": "Petushki Battle",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20314": {
+   "nome": "Petushki Battle Season 1",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20313": {
+   "nome": "1488",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20312": {
+   "nome": "Recruit Tourik",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20311": {
+   "nome": "Syrian Digital League finals",
+   "ids": 5,
+   "time_pro": false
+  },
+  "20310": {
+   "nome": "NEVA Season 2027",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20309": {
+   "nome": "八零杯",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20308": {
+   "nome": "CML OCTOBER CAPTAINS MODE",
+   "ids": 12,
+   "time_pro": false
+  },
+  "20307": {
+   "nome": "CML OCTOBER TURBO",
+   "ids": 28,
+   "time_pro": false
+  },
+  "20305": {
+   "nome": "GL.CN",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20304": {
+   "nome": "GL.CN",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20302": {
+   "nome": "电竞GO社区赛2026-S2",
+   "ids": 38,
+   "time_pro": false
+  },
+  "20301": {
+   "nome": "POLZOVATELI PRIME ЛУЧШАЯ КОМАНДА",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20300": {
+   "nome": "E-Sport.GG",
+   "ids": 25,
+   "time_pro": false
+  },
+  "20299": {
+   "nome": "第三届卞分杯",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20298": {
+   "nome": "Dotahub continuation league",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20297": {
+   "nome": "Nexora: Bidding League Season-1",
+   "ids": 13,
+   "time_pro": false
+  },
+  "20295": {
+   "nome": "BATTLEGROUNDS WEEKLY TOURNAMENT",
+   "ids": 9,
+   "time_pro": false
+  },
+  "20291": {
+   "nome": "XNN 文员大舞台",
+   "ids": 4,
+   "time_pro": false
+  },
+  "20290": {
+   "nome": "Отборочные соревнования РТУ МИРЭА 26/27 Осень",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20289": {
+   "nome": "PARI Super Mixer",
+   "ids": 550,
+   "time_pro": false
+  },
+  "20286": {
+   "nome": "LDEL #1 — Latin Dota Elite Cup",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20285": {
+   "nome": "League of Lads Season 22",
+   "ids": 115,
+   "time_pro": false
+  },
+  "20283": {
+   "nome": "BCL Fall 2026",
+   "ids": 280,
+   "time_pro": false
+  },
+  "20282": {
+   "nome": "Ancient Ascension",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20281": {
+   "nome": "能量蓄电池内战专用",
+   "ids": 569,
+   "time_pro": false
+  },
+  "20280": {
+   "nome": "能量蓄电池中秋杯",
+   "ids": 12,
+   "time_pro": false
+  },
+  "20274": {
+   "nome": "BOFU",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20273": {
+   "nome": "Отборочные соревнования РТУ МИРЭА 26/27 Осень",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20272": {
+   "nome": "O Intranacional 3",
+   "ids": 48,
+   "time_pro": false
+  },
+  "20271": {
+   "nome": "Get Good League Season 3",
+   "ids": 136,
+   "time_pro": false
+  },
+  "20270": {
+   "nome": "Test SS",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20269": {
+   "nome": "BOTA TU GA",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20268": {
+   "nome": "Лига Лидеры Бизнеса",
+   "ids": 66,
+   "time_pro": false
+  },
+  "20267": {
+   "nome": "2026年刀塔小油条友谊赛",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20266": {
+   "nome": "Студенческая Киберлига ВТБ",
+   "ids": 112,
+   "time_pro": false
+  },
+  "20265": {
+   "nome": "EnergoBOMJprime_2026",
+   "ids": 73,
+   "time_pro": false
+  },
+  "20264": {
+   "nome": "GG League - Saison 10",
+   "ids": 20,
+   "time_pro": false
+  },
+  "20263": {
+   "nome": "Открытый чемпионат среди команд ТЭК г. Новый Уренгой",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20261": {
+   "nome": "中军杯",
+   "ids": 17,
+   "time_pro": false
+  },
+  "20260": {
+   "nome": "明堂solo赛",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20259": {
+   "nome": "Knight Cup",
+   "ids": 163,
+   "time_pro": false
+  },
+  "20258": {
+   "nome": "Kobold League V",
+   "ids": 242,
+   "time_pro": false
+  },
+  "20257": {
+   "nome": "Molodoy Lil Young`s 322 tournament",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20256": {
+   "nome": "BeReddy Season 8, Cup",
+   "ids": 19,
+   "time_pro": false
+  },
+  "20255": {
+   "nome": "BeReddy Season 8, Championship",
+   "ids": 318,
+   "time_pro": false
+  },
+  "20254": {
+   "nome": "Swiss Dota Cup VI",
+   "ids": 10,
+   "time_pro": false
+  },
+  "20253": {
+   "nome": "IDL Season 45",
+   "ids": 65,
+   "time_pro": false
+  },
+  "20252": {
+   "nome": "IDL MIDAS MODE",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20249": {
+   "nome": "AnyLvL × Bedlam: COLLISION",
+   "ids": 4,
+   "time_pro": false
+  },
+  "20248": {
+   "nome": "1rep0rt Tournament",
+   "ids": 3,
+   "time_pro": false
+  },
+  "20246": {
+   "nome": "Core League x Cyberhub | Lviv",
+   "ids": 19,
+   "time_pro": false
+  },
+  "20245": {
+   "nome": "仇人杯",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20244": {
+   "nome": "6ª LIGA DECAN DIVISÃO 2",
+   "ids": 182,
+   "time_pro": false
+  },
+  "20243": {
+   "nome": "KaaosCup Division 2 | Qualifier 4",
+   "ids": 5,
+   "time_pro": false
+  },
+  "20242": {
+   "nome": "KaaosCup Division 2 | Qualifier 3",
+   "ids": 8,
+   "time_pro": false
+  },
+  "20241": {
+   "nome": "KaaosCup Division 2 | Qualifier 2",
+   "ids": 8,
+   "time_pro": false
+  },
+  "20240": {
+   "nome": "PWdodo",
+   "ids": 8,
+   "time_pro": false
+  },
+  "20239": {
+   "nome": "Efes Cyber Cup 2026",
+   "ids": 22,
+   "time_pro": false
+  },
+  "20238": {
+   "nome": "VAL CUP",
+   "ids": 4,
+   "time_pro": false
+  },
+  "20237": {
+   "nome": "1rep0rt Tournament",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20236": {
+   "nome": "Fall Mercury League",
+   "ids": 5,
+   "time_pro": false
+  },
+  "20235": {
+   "nome": "HATER ZDES' CUP: SEASON 4. DIVISION 2",
+   "ids": 41,
+   "time_pro": false
+  },
+  "20234": {
+   "nome": "吃可爱杯-长不大赛S11",
+   "ids": 78,
+   "time_pro": false
+  },
+  "20233": {
+   "nome": "杭州富阳DOTA喜爱者杯",
+   "ids": 502,
+   "time_pro": false
+  },
+  "20232": {
+   "nome": "Friendly Cup Dota 2 : Season 4",
+   "ids": 34,
+   "time_pro": false
+  },
+  "20231": {
+   "nome": "Liga RDC v8.2",
+   "ids": 127,
+   "time_pro": false
+  },
+  "20230": {
+   "nome": "Pavaga Dota League Season 6",
+   "ids": 122,
+   "time_pro": false
+  },
+  "20225": {
+   "nome": "小天才杯",
+   "ids": 5,
+   "time_pro": false
+  },
+  "20224": {
+   "nome": "Ísland Dota Inhouse Vetur 2026-27",
+   "ids": 55,
+   "time_pro": false
+  },
+  "20223": {
+   "nome": "DFC | Tournament",
+   "ids": 26,
+   "time_pro": false
+  },
+  "20222": {
+   "nome": "LS SD Fastcup #2",
+   "ids": 9,
+   "time_pro": false
+  },
+  "20221": {
+   "nome": "LS CD Fastcup #7",
+   "ids": 9,
+   "time_pro": false
+  },
+  "20220": {
+   "nome": "The Hope Hotpot league",
+   "ids": 2,
+   "time_pro": false
+  },
+  "20219": {
+   "nome": "星动次元杯",
+   "ids": 6,
+   "time_pro": false
+  },
+  "20218": {
+   "nome": "帕鲁杯帕鲁大陆大乱斗",
+   "ids": 1,
+   "time_pro": false
+  },
+  "20217": {
+   "nome": "ForgeInLeague REBORN",
+   "ids": 0,
+   "time_pro": false
+  },
+  "20216": {
+   "nome": "1001对黑杯",
+   "ids": 7,
+   "time_pro": false
+  },
+  "20215": {
+   "nome": "Titancup season 6",
+   "ids": 76,
+   "time_pro": false
+  }
+ }
 }

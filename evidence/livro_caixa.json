@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-15T17:35:08",
+ "gerado_em": "2026-11-16T03:15:54",
  "itens": [
   {
    "familia": "continue_on_error",
@@ -7,7 +7,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:54",
    "chave": "continue_on_error|dados_diarios_dota.yml: Coletar serie por minuto (um pedaco por rodada)",
    "visto_em": "2026-08-26",
-   "idade_dias": 81
+   "idade_dias": 82
   },
   {
    "familia": "continue_on_error",
@@ -15,7 +15,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:124",
    "chave": "continue_on_error|dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
    "visto_em": "2026-08-26",
-   "idade_dias": 81
+   "idade_dias": 82
   },
   {
    "familia": "continue_on_error",
@@ -23,7 +23,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:161",
    "chave": "continue_on_error|dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
    "visto_em": "2026-08-27",
-   "idade_dias": 80
+   "idade_dias": 81
   },
   {
    "familia": "continue_on_error",
@@ -31,7 +31,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:153",
    "chave": "continue_on_error|dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -39,7 +39,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:180",
    "chave": "continue_on_error|dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -47,7 +47,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:168",
    "chave": "continue_on_error|dados_diarios_dota.yml: Frescor das reguas (so reporta)",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -55,7 +55,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:140",
    "chave": "continue_on_error|dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -63,7 +63,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:172",
    "chave": "continue_on_error|dados_diarios_dota.yml: Regua das 28 (so reporta)",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -71,7 +71,7 @@
    "onde": ".github/workflows/suite.yml:50",
    "chave": "continue_on_error|suite.yml: Medir desempenho computacional",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -79,7 +79,7 @@
    "onde": ".github/workflows/suite.yml:43",
    "chave": "continue_on_error|suite.yml: Rodar a suite inteira",
    "visto_em": "2026-10-24",
-   "idade_dias": 22
+   "idade_dias": 23
   },
   {
    "familia": "continue_on_error",
@@ -87,7 +87,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:69",
    "chave": "continue_on_error|dados_diarios_dota.yml: Escalacoes por partida (nota por jogador)",
    "visto_em": "2026-10-28",
-   "idade_dias": 18
+   "idade_dias": 19
   },
   {
    "familia": "continue_on_error",
@@ -95,7 +95,7 @@
    "onde": ".github/workflows/dados_diarios_dota.yml:130",
    "chave": "continue_on_error|dados_diarios_dota.yml: Nota por jogador",
    "visto_em": "2026-10-28",
-   "idade_dias": 18
+   "idade_dias": 19
   }
  ]
 }
