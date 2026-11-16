@@ -2495,98 +2495,107 @@ if _dota_time.time() - float(st.session_state.get("dota_diaria_auto_ts", 0.0) or
     except Exception as _dota_exc:
         st.session_state["dota_diaria_auto_msg"] = f"Diária automática indisponível: {_dota_exc}"
 _dota_msg = str(st.session_state.get("dota_diaria_auto_msg", "") or "")
-if _dota_msg:
-    (st.warning if "indisponível" in _dota_msg else st.info)(_dota_msg)
+# 16/11/2026: a "Diaria" depende da PandaScore (chave nunca configurada no Dota): o aviso de
+# "indisponivel" so poluia a tela. Mostra so quando ela de fato trouxe jogo.
+if _dota_msg and "indisponível" not in _dota_msg:
+    st.info(_dota_msg)
 
-# --- painel DIÁRIA: seletor de dia + jogos do dia (nada some ao começar) ---
-# Botão SEMPRE visível (pedido 13/07: "imprescindível conseguir ver os
-# jogos") — força a busca na hora, ignorando o intervalo do auto-fetch.
-_cbt, _cinfo = st.columns([1.4, 5])
-with _cbt:
-    if st.button("🔄 Procurar jogos", key="dota_diaria_force"):
-        st.session_state["dota_diaria_auto_ts"] = 0.0
-        st.rerun()
-with _cinfo:
-    _ts_last = float(st.session_state.get("dota_diaria_auto_ts", 0.0) or 0.0)
-    if _ts_last > 0:
-        _min_atras = max(0, int((_dota_time.time() - _ts_last) / 60))
-        st.caption(f"Agenda buscada há {_min_atras} min (auto a cada 15 min e ao abrir o app).")
-    else:
-        st.caption("Agenda ainda não buscada nesta sessão.")
+# --- painel DIÁRIA ANTIGO (escondido em 16/11/2026) ---------------------------------------
+# Ele: "nao sei se faz sentido ter isso aqui ainda, ja que tem a mesma coisa embaixo". A lista
+# "Jogos encontrados" (gaveta: Pinnacle + Polymarket, app_core/gaveta_jogos_core.py) faz o mesmo
+# e tem os jogos; este seletor (Dia / Jogos do dia / Carregar) dependia da PandaScore e ficava
+# vazio. Fica no codigo atras da chave abaixo; o "colar / adicionar" continua como reserva para
+# jogo que nao apareca na lista.
+_MOSTRAR_DIARIA_ANTIGA = False
+if _MOSTRAR_DIARIA_ANTIGA:
+    # Botão SEMPRE visível (pedido 13/07: "imprescindível conseguir ver os
+    # jogos") — força a busca na hora, ignorando o intervalo do auto-fetch.
+    _cbt, _cinfo = st.columns([1.4, 5])
+    with _cbt:
+        if st.button("🔄 Procurar jogos", key="dota_diaria_force"):
+            st.session_state["dota_diaria_auto_ts"] = 0.0
+            st.rerun()
+    with _cinfo:
+        _ts_last = float(st.session_state.get("dota_diaria_auto_ts", 0.0) or 0.0)
+        if _ts_last > 0:
+            _min_atras = max(0, int((_dota_time.time() - _ts_last) / 60))
+            st.caption(f"Agenda buscada há {_min_atras} min (auto a cada 15 min e ao abrir o app).")
+        else:
+            st.caption("Agenda ainda não buscada nesta sessão.")
 
-_dota_games_all = core_get_schedule_games(st.session_state)
-if not _dota_games_all:
-    st.info("Sem jogos T1/T2 na agenda — clique em 🔄 Procurar jogos ou aguarde a "
-            "próxima janela (busca cobre 48h à frente).")
-if _dota_games_all:
-    from app_core.schedule_state_core import set_schedule_pending_load as _dota_set_pending
-    from app_core.schedule_state_core import save_schedule_games as _dota_save_games
-    from zoneinfo import ZoneInfo as _dota_zi2
-    _tz_now = pd.Timestamp.now(tz=_dota_zi2("America/Sao_Paulo"))
-    _hoje_d = _tz_now.normalize()
+    _dota_games_all = core_get_schedule_games(st.session_state)
+    if not _dota_games_all:
+        st.info("Sem jogos T1/T2 na agenda — clique em 🔄 Procurar jogos ou aguarde a "
+                "próxima janela (busca cobre 48h à frente).")
+    if _dota_games_all:
+        from app_core.schedule_state_core import set_schedule_pending_load as _dota_set_pending
+        from app_core.schedule_state_core import save_schedule_games as _dota_save_games
+        from zoneinfo import ZoneInfo as _dota_zi2
+        _tz_now = pd.Timestamp.now(tz=_dota_zi2("America/Sao_Paulo"))
+        _hoje_d = _tz_now.normalize()
 
-    def _dota_parse_ddmm(s):
-        try:
-            _dd, _mm = str(s).strip().split("/")[:2]
-            cand = pd.Timestamp(year=_tz_now.year, month=int(_mm), day=int(_dd), tz=str(_tz_now.tz))
-            # virada de ano: dd/mm sem ano — muito no futuro = era do ano passado
-            if (cand - _hoje_d).days > 200:
-                cand = cand.replace(year=_tz_now.year - 1)
-            elif (_hoje_d - cand).days > 200:
-                cand = cand.replace(year=_tz_now.year + 1)
-            return cand
-        except Exception:
-            return None
+        def _dota_parse_ddmm(s):
+            try:
+                _dd, _mm = str(s).strip().split("/")[:2]
+                cand = pd.Timestamp(year=_tz_now.year, month=int(_mm), day=int(_dd), tz=str(_tz_now.tz))
+                # virada de ano: dd/mm sem ano — muito no futuro = era do ano passado
+                if (cand - _hoje_d).days > 200:
+                    cand = cand.replace(year=_tz_now.year - 1)
+                elif (_hoje_d - cand).days > 200:
+                    cand = cand.replace(year=_tz_now.year + 1)
+                return cand
+            except Exception:
+                return None
 
-    # Pedido 13/07: dia que PASSOU sai da agenda; seletor mostra só hoje +48h
-    # (jogos de hoje seguem visíveis mesmo já iniciados — decisão anterior).
-    _keep = []
-    for _g in _dota_games_all:
-        _dt_g = _dota_parse_ddmm(_g.get("date"))
-        if _dt_g is not None and _dt_g < _hoje_d:
-            continue
-        _keep.append(_g)
-    if len(_keep) != len(_dota_games_all):
-        _dota_save_games(st.session_state, _keep)
-        _dota_games_all = _keep
+        # Pedido 13/07: dia que PASSOU sai da agenda; seletor mostra só hoje +48h
+        # (jogos de hoje seguem visíveis mesmo já iniciados — decisão anterior).
+        _keep = []
+        for _g in _dota_games_all:
+            _dt_g = _dota_parse_ddmm(_g.get("date"))
+            if _dt_g is not None and _dt_g < _hoje_d:
+                continue
+            _keep.append(_g)
+        if len(_keep) != len(_dota_games_all):
+            _dota_save_games(st.session_state, _keep)
+            _dota_games_all = _keep
 
-    _dota_dates = []
-    for _g in _dota_games_all:
-        _d = str(_g.get("date", "") or "")
-        _dt_g = _dota_parse_ddmm(_d)
-        if _dt_g is None or _dt_g > _hoje_d + pd.Timedelta(days=2):
-            continue
-        if _d and _d not in _dota_dates:
-            _dota_dates.append(_d)
-    _dota_dates.sort(key=lambda s: _dota_parse_ddmm(s) or _hoje_d)
-    _hoje = _tz_now.strftime("%d/%m")
-if _dota_games_all and _dota_dates:
-    _c1, _c2, _c3 = st.columns([1, 3, 1])
-    with _c1:
-        if str(st.session_state.get("dota_diaria_day", "") or "") not in _dota_dates:
-            st.session_state["dota_diaria_day"] = _dota_dates[_dota_dates.index(_hoje) if _hoje in _dota_dates else 0]
-        _day = st.selectbox("📅 Dia", _dota_dates, key="dota_diaria_day")
-    _day_games = [g for g in _dota_games_all if str(g.get("date", "")) == _day]
-    _labels = [f"{g.get('time','')}  {g.get('teamA','')} x {g.get('teamB','')} (BO{g.get('bo','?')})"
-               for g in _day_games]
-    with _c2:
-        _pick = st.selectbox("Jogos do dia", ["", *_labels], key="dota_diaria_pick")
-    with _c3:
-        st.markdown("<div style='height:1.75em'></div>", unsafe_allow_html=True)
-        _load_clicked = st.button("Carregar", key="dota_diaria_load", width='stretch')
-    if _load_clicked and _pick:
-        _g = _day_games[_labels.index(_pick)]
-        _payload = {"_reset_flow": True}
-        if _g.get("teamA") in teams:
-            _payload["teamA"] = _g.get("teamA")
-        if _g.get("teamB") in teams:
-            _payload["teamB"] = _g.get("teamB")
-        if str(_g.get("bo")) in ("1", "2", "3", "5"):
-            _payload["bo"] = int(_g.get("bo"))
-        _dota_set_pending(st.session_state, _payload)
-        st.rerun()
+        _dota_dates = []
+        for _g in _dota_games_all:
+            _d = str(_g.get("date", "") or "")
+            _dt_g = _dota_parse_ddmm(_d)
+            if _dt_g is None or _dt_g > _hoje_d + pd.Timedelta(days=2):
+                continue
+            if _d and _d not in _dota_dates:
+                _dota_dates.append(_d)
+        _dota_dates.sort(key=lambda s: _dota_parse_ddmm(s) or _hoje_d)
+        _hoje = _tz_now.strftime("%d/%m")
+    if _dota_games_all and _dota_dates:
+        _c1, _c2, _c3 = st.columns([1, 3, 1])
+        with _c1:
+            if str(st.session_state.get("dota_diaria_day", "") or "") not in _dota_dates:
+                st.session_state["dota_diaria_day"] = _dota_dates[_dota_dates.index(_hoje) if _hoje in _dota_dates else 0]
+            _day = st.selectbox("📅 Dia", _dota_dates, key="dota_diaria_day")
+        _day_games = [g for g in _dota_games_all if str(g.get("date", "")) == _day]
+        _labels = [f"{g.get('time','')}  {g.get('teamA','')} x {g.get('teamB','')} (BO{g.get('bo','?')})"
+                   for g in _day_games]
+        with _c2:
+            _pick = st.selectbox("Jogos do dia", ["", *_labels], key="dota_diaria_pick")
+        with _c3:
+            st.markdown("<div style='height:1.75em'></div>", unsafe_allow_html=True)
+            _load_clicked = st.button("Carregar", key="dota_diaria_load", width='stretch')
+        if _load_clicked and _pick:
+            _g = _day_games[_labels.index(_pick)]
+            _payload = {"_reset_flow": True}
+            if _g.get("teamA") in teams:
+                _payload["teamA"] = _g.get("teamA")
+            if _g.get("teamB") in teams:
+                _payload["teamB"] = _g.get("teamB")
+            if str(_g.get("bo")) in ("1", "2", "3", "5"):
+                _payload["bo"] = int(_g.get("bo"))
+            _dota_set_pending(st.session_state, _payload)
+            st.rerun()
 
-with st.expander("Jogos (agenda) - colar / adicionar", expanded=False):
+with st.expander("Adicionar jogo à mão (se algum jogo não apareceu na lista)", expanded=False):
     st.caption("Cole aqui um bloco de jogos (data, hora, time A, time B). O app tenta inferir a liga pelos cabeçalhos e te pede para mapear times desconhecidos.")
 
     if st.button("🗓️ Buscar jogos do dia (Diária/PandaScore)", key="dota_diaria_fetch"):
