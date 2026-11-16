@@ -889,6 +889,18 @@ def render_visao_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         _lineupB_sig = dict(_pre_model._lineupB_sig)
         trace_pipeline_steps = list(_pre_model.trace_pipeline_steps)
 
+# FORMA RECENTE (16/11/2026, aprovada por ele): o modelo reage devagar a fase boa/ruim (WE no
+    # LoL; Synapse x Spirit Academy no Dota). Entra NO FIM, no p que vira preco (as misturas do meio
+    # do caminho diluiam o ajuste: 67,5% virava 59,5%). Ver app_core/forma_recente_core.py.
+    try:
+        from pathlib import Path as _P
+        from app_core.forma_recente_core import aplicar_no_confronto as _forma_aplicar
+        p_map_used, p_series_used = _forma_aplicar(
+            st, _P(__file__).resolve().parents[1], str(teamA or ""), str(teamB or ""),
+            float(p_map_used), float(p_series_used), int(bo or 1), prob_win_series)
+    except Exception as _e_forma:
+        st.caption("Forma recente indisponível ({}); preço sem esse ajuste.".format(type(_e_forma).__name__))
+
 # persistência para as outras abas
     _team_games_min_used = core_persist_runtime_analysis_state(
         session_state=st.session_state,

@@ -536,6 +536,27 @@ def run_auto_maintenance_now(
                 _ok_model = int(cp_m.returncode) == 0
                 if bool(_ok_model):
                     _model_updated_this_cycle = True
+                    # FECHAR A DEFASAGEM DO HOLDOUT (16/11/2026). O train_offline ajusta os ratings so
+                    # ate 30 dias atras (holdout). O robo do Dota roda o incremental logo depois; o app
+                    # nao rodava -> depois de um retreino completo na maquina dele o modelo ficava 30
+                    # dias atrasado (Synapse com a forca de outubro: 341 x 148 no modelo do robo;
+                    # Spirit Academy 89 x 238). Mesmo passo do robo: aplicar o CSV do ano corrente.
+                    if Path(str(daily_csv or "")).exists():
+                        try:
+                            cmd_fecha = core_build_incremental_update_cmd(
+                                artifact_path=str(art_target),
+                                csv_path=str(daily_csv),
+                                players_path=str(_players_artifact_target),
+                            )
+                            cp_fecha = _run_cmd(cmd_fecha, timeout_s=cmd_timeout_s)
+                            logs.append("[modelo-fecha-holdout]\n" + (cp_fecha.stdout or "")
+                                        + ("\n" + cp_fecha.stderr if cp_fecha.stderr else ""))
+                            if int(cp_fecha.returncode) != 0:
+                                logs.append("[modelo-fecha-holdout] falhou: o modelo fica sem os ultimos 30 dias")
+                                all_ok = False
+                        except Exception as _e_fecha:  # noqa: BLE001
+                            logs.append(f"[modelo-fecha-holdout] erro: {type(_e_fecha).__name__}: {_e_fecha}")
+                            all_ok = False
                 _mark_step(
                     "modelo_full_retrain",
                     ok=_ok_model,

@@ -77,6 +77,12 @@ jobs:
 
       # SUPER-LIVE (16/11/2026): herois de cada jogo (o sidecar raw_matches.jsonl desta rodada,
       # depois a OpenDota) e as tabelas da camada pos-draft. Falhar aqui nao barra o dado.
+      # FORMA RECENTE (16/11/2026, aprovada por ele): ultimos 5 mapas de cada time contra o que o
+      # modelo previa na hora. Falhar aqui nao barra o dado (o app fica sem o ajuste e diz).
+      - name: Forma recente
+        continue-on-error: true
+        run: python tools/forma_recente.py
+
       - name: Herois dos jogos e camada pos-draft (SUPER-LIVE)
         continue-on-error: true
         run: python tools/camada_draft.py --picks
@@ -208,7 +214,7 @@ jobs:
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
           fi
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json forma_recente_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
           git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"
