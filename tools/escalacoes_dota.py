@@ -91,6 +91,13 @@ def faltando(esc: dict, desde: str = "2025-01-01") -> list:
     # tier pela foto versionada (league_tiers.csv), sem rede: o mesmo universo do produto
     tiers = pd.read_csv(RAIZ / "league_tiers.csv")
     pro = {int(i) for i, t in zip(tiers.league_id, tiers.tier) if str(t) in PRO_TIERS}
+    try:                                    # + as ligas promovidas (ligas_dota.py, 16/11/2026)
+        import sys as _sys
+        _sys.path.insert(0, str(RAIZ))
+        from ligas_dota import promovidas
+        pro |= promovidas()
+    except Exception:
+        pass
     d = d[d.league_id.fillna(0).astype(int).isin(pro)]
     return [int(m) for m in d.sort_values("start_time", ascending=False).match_id if int(m) not in esc]
 

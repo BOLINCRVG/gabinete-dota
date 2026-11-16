@@ -1,0 +1,415 @@
+{
+ "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
+ "gerado_em": "2026-11-15T23:00:55",
+ "ligas": {
+  "16110": {
+   "nome": "Dota 2 Space League",
+   "tier": "excluded",
+   "partidas": 1548,
+   "pct_pro": 0.0,
+   "ate": "2026-02-09",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "17163": {
+   "nome": "Dota 2 Space League",
+   "tier": "excluded",
+   "partidas": 596,
+   "pct_pro": 0.0,
+   "ate": "2025-03-12",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "17211": {
+   "nome": "Dota 2 Space League",
+   "tier": "excluded",
+   "partidas": 1294,
+   "pct_pro": 0.0,
+   "ate": "2025-08-09",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "17233": {
+   "nome": "Destiny League",
+   "tier": "excluded",
+   "partidas": 6031,
+   "pct_pro": 0.0,
+   "ate": "2026-01-26",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "17910": {
+   "nome": "WB team CyberClub CUP",
+   "tier": "excluded",
+   "partidas": 90,
+   "pct_pro": 16.7,
+   "ate": "2026-05-26",
+   "promovida": false,
+   "motivo": "so 17% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "18477": {
+   "nome": "天蝉杯",
+   "tier": "excluded",
+   "partidas": 69,
+   "pct_pro": 0.0,
+   "ate": "2026-06-02",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "18590": {
+   "nome": "Open Esports Student Games 2025 : SA Qualifier",
+   "tier": "excluded",
+   "partidas": 4,
+   "pct_pro": 0.0,
+   "ate": "2025-08-25",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "18865": {
+   "nome": "EPL World Series: Southeast Asia 2025-2026 Season",
+   "tier": "excluded",
+   "partidas": 400,
+   "pct_pro": 68.5,
+   "ate": "2026-06-15",
+   "promovida": true,
+   "motivo": "68% das participacoes sao de times do universo profissional (400 partidas; rodada 1)"
+  },
+  "18866": {
+   "nome": "European Pro League  2025-2026 Season",
+   "tier": "excluded",
+   "partidas": 672,
+   "pct_pro": 73.7,
+   "ate": "2026-06-16",
+   "promovida": true,
+   "motivo": "74% das participacoes sao de times do universo profissional (672 partidas; rodada 1)"
+  },
+  "18867": {
+   "nome": "Ultras Dota Pro League  2025-26",
+   "tier": "excluded",
+   "partidas": 3136,
+   "pct_pro": 56.1,
+   "ate": "2026-06-10",
+   "promovida": true,
+   "motivo": "56% das participacoes sao de times do universo profissional (3136 partidas; rodada 1)"
+  },
+  "18940": {
+   "nome": "Tennisi Stampede Champions - Season 1",
+   "tier": "excluded",
+   "partidas": 27,
+   "pct_pro": 85.2,
+   "ate": "2025-12-14",
+   "promovida": true,
+   "motivo": "85% das participacoes sao de times do universo profissional (27 partidas; rodada 1)"
+  },
+  "18959": {
+   "nome": "Destiny League",
+   "tier": "excluded",
+   "partidas": 2973,
+   "pct_pro": 0.0,
+   "ate": "2026-06-10",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19071": {
+   "nome": "WINTER CUP 2026 SEASON 2",
+   "tier": "excluded",
+   "partidas": 39,
+   "pct_pro": 0.0,
+   "ate": "2026-01-11",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19093": {
+   "nome": "CIS Battle 4",
+   "tier": "excluded",
+   "partidas": 78,
+   "pct_pro": 100.0,
+   "ate": "2025-12-30",
+   "promovida": true,
+   "motivo": "100% das participacoes sao de times do universo profissional (78 partidas; rodada 1)"
+  },
+  "19147": {
+   "nome": "CCT Dota 2 Season 2 South America Series 2",
+   "tier": "excluded",
+   "partidas": 53,
+   "pct_pro": 54.7,
+   "ate": "2026-01-31",
+   "promovida": true,
+   "motivo": "55% das participacoes sao de times do universo profissional (53 partidas; rodada 1)"
+  },
+  "19176": {
+   "nome": "SIVVIT League",
+   "tier": "excluded",
+   "partidas": 608,
+   "pct_pro": 0.0,
+   "ate": "2026-06-07",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19201": {
+   "nome": "Dota 2 Space League",
+   "tier": "excluded",
+   "partidas": 1060,
+   "pct_pro": 0.0,
+   "ate": "2026-06-10",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19273": {
+   "nome": "Lunar Snake Trophy",
+   "tier": "excluded",
+   "partidas": 10,
+   "pct_pro": 75.0,
+   "ate": "2026-03-05",
+   "promovida": true,
+   "motivo": "liga nova: 75% das participacoes de times profissionais"
+  },
+  "19316": {
+   "nome": "Flame Tournament",
+   "tier": "excluded",
+   "partidas": 32,
+   "pct_pro": 28.1,
+   "ate": "2026-02-22",
+   "promovida": false,
+   "motivo": "so 28% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19322": {
+   "nome": "CCT Dota 2 Season 2 Series 7",
+   "tier": "excluded",
+   "partidas": 57,
+   "pct_pro": 85.1,
+   "ate": "2026-02-20",
+   "promovida": true,
+   "motivo": "85% das participacoes sao de times do universo profissional (57 partidas; rodada 1)"
+  },
+  "19361": {
+   "nome": "CCT Dota 2 Season 2 South America Series 3",
+   "tier": "excluded",
+   "partidas": 57,
+   "pct_pro": 50.9,
+   "ate": "2026-03-08",
+   "promovida": true,
+   "motivo": "51% das participacoes sao de times do universo profissional (57 partidas; rodada 1)"
+  },
+  "19371": {
+   "nome": "CIS Esports League",
+   "tier": "excluded",
+   "partidas": 19,
+   "pct_pro": 36.8,
+   "ate": "2026-03-21",
+   "promovida": false,
+   "motivo": "so 37% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19378": {
+   "nome": "Tennisi Stampede Champions - Season 2",
+   "tier": "excluded",
+   "partidas": 28,
+   "pct_pro": 44.6,
+   "ate": "2026-03-27",
+   "promovida": false,
+   "motivo": "so 45% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19421": {
+   "nome": "CCT Dota 2 Season 2 Series 8",
+   "tier": "excluded",
+   "partidas": 56,
+   "pct_pro": 79.5,
+   "ate": "2026-03-20",
+   "promovida": true,
+   "motivo": "80% das participacoes sao de times do universo profissional (56 partidas; rodada 1)"
+  },
+  "19434": {
+   "nome": "Americas Open Premier Cup",
+   "tier": "excluded",
+   "partidas": 39,
+   "pct_pro": 0.0,
+   "ate": "2026-04-08",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19464": {
+   "nome": "1win Streamers League #1",
+   "tier": "excluded",
+   "partidas": 46,
+   "pct_pro": 0.0,
+   "ate": "2026-03-22",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19467": {
+   "nome": "Liga OverPower Season 2",
+   "tier": "excluded",
+   "partidas": 95,
+   "pct_pro": 0.0,
+   "ate": "2026-06-09",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19502": {
+   "nome": "Trinity League",
+   "tier": "excluded",
+   "partidas": 40,
+   "pct_pro": 0.0,
+   "ate": "2026-04-29",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19503": {
+   "nome": "CCT Dota 2 Season 2 South America Series 4",
+   "tier": "excluded",
+   "partidas": 50,
+   "pct_pro": 32.0,
+   "ate": "2026-04-17",
+   "promovida": false,
+   "motivo": "so 32% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19507": {
+   "nome": "FONBET MEDIA ELEAGUE SEASON 4 DOTA2 2026",
+   "tier": "excluded",
+   "partidas": 1,
+   "pct_pro": 0.0,
+   "ate": "2026-04-03",
+   "promovida": true,
+   "motivo": "edicao nova (1 partidas) de uma liga do universo profissional"
+  },
+  "19545": {
+   "nome": "Lunar Trophy",
+   "tier": "excluded",
+   "partidas": 79,
+   "pct_pro": 33.5,
+   "ate": "2026-05-29",
+   "promovida": false,
+   "motivo": "so 34% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19656": {
+   "nome": "1win Essence I",
+   "tier": "excluded",
+   "partidas": 87,
+   "pct_pro": 100.0,
+   "ate": "2026-05-11",
+   "promovida": true,
+   "motivo": "100% das participacoes sao de times do universo profissional (87 partidas; rodada 1)"
+  },
+  "19682": {
+   "nome": "刀塔扭蛋杯",
+   "tier": "excluded",
+   "partidas": 164,
+   "pct_pro": 0.0,
+   "ate": "2026-06-08",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19742": {
+   "nome": "BetBoom Streamers Battle 13",
+   "tier": "excluded",
+   "partidas": 58,
+   "pct_pro": 0.0,
+   "ate": "2026-05-24",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19752": {
+   "nome": "Immigrant Night Club #1",
+   "tier": "excluded",
+   "partidas": 88,
+   "pct_pro": 0.0,
+   "ate": "2026-06-10",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "19943": {
+   "nome": "FB杯DOTA2精英联赛26赛季",
+   "tier": "excluded",
+   "partidas": 7,
+   "pct_pro": 0.0,
+   "ate": "2026-07-08",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20026": {
+   "nome": "Asgard Championship",
+   "tier": "excluded",
+   "partidas": 32,
+   "pct_pro": 46.9,
+   "ate": "2026-08-03",
+   "promovida": false,
+   "motivo": "so 47% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20030": {
+   "nome": "The Boris Invitational: Streamer Battles 2",
+   "tier": "excluded",
+   "partidas": 54,
+   "pct_pro": 0.0,
+   "ate": "2026-08-03",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20134": {
+   "nome": "ExitLag ChampZ: Dota 2",
+   "tier": "excluded",
+   "partidas": 192,
+   "pct_pro": 2.6,
+   "ate": "2026-08-31",
+   "promovida": false,
+   "motivo": "so 3% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20159": {
+   "nome": "WINLINE Star Series Season 4",
+   "tier": "excluded",
+   "partidas": 27,
+   "pct_pro": 0.0,
+   "ate": "2026-09-13",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20206": {
+   "nome": "NEXUS SERIES I",
+   "tier": "excluded",
+   "partidas": 27,
+   "pct_pro": 22.2,
+   "ate": "2026-09-13",
+   "promovida": false,
+   "motivo": "so 22% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20334": {
+   "nome": "NEXUS SERIES II",
+   "tier": "excluded",
+   "partidas": 37,
+   "pct_pro": 35.1,
+   "ate": "2026-10-21",
+   "promovida": false,
+   "motivo": "so 35% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20411": {
+   "nome": "奇迹杯",
+   "tier": "excluded",
+   "partidas": 12,
+   "pct_pro": 0.0,
+   "ate": "2026-10-19",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  },
+  "20471": {
+   "nome": "Кубок России Сбера 2026 [3 этап]",
+   "tier": "excluded",
+   "partidas": 1,
+   "pct_pro": 0.0,
+   "ate": "2026-10-25",
+   "promovida": false,
+   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+  }
+ },
+ "acompanhar": {
+  "20276": {
+   "nome": "European Pro League  2026-2027 Season",
+   "desde": "2026-11-16",
+   "motivo": "edicao nova da European Pro League (apontada por ele em 16/11/2026)"
+  },
+  "20026": {
+   "nome": "Asgard Championship",
+   "desde": "2026-11-16",
+   "motivo": "times profissionais jogando nela (apontada por ele em 16/11/2026)"
+  }
+ },
+ "julgadas": {}
+}

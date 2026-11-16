@@ -55,6 +55,18 @@ def main() -> int:
         log("[2] buracos FALHOU:\n" + traceback.format_exc())
 
     try:
+        # [2b] 16/11/2026 (regra dele: jogo nao pode faltar): as partidas de liga que a OpenDota
+        # marca "excluded" nao vem no /proMatches. Procura ligas novas com time profissional,
+        # traz o que falta das acompanhadas e reclassifica (ligas_dota.py).
+        import ligas_dota
+        ligas_dota.varrer(max_ligas=400, max_segundos=600, log=log)
+        rep = ligas_dota.importar(max_partidas=600, max_segundos=1200, log=log)
+        ligas_dota.gravar()
+        log(f"[2b] ligas fora do proMatches: +{rep.get('trazidas', 0)} partidas (restam {rep.get('restam', 0)})")
+    except Exception:
+        log("[2b] ligas FALHOU:\n" + traceback.format_exc())
+
+    try:
         # Campanha P3 (2026-07-09, "faça"): o fetch completo traz objetivos +
         # players/draft (sidecar raw_matches.jsonl). Rodadas até ~50min ou
         # cota — o refetch histórico (~18k partidas de 2025) anda sozinho.

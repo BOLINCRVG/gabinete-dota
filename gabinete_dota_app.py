@@ -3532,6 +3532,36 @@ if _page_mode_now in ("Fluxo R\u00e1pido", "Mercados"):
 # Dedupe final por rótulo canônico (evita variantes quebradas/duplicadas no topo).
 _active_tabs = _canonicalize_tab_labels(_active_tabs, _TAB_ALL)
 
+# NADA SOME CALADO (16/11/2026, regra dele: "os jogos tem que ser explicado o porque nao estarem
+# ali"). Para os dois times do confronto: as partidas recentes que estao na base bruta e NAO entram
+# na analise (liga fora do universo profissional), com o motivo; e o alerta de time parado.
+@st.cache_data(show_spinner=False, ttl=900)
+def _jogos_fora_da_analise(nome: str, _assinatura: float) -> str:
+    import ligas_dota as _ld
+    _d = _ld._linhas()
+    return _ld.texto_fora_do_produto(nome, _ld.fora_do_produto(_ld.ids_do_time(nome, _d), d=_d))
+
+
+try:
+    from pathlib import Path as _P_fora
+    _sig_fora = (_P_fora(__file__).with_name("data.csv").stat().st_mtime
+                 + _P_fora(__file__).with_name("ligas_promovidas_dota.json").stat().st_mtime)
+    for _t_fora in (teamA, teamB):
+        if not _t_fora:
+            continue
+        _txt_fora = _jogos_fora_da_analise(str(_t_fora), _sig_fora)
+        if _txt_fora:
+            st.warning(_txt_fora)
+        _ult_fora = (st.session_state.get("_ultimo_jogo_por_time") or {}).get(str(_t_fora))
+        if _ult_fora is not None:
+            _dias_fora = (date.today() - _ult_fora).days
+            if _dias_fora >= 10:
+                st.warning(f"{_t_fora}: o último jogo na base é de {_ult_fora:%d/%m/%Y} ({_dias_fora} dias). "
+                           "Se o time jogou depois disso, a fonte (OpenDota) não trouxe esses jogos — "
+                           "confira antes de usar a forma recente.")
+except Exception as _e_fora:  # noqa: BLE001  (o aviso nunca derruba o app)
+    st.caption(f"Conferência de jogos fora da análise indisponível ({type(_e_fora).__name__}).")
+
 tab_refs = {n: t for n, t in zip(_active_tabs, st.tabs(_active_tabs))}
 
 if _TAB_PARAMS in tab_refs:

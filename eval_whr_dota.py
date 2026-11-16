@@ -534,6 +534,11 @@ def load_matches() -> pd.DataFrame:
     m["league_id"] = pd.to_numeric(m["league_id"], errors="coerce").fillna(0).astype(int)
     m = m[(m["tid"] > 0) & (m["oid"] > 0) & m["dt"].notna()]
     tiers = load_tiers(ligas_usadas=m["league_id"].unique())
+    # 16/11/2026 (regra dele: jogo nao pode faltar): liga REAL de times profissionais que a
+    # OpenDota marca "excluded" (European Pro League, Ultras, CCT, 1win Essence I...) entra no
+    # produto como professional. A lista e medida e versionada: ligas_dota.py.
+    from ligas_dota import aplicar_promocao
+    tiers = aplicar_promocao(tiers)
     m["tier"] = m["league_id"].map(tiers).fillna("sem_tier")
     m["day"] = m["dt"].dt.date.map(lambda d: d.toordinal())
     m = m.sort_values(["ord_key", "match_id"]).reset_index(drop=True)
