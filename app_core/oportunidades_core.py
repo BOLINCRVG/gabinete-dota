@@ -674,15 +674,15 @@ def _mercado_completo(linhas: List[Dict[str, Any]], jogos: Dict[int, Dict[str, A
 def prob_handicap_de_mapas(linha: Dict[str, Any], *, p_map: Any, casa_e_time_a: bool,
                            bo: Any, p_series: Any = None) -> Optional[float]:
     """+-1,5 / +-2,5 de MAPAS da serie (29/10/2026), com a forma do dia da aba Series
-    (app_core/series_tab_core.score_probs). So onde a forma do dia foi medida (LoL):
-    no Dota KAPPA_SERIE e None e a linha continua de fora."""
-    from app_core.series_tab_core import KAPPA_SERIE, chance_do_mapa_coerente, score_probs
-    if KAPPA_SERIE is None:
-        return None
+    (app_core/series_tab_core.score_probs). So onde a forma do dia foi medida (LoL BO3/BO5;
+    Dota BO3 desde 15/11/2026): no BO5 do Dota a linha continua de fora."""
+    from app_core.series_tab_core import chance_do_mapa_coerente, kappa_do_bo, score_probs
     try:
         bo_i = int(bo or 0)
         pontos = float(linha.get("pontos"))
     except (TypeError, ValueError):
+        return None
+    if kappa_do_bo(bo_i) is None:
         return None
     pa = _num(p_map)
     lado = str(linha.get("lado") or "").strip().lower()

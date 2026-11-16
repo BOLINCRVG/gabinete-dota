@@ -11,7 +11,8 @@ oferece ja estao boas". O layout (cards, Sua odd, Edge, Stake, veredito) fica; m
   - entra na lista o que tem fair <= teto (1,72, a regra dele); a odd das casas dele (Stake +
     Polymarket por padrao) ja vem preenchida em "Sua odd".
 
-Sem o motor do metodo (Dota ainda nao tem) a linha segue a logica antiga: nada quebra.
+Sem o motor do metodo a linha segue a logica antiga: nada quebra. O Dota tem o motor desde
+15/11/2026 (pesos medidos nele: sinais_linha_core.METRICAS_DOTA); as combinadas seguem so no LoL.
 """
 from __future__ import annotations
 
@@ -23,6 +24,10 @@ TOTAIS = ("kills", "towers", "dragons", "barons", "inhibitors", "time")
 COMBINADAS = ("kills", "time", "towers", "dragons")
 ROTULO = {"kills": "Kills", "towers": "Torres", "dragons": "Dragões", "barons": "Barões",
           "inhibitors": "Inibidores", "time": "Tempo"}
+
+# a unidade de cada metrica nas linhas das casas (suas_casas_core.linhas_de_mapa)
+UNIDADE_DAS_CASAS = {"kills": "kills", "towers": "turrets", "dragons": "dragons", "barons": "barons",
+                     "inhibitors": "inhibitors"}
 
 # odds das casas: (metrica, linha) -> {"over": (odd, casa), "under": (odd, casa)}; ("ml", 0) ->
 # {"A": (odd, casa), "B": (odd, casa)}
@@ -238,19 +243,32 @@ def pros_e_contras(row: Mapping[str, Any], edge: Optional[float], odd_casa: Opti
 def odds_das_casas(raiz: Any, tg: pd.DataFrame, team_a: str, team_b: str, casas: List[str]) -> Optional[OddsCasas]:
     """A melhor odd do MAPA 1 nas casas dele (totais) e da SERIE (vencedor). None = jogo fora da coleta."""
     from pathlib import Path
-    from app_core.seus_sinais_tab_core import linhas_de_kills
-    from app_core.suas_casas_core import jogo_das_casas, linhas
+    from app_core.suas_casas_core import esporte, jogo_das_casas, linhas, linhas_de_mapa
     times = sorted({str(x) for x in tg["team"].dropna().unique()})
     jogo, inv = jogo_das_casas(Path(raiz), str(team_a), str(team_b), times)
     if not jogo:
         return None
+    esp = esporte(Path(raiz))
     cache: Dict[str, Any] = {}
+
+    def linhas_de_kills(jogo_, inv_, casas_, metrica):
+        """{pontos: {mapa: {"over": (odd, casa), "under": (odd, casa)}}}: a melhor odd de cada lado."""
+        un = UNIDADE_DAS_CASAS.get(metrica)
+        fora: Dict[float, Dict] = {}
+        for l in linhas_de_mapa(jogo_, inv_, esp, casas_dele=casas_):
+            if l["unidade"] != un or l["tipo"] != "total" or l["slug"] == "pinnacle":
+                continue
+            cel = fora.setdefault(float(l["pontos"]), {}).setdefault(int(l["periodo"]), {})
+            atual = cel.get(l["lado"])
+            if atual is None or l["odd"] > atual[0]:
+                cel[l["lado"]] = (float(l["odd"]), l["casa_aposta"])
+        return fora
 
     def _f(met: str, L: float):
         if met == "ml":
             if "ml" not in cache:
                 best: Dict[str, Tuple[float, str]] = {}
-                for l in linhas(jogo, inv, "lol", casas_dele=casas):
+                for l in linhas(jogo, inv, esp, casas_dele=casas):
                     if int(l.get("periodo") or 0) != 0:
                         continue
                     for lado, k in (("A", "odd_a"), ("B", "odd_b")):

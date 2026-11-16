@@ -17,13 +17,33 @@ from app_core.tab_ui_core import render_tab_hero, render_tab_section
 # 61,8% previsto x 70,1% real). Correcao: a chance de cada mapa vem de uma Beta com media
 # p e concentracao KAPPA (mapas trocaveis entre si). KAPPA=3 escolhido em jan-mai/2026;
 # cego jun-out (972 series): placar da serie +0,0194 IC95 [+0,0024; +0,0355], "teve
-# 2-0?" +0,0157. So no LoL: no Dota (arquivo identico) ainda nao foi medido -> independente.
-def _kappa_padrao():
+# 2-0?" +0,0157.
+# DOTA (15/11/2026, medido): BO3 de 2025-2026 (7.972 series, chance da serie por um Elo simples,
+# todo kappa reproduzindo a MESMA chance de serie). Escolhendo kappa so com o passado, em 3 blocos
+# seguidos de ~2.000 series o escolhido foi sempre 3 e o placar exato melhorou +0,0184 IC95
+# [+0,0115; +0,0252] (favorito 60%+: 2-0 previsto por p*p 49,7%, real 54,4%). O bloco mais novo
+# sozinho (dez/2025-nov/2026) deu +0,0090 com IC cruzando o zero: efeito menor em 2026, a
+# acompanhar. BO5 do Dota: 187 series, nao da para medir -> mapas independentes.
+def _e_dota() -> bool:
     from pathlib import Path
-    return None if (Path(__file__).resolve().parents[1] / "dota_paths.py").exists() else 3.0
+    return (Path(__file__).resolve().parents[1] / "dota_paths.py").exists()
 
 
-KAPPA_SERIE = _kappa_padrao()
+E_DOTA = _e_dota()
+
+
+def kappa_do_bo(bo: Any) -> Optional[float]:
+    """A concentracao da forma do dia para o formato: LoL 3 (BO3 e BO5); Dota 3 so no BO3."""
+    try:
+        b = int(bo)
+    except (TypeError, ValueError):
+        return None
+    if E_DOTA:
+        return 3.0 if b == 3 else None
+    return 3.0
+
+
+KAPPA_SERIE = kappa_do_bo(3)
 
 
 def _momento(p: float, a: int, b: int, kappa: Optional[float]) -> float:
@@ -46,7 +66,7 @@ def _momento(p: float, a: int, b: int, kappa: Optional[float]) -> float:
 def score_probs(p: float, bo: int, kappa: Optional[float] = "padrao") -> dict[str, float]:
     """Placar da serie a partir da chance do mapa. kappa: concentracao da "forma do dia"
     (padrao: KAPPA_SERIE; None = mapas independentes, a conta antiga)."""
-    k = KAPPA_SERIE if kappa == "padrao" else kappa
+    k = kappa_do_bo(bo) if kappa == "padrao" else kappa
     p = float(p)
     if k is not None:
         p = min(max(p, 1e-6), 1.0 - 1e-6)          # a Beta pede 0 < p < 1
@@ -83,7 +103,7 @@ def chance_do_mapa_coerente(p_serie: Any, bo: int, kappa: Optional[float] = "pad
         return None
     if not (0.0 < ps < 1.0) or int(bo) not in (3, 5):
         return None
-    k = KAPPA_SERIE if kappa == "padrao" else kappa
+    k = kappa_do_bo(bo) if kappa == "padrao" else kappa
 
     def _serie(m):
         return sum(v for c, v in score_probs(m, int(bo), kappa=k).items() if c.startswith("A_"))
@@ -143,7 +163,7 @@ def linhas_auto_serie(n_mapas: Mapping[int, float], media: float, dp: float, pas
 
 def mercados_da_serie(p_serie_a: float, bo: int, nome_a: str, nome_b: str) -> list[dict[str, Any]]:
     """Vencedor, placar, handicaps e total de mapas -- coerentes com o ML da serie. Pura."""
-    m = chance_do_mapa_coerente(p_serie_a, int(bo)) if KAPPA_SERIE is not None else None
+    m = chance_do_mapa_coerente(p_serie_a, int(bo)) if kappa_do_bo(bo) is not None else None
     if m is None:
         # sem forma do dia (Dota): a chance do mapa que, independente, da a mesma serie
         lo, hi = 1e-4, 1 - 1e-4
@@ -322,7 +342,7 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
 
     merc = mercados_da_serie(p_serie_a, int(bo), nome_a, nome_b)
     st.caption(f"{nome_a} x {nome_b} · BO{bo} · ★ = justa abaixo de {DESTAQUE:.2f}".replace(".", ",")
-               + (" · forma do dia ligada (os mapas da série andam juntos)" if KAPPA_SERIE is not None else ""))
+               + (" · forma do dia ligada (os mapas da série andam juntos)" if kappa_do_bo(bo) is not None else ""))
     for secao in ("Vencedor da série", "Handicap de mapas", "Placar exato", "Total de mapas"):
         render_tab_section(st, title=secao, subtitle="")
         _tabela(st, [r for r in merc if r["secao"] == secao], odds)
@@ -334,7 +354,7 @@ def render_series_tab(*, st: Any, ctx: Mapping[str, Any]) -> None:
         "As linhas entram sozinhas; adicione outras abaixo."))
     passos = {"kills": 3.0, "towers": 2.0, "dragons": 1.0, "barons": 1.0}
     rotulos = {"kills": "Kills", "towers": "Torres", "dragons": "Dragões", "barons": "Barões"}
-    if KAPPA_SERIE is None:                     # Dota: o "baron" do motor e o Roshan
+    if E_DOTA:                                  # Dota: o "baron" do motor e o Roshan
         rotulos["barons"] = "Roshans"
     with st.expander("Adicionar linhas da série", expanded=False):
         extra = {m: parse_lines_fn(st.text_input(f"{rotulos[m]} (série) — ex: 75.5", key=f"series_{m}_txt"))
