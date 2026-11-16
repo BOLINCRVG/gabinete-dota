@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-16T03:15:54",
+ "gerado_em": "2026-11-16T06:16:13",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -19,25 +19,25 @@
    "arquivo": "regua_pinnacle_vencedor_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 19.3,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "regua_28.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.4,
+   "idade_dias": 19.5,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.1,
+   "idade_dias": 0.2,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "suite_esteira.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.2,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": 0.1,
@@ -75,7 +75,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 1.0,
-   "idade_dias": 0.4,
+   "idade_dias": 0.1,
    "estado": "ok"
   },
   {
