@@ -2320,6 +2320,18 @@ core_normalize_matchup_selection_teams(
     set_selected_team_fn=core_set_selected_team,
 )
 
+# SUPER-LIVE (16/11/2026): quem esta na vantagem no mapa -- pre-jogo, pos-draft e ao vivo,
+# puxando o jogo da OpenDota (digitacao como reserva). Ver app_core/super_live_tab_core.py.
+if nav_page == "SUPER-LIVE":
+    try:
+        from app_core.gaveta_jogos_core import resolver_padrao as _sl_resolver
+        from app_core.super_live_tab_core import render_super_live as _render_super_live
+        _render_super_live(st, raiz=APP_ROOT, esporte="dota", times=list(teams or []),
+                           resolver=_sl_resolver(list(teams or []), APP_ROOT))
+    except Exception as _e_sl:
+        st.error("O SUPER-LIVE não abriu: {}: {}".format(type(_e_sl).__name__, _e_sl))
+    st.stop()
+
 if nav_page == "Live-Bet":
     team_games = _load_team_games(csv_sig)
     years = sorted([int(y) for y in team_games["year"].dropna().unique().tolist()]) if team_games is not None and not team_games.empty else [int(season_year)]

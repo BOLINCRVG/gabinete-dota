@@ -1,0 +1,54 @@
+{
+ "gate": 0.005,
+ "minutos": [
+  {
+   "minuto": 10,
+   "n_treino": 26052,
+   "n_calib": 13026,
+   "n_teste": 13026,
+   "ll_pre_jogo": 0.6134,
+   "ll_estado": 0.5422,
+   "ganho": 0.0713,
+   "ece": 0.0161,
+   "acerto": 0.7249,
+   "salvo": true
+  },
+  {
+   "minuto": 15,
+   "n_treino": 25896,
+   "n_calib": 12948,
+   "n_teste": 12948,
+   "ll_pre_jogo": 0.6164,
+   "ll_estado": 0.5013,
+   "ganho": 0.115,
+   "ece": 0.0084,
+   "acerto": 0.7477,
+   "salvo": true
+  },
+  {
+   "minuto": 20,
+   "n_treino": 25285,
+   "n_calib": 12642,
+   "n_teste": 12643,
+   "ll_pre_jogo": 0.6223,
+   "ll_estado": 0.4514,
+   "ganho": 0.1709,
+   "ece": 0.0105,
+   "acerto": 0.774,
+   "salvo": true
+  },
+  {
+   "minuto": 25,
+   "n_treino": 22908,
+   "n_calib": 11454,
+   "n_teste": 11454,
+   "ll_pre_jogo": 0.6335,
+   "ll_estado": 0.4117,
+   "ganho": 0.2219,
+   "ece": 0.0153,
+   "acerto": 0.8004,
+   "salvo": true
+  }
+ ],
+ "salvos": 4
+}

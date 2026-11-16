@@ -9,7 +9,7 @@ DEFAULT_UI_PAGE_MODE = "Fluxo R\u00e1pido"
 # Live-Bet foi FUNDIDA na página Radar (2026-07-04, pedido do usuário):
 # entre-mapas e durante-o-mapa agora vivem lá. Navegações antigas pra
 # "Live-Bet" caem no Radar (ver resolve_nav_page).
-TOP_NAV_OPTIONS = ("Plays", "Radar", "Meta", "Tecnico")
+TOP_NAV_OPTIONS = ("Plays", "SUPER-LIVE", "Radar", "Meta", "Tecnico")
 
 
 def get_nav_pending(session_state: MutableMapping[str, Any]) -> str:
@@ -97,7 +97,7 @@ def resolve_nav_page(session_state: MutableMapping[str, Any]) -> str:
     if pending:
         if pending == "Live-Bet":
             pending = "Radar"  # página fundida no Radar
-        if pending in {"Plays", "Radar", "Meta", "Tecnico"}:
+        if pending in {"Plays", "SUPER-LIVE", "Radar", "Meta", "Tecnico"}:
             set_nav_main(session_state, pending)
         else:
             set_nav_main(session_state, "Plays")

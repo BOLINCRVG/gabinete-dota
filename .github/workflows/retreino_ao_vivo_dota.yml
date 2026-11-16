@@ -41,6 +41,10 @@ jobs:
       - name: Retreinar os modelos ao vivo (estado -> vitoria)
         run: python run_phase6_live_dota.py --save-models-dir live_models
 
+      # SUPER-LIVE (16/11/2026): os mesmos modelos de estado so com o que o feed ao vivo entrega.
+      - name: Retreinar os modelos ao vivo so-feed (SUPER-LIVE)
+        run: python tools/treinar_ao_vivo_feed.py
+
       - name: Guarda - os 4 minutos carregam (nunca commitar quebrado)
         run: |
           python - <<'PY'
@@ -59,7 +63,7 @@ jobs:
         run: |
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
-          git add live_models/ FASE6_LIVE_DOTA.json
+          git add live_models/ live_models_feed/ FASE6_LIVE_DOTA.json
           git reset -q -- live_models/retrain.log live_models/retrain.pid 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "modelos ao vivo nao mudaram - nada a commitar"
