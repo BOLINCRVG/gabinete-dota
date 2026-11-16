@@ -31,6 +31,18 @@ class TestGaveta(unittest.TestCase):
         self.assertEqual(tes["fontes"], ["Pinnacle", "Polymarket"])
         self.assertEqual(js[-1]["id"], "poly:rb-mr")
 
+    def test_nome_que_so_o_resolvedor_junta(self):
+        # 16/11/2026: Pinnacle "PVISION x Spirit", Polymarket "PARIVISION x Team Spirit" -- o mesmo jogo
+        odds = {"jogos": [{"id": 7, "casa": "PVISION", "fora": "Spirit", "bo": 3, "inicio_utc": "2026-11-16T16:15:00Z"}]}
+        poly = {"partidas": [{"time_a": "PARIVISION", "time_b": "Team Spirit", "inicio_utc": "2026-11-16 16:00:00+00", "bo": 3}]}
+        base = {"PVISION": "PVISION", "PARIVISION": "PVISION", "Spirit": "Team Spirit", "Team Spirit": "Team Spirit"}
+        self.assertEqual(len(jogos_da_gaveta(odds, poly)), 2)                    # sem resolvedor: nomes crus
+        js = jogos_da_gaveta(odds, poly, None, lambda n: base.get(n, ""))
+        self.assertEqual(len(js), 1)
+        self.assertEqual(js[0]["fontes"], ["Pinnacle", "Polymarket"])
+        # nome que nao casa com time nenhum nao junta por acidente
+        self.assertEqual(len(jogos_da_gaveta(odds, poly, None, lambda n: "")), 2)
+
     def test_mesmo_jogo_com_nome_diferente_nas_casas(self):
         odds = {"jogos": [{"id": 9, "casa": "Invictus", "fora": "Secret Whales", "bo": 1,
                            "inicio_utc": "2026-10-24T21:00:00Z"}]}

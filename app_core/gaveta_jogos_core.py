@@ -63,8 +63,26 @@ JANELA_MESMO_JOGO_S = 3 * 3600
 ATRASO_PINNACLE = timedelta(minutes=15)
 
 
+def _par_resolvido(resolver: Optional[Callable[[str], str]], a1: Any, b1: Any, a2: Any, b2: Any) -> bool:
+    """O mesmo confronto pelos nomes ja casados com o time da base (16/11/2026: a Pinnacle diz
+    "PVISION x Spirit" e a Polymarket "PARIVISION x Team Spirit" -- o mesmo jogo aparecia duas
+    vezes na gaveta). Sem resolvedor, ou nome que nao casa, vale so a comparacao dos nomes crus."""
+    if _mesmo_par(a1, b1, a2, b2):
+        return True
+    if resolver is None:
+        return False
+    try:
+        r = [resolver(str(x or "")) for x in (a1, b1, a2, b2)]
+    except Exception:
+        return False
+    if not all(r) or r[0] == r[1]:
+        return False
+    return {r[0], r[1]} == {r[2], r[3]}
+
+
 def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any],
-                    agenda: Optional[Mapping[str, Any]] = None) -> List[Dict[str, Any]]:
+                    agenda: Optional[Mapping[str, Any]] = None,
+                    resolver: Optional[Callable[[str], str]] = None) -> List[Dict[str, Any]]:
     """Os jogos da Pinnacle e os da Polymarket que a Pinnacle nao tem, com
     data/hora de Brasilia. Pura.
 
@@ -90,7 +108,7 @@ def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any],
             continue
         igual = next((g for g in fora if "Pinnacle" in g["fontes"]
                       and abs((g["quando"] - quando).total_seconds()) <= JANELA_MESMO_JOGO_S
-                      and _mesmo_par(g["casa"], g["fora"], p.get("time_a"), p.get("time_b"))), None)
+                      and _par_resolvido(resolver, g["casa"], g["fora"], p.get("time_a"), p.get("time_b"))), None)
         if igual is not None:
             if "Polymarket" not in igual["fontes"]:
                 igual["fontes"].append("Polymarket")
@@ -104,7 +122,7 @@ def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any],
             continue
         for g in fora:
             if (abs((g["quando"] - oficial).total_seconds()) <= JANELA_MESMO_JOGO_S
-                    and _mesmo_par(g["casa"], g["fora"], a.get("teamA_raw"), a.get("teamB_raw"))):
+                    and _par_resolvido(resolver, g["casa"], g["fora"], a.get("teamA_raw"), a.get("teamB_raw"))):
                 g["quando"] = oficial
     return sorted(fora, key=lambda g: g["quando"])
 
@@ -195,7 +213,7 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
     esta aberto (ou None)."""
     ss = st.session_state
     st.markdown(CSS_GAVETA, unsafe_allow_html=True)
-    dias = por_dia(jogos_da_gaveta(odds, poly, _agenda()))
+    dias = por_dia(jogos_da_gaveta(odds, poly, _agenda(), resolver))
     if not dias:
         st.caption("Nenhum jogo nas coletas da Pinnacle nem da Polymarket.")
     rotulos_dias = list(dias)
@@ -305,7 +323,7 @@ def render_gaveta_inicial(st: Any, *, raiz: Any, times: List[str]) -> None:
 def jogo_aberto(odds: Mapping[str, Any], poly: Mapping[str, Any], confronto: Mapping[str, Any],
                 resolver: Optional[Callable[[str], str]]) -> Optional[Mapping[str, Any]]:
     """O jogo das casas que e o confronto aberto (sem desenhar nada)."""
-    for g in jogos_da_gaveta(odds, poly, _agenda()):
+    for g in jogos_da_gaveta(odds, poly, _agenda(), resolver):
         if e_o_confronto_aberto(g, confronto, resolver):
             return g
     return None
