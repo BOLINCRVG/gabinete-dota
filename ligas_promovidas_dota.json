@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-16T05:49:37",
+ "gerado_em": "2026-11-16T16:02:33",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -9,7 +9,8 @@
    "pct_pro": 0.0,
    "ate": "2026-02-09",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "17163": {
    "nome": "Dota 2 Space League",
@@ -18,7 +19,8 @@
    "pct_pro": 0.0,
    "ate": "2025-03-12",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "17211": {
    "nome": "Dota 2 Space League",
@@ -27,7 +29,8 @@
    "pct_pro": 0.0,
    "ate": "2025-08-09",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "17233": {
    "nome": "Destiny League",
@@ -36,7 +39,8 @@
    "pct_pro": 0.0,
    "ate": "2026-01-26",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "17910": {
    "nome": "WB team CyberClub CUP",
@@ -45,7 +49,8 @@
    "pct_pro": 16.7,
    "ate": "2026-05-26",
    "promovida": false,
-   "motivo": "so 17% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 17% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "18477": {
    "nome": "天蝉杯",
@@ -54,7 +59,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-02",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "18590": {
    "nome": "Open Esports Student Games 2025 : SA Qualifier",
@@ -63,7 +69,8 @@
    "pct_pro": 0.0,
    "ate": "2025-08-25",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "18865": {
    "nome": "EPL World Series: Southeast Asia 2025-2026 Season",
@@ -108,7 +115,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-10",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19071": {
    "nome": "WINTER CUP 2026 SEASON 2",
@@ -117,7 +125,8 @@
    "pct_pro": 0.0,
    "ate": "2026-01-11",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19093": {
    "nome": "CIS Battle 4",
@@ -144,7 +153,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-07",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19201": {
    "nome": "Dota 2 Space League",
@@ -153,7 +163,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-10",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19273": {
    "nome": "Lunar Snake Trophy",
@@ -171,7 +182,8 @@
    "pct_pro": 28.1,
    "ate": "2026-02-22",
    "promovida": false,
-   "motivo": "so 28% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 28% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19322": {
    "nome": "CCT Dota 2 Season 2 Series 7",
@@ -198,7 +210,8 @@
    "pct_pro": 36.8,
    "ate": "2026-03-21",
    "promovida": false,
-   "motivo": "so 37% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 37% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19378": {
    "nome": "Tennisi Stampede Champions - Season 2",
@@ -207,7 +220,8 @@
    "pct_pro": 44.6,
    "ate": "2026-03-27",
    "promovida": false,
-   "motivo": "so 45% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 45% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19421": {
    "nome": "CCT Dota 2 Season 2 Series 8",
@@ -225,7 +239,8 @@
    "pct_pro": 0.0,
    "ate": "2026-04-08",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19464": {
    "nome": "1win Streamers League #1",
@@ -234,7 +249,8 @@
    "pct_pro": 0.0,
    "ate": "2026-03-22",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19467": {
    "nome": "Liga OverPower Season 2",
@@ -243,7 +259,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-09",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19502": {
    "nome": "Trinity League",
@@ -252,7 +269,8 @@
    "pct_pro": 0.0,
    "ate": "2026-04-29",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19503": {
    "nome": "CCT Dota 2 Season 2 South America Series 4",
@@ -261,7 +279,8 @@
    "pct_pro": 32.0,
    "ate": "2026-04-17",
    "promovida": false,
-   "motivo": "so 32% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 32% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19507": {
    "nome": "FONBET MEDIA ELEAGUE SEASON 4 DOTA2 2026",
@@ -279,7 +298,8 @@
    "pct_pro": 33.5,
    "ate": "2026-05-29",
    "promovida": false,
-   "motivo": "so 34% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 34% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19656": {
    "nome": "1win Essence I",
@@ -297,7 +317,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-08",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19742": {
    "nome": "BetBoom Streamers Battle 13",
@@ -306,7 +327,8 @@
    "pct_pro": 0.0,
    "ate": "2026-05-24",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19752": {
    "nome": "Immigrant Night Club #1",
@@ -315,7 +337,8 @@
    "pct_pro": 0.0,
    "ate": "2026-06-10",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19943": {
    "nome": "FB杯DOTA2精英联赛26赛季",
@@ -324,7 +347,8 @@
    "pct_pro": 0.0,
    "ate": "2026-07-08",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20026": {
    "nome": "Asgard Championship",
@@ -342,7 +366,8 @@
    "pct_pro": 0.0,
    "ate": "2026-08-03",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20134": {
    "nome": "ExitLag ChampZ: Dota 2",
@@ -351,7 +376,8 @@
    "pct_pro": 2.6,
    "ate": "2026-08-31",
    "promovida": false,
-   "motivo": "so 3% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 3% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20159": {
    "nome": "WINLINE Star Series Season 4",
@@ -360,7 +386,8 @@
    "pct_pro": 0.0,
    "ate": "2026-09-13",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20206": {
    "nome": "NEXUS SERIES I",
@@ -369,7 +396,8 @@
    "pct_pro": 22.2,
    "ate": "2026-09-13",
    "promovida": false,
-   "motivo": "so 22% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 22% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20212": {
    "nome": "Esportsprocircuit",
@@ -378,7 +406,8 @@
    "pct_pro": 24.0,
    "ate": "2026-11-15",
    "promovida": false,
-   "motivo": "so 24% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 24% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20247": {
    "nome": "Pakistan Dota Masters - Season 3",
@@ -387,7 +416,8 @@
    "pct_pro": 0.0,
    "ate": "2026-11-01",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
@@ -396,7 +426,8 @@
    "pct_pro": 44.8,
    "ate": "2026-11-16",
    "promovida": false,
-   "motivo": "so 45% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 45% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20276": {
    "nome": "European Pro League  2026-2027 Season",
@@ -423,7 +454,8 @@
    "pct_pro": 48.6,
    "ate": "2026-11-01",
    "promovida": false,
-   "motivo": "so 49% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 49% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20389": {
    "nome": "BLAST Slam IX China Qualifier",
@@ -441,7 +473,8 @@
    "pct_pro": 0.0,
    "ate": "2026-10-19",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20417": {
    "nome": "FONBET MEDIA ELEAGUE SEASON 5 DOTA2 2026",
@@ -450,7 +483,8 @@
    "pct_pro": 0.0,
    "ate": "2026-11-11",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "20457": {
    "nome": "IV Киберспортивный турнир Сбера по Dota 2 [5x5]",
@@ -468,7 +502,8 @@
    "pct_pro": 0.0,
    "ate": "2026-10-25",
    "promovida": false,
-   "motivo": "so 0% das participacoes sao de times do universo profissional (precisa de 50%)"
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   }
  },
  "acompanhar": {

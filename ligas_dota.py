@@ -44,6 +44,10 @@ ARQUIVO = RAIZ / "ligas_promovidas_dota.json"
 PRO_TIERS = ("professional", "premium")
 MIN_PARTIDAS_DO_TIME = 40          # "time do universo profissional"
 MIN_PARTIDAS_DA_LIGA = 20          # abaixo disso a liga e nova demais para julgar sozinha
+# 16/11/2026, MEDIDO (ele pediu: "faca"): incluir TODA liga com algum time profissional (Esportsprocircuit,
+# NEXUS, Lunar Trophy, CIS Esports League... +11 ligas) PIORA a previsao nos jogos das ligas que ja
+# entravam: -0,0090 IC95 [-0,0127; -0,0050] (cego, 935 jogos dos ultimos 30 dias), embora ajude nos
+# jogos das proprias ligas novas (+0,052). Os jogos que ele aposta sao os das ligas principais: fica o corte.
 PCT_PRO_MINIMO = 50.0              # metade das participacoes ou mais
 DESDE = "2025-01-01"
 _ANO = re.compile(r"\b(19|20)\d{2}\b|\b\d{1,3}\b|season|series|temporada|[^a-z]+")
@@ -103,8 +107,8 @@ def classificar(d: pd.DataFrame, tiers: Dict[int, str]) -> Dict[int, Dict[str, A
             r["promovida"] = True
             r["motivo"] = f"liga nova: {r['pct_pro']:.0f}% das participacoes de times profissionais"
         else:
-            r["motivo"] = (f"so {r['pct_pro']:.0f}% das participacoes sao de times do universo profissional "
-                           f"(precisa de {PCT_PRO_MINIMO:.0f}%)")
+            r["motivo"] = f"liga de nível mais baixo: {r['pct_pro']:.0f}% de times profissionais (corte: {PCT_PRO_MINIMO:.0f}%)"
+            r["nivel_baixo"] = True
     return res
 
 
@@ -177,7 +181,11 @@ def texto_fora_do_produto(nome: str, itens: List[Dict[str, Any]]) -> str:
         return ""
     partes = [f"{i['partidas']} partida(s) na \"{i['liga']}\" (até {i['ate'][8:10]}/{i['ate'][5:7]}): {i['motivo']}"
               for i in itens]
-    return f"{nome} — jogos recentes FORA da análise: " + "; ".join(partes) + "."
+    txt = f"{nome} — jogos recentes FORA da análise: " + "; ".join(partes) + "."
+    if any("nível mais baixo" in str(i.get("motivo")) for i in itens):
+        txt += (" Esses jogos estão na base, mas não entram no modelo nem nas estatísticas: medido em 16/11/2026, "
+                "pôr ligas de nível mais baixo na análise piora a previsão dos jogos das ligas principais.")
+    return txt
 
 
 def fora_do_produto(team_ids: Iterable[int], dias: int = 60, agora: Optional[pd.Timestamp] = None,
