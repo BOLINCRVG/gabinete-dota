@@ -1,0 +1,350 @@
+{
+ "coletado_em": "2026-11-17T00:31:43+00:00",
+ "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
+ "partidas": [
+  {
+   "time_a": "Team Nemesis Academy",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-17 04:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 17",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Direborn Esports",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-17 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 17",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "PARIVISION",
+   "time_b": "Froglings",
+   "inicio_utc": "2026-11-17 10:00:00+00",
+   "bo": 3,
+   "torneio": "1w Essence III - Playoffs",
+   "pagina": "1win Essence/3"
+  },
+  {
+   "time_a": "Cloud of Hope",
+   "time_b": "Cloud Rising",
+   "inicio_utc": "2026-11-17 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 17",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Power Rangers",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-17 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 17",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "LEGION",
+   "time_b": "LGD Gaming",
+   "inicio_utc": "2026-11-17 13:00:00+00",
+   "bo": 3,
+   "torneio": "1w Essence III - Playoffs",
+   "pagina": "1win Essence/3"
+  },
+  {
+   "time_a": "Team Nemesis Academy",
+   "time_b": "Yangon Galacticos",
+   "inicio_utc": "2026-11-17 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 17",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Angry Birds",
+   "inicio_utc": "2026-11-17 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 17",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "Nemiga Gaming",
+   "inicio_utc": "2026-11-17 13:30:00+00",
+   "bo": 3,
+   "torneio": "DreamLeague D2 S5 - Playoffs",
+   "pagina": "DreamLeague/Division 2/5"
+  },
+  {
+   "time_a": "Team Spirit",
+   "time_b": "Aurora Gaming",
+   "inicio_utc": "2026-11-17 16:00:00+00",
+   "bo": 3,
+   "torneio": "1w Essence III - Playoffs",
+   "pagina": "1win Essence/3"
+  },
+  {
+   "time_a": "Team Spirit Academy",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-17 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 17",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Froglings",
+   "time_b": "PlayTime",
+   "inicio_utc": "2026-11-17 17:00:00+00",
+   "bo": 3,
+   "torneio": "DreamLeague D2 S5 - Playoffs",
+   "pagina": "DreamLeague/Division 2/5"
+  },
+  {
+   "time_a": "InterActive Philippines",
+   "time_b": "Potn9ki",
+   "inicio_utc": "2026-11-17 19:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 17",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Resp Gaming",
+   "time_b": "Cloud of Hope",
+   "inicio_utc": "2026-11-18 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 18",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Team Nemesis Academy",
+   "time_b": "Direborn Esports",
+   "inicio_utc": "2026-11-18 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 18",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Angry Birds",
+   "time_b": "Team Spirit Academy",
+   "inicio_utc": "2026-11-18 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 18",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Power Rangers",
+   "time_b": "Red John",
+   "inicio_utc": "2026-11-18 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 18",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-18 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 18",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "CyberHero",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-18 17:00:00+00",
+   "bo": 3,
+   "torneio": "DreamLeague D2 S5 - Playoffs",
+   "pagina": "DreamLeague/Division 2/5"
+  },
+  {
+   "time_a": "Zero Tenacity",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-18 19:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 18",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "RyVex Esports",
+   "time_b": "Execration",
+   "inicio_utc": "2026-11-19 04:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 19",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Direborn Esports",
+   "time_b": "Resp Gaming",
+   "inicio_utc": "2026-11-19 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 19",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Cloud Rising",
+   "time_b": "Team Nemesis Academy",
+   "inicio_utc": "2026-11-19 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 19",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "InterActive Philippines",
+   "inicio_utc": "2026-11-19 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 19",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Angry Birds",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-19 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 19",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-19 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 19",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "Potn9ki",
+   "inicio_utc": "2026-11-19 19:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 19",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Execration",
+   "time_b": "Resp Gaming",
+   "inicio_utc": "2026-11-20 04:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 20",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Cloud Rising",
+   "time_b": "Direborn Esports",
+   "inicio_utc": "2026-11-20 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 20",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Inner Circle x Insanity",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-20 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 20",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Team Yandex",
+   "time_b": "PlayTime",
+   "inicio_utc": "2026-11-20 11:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group A",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "Team Spirit",
+   "time_b": "Team Nemesis",
+   "inicio_utc": "2026-11-20 11:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group B",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "Potn9ki",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-20 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 20",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Natus Vincere",
+   "time_b": "OG",
+   "inicio_utc": "2026-11-20 14:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group A",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "GamerLegion",
+   "time_b": "Xtreme Gaming",
+   "inicio_utc": "2026-11-20 14:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group B",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "InterActive Philippines",
+   "inicio_utc": "2026-11-20 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 20",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "PARIVISION",
+   "time_b": "LEGION",
+   "inicio_utc": "2026-11-20 17:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group C",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "Team Liquid",
+   "time_b": "DO KONCA",
+   "inicio_utc": "2026-11-20 17:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group C",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-20 19:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 20",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Yangon Galacticos",
+   "time_b": "Execration",
+   "inicio_utc": "2026-11-21 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 21",
+   "pagina": "EPL/World Series/Southeast Asia/20"
+  },
+  {
+   "time_a": "Power Rangers",
+   "time_b": "Potn9ki",
+   "inicio_utc": "2026-11-21 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 21",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Aurora Gaming",
+   "time_b": "Astra Invicta",
+   "inicio_utc": "2026-11-21 11:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group D",
+   "pagina": "BLAST/SLAM/9"
+  },
+  {
+   "time_a": "LGD Gaming",
+   "time_b": "1w Team",
+   "inicio_utc": "2026-11-21 11:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX - Group D",
+   "pagina": "BLAST/SLAM/9"
+  }
+ ]
+}

@@ -64,6 +64,22 @@ class TestGaveta(unittest.TestCase):
         self.assertEqual(len(js), 1)
         self.assertEqual(js[0]["quando"].strftime("%d/%m %H:%M"), "26/10 14:00")
 
+    def test_jogo_so_da_agenda_entra_na_lista(self):
+        # 17/11/2026 (REGRA: jogo nunca falta): EPL 41 sem casa nenhuma ainda -- antes sumia
+        agenda = {"jogos": [{"teamA_raw": "Power Rangers", "teamB_raw": "Team Synapse", "bo": 3,
+                             "league": "European Pro League 41", "inicio_utc": "2026-11-17T10:00:00Z"},
+                            {"teamA_raw": "T1", "teamB_raw": "CTBC Flying Oyster",
+                             "inicio_utc": "2026-10-26T17:00:00Z"}]}
+        odds = {"jogos": [{"id": 3, "casa": "T1", "fora": "CTBC Flying Oyster", "bo": 1,
+                           "inicio_utc": "2026-10-26T17:15:00Z"}]}
+        js = jogos_da_gaveta(odds, {}, agenda)
+        self.assertEqual(len(js), 2)  # o T1 x CFO da agenda e o mesmo da Pinnacle: nao repete
+        so_agenda = [g for g in js if g["fontes"] == ["Agenda"]]
+        self.assertEqual(len(so_agenda), 1)
+        self.assertEqual((so_agenda[0]["casa"], so_agenda[0]["liga"], so_agenda[0]["bo"]),
+                         ("Power Rangers", "European Pro League 41", 3))
+        self.assertEqual(so_agenda[0]["quando"].strftime("%d/%m %H:%M"), "17/11 07:00")
+
     def test_dia_pelo_horario_de_brasilia(self):
         # 25/10 00:00 UTC = 24/10 21:00 em Brasilia -> mesmo dia do TES x AL
         dias = por_dia(jogos_da_gaveta(ODDS, POLY), hoje=date(2026, 10, 24))

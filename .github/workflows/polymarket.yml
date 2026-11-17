@@ -24,6 +24,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      # 17/11/2026: o GitHub pula a maioria dos agendamentos (16/11: Polymarket rodou 3 de 24 vezes,
+      # Pinnacle 5 de ~25). Entao TODA rodada que acontece atualiza o que e rapido: a agenda
+      # (Liquipedia, 1 leitura) e a Polymarket. Falhar aqui nao derruba o resto.
+      - name: Agenda do Dota (Liquipedia)
+        continue-on-error: true
+        run: python tools/agenda_dota.py
+
       - name: Ler os precos
         id: coleta
         run: |
@@ -38,13 +45,16 @@ jobs:
           fi
           exit "$rc"
       - name: Commitar
-        if: steps.coleta.outputs.rc == '0'
+        if: always() && steps.coleta.outputs.rc != ''
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add polymarket_dota.json polymarket_dota_historico.jsonl
+          git add agenda_dota.json || true
+          if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
+            git add polymarket_dota.json polymarket_dota_historico.jsonl
+          fi
           git diff --cached --quiet && exit 0
-          git commit -m "Robô: precos da Polymarket atualizados"
+          git commit -m "Robô: precos da Polymarket e agenda atualizados"
           for i in 1 2 3; do
             if git push; then exit 0; fi
             git pull --rebase --autostash || exit 1

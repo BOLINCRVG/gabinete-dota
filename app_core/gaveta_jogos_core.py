@@ -120,10 +120,20 @@ def jogos_da_gaveta(odds: Mapping[str, Any], poly: Mapping[str, Any],
         oficial = _br(a.get("inicio_utc"))
         if oficial is None:
             continue
+        achou = False
         for g in fora:
             if (abs((g["quando"] - oficial).total_seconds()) <= JANELA_MESMO_JOGO_S
                     and _par_resolvido(resolver, g["casa"], g["fora"], a.get("teamA_raw"), a.get("teamB_raw"))):
                 g["quando"] = oficial
+                achou = True
+        # 17/11/2026 (REGRA: jogo nunca falta): jogo da agenda que nenhuma casa abriu ainda entra
+        # na lista do mesmo jeito ("sem odd ainda"). Antes so corrigia a hora e o jogo sumia --
+        # no Dota, sem agenda, a European Pro League 41 inteira nao aparecia.
+        if not achou and a.get("teamA_raw") and a.get("teamB_raw"):
+            fora.append({"id": "agenda:{}|{}|{}".format(a.get("teamA_raw"), a.get("teamB_raw"), a.get("inicio_utc")),
+                         "casa": str(a.get("teamA_raw") or ""), "fora": str(a.get("teamB_raw") or ""),
+                         "liga": str(a.get("league") or ""), "bo": a.get("bo"), "quando": oficial,
+                         "fontes": ["Agenda"]})
     return sorted(fora, key=lambda g: g["quando"])
 
 
@@ -140,11 +150,19 @@ def rotulo_do_jogo(g: Mapping[str, Any]) -> str:
 
 
 def _agenda() -> Dict[str, Any]:
+    """LoL: agenda oficial (agenda_coletada.json, lolesports). Dota: agenda da Liquipedia
+    (agenda_dota.json, tools/agenda_dota.py, desde 17/11/2026), no mesmo formato."""
     import json
     from pathlib import Path
+    raiz = Path(__file__).resolve().parents[1]
     try:
-        return json.loads((Path(__file__).resolve().parents[1] / "agenda_coletada.json")
-                          .read_text(encoding="utf-8")) or {}
+        if (raiz / "dota_paths.py").exists():
+            d = json.loads((raiz / "agenda_dota.json").read_text(encoding="utf-8")) or {}
+            return {"jogos": [{"teamA_raw": j.get("time_a"), "teamB_raw": j.get("time_b"),
+                               "inicio_utc": str(j.get("inicio_utc") or "").replace(" ", "T").replace("+00", "Z"),
+                               "league": j.get("pagina", "").replace("/", " ") or j.get("torneio"), "bo": j.get("bo")}
+                              for j in d.get("partidas") or []]}
+        return json.loads((raiz / "agenda_coletada.json").read_text(encoding="utf-8")) or {}
     except (OSError, ValueError):
         return {}
 
