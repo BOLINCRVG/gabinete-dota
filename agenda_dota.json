@@ -1,27 +1,11 @@
 {
- "coletado_em": "2026-11-17T17:02:13+00:00",
+ "coletado_em": "2026-11-17T19:59:57+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
   {
-   "time_a": "Team Spirit",
-   "time_b": "Aurora Gaming",
-   "inicio_utc": "2026-11-17 16:30:00+00",
-   "bo": 3,
-   "torneio": "1w Essence III - Playoffs",
-   "pagina": "1win Essence/3"
-  },
-  {
-   "time_a": "Froglings",
-   "time_b": "PlayTime",
-   "inicio_utc": "2026-11-17 17:00:00+00",
-   "bo": 3,
-   "torneio": "DreamLeague D2 S5 - Playoffs",
-   "pagina": "DreamLeague/Division 2/5"
-  },
-  {
    "time_a": "Angry Birds",
    "time_b": "Team Spirit Academy",
-   "inicio_utc": "2026-11-17 17:00:00+00",
+   "inicio_utc": "2026-11-17 17:20:00+00",
    "bo": 3,
    "torneio": "Asgard Championship S2 - Playoffs",
    "pagina": "Asgard Championship/2"
@@ -45,7 +29,7 @@
   {
    "time_a": "Xipto Esports",
    "time_b": "CyberHero",
-   "inicio_utc": "2026-11-17 19:00:00+00",
+   "inicio_utc": "2026-11-17 21:00:00+00",
    "bo": 3,
    "torneio": "Asgard Championship S2 - Playoffs",
    "pagina": "Asgard Championship/2"
@@ -89,14 +73,6 @@
    "bo": 3,
    "torneio": "DreamLeague D2 S5 - Playoffs",
    "pagina": "DreamLeague/Division 2/5"
-  },
-  {
-   "time_a": "Zero Tenacity",
-   "time_b": "Inner Circle x Insanity",
-   "inicio_utc": "2026-11-18 19:00:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41 - November 18",
-   "pagina": "European Pro League/41"
   },
   {
    "time_a": "RyVex Esports",
@@ -299,6 +275,14 @@
    "pagina": "European Pro League/41"
   },
   {
+   "time_a": "Zero Tenacity",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-21 19:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 21",
+   "pagina": "European Pro League/41"
+  },
+  {
    "time_a": "Cloud of Hope",
    "time_b": "Yangon Galacticos",
    "inicio_utc": "2026-11-22 07:00:00+00",
@@ -318,6 +302,14 @@
    "time_a": "PuckChamp",
    "time_b": "Power Rangers",
    "inicio_utc": "2026-11-22 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41 - November 22",
+   "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Team Spirit Academy",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-22 16:00:00+00",
    "bo": 3,
    "torneio": "EPL Season 41 - November 22",
    "pagina": "European Pro League/41"
