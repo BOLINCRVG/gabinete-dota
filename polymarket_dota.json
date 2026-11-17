@@ -1,15 +1,15 @@
 {
- "coletado_em": "2026-11-17T04:44:55+00:00",
+ "coletado_em": "2026-11-17T11:06:22+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=102366",
  "partidas": [
   {
    "time_a": "Inner Circle",
    "time_b": "Team Allied",
-   "p_a": 0.485,
-   "p_b": 0.515,
+   "p_a": 0.48,
+   "p_b": 0.52,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.85,
-   "liquidez": 13.4651,
+   "spread": 0.84,
+   "liquidez": 24.134,
    "volume": 230.899509,
    "bo": 3,
    "torneio": "European Pro League Group A",
@@ -24,10 +24,10 @@
       "Inner Circle",
       "Team Allied"
      ],
-     "p1": 0.475,
+     "p1": 0.52,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.89,
-     "liquidez": 22.3197
+     "spread": 0.9,
+     "liquidez": 22.2793
     },
     {
      "tipo": "child_moneyline",
@@ -37,10 +37,10 @@
       "Inner Circle",
       "Team Allied"
      ],
-     "p1": 0.53,
+     "p1": 0.505,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.9,
-     "liquidez": 17.3197
+     "spread": 0.95,
+     "liquidez": 16.9196
     },
     {
      "tipo": "totals",
@@ -77,7 +77,7 @@
    "p_b": 0.27,
    "fonte_preco": "meio_do_livro",
    "spread": 0.4,
-   "liquidez": 254.5385,
+   "liquidez": 198.5978,
    "volume": 401.74204799999995,
    "bo": 3,
    "torneio": "European Pro League Group B",
@@ -145,8 +145,8 @@
    "p_b": 0.645,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 2133.1156,
-   "volume": 4407.425219999999,
+   "liquidez": 35381.2322,
+   "volume": 5855.726925999999,
    "bo": 3,
    "torneio": "DreamLeague Division 2 Playoffs",
    "inicio_utc": "2026-11-17 13:30:00+00",
@@ -162,8 +162,8 @@
      ],
      "p1": 0.465,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.71,
-     "liquidez": 179.2046
+     "spread": 0.15,
+     "liquidez": 2572.4396
     },
     {
      "tipo": "child_moneyline",
@@ -173,10 +173,10 @@
       "PuckChamp",
       "Nemiga Gaming"
      ],
-     "p1": 0.45,
+     "p1": 0.465,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.74,
-     "liquidez": 168.1389
+     "spread": 0.15,
+     "liquidez": 3199.692
     },
     {
      "tipo": "totals",
@@ -189,7 +189,7 @@
      "p1": 0.395,
      "fonte_preco": "meio_do_livro",
      "spread": 0.17,
-     "liquidez": 101.1122
+     "liquidez": 107.5301
     },
     {
      "tipo": "map_handicap",
@@ -199,90 +199,22 @@
       "Nemiga Gaming",
       "PuckChamp"
      ],
-     "p1": 0.375,
+     "p1": 0.385,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 998.1674
-    }
-   ]
-  },
-  {
-   "time_a": "Team Allied",
-   "time_b": "Nemiga Gaming",
-   "p_a": 0.465,
-   "p_b": 0.535,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 2504.9139,
-   "volume": 1948.3219359999998,
-   "bo": 3,
-   "torneio": "Asgard Championship Playoffs",
-   "inicio_utc": "2026-11-17 10:00:00+00",
-   "evento": "dota2-all2-nemiga-2026-11-17",
-   "mercados": [
-    {
-     "tipo": "child_moneyline",
-     "mapa": 1,
-     "linha": null,
-     "lados": [
-      "Team Allied",
-      "Nemiga Gaming"
-     ],
-     "p1": 0.515,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.83,
-     "liquidez": 124.3189
-    },
-    {
-     "tipo": "child_moneyline",
-     "mapa": 2,
-     "linha": null,
-     "lados": [
-      "Team Allied",
-      "Nemiga Gaming"
-     ],
-     "p1": 0.49,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 136.3188
-    },
-    {
-     "tipo": "totals",
-     "mapa": 0,
-     "linha": 2.5,
-     "lados": [
-      "Over",
-      "Under"
-     ],
-     "p1": 0.5,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.02,
-     "liquidez": 320.8054
-    },
-    {
-     "tipo": "map_handicap",
-     "mapa": 0,
-     "linha": -1.5,
-     "lados": [
-      "Team Allied",
-      "Nemiga Gaming"
-     ],
-     "p1": 0.255,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 257.5424
+     "spread": 0.01,
+     "liquidez": 1283.2465
     }
    ]
   },
   {
    "time_a": "Froglings",
    "time_b": "PlayTime",
-   "p_a": 0.555,
-   "p_b": 0.445,
+   "p_a": 0.565,
+   "p_b": 0.435,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 3955.339,
-   "volume": 926.383396,
+   "liquidez": 8026.0046,
+   "volume": 1211.517799,
    "bo": 3,
    "torneio": "DreamLeague Division 2 Playoffs",
    "inicio_utc": "2026-11-17 17:00:00+00",
@@ -296,10 +228,10 @@
       "Froglings",
       "PlayTime"
      ],
-     "p1": 0.545,
+     "p1": 0.565,
      "fonte_preco": "meio_do_livro",
      "spread": 0.03,
-     "liquidez": 490.9222
+     "liquidez": 1537.1458
     },
     {
      "tipo": "child_moneyline",
@@ -309,10 +241,10 @@
       "Froglings",
       "PlayTime"
      ],
-     "p1": 0.545,
+     "p1": 0.55,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 750.1814
+     "spread": 0.02,
+     "liquidez": 1829.1653
     },
     {
      "tipo": "totals",
@@ -322,10 +254,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.495,
+     "p1": 0.49,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 882.5352
+     "spread": 0.02,
+     "liquidez": 1182.2872
     },
     {
      "tipo": "map_handicap",
@@ -335,22 +267,22 @@
       "Froglings",
       "PlayTime"
      ],
-     "p1": 0.305,
+     "p1": 0.315,
      "fonte_preco": "meio_do_livro",
      "spread": 0.03,
-     "liquidez": 451.5522
+     "liquidez": 814.0529
     }
    ]
   },
   {
    "time_a": "Xipto Esports",
    "time_b": "CyberHero",
-   "p_a": 0.395,
-   "p_b": 0.605,
+   "p_a": 0.365,
+   "p_b": 0.635,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 1956.9536,
-   "volume": 382.978927,
+   "liquidez": 1859.8777,
+   "volume": 412.16861,
    "bo": 3,
    "torneio": "Asgard Championship Playoffs",
    "inicio_utc": "2026-11-17 19:00:00+00",
@@ -364,10 +296,10 @@
       "Xipto Esports",
       "CyberHero"
      ],
-     "p1": 0.425,
+     "p1": 0.4,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 391.4825
+     "spread": 0.02,
+     "liquidez": 430.1442
     },
     {
      "tipo": "child_moneyline",
@@ -377,10 +309,10 @@
       "Xipto Esports",
       "CyberHero"
      ],
-     "p1": 0.425,
+     "p1": 0.4,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 324.1319
+     "spread": 0.02,
+     "liquidez": 440.135
     },
     {
      "tipo": "totals",
@@ -390,10 +322,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.475,
+     "p1": 0.47,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 321.6552
+     "spread": 0.02,
+     "liquidez": 340.0554
     },
     {
      "tipo": "map_handicap",
@@ -403,21 +335,21 @@
       "CyberHero",
       "Xipto Esports"
      ],
-     "p1": 0.405,
+     "p1": 0.365,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.07,
-     "liquidez": 385.3732
+     "spread": 0.03,
+     "liquidez": 1171.6837
     }
    ]
   },
   {
    "time_a": "CyberHero",
    "time_b": "Inner Circle",
-   "p_a": 0.6,
-   "p_b": 0.4,
+   "p_a": 0.595,
+   "p_b": 0.405,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.04,
-   "liquidez": 541.0904,
+   "spread": 0.01,
+   "liquidez": 469.0218,
    "volume": 4.83871,
    "bo": 3,
    "torneio": "DreamLeague Division 2 Playoffs",
@@ -432,10 +364,10 @@
       "CyberHero",
       "Inner Circle"
      ],
-     "p1": 0.39,
+     "p1": 0.32,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.64,
-     "liquidez": 115.8924
+     "spread": 0.48,
+     "liquidez": 173.7283
     },
     {
      "tipo": "child_moneyline",
@@ -445,10 +377,10 @@
       "CyberHero",
       "Inner Circle"
      ],
-     "p1": 0.395,
+     "p1": 0.32,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.63,
-     "liquidez": 104.4293
+     "spread": 0.48,
+     "liquidez": 164.5148
     },
     {
      "tipo": "totals",
@@ -458,10 +390,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.505,
+     "p1": 0.4,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.89,
-     "liquidez": 12.7294
+     "spread": 0.2,
+     "liquidez": 53.3652
     },
     {
      "tipo": "map_handicap",
@@ -471,90 +403,22 @@
       "CyberHero",
       "Inner Circle"
      ],
-     "p1": 0.5,
+     "p1": 0.335,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.86,
-     "liquidez": 32.3996
-    }
-   ]
-  },
-  {
-   "time_a": "PARIVISION",
-   "time_b": "Froglings",
-   "p_a": 0.895,
-   "p_b": 0.105,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 19175.9031,
-   "volume": 1333.4833840000001,
-   "bo": 3,
-   "torneio": "1win Essence Playoffs",
-   "inicio_utc": "2026-11-17 10:00:00+00",
-   "evento": "dota2-pari-frogli-2026-11-17",
-   "mercados": [
-    {
-     "tipo": "child_moneyline",
-     "mapa": 1,
-     "linha": null,
-     "lados": [
-      "PARIVISION",
-      "Froglings"
-     ],
-     "p1": 0.805,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 7530.8601
-    },
-    {
-     "tipo": "child_moneyline",
-     "mapa": 2,
-     "linha": null,
-     "lados": [
-      "PARIVISION",
-      "Froglings"
-     ],
-     "p1": 0.805,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 651.42
-    },
-    {
-     "tipo": "totals",
-     "mapa": 0,
-     "linha": 2.5,
-     "lados": [
-      "Over",
-      "Under"
-     ],
-     "p1": 0.295,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 2028.6866
-    },
-    {
-     "tipo": "map_handicap",
-     "mapa": 0,
-     "linha": -1.5,
-     "lados": [
-      "PARIVISION",
-      "Froglings"
-     ],
-     "p1": 0.675,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 4715.6525
+     "spread": 0.09,
+     "liquidez": 194.5422
     }
    ]
   },
   {
    "time_a": "Team Lynx",
    "time_b": "Team Synapse",
-   "p_a": 0.55,
-   "p_b": 0.45,
+   "p_a": 0.575,
+   "p_b": 0.425,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.02,
-   "liquidez": 1439.5781,
-   "volume": 1206.940207,
+   "spread": 0.01,
+   "liquidez": 4904.0567,
+   "volume": 1476.01968,
    "bo": 3,
    "torneio": "Asgard Championship Playoffs",
    "inicio_utc": "2026-11-17 13:00:00+00",
@@ -568,10 +432,10 @@
       "Team Lynx",
       "Team Synapse"
      ],
-     "p1": 0.505,
+     "p1": 0.595,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.79,
-     "liquidez": 156.8187
+     "spread": 0.19,
+     "liquidez": 2144.7619
     },
     {
      "tipo": "child_moneyline",
@@ -581,10 +445,10 @@
       "Team Lynx",
       "Team Synapse"
      ],
-     "p1": 0.41,
+     "p1": 0.565,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.56,
-     "liquidez": 173.2171
+     "spread": 0.19,
+     "liquidez": 1605.6671
     },
     {
      "tipo": "totals",
@@ -594,10 +458,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.5,
+     "p1": 0.28,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.519
+     "spread": 0.44,
+     "liquidez": 9.9198
     },
     {
      "tipo": "map_handicap",
@@ -607,22 +471,22 @@
       "Team Lynx",
       "Team Synapse"
      ],
-     "p1": 0.51,
+     "p1": 0.49,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.64,
-     "liquidez": 83.2573
+     "spread": 0.96,
+     "liquidez": 2.9197
     }
    ]
   },
   {
    "time_a": "angry birds",
    "time_b": "Spirit Academy",
-   "p_a": 0.665,
-   "p_b": 0.335,
+   "p_a": 0.675,
+   "p_b": 0.325,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.05,
-   "liquidez": 1442.9521,
-   "volume": 1064.754866,
+   "spread": 0.03,
+   "liquidez": 3377.0046,
+   "volume": 1371.7283330000002,
    "bo": 3,
    "torneio": "Asgard Championship Playoffs",
    "inicio_utc": "2026-11-17 16:00:00+00",
@@ -636,10 +500,10 @@
       "angry birds",
       "Spirit Academy"
      ],
-     "p1": 0.515,
+     "p1": 0.615,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.81,
-     "liquidez": 146.8777
+     "spread": 0.43,
+     "liquidez": 286.087
     },
     {
      "tipo": "child_moneyline",
@@ -649,10 +513,10 @@
       "angry birds",
       "Spirit Academy"
      ],
-     "p1": 0.515,
+     "p1": 0.615,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.83,
-     "liquidez": 131.6476
+     "spread": 0.43,
+     "liquidez": 284.7769
     },
     {
      "tipo": "totals",
@@ -662,10 +526,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.5,
+     "p1": 0.395,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 10.3904
+     "spread": 0.21,
+     "liquidez": 46.6184
     },
     {
      "tipo": "map_handicap",
@@ -675,25 +539,25 @@
       "angry birds",
       "Spirit Academy"
      ],
-     "p1": 0.52,
+     "p1": 0.51,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.84,
-     "liquidez": 28.6329
+     "spread": 0.78,
+     "liquidez": 47.7585
     }
    ]
   },
   {
    "time_a": "Power Rangers",
    "time_b": "Team Synapse",
-   "p_a": 0.685,
-   "p_b": 0.315,
+   "p_a": 0.615,
+   "p_b": 0.385,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.21,
-   "liquidez": 1084.0019,
-   "volume": 113.105953,
+   "spread": 0.07,
+   "liquidez": 2409.826,
+   "volume": 4421.050604000001,
    "bo": 3,
    "torneio": "European Pro League Group B",
-   "inicio_utc": "2026-11-17 10:00:00+00",
+   "inicio_utc": "2026-11-21 16:00:00+00",
    "evento": "dota2-pr1-synaps-2026-11-17",
    "mercados": [
     {
@@ -704,10 +568,10 @@
       "Power Rangers",
       "Team Synapse"
      ],
-     "p1": 0.48,
+     "p1": 0.355,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 75.7195
+     "spread": 0.51,
+     "liquidez": 619.4081
     },
     {
      "tipo": "child_moneyline",
@@ -717,10 +581,10 @@
       "Power Rangers",
       "Team Synapse"
      ],
-     "p1": 0.5,
+     "p1": 0.565,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 75.3196
+     "spread": 0.69,
+     "liquidez": 319.2288
     },
     {
      "tipo": "totals",
@@ -732,8 +596,8 @@
      ],
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.519
+     "spread": 0.98,
+     "liquidez": 1.92
     },
     {
      "tipo": "map_handicap",
@@ -745,20 +609,20 @@
      ],
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.86,
-     "liquidez": 17.7192
+     "spread": 0.98,
+     "liquidez": 1.92
     }
    ]
   },
   {
    "time_a": "4ikibamboni",
    "time_b": "angry birds",
-   "p_a": 0.15,
-   "p_b": 0.85,
+   "p_a": 0.215,
+   "p_b": 0.785,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.18,
-   "liquidez": 190.9147,
-   "volume": 27.157275,
+   "spread": 0.01,
+   "liquidez": 6361.0136,
+   "volume": 772.343984,
    "bo": 3,
    "torneio": "European Pro League Group A",
    "inicio_utc": "2026-11-17 13:00:00+00",
@@ -772,10 +636,10 @@
       "4ikibamboni",
       "angry birds"
      ],
-     "p1": 0.52,
+     "p1": 0.325,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 94.7196
+     "spread": 0.33,
+     "liquidez": 2432.2541
     },
     {
      "tipo": "child_moneyline",
@@ -785,10 +649,10 @@
       "4ikibamboni",
       "angry birds"
      ],
-     "p1": 0.52,
+     "p1": 0.32,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 94.7196
+     "spread": 0.34,
+     "liquidez": 2531.6944
     },
     {
      "tipo": "totals",
@@ -798,10 +662,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.21,
+     "p1": 0.375,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.34,
-     "liquidez": 7.6504
+     "spread": 0.01,
+     "liquidez": 107.7868
     },
     {
      "tipo": "map_handicap",
@@ -811,22 +675,22 @@
       "angry birds",
       "4ikibamboni"
      ],
-     "p1": 0.505,
+     "p1": 0.53,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.95,
-     "liquidez": 2.6
+     "spread": 0.22,
+     "liquidez": 174.9963
     }
    ]
   },
   {
    "time_a": "Spirit Academy",
    "time_b": "Team Allied",
-   "p_a": 0.605,
-   "p_b": 0.395,
+   "p_a": 0.655,
+   "p_b": 0.345,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.03,
-   "liquidez": 1839.8365,
-   "volume": 38.819355,
+   "spread": 0.01,
+   "liquidez": 2669.62,
+   "volume": 132.09073999999998,
    "bo": 3,
    "torneio": "European Pro League Group A",
    "inicio_utc": "2026-11-17 16:00:00+00",
@@ -843,7 +707,7 @@
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
      "spread": 0.92,
-     "liquidez": 84.8196
+     "liquidez": 75.3196
     },
     {
      "tipo": "child_moneyline",
@@ -856,7 +720,7 @@
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
      "spread": 0.92,
-     "liquidez": 84.8196
+     "liquidez": 75.3196
     },
     {
      "tipo": "totals",
@@ -866,10 +730,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.5,
+     "p1": 0.395,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.5193
+     "spread": 0.21,
+     "liquidez": 46.1389
     },
     {
      "tipo": "map_handicap",
@@ -879,22 +743,22 @@
       "Spirit Academy",
       "Team Allied"
      ],
-     "p1": 0.5,
+     "p1": 0.43,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.5194
+     "spread": 0.08,
+     "liquidez": 315.0278
     }
    ]
   },
   {
    "time_a": "InterActive Philippines",
    "time_b": "potn9ki",
-   "p_a": 0.8,
-   "p_b": 0.2,
+   "p_a": 0.695,
+   "p_b": 0.305,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.22,
-   "liquidez": 261.1782,
-   "volume": 68.44907599999999,
+   "spread": 0.03,
+   "liquidez": 412.0903,
+   "volume": 73.44907599999999,
    "bo": 3,
    "torneio": "European Pro League Group B",
    "inicio_utc": "2026-11-17 19:00:00+00",
@@ -908,10 +772,10 @@
       "InterActive Philippines",
       "potn9ki"
      ],
-     "p1": 0.505,
+     "p1": 0.42,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.87,
-     "liquidez": 106.5591
+     "spread": 0.7,
+     "liquidez": 125.349
     },
     {
      "tipo": "child_moneyline",
@@ -921,10 +785,10 @@
       "InterActive Philippines",
       "potn9ki"
      ],
-     "p1": 0.5,
+     "p1": 0.48,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.9,
-     "liquidez": 99.3193
+     "spread": 0.82,
+     "liquidez": 118.4793
     },
     {
      "tipo": "totals",
@@ -934,10 +798,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.5,
+     "p1": 0.39,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.519
+     "spread": 0.22,
+     "liquidez": 39.3564
     },
     {
      "tipo": "map_handicap",
@@ -947,10 +811,10 @@
       "InterActive Philippines",
       "potn9ki"
      ],
-     "p1": 0.5,
+     "p1": 0.3,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.92,
-     "liquidez": 4.5194
+     "spread": 0.46,
+     "liquidez": 83.3992
     }
    ]
   },
@@ -961,8 +825,8 @@
    "p_b": 0.365,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 5917.1886,
-   "volume": 1507.2120329999998,
+   "liquidez": 50224.683,
+   "volume": 11182.440889999998,
    "bo": 3,
    "torneio": "1win Essence Playoffs",
    "inicio_utc": "2026-11-17 13:00:00+00",
@@ -976,10 +840,10 @@
       "LGD Gaming",
       "LEGION"
      ],
-     "p1": 0.6,
+     "p1": 0.585,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.02,
-     "liquidez": 3711.0779
+     "spread": 0.01,
+     "liquidez": 7977.4895
     },
     {
      "tipo": "child_moneyline",
@@ -989,10 +853,10 @@
       "LGD Gaming",
       "LEGION"
      ],
-     "p1": 0.59,
+     "p1": 0.585,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.04,
-     "liquidez": 256.2723
+     "spread": 0.01,
+     "liquidez": 4775.735
     },
     {
      "tipo": "totals",
@@ -1002,10 +866,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.475,
+     "p1": 0.48,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 669.7562
+     "spread": 0.02,
+     "liquidez": 2476.9182
     },
     {
      "tipo": "map_handicap",
@@ -1015,22 +879,22 @@
       "LGD Gaming",
       "LEGION"
      ],
-     "p1": 0.355,
+     "p1": 0.365,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 234.3149
+     "spread": 0.01,
+     "liquidez": 9214.9691
     }
    ]
   },
   {
    "time_a": "Team Spirit",
    "time_b": "Aurora",
-   "p_a": 0.75,
-   "p_b": 0.25,
+   "p_a": 0.745,
+   "p_b": 0.255,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.02,
-   "liquidez": 6283.4654,
-   "volume": 3522.5423989999995,
+   "spread": 0.01,
+   "liquidez": 35974.6367,
+   "volume": 7131.377286999999,
    "bo": 3,
    "torneio": "1win Essence Playoffs",
    "inicio_utc": "2026-11-17 16:00:00+00",
@@ -1046,8 +910,8 @@
      ],
      "p1": 0.675,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 1704.1836
+     "spread": 0.01,
+     "liquidez": 8502.3999
     },
     {
      "tipo": "child_moneyline",
@@ -1060,7 +924,7 @@
      "p1": 0.675,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 1785.3732
+     "liquidez": 4618.4106
     },
     {
      "tipo": "totals",
@@ -1070,10 +934,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.435,
+     "p1": 0.425,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 1649.62
+     "liquidez": 2485.8926
     },
     {
      "tipo": "map_handicap",
@@ -1086,7 +950,7 @@
      "p1": 0.475,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 2929.3528
+     "liquidez": 8563.0757
     }
    ]
   }
