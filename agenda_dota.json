@@ -1,31 +1,7 @@
 {
- "coletado_em": "2026-11-18T19:34:31+00:00",
+ "coletado_em": "2026-11-18T21:33:37+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
-  {
-   "time_a": "Team Spirit",
-   "time_b": "PARIVISION",
-   "inicio_utc": "2026-11-18 16:00:00+00",
-   "bo": 5,
-   "torneio": "1w Essence III - Playoffs",
-   "pagina": "1win Essence/3"
-  },
-  {
-   "time_a": "CyberHero",
-   "time_b": "Inner Circle x Insanity",
-   "inicio_utc": "2026-11-18 17:10:00+00",
-   "bo": 3,
-   "torneio": "DreamLeague D2 S5 - Playoffs",
-   "pagina": "DreamLeague/Division 2/5"
-  },
-  {
-   "time_a": "Team Spirit Academy",
-   "time_b": "Nemiga Gaming",
-   "inicio_utc": "2026-11-18 17:25:00+00",
-   "bo": 3,
-   "torneio": "Asgard Championship S2 - Playoffs",
-   "pagina": "Asgard Championship/2"
-  },
   {
    "time_a": "RyVex Esports",
    "time_b": "Execration",
@@ -65,6 +41,14 @@
    "bo": 3,
    "torneio": "EPL Season 41 - November 19",
    "pagina": "European Pro League/41"
+  },
+  {
+   "time_a": "Team Lynx",
+   "time_b": "Team Spirit Academy",
+   "inicio_utc": "2026-11-19 13:00:00+00",
+   "bo": 3,
+   "torneio": "Asgard Championship S2 - Playoffs",
+   "pagina": "Asgard Championship/2"
   },
   {
    "time_a": "Froglings",
