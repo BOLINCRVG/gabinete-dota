@@ -1,23 +1,7 @@
 {
- "coletado_em": "2026-11-18T02:35:50+00:00",
+ "coletado_em": "2026-11-18T10:42:24+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
-  {
-   "time_a": "Resp Gaming",
-   "time_b": "Cloud of Hope",
-   "inicio_utc": "2026-11-18 07:00:00+00",
-   "bo": 3,
-   "torneio": "EPL World SEA S20 - November 18",
-   "pagina": "EPL/World Series/Southeast Asia/20"
-  },
-  {
-   "time_a": "Team Nemesis Academy",
-   "time_b": "Direborn Esports",
-   "inicio_utc": "2026-11-18 10:00:00+00",
-   "bo": 3,
-   "torneio": "EPL World SEA S20 - November 18",
-   "pagina": "EPL/World Series/Southeast Asia/20"
-  },
   {
    "time_a": "Angry Birds",
    "time_b": "Team Spirit Academy",
@@ -33,6 +17,14 @@
    "bo": 3,
    "torneio": "Asgard Championship S2 - Playoffs",
    "pagina": "Asgard Championship/2"
+  },
+  {
+   "time_a": "Team Nemesis Academy",
+   "time_b": "Direborn Esports",
+   "inicio_utc": "2026-11-18 10:30:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20 - November 18",
+   "pagina": "EPL/World Series/Southeast Asia/20"
   },
   {
    "time_a": "Aurora Gaming",
