@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-16T19:34:29",
+ "gerado_em": "2026-11-19T19:25:39",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -353,11 +353,11 @@
   "20026": {
    "nome": "Asgard Championship",
    "tier": "excluded",
-   "partidas": 136,
-   "pct_pro": 65.8,
-   "ate": "2026-11-16",
+   "partidas": 140,
+   "pct_pro": 66.4,
+   "ate": "2026-11-19",
    "promovida": true,
-   "motivo": "66% das participacoes sao de times do universo profissional (136 partidas; rodada 1)"
+   "motivo": "66% das participacoes sao de times do universo profissional (140 partidas; rodada 1)"
   },
   "20030": {
    "nome": "The Boris Invitational: Streamer Battles 2",
@@ -422,9 +422,9 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 201,
-   "pct_pro": 44.8,
-   "ate": "2026-11-16",
+   "partidas": 211,
+   "pct_pro": 45.3,
+   "ate": "2026-11-19",
    "promovida": false,
    "motivo": "liga de nível mais baixo: 45% de times profissionais (corte: 50%)",
    "nivel_baixo": true
@@ -432,20 +432,20 @@
   "20276": {
    "nome": "European Pro League  2026-2027 Season",
    "tier": "excluded",
-   "partidas": 22,
-   "pct_pro": 54.5,
-   "ate": "2026-11-15",
+   "partidas": 26,
+   "pct_pro": 50.0,
+   "ate": "2026-11-19",
    "promovida": true,
-   "motivo": "54% das participacoes sao de times do universo profissional (22 partidas; rodada 1)"
+   "motivo": "50% das participacoes sao de times do universo profissional (26 partidas; rodada 1)"
   },
   "20277": {
    "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
    "tier": "excluded",
-   "partidas": 56,
-   "pct_pro": 59.8,
-   "ate": "2026-11-16",
+   "partidas": 58,
+   "pct_pro": 59.5,
+   "ate": "2026-11-19",
    "promovida": true,
-   "motivo": "60% das participacoes sao de times do universo profissional (56 partidas; rodada 2)"
+   "motivo": "60% das participacoes sao de times do universo profissional (58 partidas; rodada 2)"
   },
   "20334": {
    "nome": "NEXUS SERIES II",
@@ -631,7 +631,7 @@
   },
   "20484": {
    "nome": "Haste Major Tournament",
-   "ids": 3,
+   "ids": 4,
    "time_pro": false
   },
   "20483": {
@@ -726,7 +726,7 @@
   },
   "20459": {
    "nome": "Jimi cup",
-   "ids": 3,
+   "ids": 7,
    "time_pro": false
   },
   "20458": {

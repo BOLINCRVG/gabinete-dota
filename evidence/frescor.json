@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-16T20:08:28",
+ "gerado_em": "2026-11-19T20:06:25",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -16,17 +16,45 @@
    "estado": "SEM CARIMBO"
   },
   {
+   "arquivo": "frescor.json",
+   "rotulo": "esta propria varredura",
+   "cadencia_dias": 1.0,
+   "idade_dias": 3.0,
+   "estado": "atrasada"
+  },
+  {
    "arquivo": "regua_pinnacle_vencedor_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 20.0,
+   "idade_dias": 23.0,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.6,
+   "idade_dias": 3.0,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "desempenho.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.3,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "suite_esteira.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.3,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "ao_vivo_feed.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
    "estado": "frequencia nao declarada"
   },
   {
@@ -41,13 +69,6 @@
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": null,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "desempenho.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.0,
    "estado": "frequencia nao declarada"
   },
   {
@@ -70,20 +91,6 @@
    "cadencia_dias": null,
    "idade_dias": null,
    "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "suite_esteira.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.0,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "frescor.json",
-   "rotulo": "esta propria varredura",
-   "cadencia_dias": 1.0,
-   "idade_dias": 0.6,
-   "estado": "ok"
   },
   {
    "arquivo": "livro_caixa.json",
