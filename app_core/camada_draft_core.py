@@ -160,7 +160,7 @@ def arquivo(raiz: Path, esporte: str) -> Path:
 
 
 def carregar(raiz: Path, esporte: str) -> Optional[Dict[str, Any]]:
-    """{'coef':..., 'estado': EstadoDraft, 'gerado_em':..., 'medicao':...} ou None."""
+    """{'coef', 'estado': EstadoDraft, 'gerado_em', 'medicao', 'ultimo_jogo', 'elencos'} ou None."""
     p = arquivo(raiz, esporte)
     if not p.exists():
         return None
@@ -171,7 +171,8 @@ def carregar(raiz: Path, esporte: str) -> Optional[Dict[str, Any]]:
     if not isinstance(d.get("coef"), dict):
         return None
     return {"coef": d["coef"], "estado": EstadoDraft.de_json(d.get("estado") or {}),
-            "gerado_em": d.get("gerado_em"), "medicao": d.get("medicao")}
+            "gerado_em": d.get("gerado_em"), "medicao": d.get("medicao"),
+            "ultimo_jogo": d.get("ultimo_jogo"), "elencos": d.get("elencos") or {}}
 
 
 def detalhe_do_lado(estado: EstadoDraft, lado: Sequence[Tuple[str, str]], quando: datetime,

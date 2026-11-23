@@ -11,7 +11,7 @@ from __future__ import annotations
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from app_core import camada_draft_core as CD
 from app_core import super_live_core as SL
@@ -80,6 +80,14 @@ def render_super_live(st: Any, *, raiz: Any, esporte: str, times: List[str],
     if not modelos:
         st.warning("Os modelos ao vivo (live_models_feed/) não estão no app: a leitura ao vivo fica de fora.")
     heroi = _nome_heroi(raiz)
+
+    if esporte == "dota":
+        try:
+            render_draft_colado(st, raiz=raiz, esporte=esporte, times=times, camada=camada, heroi=heroi)
+        except Exception as e:  # noqa: BLE001
+            st.error(f"O draft colado não abriu: {type(e).__name__}: {e}")
+        st.divider()
+        st.markdown("#### Ao vivo")
 
     jogos, motivo = _lista_ao_vivo(st, esporte)
     fonte = "OpenDota (ao vivo)" if esporte == "dota" else "lolesports (ao vivo)"
@@ -297,3 +305,125 @@ def _render_polymarket(st: Any, *, raiz: Path, esporte: str, jogo, nome_a, nome_
                            f"(retorno esperado {100 * (p_mod * compra - 1):+.1f}%).")
     elif mapas:
         st.caption(f"Mercados de mapa abertos: {sorted(mapas)}; o mapa deste jogo não está entre eles.")
+
+
+# ---------------------------------------------------------------------------------------------
+# DRAFT COLADO (23/11/2026): cola os herois -> quanto a odd mexe e POR QUE (app_core/draft_colado_core)
+# ---------------------------------------------------------------------------------------------
+def _nomes_jogadores(raiz: Path) -> Dict[str, str]:
+    import json
+    try:
+        return dict(json.loads((Path(raiz) / "nomes_jogadores_dota.json").read_text(encoding="utf-8")).get("nomes") or {})
+    except (OSError, ValueError):
+        return {}
+
+
+def _rot_jogador(conta: str, nomes: Mapping[str, str]) -> str:
+    if not conta:
+        return "fora da base"
+    return nomes.get(str(conta)) or f"conta {conta} (sem nome público)"
+
+
+def render_draft_colado(st: Any, *, raiz: Path, esporte: str, times: List[str], camada: Optional[Dict[str, Any]],
+                        heroi: Callable[[str], str]) -> None:
+    import json
+    from app_core import draft_colado_core as DC
+    from app_core.live_between_maps_core import resolve_p_base
+    st.markdown("#### Colar o draft — quanto a odd mexe e por quê")
+    if camada is None:
+        st.warning("Sem a camada de draft (camada_draft_dota.json): não dá para analisar o draft.")
+        return
+    ss = st.session_state
+    lista = [""] + sorted(times)
+    ini_a, ini_b = str(ss.get("teamA") or ""), str(ss.get("teamB") or "")
+    c1, c2, c3 = st.columns([3, 3, 2])
+    t1 = c1.selectbox("Time 1", lista, index=lista.index(ini_a) if ini_a in lista else 0, key="dc_t1")
+    t2 = c2.selectbox("Time 2", lista, index=lista.index(ini_b) if ini_b in lista else 0, key="dc_t2")
+    rad = c3.radio("Radiant", ["Time 1", "Time 2"], horizontal=True, key="dc_rad")
+    texto = st.text_area("Heróis: uma linha por time (primeiro o Time 1), separados por vírgula — ou os 10 numa "
+                         "linha só. Aceita apelidos (FV, AM, NP, WR...).", key="dc_texto", height=80,
+                         placeholder="Faceless Void, Puck, Mars, Tusk, Rubick\nAnti-Mage, Invoker, NP, Axe, Centaur")
+    ult = str(camada.get("ultimo_jogo") or "")[:10]
+    if ult:
+        st.caption(f"Base do draft até {ult[8:10]}/{ult[5:7]}/{ult[:4]} (jogos depois disso ainda não contam).")
+    if not (t1 and t2) or t1 == t2:
+        st.info("Escolha os dois times.")
+        return
+    if not str(texto or "").strip():
+        return
+    try:
+        herois = json.loads((Path(raiz) / "herois_dota.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        herois = {}
+    lados, _nao, aviso = DC.ler_draft(texto, DC.catalogo_dota(herois))
+    if lados is None:
+        st.warning(aviso)
+        return
+    estado, nomes = camada["estado"], _nomes_jogadores(raiz)
+    elencos = camada.get("elencos") or {}
+    escolhidos: List[List[str]] = []
+    with st.expander("Quem joga cada herói (escolhido pelo histórico — corrija se estiver errado)", expanded=False):
+        cols = st.columns(2)
+        for col, time_, hs in ((cols[0], t1, lados[0]), (cols[1], t2, lados[1])):
+            el = elencos.get(time_) or {}
+            contas = [str(x) for x in (el.get("jogadores") or [])]
+            visto = str(el.get("visto_em") or "")
+            col.markdown(f"**{time_}**" + (f" — elenco do jogo de {visto[8:10]}/{visto[5:7]}" if visto else ""))
+            if len(contas) < 5:
+                col.warning(f"{time_} não tem elenco na base: a parte de cada jogador fica de fora "
+                            "(só a força dos heróis conta).")
+            quem = DC.atribuir(contas, hs, estado)
+            opcoes = contas + [""]
+            lado = []
+            for h, q in zip(hs, quem):
+                v = col.selectbox(heroi(h), opcoes, index=opcoes.index(q) if q in opcoes else len(opcoes) - 1,
+                                  format_func=lambda c: _rot_jogador(c, nomes), key=f"dc_j_{time_}_{h}")
+                lado.append(v)
+            escolhidos.append(lado)
+    p1, origem = resolve_p_base(session_state=ss, team_a=t1, team_b=t2,
+                                artifact_path=str(Path(raiz) / "ml_artifact.json"))
+    if p1 is None:
+        st.warning(f"Sem preço pré-jogo para {t1} x {t2} ({origem}): a análise parte de 50%.")
+        p1 = 0.5
+    p1 = float(p1)
+    t1_rad = rad == "Time 1"
+    l1, l2 = list(zip(escolhidos[0], lados[0])), list(zip(escolhidos[1], lados[1]))
+    azul, verm = (l1, l2) if t1_rad else (l2, l1)
+    agora = datetime.now(timezone.utc).replace(tzinfo=None)
+    r = DC.explicar(estado, camada["coef"], azul, verm, agora, p1 if t1_rad else 1 - p1)
+    pos1 = r["p_pos"] if t1_rad else 1 - r["p_pos"]
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Pré-jogo (mapa)", _pct(p1), help=origem)
+    m1.caption(f"{t1} {_odd(p1)} · {t2} {_odd(1 - p1)}")
+    m2.metric("Pós-draft (mapa)", _pct(pos1), delta=f"{100 * (pos1 - p1):+.1f} pp para {t1}")
+    m2.caption(f"{t1} {_odd(pos1)} · {t2} {_odd(1 - pos1)}")
+    m3.metric("Lado Radiant", f"{r['pp_lado_azul']:+.1f} pp",
+              help="Vantagem medida do lado Radiant (já somada no pós-draft).")
+    m3.caption(f"Radiant: {t1 if t1_rad else t2}")
+    if r["faltam"]:
+        st.warning("Jogador fora da base (" + ", ".join(_rot_jogador(c, nomes) for c in sorted(set(r["faltam"])))
+                   + "): a parte dos jogadores sai (regra da medição); contam só os heróis.")
+    st.markdown("**Por quê** — cada jogador naquele herói comparado com a média dos 10 deste jogo "
+                "(positivo = puxa a favor do time dele). Pós-draft = pré-jogo + lado + diferença entre os dois times.")
+    cols = st.columns(2)
+    por_lado: Dict[str, List[Dict[str, Any]]] = {"azul": [], "vermelho": []}
+    for x in r["partes"]:
+        por_lado[x["lado"]].append(x)
+    for col, time_, ld in ((cols[0], t1, "azul" if t1_rad else "vermelho"),
+                           (cols[1], t2, "vermelho" if t1_rad else "azul")):
+        tot = sum(x["pp"] for x in por_lado[ld])
+        col.markdown(f"**{time_}** — no duelo do draft: {tot:+.1f} pp")
+        for x in sorted(por_lado[ld], key=lambda z: -z["pp"]):
+            nome = _rot_jogador(x["conta"], nomes) if x["conta"] else "jogador não definido"
+            if not r["usa_jogador"]:
+                jog = "parte do jogador fora"
+            elif x["jogos"] == 0:
+                jog = f"nunca jogou de {heroi(x['heroi'])} na base ({x['pp_jogador']:+.1f})"
+            else:
+                jog = (f"ele no herói: {x['vitorias']}–{x['jogos'] - x['vitorias']} em {x['jogos']} jogos "
+                       f"({x['pp_jogador']:+.1f})")
+            col.markdown(f"**{x['pp']:+.1f} pp** · {nome} de {heroi(x['heroi'])}")
+            col.caption(f"herói {100 * x['wr_heroi']:.0f}% nos jogos recentes ({x['pp_heroi']:+.1f}) · {jog}")
+    st.caption("Medido às cegas em 2026: só a força recente do herói e o jogador naquele herói mexem no preço. "
+               "Counter, dupla de heróis, time no herói, último pick, ban no herói do jogador e estilo de jogo "
+               "foram testados e não melhoraram a previsão — por isso não aparecem como motivo.")

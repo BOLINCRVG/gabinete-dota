@@ -170,14 +170,16 @@ def baixar_picks(ids, ja) -> int:
 
 
 def jogos():
-    """Lista (data, gameid, azul[(jog,camp)], vermelho[(jog,camp)], azul_venceu) em ordem de data."""
-    cols = ["gameid", "date", "side", "position", "playername", "champion", "result", "participantid"]
+    """Lista (data, gameid, azul[(jog,camp)], vermelho[(jog,camp)], azul_venceu, time_azul, time_vermelho)
+    em ordem de data."""
+    cols = ["gameid", "date", "side", "position", "playername", "champion", "result", "participantid", "teamname"]
     d = pd.concat([pd.read_csv(c, usecols=lambda x: x in cols, low_memory=False) for c in _csvs()],
                   ignore_index=True)
     d["date"] = pd.to_datetime(d["date"], errors="coerce")
     d = d.dropna(subset=["date"])
     tm = d[d["position"] == "team"].drop_duplicates(["gameid", "side"])
     res = {(r.gameid, str(r.side).title()): int(r.result) for r in tm.itertuples(index=False)}
+    nome = {(r.gameid, str(r.side).title()): str(r.teamname) for r in tm.itertuples(index=False)}
     data = tm.groupby("gameid")["date"].min()
     lados = {}
     if E_DOTA:
@@ -202,7 +204,8 @@ def jogos():
         lr = lados.get(gid)
         if not lr or len(lr[0]) != 5 or len(lr[1]) != 5 or (gid, "Blue") not in res:
             continue
-        out.append((t.to_pydatetime(), str(gid), lr[0], lr[1], res[(gid, "Blue")]))
+        out.append((t.to_pydatetime(), str(gid), lr[0], lr[1], res[(gid, "Blue")],
+                    nome.get((gid, "Blue"), ""), nome.get((gid, "Red"), "")))
     return out
 
 
@@ -227,7 +230,11 @@ def main() -> int:
     est = EstadoDraft()
     linhas = []
     inicio = lista[0][0]
-    for t, gid, az, vm, y in lista:
+    elencos = {}
+    for t, gid, az, vm, y, n_az, n_vm in lista:
+        for nm, lado in ((n_az, az), (n_vm, vm)):
+            if nm and nm.lower() != "nan":
+                elencos[nm] = {"jogadores": [j for j, _ in lado], "visto_em": t.date().isoformat()}
         if a.ajustar and (t - inicio).days >= AQUECIMENTO_DIAS:
             s = est.sinais(az, vm, t)
             linhas.append((gid, t, s["campeao"], s["conforto"], s["pratica"], y))
@@ -270,7 +277,9 @@ def main() -> int:
         return 1
     doc = {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
            "ultimo_jogo": lista[-1][0].isoformat(timespec="seconds"), "n_jogos": len(lista),
-           "coef": coef, "medicao": medicao, "estado": est.para_json()}
+           "coef": coef, "medicao": medicao, "estado": est.para_json(),
+           # elenco = os 5 do ULTIMO jogo de cada time (nome do modelo); a tela de draft colado usa
+           "elencos": dict(sorted(elencos.items()))}
     destino.write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"[camada_draft] gravado {destino.name}: {len(est.campeao)} campeoes, {len(est.jogador)} pares "
           f"jogador-campeao, {destino.stat().st_size // 1024} KB")
