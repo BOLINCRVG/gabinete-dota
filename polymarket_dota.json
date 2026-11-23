@@ -1,220 +1,16 @@
 {
- "coletado_em": "2026-11-23T15:20:22+00:00",
+ "coletado_em": "2026-11-23T18:47:09+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=102366",
  "partidas": [
   {
-   "time_a": "Team Liquid",
-   "time_b": "DO KONCA",
-   "p_a": 0.725,
-   "p_b": 0.275,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 121111.0772,
-   "volume": 26806.919816999995,
-   "bo": 3,
-   "torneio": "BLAST Slam Group C",
-   "inicio_utc": "2026-11-23 17:00:00+00",
-   "evento": "dota2-liquid-konca-2026-11-23",
-   "mercados": [
-    {
-     "tipo": "child_moneyline",
-     "mapa": 1,
-     "linha": null,
-     "lados": [
-      "Team Liquid",
-      "DO KONCA"
-     ],
-     "p1": 0.665,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 44754.2296
-    },
-    {
-     "tipo": "child_moneyline",
-     "mapa": 2,
-     "linha": null,
-     "lados": [
-      "Team Liquid",
-      "DO KONCA"
-     ],
-     "p1": 0.665,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 40516.3983
-    },
-    {
-     "tipo": "totals",
-     "mapa": 0,
-     "linha": 2.5,
-     "lados": [
-      "Over",
-      "Under"
-     ],
-     "p1": 0.435,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 18323.2504
-    },
-    {
-     "tipo": "map_handicap",
-     "mapa": 0,
-     "linha": -1.5,
-     "lados": [
-      "Team Liquid",
-      "DO KONCA"
-     ],
-     "p1": 0.445,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 115234.9945
-    }
-   ]
-  },
-  {
-   "time_a": "Aurora",
-   "time_b": "LGD Gaming",
-   "p_a": 0.605,
-   "p_b": 0.395,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.01,
-   "liquidez": 74656.6082,
-   "volume": 19000.2343,
-   "bo": 3,
-   "torneio": "BLAST Slam Group D",
-   "inicio_utc": "2026-11-23 17:00:00+00",
-   "evento": "dota2-aur1-lgd-2026-11-23",
-   "mercados": [
-    {
-     "tipo": "child_moneyline",
-     "mapa": 1,
-     "linha": null,
-     "lados": [
-      "Aurora",
-      "LGD Gaming"
-     ],
-     "p1": 0.565,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 23606.441
-    },
-    {
-     "tipo": "child_moneyline",
-     "mapa": 2,
-     "linha": null,
-     "lados": [
-      "Aurora",
-      "LGD Gaming"
-     ],
-     "p1": 0.555,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 18381.5923
-    },
-    {
-     "tipo": "totals",
-     "mapa": 0,
-     "linha": 2.5,
-     "lados": [
-      "Over",
-      "Under"
-     ],
-     "p1": 0.485,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 16249.7424
-    },
-    {
-     "tipo": "map_handicap",
-     "mapa": 0,
-     "linha": -1.5,
-     "lados": [
-      "Aurora",
-      "LGD Gaming"
-     ],
-     "p1": 0.335,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 48697.564
-    }
-   ]
-  },
-  {
-   "time_a": "PuckChamp",
-   "time_b": "InterActive Philippines",
-   "p_a": 0.61,
-   "p_b": 0.39,
-   "fonte_preco": "meio_do_livro",
-   "spread": 0.04,
-   "liquidez": 354.6554,
-   "volume": 7.142858,
-   "bo": 3,
-   "torneio": "European Pro League Group B",
-   "inicio_utc": "2026-11-23 16:00:00+00",
-   "evento": "dota2-pckcp-iac-2026-11-23",
-   "mercados": [
-    {
-     "tipo": "child_moneyline",
-     "mapa": 1,
-     "linha": null,
-     "lados": [
-      "PuckChamp",
-      "InterActive Philippines"
-     ],
-     "p1": 0.5,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 11.8694
-    },
-    {
-     "tipo": "child_moneyline",
-     "mapa": 2,
-     "linha": null,
-     "lados": [
-      "PuckChamp",
-      "InterActive Philippines"
-     ],
-     "p1": 0.5,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.88,
-     "liquidez": 11.3484
-    },
-    {
-     "tipo": "totals",
-     "mapa": 0,
-     "linha": 2.5,
-     "lados": [
-      "Over",
-      "Under"
-     ],
-     "p1": 0.5,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.96,
-     "liquidez": 1.9198
-    },
-    {
-     "tipo": "map_handicap",
-     "mapa": 0,
-     "linha": -1.5,
-     "lados": [
-      "PuckChamp",
-      "InterActive Philippines"
-     ],
-     "p1": 0.205,
-     "fonte_preco": "meio_do_livro",
-     "spread": 0.37,
-     "liquidez": 9.024
-    }
-   ]
-  },
-  {
    "time_a": "Team Yandex",
    "time_b": "1win",
-   "p_a": 0.78,
-   "p_b": 0.22,
+   "p_a": 0.775,
+   "p_b": 0.225,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.02,
-   "liquidez": 6626.2392,
-   "volume": 1385.645152,
+   "spread": 0.01,
+   "liquidez": 11933.7338,
+   "volume": 2362.238099,
    "bo": 3,
    "torneio": "BLAST Slam Seeding Matches",
    "inicio_utc": "2026-11-24 14:00:00+00",
@@ -228,10 +24,10 @@
       "Team Yandex",
       "1win"
      ],
-     "p1": 0.5,
+     "p1": 0.725,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.52,
-     "liquidez": 2562.026
+     "spread": 0.05,
+     "liquidez": 2568.7072
     },
     {
      "tipo": "child_moneyline",
@@ -241,10 +37,10 @@
       "Team Yandex",
       "1win"
      ],
-     "p1": 0.47,
+     "p1": 0.725,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.6,
-     "liquidez": 2523.9795
+     "spread": 0.03,
+     "liquidez": 2593.3779
     },
     {
      "tipo": "totals",
@@ -254,10 +50,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.405,
+     "p1": 0.415,
      "fonte_preco": "meio_do_livro",
      "spread": 0.03,
-     "liquidez": 319.4932
+     "liquidez": 311.1678
     },
     {
      "tipo": "map_handicap",
@@ -267,21 +63,21 @@
       "Team Yandex",
       "1win"
      ],
-     "p1": 0.515,
+     "p1": 0.5,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 2132.06
+     "spread": 0.02,
+     "liquidez": 2936.8352
     }
    ]
   },
   {
    "time_a": "GamerLegion",
    "time_b": "PARIVISION",
-   "p_a": 0.16,
-   "p_b": 0.84,
+   "p_a": 0.155,
+   "p_b": 0.845,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.02,
-   "liquidez": 33090.8512,
+   "spread": 0.01,
+   "liquidez": 33267.056,
    "volume": 427.416241,
    "bo": 3,
    "torneio": "BLAST Slam Seeding Matches",
@@ -296,10 +92,10 @@
       "GamerLegion",
       "PARIVISION"
      ],
-     "p1": 0.57,
+     "p1": 0.255,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.7,
-     "liquidez": 4304.6199
+     "spread": 0.03,
+     "liquidez": 14129.05
     },
     {
      "tipo": "child_moneyline",
@@ -309,10 +105,10 @@
       "GamerLegion",
       "PARIVISION"
      ],
-     "p1": 0.565,
+     "p1": 0.255,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.71,
-     "liquidez": 4266.9695
+     "spread": 0.03,
+     "liquidez": 13898.9193
     },
     {
      "tipo": "totals",
@@ -325,7 +121,7 @@
      "p1": 0.355,
      "fonte_preco": "meio_do_livro",
      "spread": 0.05,
-     "liquidez": 9679.0002
+     "liquidez": 9832.9577
     },
     {
      "tipo": "map_handicap",
@@ -335,10 +131,10 @@
       "PARIVISION",
       "GamerLegion"
      ],
-     "p1": 0.57,
+     "p1": 0.56,
      "fonte_preco": "meio_do_livro",
      "spread": 0.04,
-     "liquidez": 18358.9993
+     "liquidez": 15493.5105
     }
    ]
   }
