@@ -150,6 +150,9 @@ def get_selected_teams(session_state: MutableMapping[str, Any]) -> tuple[str, st
 def request_pending_reset_matchup(session_state: MutableMapping[str, Any]) -> None:
     """Signal that the matchup selection should be reset on the next render cycle."""
     session_state["pending_reset_matchup"] = True
+    # 23/11/2026: a lista "Jogos encontrados" nasce com chave nova -- senao o
+    # navegador reenvia o jogo marcado e o confronto reabre sozinho.
+    session_state["_gaveta_geracao"] = int(session_state.get("_gaveta_geracao") or 0) + 1
 
 
 def consume_pending_reset_matchup(session_state: MutableMapping[str, Any]) -> bool:

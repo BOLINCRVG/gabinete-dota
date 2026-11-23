@@ -100,6 +100,61 @@ class TestGaveta(unittest.TestCase):
         self.assertFalse(e_o_confronto_aberto(g, {"teamA": "T1", "teamB": "Team Liquid"}, res))
 
 
+class _StFalso:
+    """So o que render_gaveta usa; guarda o on_change do radio dos jogos."""
+    def __init__(self, ss):
+        self.session_state, self.ao_trocar, self.chave = ss, None, None
+
+    def markdown(self, *a, **k): pass
+    def caption(self, *a, **k): pass
+    def warning(self, *a, **k): pass
+    def info(self, *a, **k): pass
+
+    def container(self, **k):
+        import contextlib
+        return contextlib.nullcontext()
+
+    def radio(self, label, opcoes, index=0, key=None, on_change=None, **k):
+        if on_change:
+            self.ao_trocar, self.chave = on_change, key
+        return self.session_state.get(key, opcoes[index])
+
+
+class TestTrocarConfronto(unittest.TestCase):
+    """23/11/2026 (bug reportado): abrir pela lista e clicar "Trocar confronto"
+    com o app calculando -- o navegador reenviava o jogo da lista, o confronto
+    reabria e o Trocar se perdia."""
+
+    def _gaveta(self, ss):
+        from app_core import gaveta_jogos_core as G
+        G._agenda = lambda: {}
+        st = _StFalso(ss)
+        G.render_gaveta(st, odds=ODDS, poly={}, confronto={}, resolver=None,
+                        times=["Top Esports", "Anyone's Legend", "Liquid", "Bilibili"])
+        return st
+
+    def test_jogo_ja_aberto_nao_reabre(self):
+        ss = {"flow_stage": "results", "teamA": "Top Esports", "teamB": "Anyone's Legend"}
+        st = self._gaveta(ss)
+        ss[st.chave] = "1"
+        st.ao_trocar()
+        self.assertNotIn("pending_load", ss)
+
+    def test_outro_jogo_abre(self):
+        ss = {"flow_stage": "results", "teamA": "Top Esports", "teamB": "Anyone's Legend"}
+        st = self._gaveta(ss)
+        ss[st.chave] = "2"
+        st.ao_trocar()
+        self.assertEqual((ss["pending_load"]["teamA"], ss["pending_load"]["teamB"]), ("Liquid", "Bilibili"))
+
+    def test_trocar_confronto_renova_a_lista(self):
+        from app_core.flow_runtime_core import request_pending_reset_matchup
+        ss = {}
+        k0 = self._gaveta(ss).chave
+        request_pending_reset_matchup(ss)
+        self.assertNotEqual(self._gaveta(ss).chave, k0)
+
+
 class TestLinhasDoJogo(unittest.TestCase):
 
     def test_a_linha_mais_equilibrada_de_cada_mercado_com_os_dois_lados(self):

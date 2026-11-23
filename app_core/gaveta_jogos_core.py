@@ -258,12 +258,18 @@ def render_gaveta(st: Any, *, odds: Mapping[str, Any], poly: Mapping[str, Any],
     nomes[ESCOLHER] = "+  Escolher times"
     por_id = {str(g["id"]): g for g in jogos}
     atual = str(aberto_jogo["id"]) if aberto_jogo and str(aberto_jogo["id"]) in opcoes else None
-    chave = "gaveta_jogo_" + str(dia if rotulos_dias else "")
+    chave = "gaveta_jogo_" + str(dia if rotulos_dias else "") + "_g" + str(ss.get("_gaveta_geracao") or 0)
 
     def _ao_trocar():
         esc = ss.get(chave)
         g = por_id.get(str(esc))
         if not g:
+            return
+        # 23/11/2026 (bug reportado): clicar "Trocar confronto" com o app ainda
+        # calculando fazia o navegador reenviar o jogo da lista; o confronto
+        # reabria do zero e o clique no Trocar se perdia. Jogo ja aberto: nada.
+        if ss.get("flow_stage") in ("lines", "results") and e_o_confronto_aberto(
+                g, {"teamA": ss.get("teamA"), "teamB": ss.get("teamB")}, resolver):
             return
         a = resolver(g["casa"]) if resolver else g["casa"]
         b = resolver(g["fora"]) if resolver else g["fora"]
