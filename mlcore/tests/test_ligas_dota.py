@@ -35,6 +35,29 @@ def _base():
     return pd.DataFrame(linhas)
 
 
+class TestHisterese(unittest.TestCase):
+    """24/11/2026: a Ultras (51,2%) caiu abaixo de 50% com partidas novas e levou 2.881 jogos de uma vez."""
+
+    def _com_liga_no_limite(self):
+        d = _base()
+        linhas, mid = [], int(d["match_id"].max())
+        for i in range(22):                           # liga 6: 18 jogos pro x amador e 4 amador x amador = 41%
+            mid += 1
+            a, b = (10, 70) if i < 18 else (71, 72)
+            for t in (a, b):
+                linhas.append({"match_id": mid, "date": f"2026-03-{1 + i:02d}T12:00:00Z", "league": "Ultras Pro League",
+                               "league_id": 6, "team_id": t, "teamname": f"Time {t}"})
+        return pd.concat([d, pd.DataFrame(linhas)], ignore_index=True), {**TIERS, 6: "excluded"}
+
+    def test_ja_promovida_so_sai_abaixo_de_40(self):
+        d, tiers = self._com_liga_no_limite()
+        nova = ld.classificar(d, tiers)
+        self.assertFalse(nova[6]["promovida"])                     # para ENTRAR precisa de 50%
+        mantida = ld.classificar(d, tiers, ja_promovidas={6})
+        self.assertTrue(mantida[6]["promovida"])                   # ja promovida: fica (41% >= 40%)
+        self.assertIn("so sai abaixo de 40%", mantida[6]["motivo"])
+
+
 class TestClassificar(unittest.TestCase):
     def setUp(self):
         self.r = ld.classificar(_base(), TIERS)

@@ -49,6 +49,10 @@ MIN_PARTIDAS_DA_LIGA = 20          # abaixo disso a liga e nova demais para julg
 # entravam: -0,0090 IC95 [-0,0127; -0,0050] (cego, 935 jogos dos ultimos 30 dias), embora ajude nos
 # jogos das proprias ligas novas (+0,052). Os jogos que ele aposta sao os das ligas principais: fica o corte.
 PCT_PRO_MINIMO = 50.0              # metade das participacoes ou mais
+# HISTERESE (24/11/2026): a Ultras Dota Pro League entrou com 51,2%; com 600 partidas novas caiu abaixo de 50%,
+# foi rebaixada numa rodada e levou 2.881 jogos de uma vez (o contrato barrou o CSV e o Dota ficou parado de 19
+# a 24/11). Liga JA promovida so sai abaixo de 40% -- a fronteira nao pisca a cada rodada.
+PCT_PRO_MANTER = 40.0
 DESDE = "2025-01-01"
 _ANO = re.compile(r"\b(19|20)\d{2}\b|\b\d{1,3}\b|season|series|temporada|[^a-z]+")
 
@@ -58,7 +62,7 @@ def raiz_do_nome(nome: Any) -> str:
     return _ANO.sub("", str(nome or "").lower())
 
 
-def classificar(d: pd.DataFrame, tiers: Dict[int, str]) -> Dict[int, Dict[str, Any]]:
+def classificar(d: pd.DataFrame, tiers: Dict[int, str], ja_promovidas: Optional[Set[int]] = None) -> Dict[int, Dict[str, Any]]:
     """{league_id: {nome, tier, partidas, pct_pro, ate, promovida, motivo}} das ligas fora do
     universo profissional com partida desde 2025. `d`: linhas do data.csv (match_id, league,
     league_id, team_id, date). Pura."""
@@ -89,10 +93,14 @@ def classificar(d: pd.DataFrame, tiers: Dict[int, str]) -> Dict[int, Dict[str, A
             if r["promovida"]:
                 continue
             r["pct_pro"] = round(100.0 * float(g["team_id"].isin(fortes).mean()), 1)
-            if r["partidas"] >= MIN_PARTIDAS_DA_LIGA and r["pct_pro"] >= PCT_PRO_MINIMO:
+            ja = int(lid) in (ja_promovidas or set())
+            corte = PCT_PRO_MANTER if ja else PCT_PRO_MINIMO
+            if r["partidas"] >= MIN_PARTIDAS_DA_LIGA and r["pct_pro"] >= corte:
                 r["promovida"], mudou = True, True
                 r["motivo"] = (f"{r['pct_pro']:.0f}% das participacoes sao de times do universo profissional "
-                               f"({r['partidas']} partidas; rodada {rodada})")
+                               f"({r['partidas']} partidas; rodada {rodada})"
+                               + (f"; ja promovida: so sai abaixo de {PCT_PRO_MANTER:.0f}%"
+                                  if ja and r["pct_pro"] < PCT_PRO_MINIMO else ""))
         if not mudou:
             break
     # 2a passada: liga nova herda da edicao anterior de mesmo nome (promovida ou profissional)
@@ -152,7 +160,13 @@ def _linhas() -> pd.DataFrame:
 def gravar(extra_acompanhar: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Reclassifica com o data.csv atual e grava o arquivo. Mantem `acompanhar` e `julgadas`."""
     velho = carregar()
-    res = classificar(_linhas(), _tiers_crus())
+    antes = {int(k) for k, v in (velho.get("ligas") or {}).items() if (v or {}).get("promovida")}
+    res = classificar(_linhas(), _tiers_crus(), ja_promovidas=antes)
+    saiu = sorted(lid for lid in antes if not (res.get(lid) or {}).get("promovida"))
+    for lid in saiu:   # nada sai calado: a liga rebaixada aparece no log do robo, com o numero
+        r = res.get(lid) or {}
+        print(f"[ligas] REBAIXADA: {r.get('nome', lid)} ({lid}) -- {r.get('pct_pro', '?')}% de times profissionais, "
+              f"{r.get('partidas', '?')} partidas (sai abaixo de {PCT_PRO_MANTER:.0f}%)")
     acomp = dict(velho.get("acompanhar") or {})
     acomp.update(extra_acompanhar or {})
     doc = {"_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como "
@@ -160,7 +174,8 @@ def gravar(extra_acompanhar: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
                     "/leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
            "gerado_em": time.strftime("%Y-%m-%dT%H:%M:%S"),
            "ligas": {str(k): v for k, v in sorted(res.items())},
-           "acompanhar": acomp, "julgadas": velho.get("julgadas") or {}}
+           "acompanhar": acomp, "julgadas": velho.get("julgadas") or {},
+           "rebaixadas_na_ultima_rodada": [str(x) for x in saiu]}
     ARQUIVO.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     return doc
 
