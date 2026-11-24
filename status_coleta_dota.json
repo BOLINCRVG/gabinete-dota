@@ -1,0 +1,16 @@
+{
+ "quando": "2026-11-24T08:01:06+00:00",
+ "resultado": "cancelled",
+ "rodada": "https://github.com/BOLINCRVG/gabinete-dota/actions/runs/45339768796",
+ "motivo": "rodada de 24/11 cortada por tempo (100 min) com 4 dias de atraso; a de 23/11 22:12 foi barrada pelo contrato de dados: os jogos de 2026 cairam de 10.265 para 7.567 (causa em investigacao; a OpenDota estava instavel, com 429 e 522)",
+ "contrato": {
+  "ok": false,
+  "jogos": 7567,
+  "falhas": [
+   "jogos cairam de 10265 para 7567 (> 10%)"
+  ],
+  "jogos_aprovados": 10265
+ },
+ "ultimo_sucesso": "2026-11-19T20:06:00+00:00",
+ "nota": "registro inicial escrito a mao em 24/11/2026 a partir dos logs do robo"
+}

@@ -1784,6 +1784,13 @@ st.markdown(
 st.caption("Fluxo: escolher Season/Times -> preencher linhas -> ver resultados (modelo + histórico).")
 
 APP_ROOT = Path(__file__).resolve().parent
+# FAIXA DE CONFIANCA (24/11/2026): ate que jogo a base vai e se a ultima coleta deu certo (e o motivo
+# se nao deu). Ver app_core/confianca_base_core.py.
+try:
+    from app_core.confianca_base_core import render_faixa as _faixa_confianca
+    _faixa_confianca(st, APP_ROOT, "dota")
+except Exception as _e_faixa:
+    st.warning("A faixa de confiança da base não abriu: {}".format(type(_e_faixa).__name__))
 _FIT_PARAMS_PATH = APP_ROOT / "params_fitted.json"
 _ODDS_ANCHOR_BASELINE_PATH = APP_ROOT / "odds_anchor_baseline.json"
 _TEAM_STATE_ARTIFACT_PATH = APP_ROOT / "team_state_artifact.json"
