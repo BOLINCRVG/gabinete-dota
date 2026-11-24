@@ -39,6 +39,19 @@ class TestVeredito(unittest.TestCase):
         self.assertEqual(C.veredito("dota", ULT, None, AGORA)[0], "atencao")
 
 
+class TestCompletude(unittest.TestCase):
+    """24/11/2026: a final do Mundial fora da base com a faixa dizendo "ok"."""
+
+    def test_serie_faltando_sobe_para_atencao(self):
+        cpl = {"janela_dias": 21, "faltando": [{"inicio": "2026-11-14T19:00:00+00:00", "a": "Gen.G Esports",
+                                                "b": "BILIBILI GAMING", "liga": "Worlds", "placar": "1-3"}]}
+        stt = {"resultado": "success", "ultimo_sucesso": "2026-11-24T10:00:00+00:00"}
+        n, t = C.veredito("lol", ULT, stt, AGORA, completude=cpl)
+        self.assertEqual(n, "atencao")
+        self.assertIn("faltam 1 série", t)
+        self.assertEqual(C.veredito("lol", ULT, stt, AGORA, completude={"faltando": []})[0], "ok")
+
+
 class TestComparar(unittest.TestCase):
 
     def test_acha_liga_e_time_que_perderam_jogos(self):

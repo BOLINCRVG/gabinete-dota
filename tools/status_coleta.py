@@ -32,9 +32,9 @@ try:
 except (AttributeError, OSError, ValueError):
     pass
 
-RAIZ = Path(__file__).resolve().parents[1]
+RAIZ = Path(__file__).resolve().parents[1] if Path(__file__).resolve().parent.name == "tools" else Path(__file__).resolve().parent
 CSV_DIA = {"dota": "CSV_DIARIO/2026_Dota_match_data_oe_like.csv",
-           "lol": "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv"}
+           "lol": "CSV_DIARIO/2026_LoL_esports_match_data_from_OraclesElixir.csv"}   # cs: sem contrato
 CONTRATO = {"dota": "evidence/contrato_dados_dota.json"}
 
 
