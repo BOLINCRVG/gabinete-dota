@@ -1,5 +1,5 @@
 {
- "coletado_em": "2026-11-24T18:23:19+00:00",
+ "coletado_em": "2026-11-24T19:03:35+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=102366",
  "partidas": [
   {
@@ -9,11 +9,11 @@
    "p_b": 0.58,
    "fonte_preco": "meio_do_livro",
    "spread": 0.02,
-   "liquidez": 6362.8606,
-   "volume": 2235.102252,
+   "liquidez": 5629.0348,
+   "volume": 2235.1022519999997,
    "bo": 3,
    "torneio": "European Pro League Playoffs",
-   "inicio_utc": "2026-11-24 19:00:00+00",
+   "inicio_utc": "2026-11-24 20:00:00+00",
    "evento": "dota2-pr1-ic-2026-11-24",
    "mercados": [
     {
@@ -24,10 +24,10 @@
       "Power Rangers",
       "Inner Circle"
      ],
-     "p1": 0.405,
+     "p1": 0.415,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.07,
-     "liquidez": 2294.1686
+     "spread": 0.05,
+     "liquidez": 2295.1264
     },
     {
      "tipo": "child_moneyline",
@@ -37,10 +37,10 @@
       "Power Rangers",
       "Inner Circle"
      ],
-     "p1": 0.4,
+     "p1": 0.41,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.08,
-     "liquidez": 1259.4332
+     "spread": 0.06,
+     "liquidez": 414.5847
     },
     {
      "tipo": "totals",
@@ -53,7 +53,7 @@
      "p1": 0.465,
      "fonte_preco": "meio_do_livro",
      "spread": 0.11,
-     "liquidez": 85.3335
+     "liquidez": 84.3898
     },
     {
      "tipo": "map_handicap",
@@ -63,10 +63,10 @@
       "Inner Circle",
       "Power Rangers"
      ],
-     "p1": 0.41,
+     "p1": 0.44,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.08,
-     "liquidez": 71.1295
+     "spread": 0.14,
+     "liquidez": 54.5431
     }
    ]
   }
