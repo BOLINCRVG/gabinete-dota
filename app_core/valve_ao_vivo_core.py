@@ -74,21 +74,46 @@ def ler_jogos(dados: Mapping[str, Any], papeis: Mapping[str, Any]) -> List[Dict[
                     "picks": ([j["heroi"] for j in ord_r], [j["heroi"] for j in ord_d]),
                     "bans": (_ids(rad.get("bans")), _ids(dire.get("bans"))),
                     "contas": contas, "duracao": dur,
+                    "contas_lado": ([j["conta"] for j in lados["rad"] if j["conta"]],
+                                    [j["conta"] for j in lados["dire"] if j["conta"]]),
                     "abates": (int(rad.get("score") or 0), int(dire.get("score") or 0)),
                     "posicoes_estimadas": True})
     return out
 
 
-def achar(jogos: List[Dict[str, Any]], t1: str, t2: str, resolver: Callable[[str], str]) -> Optional[Dict[str, Any]]:
-    """Pura. O jogo ao vivo dos dois times (pelos nomes resolvidos para a base), ou None."""
+MIN_JOGADORES_DO_TIME = 3   # de 5: o lado e daquele time se 3+ contas estao no elenco dele na base
+
+
+def time_pelos_jogadores(contas: List[str], elencos: Mapping[str, Any]) -> str:
+    """Pura. Achado com a chave real (24/11/2026): em 4 de 6 jogos ao vivo a Valve manda o nome do time VAZIO.
+    O lado vira o time da base que tem 3+ destas contas no elenco (um so; empate = nao sabe)."""
+    cs = {str(c) for c in contas if c}
+    melhores = sorted(((len(cs & {str(x) for x in (e.get("jogadores") or [])}), t) for t, e in elencos.items()),
+                      reverse=True)
+    if not melhores or melhores[0][0] < MIN_JOGADORES_DO_TIME:
+        return ""
+    if len(melhores) > 1 and melhores[1][0] == melhores[0][0]:
+        return ""
+    return melhores[0][1]
+
+
+def achar(jogos: List[Dict[str, Any]], t1: str, t2: str, resolver: Callable[[str], str],
+          elencos: Optional[Mapping[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    """Pura. O jogo ao vivo dos dois times, ou None. Cada lado: pelo nome (resolvido para a base); se a Valve
+    mandou o nome vazio ou desconhecido, pelos jogadores (elenco da base)."""
     alvo = {t1, t2}
     for j in jogos:
-        try:
-            par = {resolver(j["radiant"]) or "", resolver(j["dire"]) or ""}
-        except Exception:  # noqa: BLE001
-            continue
-        if par == alvo:
-            return {**j, "radiant_base": resolver(j["radiant"]), "dire_base": resolver(j["dire"])}
+        lados = []
+        for k, nome in ((0, j.get("radiant")), (1, j.get("dire"))):
+            try:
+                r = resolver(nome) if nome else ""
+            except Exception:  # noqa: BLE001
+                r = ""
+            if not r and elencos:
+                r = time_pelos_jogadores((j.get("contas_lado") or ([], []))[k], elencos)
+            lados.append(r or "")
+        if set(lados) == alvo:
+            return {**j, "radiant_base": lados[0], "dire_base": lados[1]}
     return None
 
 

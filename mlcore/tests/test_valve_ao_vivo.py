@@ -46,5 +46,18 @@ class TestValve(unittest.TestCase):
         self.assertIsNone(VA.achar(js, "X", "Team Synapse", lambda n: res(n) or ""))
 
 
+class TestTimePelosJogadores(unittest.TestCase):
+    """24/11/2026, com a chave real: em 4 de 6 jogos ao vivo a Valve manda o nome do time vazio."""
+
+    def test_identifica_pelo_elenco_e_nao_chuta(self):
+        el = {"Team Synapse": {"jogadores": ["1", "2", "3", "4", "5"]}, "Angry Birds": {"jogadores": ["6", "7", "8", "9", "10"]}}
+        self.assertEqual(VA.time_pelos_jogadores(["1", "2", "3", "40", "50"], el), "Team Synapse")
+        self.assertEqual(VA.time_pelos_jogadores(["1", "2", "40", "50", "60"], el), "")      # so 2 de 5: nao sabe
+        js = VA.ler_jogos(_jogo(0), PAPEIS)
+        js[0]["radiant"] = js[0]["dire"] = ""                                                 # nome vazio
+        v = VA.achar(js, "Angry Birds", "Team Synapse", lambda n: "", elencos=el)
+        self.assertEqual((v["radiant_base"], v["dire_base"]), ("Team Synapse", "Angry Birds"))
+
+
 if __name__ == "__main__":
     unittest.main()

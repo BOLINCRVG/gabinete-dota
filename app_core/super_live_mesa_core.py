@@ -114,8 +114,13 @@ def _ao_vivo_cache(st: Any, esporte: str) -> Tuple[List[Dict[str, Any]], str]:
             ch = VA.chave(st)
             if ch:   # a lista ao vivo da propria Valve (mais confiavel que a da OpenDota), com lado certo
                 from app_core import perfil_comp_core as PC
-                js = [{"azul": j["radiant"], "vermelho": j["dire"], "liga": "", "bo": None}
-                      for j in VA.buscar(ch, PC.carregar(Path(__file__).resolve().parents[1], "dota"))]
+                raiz_ = Path(__file__).resolve().parents[1]
+                from app_core import camada_draft_core as CD_
+                el = (CD_.carregar(raiz_, "dota") or {}).get("elencos") or {}
+                js = [{"azul": j["radiant"] or VA.time_pelos_jogadores(j["contas_lado"][0], el),
+                       "vermelho": j["dire"] or VA.time_pelos_jogadores(j["contas_lado"][1], el), "liga": "", "bo": None}
+                      for j in VA.buscar(ch, PC.carregar(raiz_, "dota"))]
+                js = [j for j in js if j["azul"] and j["vermelho"]]
             else:
                 js = SL.dota_ao_vivo()
         else:
@@ -381,7 +386,9 @@ def _valve_do_jogo(st: Any, raiz: Path, esporte: str, t1: str, t2: str,
     if c[2]:
         st.caption("Draft ao vivo pela Valve: " + c[2] + ".")
         return None
-    vj = VA.achar(c[1], t1, t2, resolver)
+    from app_core import camada_draft_core as CD_
+    cam = CD_.carregar(raiz, "dota") or {}
+    vj = VA.achar(c[1], t1, t2, resolver, elencos=cam.get("elencos") or {})
     if vj is None:
         st.caption(f"Draft ao vivo pela Valve: {t1} x {t2} não está entre os {len(c[1])} jogos de liga ao vivo agora.")
     return vj
