@@ -82,7 +82,20 @@ def main() -> int:
                                                                    "first_blood_time", "start_time")},
                                   "estrutura": _estrutura(res)}
         st, js = _get("GetLiveLeagueGames", chave)
-        doc["GetLiveLeagueGames"] = {"status": st, "jogos": len(((js or {}).get("result") or {}).get("games") or [])}
+        jg = ((js or {}).get("result") or {}).get("games") or []
+        com_sb = [g for g in jg if (g.get("scoreboard") or {}).get("radiant")]
+        doc["GetLiveLeagueGames"] = {"status": st, "jogos": len(jg), "com_scoreboard": len(com_sb),
+                                     "estrutura_jogo": _estrutura(com_sb[0] if com_sb else (jg[0] if jg else {}))}
+        # o leitor do app (app_core/valve_ao_vivo_core.py) confere aqui com dado real
+        try:
+            sys.path.insert(0, str(RAIZ))
+            from app_core import valve_ao_vivo_core as VA
+            lidos = VA.ler_jogos(js or {}, {})
+            doc["GetLiveLeagueGames"]["lidos_pelo_app"] = len(lidos)
+            doc["GetLiveLeagueGames"]["exemplo_lido"] = ({k: lidos[0][k] for k in ("radiant", "dire", "picks", "bans",
+                                                                                   "duracao")} if lidos else None)
+        except Exception as e:  # noqa: BLE001
+            doc["GetLiveLeagueGames"]["erro_leitor"] = f"{type(e).__name__}: {e}"
     SAIDA.parent.mkdir(exist_ok=True)
     SAIDA.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({k: v for k, v in doc.items() if not k.startswith("estrutura")}, ensure_ascii=False)[:2000])

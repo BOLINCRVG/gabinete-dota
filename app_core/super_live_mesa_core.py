@@ -109,7 +109,18 @@ def _ao_vivo_cache(st: Any, esporte: str) -> Tuple[List[Dict[str, Any]], str]:
         return c[1], c[2]
     from app_core import super_live_core as SL
     try:
-        js, mot = (SL.dota_ao_vivo() if esporte == "dota" else SL.lol_ao_vivo()), ""
+        if esporte == "dota":
+            from app_core import valve_ao_vivo_core as VA
+            ch = VA.chave(st)
+            if ch:   # a lista ao vivo da propria Valve (mais confiavel que a da OpenDota), com lado certo
+                from app_core import perfil_comp_core as PC
+                js = [{"azul": j["radiant"], "vermelho": j["dire"], "liga": "", "bo": None}
+                      for j in VA.buscar(ch, PC.carregar(Path(__file__).resolve().parents[1], "dota"))]
+            else:
+                js = SL.dota_ao_vivo()
+        else:
+            js = SL.lol_ao_vivo()
+        mot = ""
     except Exception as e:  # noqa: BLE001
         js, mot = [], f"fonte ao vivo fora ({type(e).__name__})"
     st.session_state[k] = (time.time(), js, mot)
@@ -243,7 +254,8 @@ def _nomes_dota(raiz: Path) -> Dict[str, str]:
         return {}
 
 
-def _ler_draft(st: Any, k: str, raiz: Path, esporte: str) -> Tuple[Optional[Tuple[List[str], List[str]]],
+def _ler_draft(st: Any, k: str, raiz: Path, esporte: str, valve: Optional[Dict[str, Any]] = None
+               ) -> Tuple[Optional[Tuple[List[str], List[str]]],
                                                                      Tuple[List[str], List[str]], List[str]]:
     """-> (picks (T1, T2) na ordem pos 1..5, bans (esq, dir), avisos). Dota: captura ou texto; LoL: texto."""
     avisos: List[str] = []
@@ -304,6 +316,14 @@ def _ler_draft(st: Any, k: str, raiz: Path, esporte: str) -> Tuple[Optional[Tupl
             if lados is None:
                 return None, ([], []), [aviso]
             return lados, ([], []), avisos
+        if valve:   # sem captura nem texto: o draft do jogo ao vivo, pela Valve (lado e jogadores certos)
+            st.session_state[f"{k}fonte"] = "valve"
+            m = int(valve.get("duracao", 0) // 60)
+            avisos.append(f"Draft preenchido pela Valve (jogo ao vivo{f', minuto {m}' if m else ', antes de começar'}). "
+                          "Lado e jogadores vêm certos; as POSIÇÕES são estimadas"
+                          + (" pelo patrimônio" if valve.get("duracao", 0) >= 480 else " (suportes por último)")
+                          + " — cole a captura da cyberscore para as rotas exatas.")
+            return valve["picks"], valve["bans"], avisos
         return None, ([], []), avisos
     camp, _v = _campeoes_lol(raiz)
     texto = st.text_area("Draft: os 10 campeões em sequência — top, jungle, mid, adc e suporte do lado Blue, depois do "
@@ -342,6 +362,31 @@ def lado_provavel(estado: Any, elencos: Mapping[str, Any], t1: str, t2: str, esq
     return (None if abs(margem) < MARGEM_LADO else margem > 0), margem
 
 
+def _valve_do_jogo(st: Any, raiz: Path, esporte: str, t1: str, t2: str,
+                   resolver: Callable[[str], str]) -> Optional[Dict[str, Any]]:
+    """O jogo ao vivo destes dois times pela Valve (cache de 20 s na sessao), ou None -- dizendo o porque."""
+    from app_core import valve_ao_vivo_core as VA
+    ch = VA.chave(st)
+    if not ch:
+        st.caption("Draft ao vivo pela Valve: desligado (falta a chave STEAM_API_KEY nos Secrets do app).")
+        return None
+    c = st.session_state.get("_slm_valve")
+    if not (isinstance(c, tuple) and time.time() - c[0] < 20):
+        try:
+            from app_core import perfil_comp_core as PC
+            c = (time.time(), VA.buscar(ch, PC.carregar(raiz, "dota")), "")
+        except Exception as e:  # noqa: BLE001
+            c = (time.time(), [], f"a Valve não respondeu ({type(e).__name__})")
+        st.session_state["_slm_valve"] = c
+    if c[2]:
+        st.caption("Draft ao vivo pela Valve: " + c[2] + ".")
+        return None
+    vj = VA.achar(c[1], t1, t2, resolver)
+    if vj is None:
+        st.caption(f"Draft ao vivo pela Valve: {t1} x {t2} não está entre os {len(c[1])} jogos de liga ao vivo agora.")
+    return vj
+
+
 def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], times: List[str],
                  camada: Optional[Dict[str, Any]], modelos: Any, resolver: Callable[[str], str]) -> None:
     import streamlit.components.v1 as components
@@ -366,7 +411,10 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
         st.caption(texto_ultimo_jogo(raiz, esporte, [t1, t2]))
     except Exception as e:  # noqa: BLE001
         st.caption(f"Último jogo de cada time: não abriu ({type(e).__name__})")
-    picks, bans, avisos = _ler_draft(st, k, raiz, esporte)
+    vj = _valve_do_jogo(st, raiz, esporte, t1, t2, resolver) if esporte == "dota" else None
+    ss.pop(f"{k}fonte", None)
+    picks, bans, avisos = _ler_draft(st, k, raiz, esporte, valve=vj)
+    da_valve = ss.get(f"{k}fonte") == "valve"
     for a in avisos:
         st.warning(a)
     p1, origem = resolve_p_base(session_state=ss, team_a=t1, team_b=t2, artifact_path=str(raiz / "ml_artifact.json"))
@@ -385,7 +433,10 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     # REGRA DE LADO: os 5 primeiros (a esquerda da captura/do texto) sao SEMPRE Radiant/Blue. Quem esta de
     # qual lado: detectado pelo historico do elenco nos herois; sem folga, ELE marca (nunca chute calado).
     kl, km = f"{k}esq", f"{k}esq_manual"
-    det, margem = lado_provavel(camada["estado"], camada.get("elencos") or {}, t1, t2, picks[0], picks[1])
+    if da_valve:      # a Valve diz quem e Radiant: sem detectar, sem chutar
+        det, margem = (vj["radiant_base"] == t1), 99.0
+    else:
+        det, margem = lado_provavel(camada["estado"], camada.get("elencos") or {}, t1, t2, picks[0], picks[1])
     if not ss.get(km) and det is not None:
         ss[kl] = t1 if det else t2
     if kl in ss and ss[kl] not in (t1, t2):
@@ -394,7 +445,8 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     esq = st.radio(f"Quem está à esquerda ({lado1})?", [t1, t2], horizontal=True, key=kl,
                    on_change=lambda: ss.__setitem__(km, True), **extra)
     if not ss.get(km) and det is not None:
-        st.caption(f"Lado detectado pelo histórico dos jogadores nos heróis ({esq} à esquerda). Se estiver errado, troque acima.")
+        st.caption(f"Lado {'informado pela Valve' if da_valve else 'detectado pelo histórico dos jogadores nos heróis'} "
+                   f"({esq} à esquerda). Se estiver errado, troque acima.")
     if esq is None:
         st.warning(f"Não dá para saber o lado pelos heróis com segurança: marque acima quem está à esquerda ({lado1}).")
         return
@@ -414,6 +466,9 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
             col.markdown(f"**{tm}** ({ld})" + (f" — elenco de {str(el.get('visto_em'))[8:10]}/{str(el.get('visto_em'))[5:7]}"
                                                if el.get("visto_em") else " — sem elenco na base"))
             quem = DC.atribuir(contas, [CD.chave_campeao(h) for h in hs], estado)
+            if da_valve:   # a Valve diz quem joga cada heroi
+                quem = [str(vj["contas"].get(str(h)) or q or "") for h, q in zip(hs, quem)]
+                contas = contas + [c for c in quem if c and c not in contas]
             opcoes = contas + [""]
             escolhidos.append([col.selectbox(str(h), opcoes, index=opcoes.index(q) if q in opcoes else len(opcoes) - 1,
                                              format_func=rot_j, key=f"{k}j_{tm}_{h}") for h, q in zip(hs, quem)])
