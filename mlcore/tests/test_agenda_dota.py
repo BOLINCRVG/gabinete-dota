@@ -21,6 +21,30 @@ def _bloco(ts, a, b, bo=3, pagina="European Pro League/41", rot="EPL Season 41 -
             f'<span>{rot}</span></a></span></div></div>')
 
 
+def _cartao(ts, a, b, vencedor=False, bo=3):
+    def op(nome, win):
+        cls = "match-ticker-card&#95;&#95;opponent" + (" winner" if win else "")
+        return (f'<div class="{cls}"><div class="block-team"><span class="name team-name-dynamic">'
+                f'<a href="/dota2/x" title="{nome}"><div class="team-shortname">X</div></a></span></div></div>')
+    return (f'<div class="match-ticker-card"><div class="match-ticker-card&#95;&#95;header"><span class="timer-object" '
+            f'data-timestamp="{ts}">x</span><div>November 24 - Bo{bo}</div></div>'
+            f'<div class="match-ticker-card&#95;&#95;opponents">{op(a, vencedor)}{op(b, False)}</div>'
+            f'<div class="match-ticker-card-tournament"><span class="match-ticker-card-tournament-name">'
+            f'<a href="/dota2/European_Pro_League/41#November_24" title="European Pro League/41">EPL Season 41</a>'
+            f'</span></div></div>')
+
+
+class TestAgendaDotaCartoes(unittest.TestCase):
+    """24/11/2026: a Liquipedia trocou para cartoes; a agenda ficou vazia de 20 a 24/11."""
+
+    def test_le_cartao_com_e_sem_placar(self):
+        h = _cartao(1795503600, "Angry Birds", "Team Synapse") + _cartao(1795503600, "Aurora Gaming", "LGD Gaming", True)             + _cartao(1795503600, "TBD", "Team Spirit")
+        js = A.ler(h)
+        self.assertEqual([(j["time_a"], j["time_b"]) for j in js],
+                         [("Angry Birds", "Team Synapse"), ("Aurora Gaming", "LGD Gaming")])
+        self.assertEqual((js[0]["bo"], js[0]["torneio"], js[0]["pagina"]), (3, "EPL Season 41", "European Pro League/41"))
+
+
 class TestAgendaDota(unittest.TestCase):
     def test_le_partidas(self):
         h = _bloco(1794909600, "Power Rangers", "Team Synapse (page does not exist)") + \
