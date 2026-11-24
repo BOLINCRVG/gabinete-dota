@@ -1,7 +1,277 @@
 {
- "coletado_em": "2026-11-24T20:41:39+00:00",
+ "coletado_em": "2026-11-24T23:15:52+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
- "partidas": [],
- "jogos_na_pagina": 100,
- "aviso": "a pagina tem 100 jogos e a leitura achou 0 -- a Liquipedia mudou o formato; a agenda NAO esta confiavel"
+ "partidas": [
+  {
+   "time_a": "Power Rangers",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-24 20:25:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": false,
+   "placar": "0-0"
+  },
+  {
+   "time_a": "Zero Tenacity",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-25 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "InterActive Philippines",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-25 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-25 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "V",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-25 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Spirit Academy",
+   "time_b": "Angry Birds",
+   "inicio_utc": "2026-11-25 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "V",
+   "inicio_utc": "2026-11-26 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "GamerLegion",
+   "time_b": "Aurora Gaming",
+   "inicio_utc": "2026-11-26 10:00:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-26 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "1w Team",
+   "time_b": "Team Liquid",
+   "inicio_utc": "2026-11-26 13:30:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-26 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-26 18:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "V",
+   "inicio_utc": "2026-11-27 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-27 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "V",
+   "inicio_utc": "2026-11-27 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Troll Division",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-27 18:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-28 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Old blood",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-28 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "V",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-28 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Hokori",
+   "time_b": "Legends Gaming",
+   "inicio_utc": "2026-11-28 18:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Red John",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-29 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-29 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Legends Gaming",
+   "time_b": "Red John",
+   "inicio_utc": "2026-11-29 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Hokori",
+   "time_b": "Troll Division",
+   "inicio_utc": "2026-11-29 18:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Zero Tenacity",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-30 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Troll Division",
+   "time_b": "Legends Gaming",
+   "inicio_utc": "2026-11-30 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "OG",
+   "time_b": "Aurora Gaming",
+   "inicio_utc": "2026-11-24 17:25:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": true,
+   "placar": "1-2"
+  }
+ ],
+ "jogos_na_pagina": 100
 }
