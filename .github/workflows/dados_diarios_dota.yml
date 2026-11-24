@@ -39,6 +39,15 @@ jobs:
       - name: Instalar dependências
         run: pip install --quiet -r requirements.txt
 
+      # SONDA DA API DA VALVE (24/11/2026): so le e registra o que a API oficial devolve
+      # (evidence/sonda_steam_dota.json) -- base para a reserva quando a OpenDota cair. Nao mexe em dado.
+      - name: Sonda da API da Valve (so registra)
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: python tools/sonda_steam_dota.py
+
       - name: Sync OpenDota (partidas novas + backfill)
         timeout-minutes: 70
         env:
@@ -246,8 +255,9 @@ jobs:
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
           git add status_coleta_dota.json
+          git add -f evidence/sonda_steam_dota.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
-          git commit -m "Robo: status da coleta do Dota (${{ job.status }})" --only status_coleta_dota.json
+          git commit -m "Robo: status da coleta do Dota (${{ job.status }})" --only status_coleta_dota.json $(git diff --cached --name-only | grep sonda_steam || true)
           for i in 1 2 3; do
             git push && exit 0
             git pull --rebase --autostash || true
