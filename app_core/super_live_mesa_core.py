@@ -16,6 +16,7 @@ Arquivo identico nos repositorios (LoL e Dota).
 from __future__ import annotations
 
 import json
+import math
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -318,6 +319,29 @@ def _ler_draft(st: Any, k: str, raiz: Path, esporte: str) -> Tuple[Optional[Tupl
     return lados, ([], []), avisos
 
 
+MARGEM_LADO = 1.5   # em soma de log(1 + jogos): abaixo disto o lado fica para ele marcar
+
+
+def lado_provavel(estado: Any, elencos: Mapping[str, Any], t1: str, t2: str, esq: List[str],
+                  dir_: List[str]) -> Tuple[Optional[bool], float]:
+    """Pura (24/11/2026, achado dele: "voce errou o lado, a Angry Birds esta Dire"). Quem esta a
+    ESQUERDA (Radiant/Blue)? O elenco que tem historico com os herois da esquerda. Compara
+    'T1 na esquerda' x 'T1 na direita' pela soma de log(1 + jogos de cada jogador no heroi dele).
+    -> (True se T1 e a esquerda / False / None se nao da para saber com folga, margem)."""
+    def enc(tm, hs):
+        contas = [str(x) for x in ((elencos.get(tm) or {}).get("jogadores") or [])]
+        if len(contas) < 5:
+            return None
+        ks = [CD.chave_campeao(h) for h in hs]
+        quem = DC.atribuir(contas, ks, estado)
+        return sum(math.log1p(estado.jogos_no_campeao(CD.chave_jogador(c), k)[1]) for c, k in zip(quem, ks) if c)
+    v = [enc(t1, esq), enc(t2, dir_), enc(t1, dir_), enc(t2, esq)]
+    if any(x is None for x in v):
+        return None, 0.0
+    margem = (v[0] + v[1]) - (v[2] + v[3])
+    return (None if abs(margem) < MARGEM_LADO else margem > 0), margem
+
+
 def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], times: List[str],
                  camada: Optional[Dict[str, Any]], modelos: Any, resolver: Callable[[str], str]) -> None:
     import streamlit.components.v1 as components
@@ -327,10 +351,9 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     k = f"slm_{esporte}_{jid}_"
     lado1, lado2 = LADOS[esporte]
     lista = [""] + sorted(times)
-    c1, c2, c3, c4 = st.columns([3, 3, 2, 1])
+    c1, c2, c4 = st.columns([3, 3, 1])
     t1 = c1.selectbox("Time 1", lista, index=lista.index(jogo["a"]) if jogo["a"] in lista else 0, key=f"{k}t1")
     t2 = c2.selectbox("Time 2", lista, index=lista.index(jogo["b"]) if jogo["b"] in lista else 0, key=f"{k}t2")
-    lado_t1 = c3.radio(f"Time 1 é", [lado1, lado2], horizontal=True, key=f"{k}lado")
     if c4.button("Fechar", key=f"{k}fechar"):
         fechar(ss, esporte, jid)
         st.rerun()
@@ -354,9 +377,23 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
         return
     if camada is None:
         return
-    # REGRA DE LADO: os 5 primeiros (a esquerda da captura/do texto) sao SEMPRE Radiant/Blue; o radio
-    # "Time 1 e" diz qual time esta de qual lado.
-    t1_azul = lado_t1 == lado1
+    # REGRA DE LADO: os 5 primeiros (a esquerda da captura/do texto) sao SEMPRE Radiant/Blue. Quem esta de
+    # qual lado: detectado pelo historico do elenco nos herois; sem folga, ELE marca (nunca chute calado).
+    kl, km = f"{k}esq", f"{k}esq_manual"
+    det, margem = lado_provavel(camada["estado"], camada.get("elencos") or {}, t1, t2, picks[0], picks[1])
+    if not ss.get(km) and det is not None:
+        ss[kl] = t1 if det else t2
+    if kl in ss and ss[kl] not in (t1, t2):
+        del ss[kl]
+    extra = {} if kl in ss else {"index": None}     # sem valor ainda: nada marcado (nunca chute)
+    esq = st.radio(f"Quem está à esquerda ({lado1})?", [t1, t2], horizontal=True, key=kl,
+                   on_change=lambda: ss.__setitem__(km, True), **extra)
+    if not ss.get(km) and det is not None:
+        st.caption(f"Lado detectado pelo histórico dos jogadores nos heróis ({esq} à esquerda). Se estiver errado, troque acima.")
+    if esq is None:
+        st.warning(f"Não dá para saber o lado pelos heróis com segurança: marque acima quem está à esquerda ({lado1}).")
+        return
+    t1_azul = esq == t1
     t_az, t_vm = (t1, t2) if t1_azul else (t2, t1)
     hs_az, hs_vm = picks[0], picks[1]
     # quem joga cada heroi (elenco do ultimo jogo de cada time na base)
