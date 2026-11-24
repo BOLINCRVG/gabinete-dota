@@ -175,3 +175,54 @@ def explicar(estado: CD.EstadoDraft, coef: Mapping[str, float], azul: Sequence[T
         x["pp"] = x["pp_heroi"] + x["pp_jogador"]
     return {"p_pre": p_pre_azul, "p_pos": p_pos, "pp_lado_azul": 100.0 * fator * z_lado,
             "partes": partes, "faltam": faltam, "usa_jogador": usa_jogador}
+
+
+# --------------------------------------------------------------------------------------------
+# LOL (24/11/2026): ele cola "renekton wukong ryze yunara lulu ambessa leesin orianna lucian milio"
+# -- os 10 em sequencia (top, jungle, mid, adc, suporte do Time 1 e depois do Time 2), com lixo no
+# meio, espacos a mais e nomes alternativos. Nome de 2-3 palavras casa junto ou separado.
+# --------------------------------------------------------------------------------------------
+APELIDOS_LOL = {"mf": "MissFortune", "tf": "TwistedFate", "j4": "JarvanIV", "jarvan": "JarvanIV",
+                "asol": "AurelionSol", "kog": "KogMaw", "kogmaw": "KogMaw", "mundo": "DrMundo",
+                "drmundo": "DrMundo", "nunu": "Nunu", "renata": "Renata", "ww": "Warwick", "xin": "XinZhao",
+                "tk": "TahmKench", "tahm": "TahmKench", "yi": "MasterYi", "lb": "Leblanc", "cass": "Cassiopeia",
+                "kassa": "Kassadin", "mord": "Mordekaiser", "morde": "Mordekaiser", "naut": "Nautilus",
+                "voli": "Volibear", "heca": "Hecarim", "kha": "Khazix", "blitz": "Blitzcrank", "gp": "Gangplank",
+                "ez": "Ezreal", "cait": "Caitlyn", "mumu": "Amumu", "sej": "Sejuani", "rell": "Rell",
+                "wukong": "MonkeyKing", "monkeyking": "MonkeyKing", "belveth": "Belveth", "velkoz": "Velkoz"}
+
+
+def catalogo_lol(campeoes: Mapping[str, str]) -> Dict[str, str]:
+    """campeoes_lol.json {Key: Nome} -> {chave normalizada: Key} (Key, nome e apelidos)."""
+    out: Dict[str, str] = {}
+    for k, n in campeoes.items():
+        out[CD.chave_campeao(k)] = k
+        out[CD.chave_campeao(n)] = k
+    for ap, k in APELIDOS_LOL.items():
+        if k in campeoes:
+            out.setdefault(CD.chave_campeao(ap), k)
+    return out
+
+
+def ler_draft_lol(texto: str, catalogo: Mapping[str, str]) -> Tuple[Optional[Tuple[List[str], List[str]]], List[str], str]:
+    """Pura. Texto -> ((5 Keys Time 1, 5 Keys Time 2) ou None, palavras ignoradas, aviso)."""
+    toks = re.findall(r"[A-Za-z0-9'&.]+", str(texto or ""))
+    achados: List[str] = []
+    ignorados: List[str] = []
+    i = 0
+    while i < len(toks):
+        for n in (3, 2, 1):
+            k = catalogo.get(CD.chave_campeao("".join(toks[i:i + n]))) if i + n <= len(toks) else None
+            if k:
+                achados.append(k)
+                i += n
+                break
+        else:
+            ignorados.append(toks[i])
+            i += 1
+    if len(achados) != 10:
+        return None, ignorados, (f"Li {len(achados)} campeões (preciso de 10)" +
+                                 (f"; não reconheci: {', '.join(ignorados)}" if ignorados else "") + ".")
+    if len(set(achados)) != 10:
+        return None, ignorados, "Há campeão repetido no draft."
+    return (achados[:5], achados[5:]), ignorados, ""

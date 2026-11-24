@@ -78,5 +78,34 @@ class TestAtribuirEExplicar(unittest.TestCase):
         self.assertTrue(all(x["pp_jogador"] == 0 for x in r["partes"]))
 
 
+CAMP = {"Renekton": "Renekton", "MonkeyKing": "Wukong", "Ryze": "Ryze", "Yunara": "Yunara", "Lulu": "Lulu",
+        "Ambessa": "Ambessa", "LeeSin": "Lee Sin", "Orianna": "Orianna", "Lucian": "Lucian", "Milio": "Milio",
+        "MissFortune": "Miss Fortune", "Kaisa": "Kai'Sa", "Nunu": "Nunu & Willump", "TwistedFate": "Twisted Fate"}
+
+
+class TestLerDraftLol(unittest.TestCase):
+
+    def test_o_texto_dele(self):
+        cat = DC.catalogo_lol(CAMP)
+        lados, ign, aviso = DC.ler_draft_lol("renekton wukong ryze yunara lulu ambessa leesin orianna lucian milio", cat)
+        self.assertEqual(aviso, "")
+        self.assertEqual(lados[0], ["Renekton", "MonkeyKing", "Ryze", "Yunara", "Lulu"])
+        self.assertEqual(lados[1], ["Ambessa", "LeeSin", "Orianna", "Lucian", "Milio"])
+
+    def test_lixo_espacos_e_nomes_alternativos(self):
+        cat = DC.catalogo_lol(CAMP)
+        lados, ign, _ = DC.ler_draft_lol("  Renekton  Monkey King   ryze | yunara lulu  vs  Ambessa Lee Sin\n"
+                                         "Orianna  lucian  milio 12:30", cat)
+        self.assertEqual(lados[0][1], "MonkeyKing")
+        self.assertEqual(lados[1][1], "LeeSin")
+        self.assertIn("vs", ign)
+
+    def test_faltando_avisa(self):
+        cat = DC.catalogo_lol(CAMP)
+        lados, ign, aviso = DC.ler_draft_lol("renekton wukong ryze yunara lulu ambessa leesin orianna lucian xyz", cat)
+        self.assertIsNone(lados)
+        self.assertIn("xyz", aviso)
+
+
 if __name__ == "__main__":
     unittest.main()
