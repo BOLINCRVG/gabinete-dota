@@ -29,7 +29,9 @@ jobs:
       # (Liquipedia, 1 leitura) e a Polymarket. Falhar aqui nao derruba o resto.
       - name: Agenda do Dota (Liquipedia)
         continue-on-error: true
-        run: python tools/agenda_dota.py
+        run: |
+          python tools/agenda_dota.py
+          pip install --quiet pandas==2.3.3 && python tools/completude_dota.py || true   # conferencia: so ela usa pandas
 
       - name: Ler os precos
         id: coleta
@@ -49,7 +51,8 @@ jobs:
         run: |
           git config user.name "Robo Gabinete"
           git config user.email "robo@gabinete.local"
-          git add agenda_dota.json || true
+          git add agenda_dota.json agenda_dota_terminados.json || true
+          git add -f evidence/completude_dota.json || true
           if [ "${{ steps.coleta.outputs.rc }}" = "0" ]; then
             git add polymarket_dota.json polymarket_dota_historico.jsonl
           fi

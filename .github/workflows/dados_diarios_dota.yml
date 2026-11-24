@@ -251,13 +251,14 @@ jobs:
       - name: Registrar o resultado da coleta (sempre)
         if: always()
         run: |
+          python tools/completude_dota.py || true
           python tools/status_coleta.py --esporte dota --resultado "${{ job.status }}" || true
           git config user.name "Robo Gabinete Dota"
           git config user.email "robo@gabinete.local"
           git add status_coleta_dota.json
-          git add -f evidence/sonda_steam_dota.json 2>/dev/null || true
+          git add -f evidence/sonda_steam_dota.json evidence/completude_dota.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
-          git commit -m "Robo: status da coleta do Dota (${{ job.status }})" --only status_coleta_dota.json $(git diff --cached --name-only | grep sonda_steam || true)
+          git commit -m "Robo: status da coleta do Dota (${{ job.status }})" --only status_coleta_dota.json $(git diff --cached --name-only | grep -E "sonda_steam|completude" || true)
           for i in 1 2 3; do
             git push && exit 0
             git pull --rebase --autostash || true

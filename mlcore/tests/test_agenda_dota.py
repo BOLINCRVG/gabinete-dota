@@ -24,8 +24,9 @@ def _bloco(ts, a, b, bo=3, pagina="European Pro League/41", rot="EPL Season 41 -
 def _cartao(ts, a, b, vencedor=False, bo=3):
     def op(nome, win):
         cls = "match-ticker-card&#95;&#95;opponent" + (" winner" if win else "")
+        placar = f"<div>{2 if win else 0}</div>" if vencedor else "<div></div>"
         return (f'<div class="{cls}"><div class="block-team"><span class="name team-name-dynamic">'
-                f'<a href="/dota2/x" title="{nome}"><div class="team-shortname">X</div></a></span></div></div>')
+                f'<a href="/dota2/x" title="{nome}"><div class="team-shortname">X</div></a></span></div>{placar}</div>')
     return (f'<div class="match-ticker-card"><div class="match-ticker-card&#95;&#95;header"><span class="timer-object" '
             f'data-timestamp="{ts}">x</span><div>November 24 - Bo{bo}</div></div>'
             f'<div class="match-ticker-card&#95;&#95;opponents">{op(a, vencedor)}{op(b, False)}</div>'
@@ -43,6 +44,7 @@ class TestAgendaDotaCartoes(unittest.TestCase):
         self.assertEqual([(j["time_a"], j["time_b"]) for j in js],
                          [("Angry Birds", "Team Synapse"), ("Aurora Gaming", "LGD Gaming")])
         self.assertEqual((js[0]["bo"], js[0]["torneio"], js[0]["pagina"]), (3, "EPL Season 41", "European Pro League/41"))
+        self.assertEqual((js[1]["placar"], js[0]["placar"]), ("2-0", ""))
 
 
 class TestAgendaDota(unittest.TestCase):

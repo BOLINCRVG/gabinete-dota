@@ -29,6 +29,7 @@ except (AttributeError, OSError, ValueError):
 
 RAIZ = Path(__file__).resolve().parents[1]
 ARQ = RAIZ / "agenda_dota.json"
+ARQ_TERM = RAIZ / "agenda_dota_terminados.json"
 URL = "https://liquipedia.net/dota2/api.php?action=parse&page=Liquipedia:Matches&format=json&prop=text"
 UA = "GabineteDota/0.1 (modelo pessoal de previsao; dados citados como Liquipedia CC-BY-SA)"
 
@@ -78,10 +79,13 @@ def _ler_cartoes(html_txt: str) -> list:
         bo = _BO.search(b)
         tn = _TORNEIO_N.search(b)
         ini = datetime.fromtimestamp(int(ts.group(1)), tz=timezone.utc)
+        pl = [re.findall(r"<div>(\d+)</div>", o) for o in ops[:2]]
         out.append({"time_a": a, "time_b": c, "inicio_utc": ini.strftime("%Y-%m-%d %H:%M:%S+00"),
                     "bo": int(bo.group(1)) if bo else None,
                     "torneio": _html.unescape(tn.group(2)).strip() if tn else "",
-                    "pagina": _html.unescape(tn.group(1)).strip() if tn else ""})
+                    "pagina": _html.unescape(tn.group(1)).strip() if tn else "",
+                    "terminado": 'data-finished="finished"' in b,
+                    "placar": f"{pl[0][-1]}-{pl[1][-1]}" if all(pl) else ""})
     return out
 
 
@@ -150,6 +154,22 @@ def main() -> int:
         print(f"::warning::[agenda_dota] {doc['aviso']}")
     ARQ.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"[agenda_dota] {len(jogos)} partidas -> {ARQ.name}")
+    # TERMINADOS (24/11/2026): as series que a Liquipedia da como encerradas ficam 21 dias guardadas,
+    # para tools/completude_dota.py conferir se cada uma entrou na base (regra: jogo nunca falta calado).
+    try:
+        velhos = json.loads(ARQ_TERM.read_text(encoding="utf-8")).get("series") or []
+    except (OSError, ValueError):
+        velhos = []
+    novos = [j for j in ler(txt) if j.get("terminado")]
+    chave = lambda j: (j["time_a"], j["time_b"], j["inicio_utc"])  # noqa: E731
+    juntos = {chave(j): j for j in velhos}
+    juntos.update({chave(j): j for j in novos})
+    limite = (agora - timedelta(days=21)).strftime("%Y-%m-%d")
+    series = sorted([j for j in juntos.values() if j["inicio_utc"][:10] >= limite], key=lambda j: j["inicio_utc"])
+    ARQ_TERM.write_text(json.dumps({"atualizado_em": agora.isoformat(timespec="seconds"),
+                                    "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches", "series": series},
+                                   ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"[agenda_dota] {len(series)} series terminadas guardadas (21 dias) -> {ARQ_TERM.name}")
     return 0
 
 

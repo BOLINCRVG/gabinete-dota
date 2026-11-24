@@ -1,169 +1,228 @@
 {
- "gerado_em": "2026-10-27T19:02:02",
+ "gerado_em": "2026-11-24T11:43:15",
  "mercado": "Vencedor de cada mapa",
  "geral": {
-  "mapas": 177,
-  "logloss_modelo": 0.6554,
-  "logloss_casa": 0.5899,
-  "vantagem_modelo": -0.0655,
+  "mapas": 380,
+  "logloss_modelo": 0.6792,
+  "logloss_casa": 0.631,
+  "vantagem_modelo": -0.0482,
   "ic95": [
-   -0.1094,
-   -0.0253
+   -0.0776,
+   -0.0194
   ],
   "conclusivo": true
  },
  "por_mapa": {
   "1": {
-   "mapas": 84,
-   "logloss_modelo": 0.6637,
-   "logloss_casa": 0.5954,
-   "vantagem_modelo": -0.0684,
+   "mapas": 180,
+   "logloss_modelo": 0.6582,
+   "logloss_casa": 0.6223,
+   "vantagem_modelo": -0.0359,
    "ic95": [
-    -0.1331,
-    -0.0075
+    -0.0804,
+    0.0045
    ],
-   "conclusivo": true
+   "conclusivo": false
   },
   "2": {
-   "mapas": 81,
-   "logloss_modelo": 0.6364,
-   "logloss_casa": 0.581,
-   "vantagem_modelo": -0.0554,
+   "mapas": 175,
+   "logloss_modelo": 0.689,
+   "logloss_casa": 0.6354,
+   "vantagem_modelo": -0.0535,
    "ic95": [
-    -0.1207,
-    -0.0028
+    -0.0982,
+    -0.0136
    ],
    "conclusivo": true
   },
   "3": {
-   "mapas": 12,
-   "logloss_modelo": 0.7263,
-   "logloss_casa": 0.6122,
-   "vantagem_modelo": -0.114,
+   "mapas": 25,
+   "logloss_modelo": 0.762,
+   "logloss_casa": 0.6624,
+   "vantagem_modelo": -0.0996,
    "ic95": [
-    -0.2544,
-    0.0104
+    -0.2242,
+    0.0013
    ],
    "conclusivo": false
   }
  },
  "por_liga": {
-  "BLAST Slam": {
-   "mapas": 35,
-   "logloss_modelo": 0.6812,
-   "logloss_casa": 0.6233,
-   "vantagem_modelo": -0.0579,
+  "1W Essence": {
+   "mapas": 32,
+   "logloss_modelo": 0.7409,
+   "logloss_casa": 0.6963,
+   "vantagem_modelo": -0.0447,
    "ic95": [
-    -0.1068,
-    -0.0158
+    -0.2508,
+    0.0977
    ],
-   "conclusivo": true
+   "conclusivo": false
   },
-  "DreamLeague: China Qualifier": {
-   "mapas": 6,
-   "logloss_modelo": 0.5455,
-   "logloss_casa": 0.6251,
-   "vantagem_modelo": 0.0795,
+  "1W Essence Play-In": {
+   "mapas": 30,
+   "logloss_modelo": 0.7175,
+   "logloss_casa": 0.6886,
+   "vantagem_modelo": -0.029,
    "ic95": [
-    -0.061,
-    0.1612
+    -0.108,
+    0.043
+   ],
+   "conclusivo": false
+  },
+  "Asgard Championship": {
+   "mapas": 31,
+   "logloss_modelo": 0.6836,
+   "logloss_casa": 0.6393,
+   "vantagem_modelo": -0.0443,
+   "ic95": [
+    -0.1344,
+    0.0136
+   ],
+   "conclusivo": false
+  },
+  "BLAST Slam": {
+   "mapas": 33,
+   "logloss_modelo": 0.7018,
+   "logloss_casa": 0.6592,
+   "vantagem_modelo": -0.0426,
+   "ic95": [
+    -0.0911,
+    0.004
+   ],
+   "conclusivo": false
+  },
+  "DreamLeague Division 2": {
+   "mapas": 64,
+   "logloss_modelo": 0.6057,
+   "logloss_casa": 0.6324,
+   "vantagem_modelo": 0.0266,
+   "ic95": [
+    -0.0167,
+    0.0632
    ],
    "conclusivo": false
   },
   "DreamLeague: Eastern Europe Qualifier": {
    "mapas": 6,
-   "logloss_modelo": 0.641,
+   "logloss_modelo": 0.6003,
    "logloss_casa": 0.4998,
-   "vantagem_modelo": -0.1412,
+   "vantagem_modelo": -0.1005,
    "ic95": [
-    -0.2625,
-    -0.0003
+    -0.1893,
+    -0.0117
    ],
    "conclusivo": true
   },
   "DreamLeague: Western Europe Qualifier": {
    "mapas": 14,
-   "logloss_modelo": 0.6196,
+   "logloss_modelo": 0.673,
    "logloss_casa": 0.5118,
-   "vantagem_modelo": -0.1078,
+   "vantagem_modelo": -0.1612,
    "ic95": [
-    -0.256,
-    0.0293
+    -0.3455,
+    0.0151
    ],
    "conclusivo": false
   },
   "EPL Masters": {
-   "mapas": 25,
-   "logloss_modelo": 0.6245,
-   "logloss_casa": 0.5867,
-   "vantagem_modelo": -0.0378,
+   "mapas": 48,
+   "logloss_modelo": 0.6812,
+   "logloss_casa": 0.6454,
+   "vantagem_modelo": -0.0358,
    "ic95": [
-    -0.0786,
-    0.0095
+    -0.0782,
+    0.0049
    ],
    "conclusivo": false
   },
   "EPL Masters Play-In": {
-   "mapas": 30,
-   "logloss_modelo": 0.6368,
-   "logloss_casa": 0.565,
-   "vantagem_modelo": -0.0719,
+   "mapas": 37,
+   "logloss_modelo": 0.671,
+   "logloss_casa": 0.5715,
+   "vantagem_modelo": -0.0995,
    "ic95": [
-    -0.2031,
-    0.0295
+    -0.2368,
+    0.0217
    ],
    "conclusivo": false
   },
-  "P Universe": {
-   "mapas": 33,
-   "logloss_modelo": 0.5345,
-   "logloss_casa": 0.5782,
-   "vantagem_modelo": 0.0437,
+  "European Pro League": {
+   "mapas": 6,
+   "logloss_modelo": 0.6762,
+   "logloss_casa": 0.4526,
+   "vantagem_modelo": -0.2235,
    "ic95": [
-    -0.0219,
-    0.1091
+    -0.346,
+    -0.1303
+   ],
+   "conclusivo": true
+  },
+  "P Universe": {
+   "mapas": 40,
+   "logloss_modelo": 0.6191,
+   "logloss_casa": 0.6398,
+   "vantagem_modelo": 0.0207,
+   "ic95": [
+    -0.0431,
+    0.0844
    ],
    "conclusivo": false
   },
   "PGL Wallachia": {
-   "mapas": 11,
-   "logloss_modelo": 0.6316,
-   "logloss_casa": 0.5821,
-   "vantagem_modelo": -0.0495,
+   "mapas": 17,
+   "logloss_modelo": 0.6484,
+   "logloss_casa": 0.5824,
+   "vantagem_modelo": -0.066,
    "ic95": [
-    -0.1719,
-    0.0759
+    -0.1739,
+    0.0326
    ],
    "conclusivo": false
   },
   "Universe Qualifier": {
-   "mapas": 17,
-   "logloss_modelo": 1.0045,
-   "logloss_casa": 0.6815,
-   "vantagem_modelo": -0.323,
+   "mapas": 20,
+   "logloss_modelo": 0.9582,
+   "logloss_casa": 0.6777,
+   "vantagem_modelo": -0.2805,
    "ic95": [
-    -0.5985,
-    -0.0718
+    -0.5279,
+    -0.0551
    ],
    "conclusivo": true
   }
  },
  "apostas_simuladas": {
   "total": {
-   "apostas": 96,
-   "lucro": -18.17,
-   "roi": -0.1893
+   "apostas": 172,
+   "lucro": -13.71,
+   "roi": -0.0797
   },
   "por_liga": {
-   "BLAST Slam": {
-    "apostas": 20,
-    "lucro": -6.07,
-    "roi": -0.3034
+   "1W Essence": {
+    "apostas": 9,
+    "lucro": -3.21,
+    "roi": -0.3567
    },
-   "DreamLeague: China Qualifier": {
-    "apostas": 6,
-    "lucro": 2.44,
-    "roi": 0.406
+   "1W Essence Play-In": {
+    "apostas": 16,
+    "lucro": 1.57,
+    "roi": 0.0982
+   },
+   "Asgard Championship": {
+    "apostas": 15,
+    "lucro": 0.31,
+    "roi": 0.0206
+   },
+   "BLAST Slam": {
+    "apostas": 21,
+    "lucro": -2.1,
+    "roi": -0.1002
+   },
+   "DreamLeague Division 2": {
+    "apostas": 23,
+    "lucro": 13.6,
+    "roi": 0.5913
    },
    "DreamLeague: Eastern Europe Qualifier": {
     "apostas": 3,
@@ -171,40 +230,45 @@
     "roi": -0.2433
    },
    "DreamLeague: Western Europe Qualifier": {
-    "apostas": 8,
-    "lucro": -2.04,
-    "roi": -0.2544
+    "apostas": 7,
+    "lucro": -1.04,
+    "roi": -0.1479
    },
    "EPL Masters": {
-    "apostas": 18,
-    "lucro": -4.83,
-    "roi": -0.2683
+    "apostas": 33,
+    "lucro": -8.46,
+    "roi": -0.2564
    },
    "EPL Masters Play-In": {
-    "apostas": 14,
-    "lucro": -2.5,
-    "roi": -0.1787
+    "apostas": 16,
+    "lucro": -8.44,
+    "roi": -0.5277
+   },
+   "European Pro League": {
+    "apostas": 2,
+    "lucro": -2.0,
+    "roi": -1.0
    },
    "P Universe": {
-    "apostas": 16,
-    "lucro": -0.17,
-    "roi": -0.0105
+    "apostas": 12,
+    "lucro": 1.89,
+    "roi": 0.1577
    },
    "PGL Wallachia": {
-    "apostas": 4,
-    "lucro": 0.78,
-    "roi": 0.1955
+    "apostas": 9,
+    "lucro": -1.04,
+    "roi": -0.1161
    },
    "Universe Qualifier": {
-    "apostas": 7,
-    "lucro": -5.06,
-    "roi": -0.7224
+    "apostas": 6,
+    "lucro": -4.06,
+    "roi": -0.6761
    }
   }
  },
  "fora_da_medicao": {
-  "sem_time": 61,
-  "sem_jogo": 66,
-  "precos": 304
+  "sem_time": 96,
+  "sem_jogo": 138,
+  "precos": 614
  }
 }
