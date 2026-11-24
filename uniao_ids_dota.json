@@ -11,6 +11,7 @@
     {"nome": "Yangon Galacticos", "ids": [7653080, 8944230, 9546449], "prova": "mesmos jogadores nos 3 ids, nunca se enfrentaram; o unico jogo 'na mesma hora' e o mapa seguinte da mesma serie (mesmo adversario, 22 min depois do fim do anterior)"},
     {"nome": "Yellow Submarine", "ids": [2576071, 10207957], "prova": "o id antigo tem 1 jogo na propria Games of the Future 2026, com os mesmos 5 do id novo"},
     {"nome": "Hokori", "ids": [1798457, 7119077], "prova": "o id antigo tem 1 jogo no mesmo qualifier da DreamLeague 29, com os mesmos 5 do id novo"},
-    {"nome": "PlayTime", "ids": [10020555, 10207983], "prova": "3 dos 5 titulares no ultimo torneio antes do id novo; o id antigo ficou parado de 19/06 a 19/09/2026, exatamente quando o novo jogou"}
+    {"nome": "PlayTime", "ids": [10020555, 10207983], "prova": "3 dos 5 titulares no ultimo torneio antes do id novo; o id antigo ficou parado de 19/06 a 19/09/2026, exatamente quando o novo jogou"},
+    {"nome": "BetBoom Team / DO KONCA", "ids": [8255888, 10331139], "prova": "auditado 24/11/2026: elenco 4/5 (MieRo, Kiritych~, Kataomi`, Save-; so swedenstrong -> kiyotaka); o id antigo (BetBoom/BoomBoys) joga ate 27/10/2026 e o novo (DO KONCA) comeca em 12/11/2026; nunca se enfrentaram"}
   ]
 }
