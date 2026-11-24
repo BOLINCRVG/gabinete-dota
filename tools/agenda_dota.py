@@ -55,7 +55,7 @@ def _nome(bloco: str) -> str:
 # "match-ticker-card". O leitor antigo achava os 100 jogos mas nenhum time -> a agenda do Dota ficou
 # VAZIA de 20/11 a 24/11 sem ninguem saber. Agora: formato novo primeiro, o antigo como reserva, e
 # main() avisa alto se a pagina tem jogos e a leitura deu zero.
-_CARTAO = re.compile(r'<div class="match-ticker-card">(.*?)(?=<div class="match-ticker-card">|\Z)', re.S)
+_CARTAO = re.compile(r'<div class="match-ticker-card"[^>]*>(.*?)(?=<div class="match-ticker-card"[^>]*>|\Z)', re.S)
 # "opponent" ou "opponent winner" (jogo com placar): o time vencedor tem classe a mais
 _OPON_N = re.compile(r'match-ticker-card(?:&#95;|_){2}opponent(?: [a-z-]+)*">(.*?)(?=match-ticker-card(?:&#95;|_){2}'
                      r'opponent(?: [a-z-]+)*"|match-ticker-card-tournament|\Z)', re.S)

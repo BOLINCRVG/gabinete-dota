@@ -52,6 +52,26 @@ class TestCompletude(unittest.TestCase):
         self.assertEqual(C.veredito("lol", ULT, stt, AGORA, completude={"faltando": []})[0], "ok")
 
 
+class TestUltimoJogoDoTime(unittest.TestCase):
+    """24/11/2026: no confronto aberto, o ultimo jogo de cada time na base."""
+
+    def test_ultimo_de_cada_time(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            raiz = Path(d)
+            (raiz / "CSV_DIARIO").mkdir()
+            linhas = [("g1", "2026-11-10 12:00:00", "A", "LCK"), ("g1", "2026-11-10 12:00:00", "B", "LCK"),
+                      ("g2", "2026-11-18 15:31:00", "A", "WLDs"), ("g2", "2026-11-18 15:31:00", "C", "WLDs")]
+            pd.DataFrame([{"gameid": g, "date": dt, "teamname": t, "league": lg, "position": "team"}
+                          for g, dt, t, lg in linhas]).to_csv(raiz / C.CSV_DIA["dota"], index=False)
+            u = C.ultimos_por_time(raiz, "dota")
+            self.assertEqual((u["A"][1], u["A"][2]), ("C", "WLDs"))
+            self.assertEqual(u["B"][1], "A")
+            t = C.texto_ultimo_jogo(raiz, "dota", ["A", "Z"])
+            self.assertIn("18/11 12:31 x C (WLDs)", t)        # horario de Brasilia
+            self.assertIn("Z**: sem jogo na base", t)
+
+
 class TestComparar(unittest.TestCase):
 
     def test_acha_liga_e_time_que_perderam_jogos(self):

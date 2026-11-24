@@ -361,6 +361,11 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     if not (t1 and t2) or t1 == t2:
         st.info("Escolha os dois times.")
         return
+    try:
+        from app_core.confianca_base_core import texto_ultimo_jogo
+        st.caption(texto_ultimo_jogo(raiz, esporte, [t1, t2]))
+    except Exception as e:  # noqa: BLE001
+        st.caption(f"Último jogo de cada time: não abriu ({type(e).__name__})")
     picks, bans, avisos = _ler_draft(st, k, raiz, esporte)
     for a in avisos:
         st.warning(a)

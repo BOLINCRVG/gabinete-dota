@@ -2809,6 +2809,16 @@ teamA, teamB, bo = core_render_matchup_selection(
     load_lines_for_matchup_fn=_load_lines_for_matchup,
     reset_flow_fn=_reset_flow,
 )
+# ULTIMO JOGO DE CADA TIME NA BASE (24/11/2026): ele quer saber, no confronto aberto, ate onde vai a base
+# de cada time. Ver app_core/confianca_base_core.texto_ultimo_jogo.
+if teamA or teamB:
+    try:
+        from app_core.confianca_base_core import texto_ultimo_jogo as _ult_jogo
+        _txt_ult = _ult_jogo(APP_ROOT, "dota", [str(teamA or ""), str(teamB or "")])
+        if _txt_ult:
+            st.caption(_txt_ult)
+    except Exception as _e_ult:
+        st.caption("Último jogo de cada time: não abriu ({})".format(type(_e_ult).__name__))
 
 core_render_schedule_alias_mapping(
     st.session_state,

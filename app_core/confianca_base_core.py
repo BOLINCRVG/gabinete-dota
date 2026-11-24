@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -66,6 +66,53 @@ def ultimo_jogo(raiz: Path, esporte: str) -> Optional[Dict[str, Any]]:
            "liga": str(g["league"].iloc[0])}
     _CACHE[str(arq)] = (mt, out)
     return out
+
+
+_ULT_TIME: Dict[str, Tuple[float, Dict[str, Tuple[datetime, str, str]]]] = {}
+
+
+def ultimos_por_time(raiz: Path, esporte: str) -> Dict[str, Tuple[datetime, str, str]]:
+    """{time: (quando UTC, adversario, liga)} do ULTIMO jogo de cada time na base que o app usa (cache por arquivo).
+    24/11/2026, ele: saber que 'esse jogo aqui e o ultimo jogo do banco de dados que nos temos'."""
+    arq = Path(raiz) / CSV_DIA.get(esporte, "")
+    try:
+        mt = arq.stat().st_mtime
+    except OSError:
+        return {}
+    c = _ULT_TIME.get(str(arq))
+    if c and c[0] == mt:
+        return c[1]
+    try:
+        d = pd.read_csv(arq, usecols=["gameid", "date", "teamname", "league", "position"], low_memory=False)
+    except (OSError, ValueError):
+        return {}
+    t = d[d["position"] == "team"].copy()
+    t["dt"] = pd.to_datetime(t["date"], errors="coerce")
+    t = t.dropna(subset=["dt"]).sort_values("dt")
+    out: Dict[str, Tuple[datetime, str, str]] = {}
+    for _gid, g in t.groupby("gameid", sort=False):
+        nomes = [str(x) for x in g["teamname"]]
+        if len(nomes) != 2:
+            continue
+        q = g["dt"].iloc[0].to_pydatetime().replace(tzinfo=timezone.utc)
+        for i in (0, 1):
+            ant = out.get(nomes[i])
+            if ant is None or q >= ant[0]:
+                out[nomes[i]] = (q, nomes[1 - i], str(g["league"].iloc[0]))
+    _ULT_TIME[str(arq)] = (mt, out)
+    return out
+
+
+def texto_ultimo_jogo(raiz: Path, esporte: str, times: List[str]) -> str:
+    """'Último jogo na base — T1: 21/11 x Gen.G (WLDs) · Gen.G: ...' ('sem jogo na base' quando nao ha)."""
+    ult = ultimos_por_time(raiz, esporte)
+    partes = []
+    for tm in times:
+        if not tm:
+            continue
+        x = ult.get(tm)
+        partes.append(f"**{tm}**: " + (f"{_brt(x[0])} x {x[1]} ({x[2]})" if x else "sem jogo na base de 2026"))
+    return ("Último jogo na base — " + " · ".join(partes)) if partes else ""
 
 
 def ler_completude(raiz: Path, esporte: str) -> Optional[Dict[str, Any]]:
