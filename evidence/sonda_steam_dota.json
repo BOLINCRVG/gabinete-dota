@@ -1,0 +1,73 @@
+{
+ "quando": "2026-11-24T20:52:21+00:00",
+ "tem_chave": true,
+ "ultimo_jogo_na_base": {
+  "match_id": 9097015818,
+  "data": "2026-11-19T17:42:17.000Z"
+ },
+ "estrutura_history": {
+  "series_id": "int",
+  "series_type": "int",
+  "match_id": "int",
+  "match_seq_num": "int",
+  "start_time": "int",
+  "lobby_type": "int",
+  "radiant_team_id": "int",
+  "dire_team_id": "int",
+  "players": [
+   {
+    "account_id": "int",
+    "player_slot": "int",
+    "team_number": "int",
+    "team_slot": "int",
+    "hero_id": "int",
+    "hero_variant": "int"
+   }
+  ]
+ },
+ "GetMatchHistory_por_liga": {
+  "20275": {
+   "status": 200,
+   "partidas": 47,
+   "mais_novas_que_a_base": 47,
+   "resultado": 1
+  },
+  "20277": {
+   "status": 200,
+   "partidas": 49,
+   "mais_novas_que_a_base": 10,
+   "resultado": 1
+  },
+  "18631": {
+   "status": 200,
+   "partidas": 25,
+   "mais_novas_que_a_base": 8,
+   "resultado": 1
+  }
+ },
+ "GetMatchDetails": {
+  "status": 500,
+  "erro": null,
+  "tem": {
+   "radiant_win": false,
+   "duration": false,
+   "radiant_team_id": false,
+   "dire_team_id": false,
+   "radiant_name": false,
+   "dire_name": false,
+   "leagueid": false,
+   "picks_bans": false,
+   "players": false,
+   "tower_status_radiant": false,
+   "barracks_status_radiant": false,
+   "radiant_score": false,
+   "first_blood_time": false,
+   "start_time": false
+  },
+  "estrutura": {}
+ },
+ "GetLiveLeagueGames": {
+  "status": 200,
+  "jogos": 25
+ }
+}
