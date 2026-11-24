@@ -7,7 +7,7 @@ minutos, ele tende a ser melhor para o time da direita por x motivo'".
 
 So entra numero MEDIDO: cada jogador vale o que a camada de draft mede (heroi + jogador no heroi,
 app_core/draft_colado_core.explicar). A rota soma os jogadores dela. O bloco "se o jogo passar de X
-minutos" fica marcado "em medicao" ate passar no teste as cegas -- nao se inventa frase.
+minutos" foi medido em 24/11/2026 e nao passou -- a tela diz isso em vez de inventar frase.
 Rotas do Dota: safe (pos 1+5) de um x off (pos 3+4) do outro; mid x mid. Arquivo identico nos repos.
 """
 from __future__ import annotations
@@ -81,6 +81,8 @@ CSS = """
 .dv-ver h4{margin:0 0 6px;font-size:16px}
 .dv-ver li{font-size:13px;color:#cbd5e1;margin:2px 0}
 .dv-tempo{margin-top:8px;font-size:12px;color:#7d8794;border:1px dashed #2b3440;border-radius:8px;padding:8px 12px}
+.dv-perfil{margin-top:4px}
+.dv-pf2{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;color:#cbd5e1;background:#151b23;border:1px solid #232b36;border-radius:10px;padding:8px 12px}
 .pos{color:#5bbd5e}.neg{color:#e0533d}
 </style>
 """
@@ -98,7 +100,7 @@ def html_draft(d: Mapping[str, Any], rotas=ROTAS_DOTA) -> str:
     """d = {'esq': lado, 'dir': lado, 'p_pre': P(esq) antes, 'p_pos': P(esq) depois, 'lado_pp': pp a favor
     da esquerda pelo lado do mapa, 'veredito': [titulo, motivos...], 'tempo': texto ou None}
     lado = {'time', 'lado' ('Radiant'|'Dire'), 'jogadores': 5 x {nome, heroi, img, pp, detalhe} na ordem
-    pos 1..5, 'bans': [{heroi, img}]}"""
+    pos 1..5, 'bans': [{heroi, img}]}; opcional 'perfil': {'esq': texto, 'dir': texto} (so descritivo)"""
     E, D = d["esq"], d["dir"]
     ce, cd = COR.get(E["lado"], "#5bbd5e"), COR.get(D["lado"], "#e0533d")
     p0, p1 = float(d["p_pre"]), float(d["p_pos"])
@@ -137,6 +139,13 @@ def html_draft(d: Mapping[str, Any], rotas=ROTAS_DOTA) -> str:
                    + f'</div><div class="dv-mid"><div class="t">{_e(rot)}</div><div class="dv-bar"><div class="c"></div>{barra}</div>'
                    f'<div class="v" style="color:{ce if dif > 0 else cd}">{_e(quem)} {_pp(abs(dif)) if quem != "equilibrado" else ""}</div></div>'
                    '<div class="dv-lado-r">' + "".join(_jog(jd[i], True) for i in pd_ if i < len(jd)) + "</div></div>")
+    pf = d.get("perfil") or {}
+    if pf.get("esq") or pf.get("dir"):
+        out.append('<div class="dv-perfil"><div class="dv-rotulo">Perfil das comps — descritivo, não mexe no preço '
+                   '(medido em 24/11: estilo contra estilo não melhorou a previsão)</div><div class="dv-pf2">'
+                   f'<div><b style="color:{ce}">{_e(E["time"])}</b><br>{_e(pf.get("esq", ""))}</div>'
+                   f'<div style="text-align:right"><b style="color:{cd}">{_e(D["time"])}</b><br>{_e(pf.get("dir", ""))}</div>'
+                   '</div></div>')
     v = list(d.get("veredito") or [])
     cor_v = ce if p1 >= p0 else cd
     if v:
@@ -144,8 +153,8 @@ def html_draft(d: Mapping[str, Any], rotas=ROTAS_DOTA) -> str:
                    + "".join(f"<li>{_e(x)}</li>" for x in v[1:]) + "</ul></div>")
     t = d.get("tempo")
     out.append('<div class="dv-tempo">' + (_e(t) if t else
-               "Se o jogo passar de X minutos: <b>em medição</b> — a curva de cada draft por duração só aparece "
-               "aqui depois de passar no teste às cegas.") + "</div>")
+               "Se o jogo passar de X minutos: <b>medido em 24/11</b> — o draft \"de jogo longo\" tem efeito, mas "
+               "pequeno demais para mudar o preço (+0,0016, abaixo da régua). Por isso não aparece frase de tempo.") + "</div>")
     out.append("</div>")
     return "".join(out)
 

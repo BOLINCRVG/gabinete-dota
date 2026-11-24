@@ -449,11 +449,15 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     d = {"esq": {"time": t_az, "lado": lado1, "jogadores": je, "bans": bans_d[0] if bans_d else []},
          "dir": {"time": t_vm, "lado": lado2, "jogadores": jd, "bans": bans_d[1] if len(bans_d) > 1 else []},
          "p_pre": p_pre_az, "p_pos": r["p_pos"], "lado_pp": r["pp_lado_azul"]}
+    from app_core import perfil_comp_core as PC
+    pfs = PC.carregar(raiz, esporte)
+    if pfs:
+        d["perfil"] = {"esq": PC.descrever(esporte, hs_az, pfs), "dir": PC.descrever(esporte, hs_vm, pfs)}
     d["veredito"] = DV.veredito(t_az, t_vm, lado1, lado2, p_pre_az, r["p_pos"], je, jd, r["pp_lado_azul"])
     dlt = 100 * (r["p_pos"] - p_pre_az) - r["pp_lado_azul"]
     res["draft"] = "equilibrado" if abs(dlt) < 0.3 else f"{t_az if dlt > 0 else t_vm} +{abs(dlt):.1f} pp"
     rotas = DV.ROTAS_DOTA if esporte == "dota" else DV.ROTAS_LOL
-    components.html(DV.html_draft(d, rotas), height=(840 if esporte == "dota" else 780), scrolling=True)
+    components.html(DV.html_draft(d, rotas), height=(920 if esporte == "dota" else 860), scrolling=True)
     # ao vivo (opcional, digitado): o estado do mapa por cima do pos-draft
     with st.expander("Ao vivo (digite o minuto e o placar do mapa)"):
         cs = st.columns(4)
