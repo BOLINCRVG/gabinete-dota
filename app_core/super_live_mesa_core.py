@@ -8,7 +8,8 @@ Pedidos dele:
     modelo ainda nao pegou" -> lista "Rolando agora" (agenda + fontes ao vivo) e "+ outro jogo";
   - o draft entra pelo que ELE cola: Dota = captura de tela da cyberscore (app_core/draft_imagem_core);
     LoL = texto com os 10 campeoes (draft_colado_core.ler_draft_lol). Nada de puxar draft sozinho.
-  - a tela bonita aprovada em 24/11 (app_core/draft_visual_core), so com numero MEDIDO.
+  - a tela bonita aprovada em 24/11 (app_core/draft_visual_core), so com numero MEDIDO;
+  - SEM Polymarket/"valor" na aba: a decisao de entrar e dele.
 REGRA ABSOLUTA: nada some calado -- time da agenda que nao casa com a base aparece com o motivo.
 Arquivo identico nos repositorios (LoL e Dota).
 """
@@ -439,11 +440,5 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
                 st.caption(f"{t1} {DV._odd(p_v1)} · {t2} {DV._odd(1 - p_v1)}")
         elif minuto > 0:
             st.caption("Os modelos ao vivo não estão carregados neste app.")
-    # Polymarket ao vivo (o foco dele): preco do mapa x o nosso (ao vivo se digitado, senao o pos-draft)
-    try:
-        from app_core.super_live_tab_core import render_polymarket
-        p_az_final = (res["vivo"] if t1_azul else 1 - res["vivo"]) if res.get("vivo") is not None else r["p_pos"]
-        render_polymarket(st, raiz=raiz, esporte=esporte, jogo={"azul": t_az, "vermelho": t_vm, "mapa": None},
-                          nome_a=t_az, nome_b=t_vm, p_mapa=p_az_final, resolver=resolver)
-    except Exception as e:  # noqa: BLE001
-        st.caption(f"Polymarket não abriu ({type(e).__name__}).")
+    # Polymarket/valor NAO aparece aqui (24/11/2026, ele: "nao quero ver isso, essa parte deixa comigo").
+
