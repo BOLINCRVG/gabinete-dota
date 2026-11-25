@@ -169,6 +169,11 @@ def build_oe_like() -> pd.DataFrame:
                     for _destino, _origem in ((_meu, _origem_meu), (_dele, _origem_dele)):
                         r[_destino] = (_idx.map(_snap[_origem]).to_numpy()
                                        if _origem in _snap.columns else np.nan)
+            # 25/11/2026: a diferenca de ouro do proprio time (o golddiffat do Oracle's Elixir). E o sinal da
+            # MARGEM DE VITORIA do WHR (--whr-mov gd15), medido as cegas no Dota: 2026 +0,0135 de logloss.
+            for _t in (10, 15, 20):
+                r[f"golddiffat{_t}"] = (pd.to_numeric(r[f"goldat{_t}"], errors="coerce")
+                                        - pd.to_numeric(r[f"opp_goldat{_t}"], errors="coerce"))
         rows.append(r)
 
     out = pd.concat(rows, ignore_index=True)

@@ -111,9 +111,13 @@ jobs:
 
       - name: Retreinar o modelo
         run: |
+          # MARGEM DE VITORIA (25/11/2026, aprovado por ele): ouro aos 15 min, como no LoL. Prova cega 2026
+          # (_medicoes/afinar_dota_whr.py): motor +0,0135; preco final (retreino mes a mes, com o Platt) +0,0017
+          # IC95 [+0,0004; +0,0029], 9 de 11 meses. Escolhido no 2o semestre de 2025 (gd15 > abates > torres).
           python -m mlcore.train_offline \
             --out ml_artifact.json \
             --holdout-days 30 \
+            --whr-mov gd15 --whr-mov-lambda 0.35 --whr-mov-folga 0.15 \
             --csv CSV_HISTORICO/2025_Dota_match_data_oe_like.csv \
             --csv CSV_DIARIO/2026_Dota_match_data_oe_like.csv
 
