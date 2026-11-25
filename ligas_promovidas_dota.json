@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-25T05:32:29",
+ "gerado_em": "2026-11-25T20:39:29",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -75,29 +75,29 @@
   "18865": {
    "nome": "EPL World Series: Southeast Asia 2025-2026 Season",
    "tier": "excluded",
-   "partidas": 626,
-   "pct_pro": 64.3,
+   "partidas": 667,
+   "pct_pro": 62.6,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "64% das participacoes sao de times do universo profissional (626 partidas; rodada 1)"
+   "motivo": "63% das participacoes sao de times do universo profissional (667 partidas; rodada 1)"
   },
   "18866": {
    "nome": "European Pro League  2025-2026 Season",
    "tier": "excluded",
-   "partidas": 837,
-   "pct_pro": 70.7,
+   "partidas": 934,
+   "pct_pro": 67.2,
    "ate": "2026-09-25",
    "promovida": true,
-   "motivo": "71% das participacoes sao de times do universo profissional (837 partidas; rodada 1)"
+   "motivo": "67% das participacoes sao de times do universo profissional (934 partidas; rodada 1)"
   },
   "18867": {
    "nome": "Ultras Dota Pro League  2025-26",
    "tier": "excluded",
-   "partidas": 4699,
-   "pct_pro": 47.6,
+   "partidas": 5072,
+   "pct_pro": 47.4,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "48% das participacoes sao de times do universo profissional (4699 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
+   "motivo": "47% das participacoes sao de times do universo profissional (5072 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
   },
   "18940": {
    "nome": "Tennisi Stampede Champions - Season 1",
@@ -131,20 +131,20 @@
   "19093": {
    "nome": "CIS Battle 4",
    "tier": "excluded",
-   "partidas": 78,
+   "partidas": 83,
    "pct_pro": 100.0,
    "ate": "2025-12-30",
    "promovida": true,
-   "motivo": "100% das participacoes sao de times do universo profissional (78 partidas; rodada 1)"
+   "motivo": "100% das participacoes sao de times do universo profissional (83 partidas; rodada 1)"
   },
   "19147": {
    "nome": "CCT Dota 2 Season 2 South America Series 2",
    "tier": "excluded",
-   "partidas": 53,
-   "pct_pro": 54.7,
+   "partidas": 56,
+   "pct_pro": 53.6,
    "ate": "2026-01-31",
    "promovida": true,
-   "motivo": "55% das participacoes sao de times do universo profissional (53 partidas; rodada 1)"
+   "motivo": "54% das participacoes sao de times do universo profissional (56 partidas; rodada 1)"
   },
   "19176": {
    "nome": "SIVVIT League",
@@ -188,11 +188,11 @@
   "19322": {
    "nome": "CCT Dota 2 Season 2 Series 7",
    "tier": "excluded",
-   "partidas": 57,
-   "pct_pro": 85.1,
+   "partidas": 58,
+   "pct_pro": 85.3,
    "ate": "2026-02-20",
    "promovida": true,
-   "motivo": "85% das participacoes sao de times do universo profissional (57 partidas; rodada 1)"
+   "motivo": "85% das participacoes sao de times do universo profissional (58 partidas; rodada 1)"
   },
   "19361": {
    "nome": "CCT Dota 2 Season 2 South America Series 3",
@@ -216,20 +216,20 @@
   "19378": {
    "nome": "Tennisi Stampede Champions - Season 2",
    "tier": "excluded",
-   "partidas": 28,
-   "pct_pro": 66.1,
+   "partidas": 29,
+   "pct_pro": 65.5,
    "ate": "2026-03-27",
    "promovida": true,
-   "motivo": "66% das participacoes sao de times do universo profissional (28 partidas; rodada 2)"
+   "motivo": "66% das participacoes sao de times do universo profissional (29 partidas; rodada 2)"
   },
   "19421": {
    "nome": "CCT Dota 2 Season 2 Series 8",
    "tier": "excluded",
-   "partidas": 56,
-   "pct_pro": 79.5,
+   "partidas": 63,
+   "pct_pro": 79.4,
    "ate": "2026-03-20",
    "promovida": true,
-   "motivo": "80% das participacoes sao de times do universo profissional (56 partidas; rodada 1)"
+   "motivo": "79% das participacoes sao de times do universo profissional (63 partidas; rodada 1)"
   },
   "19434": {
    "nome": "Americas Open Premier Cup",
@@ -284,11 +284,12 @@
   "19507": {
    "nome": "FONBET MEDIA ELEAGUE SEASON 4 DOTA2 2026",
    "tier": "excluded",
-   "partidas": 1,
+   "partidas": 47,
    "pct_pro": 0.0,
-   "ate": "2026-04-03",
-   "promovida": true,
-   "motivo": "edicao nova (1 partidas) de uma liga do universo profissional"
+   "ate": "2026-04-10",
+   "promovida": false,
+   "motivo": "liga de nível mais baixo: 0% de times profissionais (corte: 50%)",
+   "nivel_baixo": true
   },
   "19545": {
    "nome": "Lunar Trophy",
@@ -303,11 +304,11 @@
   "19656": {
    "nome": "1win Essence I",
    "tier": "excluded",
-   "partidas": 87,
+   "partidas": 89,
    "pct_pro": 100.0,
    "ate": "2026-05-11",
    "promovida": true,
-   "motivo": "100% das participacoes sao de times do universo profissional (87 partidas; rodada 1)"
+   "motivo": "100% das participacoes sao de times do universo profissional (89 partidas; rodada 1)"
   },
   "19682": {
    "nome": "刀塔扭蛋杯",
@@ -401,9 +402,9 @@
   "20212": {
    "nome": "Esportsprocircuit",
    "tier": "excluded",
-   "partidas": 210,
-   "pct_pro": 32.9,
-   "ate": "2026-11-16",
+   "partidas": 214,
+   "pct_pro": 33.2,
+   "ate": "2026-11-25",
    "promovida": false,
    "motivo": "liga de nível mais baixo: 33% de times profissionais (corte: 50%)",
    "nivel_baixo": true
@@ -421,21 +422,21 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 344,
-   "pct_pro": 47.8,
+   "partidas": 357,
+   "pct_pro": 49.0,
    "ate": "2026-11-25",
    "promovida": false,
-   "motivo": "liga de nível mais baixo: 48% de times profissionais (corte: 50%)",
+   "motivo": "liga de nível mais baixo: 49% de times profissionais (corte: 50%)",
    "nivel_baixo": true
   },
   "20276": {
    "nome": "European Pro League  2026-2027 Season",
    "tier": "excluded",
-   "partidas": 75,
-   "pct_pro": 61.3,
-   "ate": "2026-11-24",
+   "partidas": 82,
+   "pct_pro": 62.8,
+   "ate": "2026-11-25",
    "promovida": true,
-   "motivo": "61% das participacoes sao de times do universo profissional (75 partidas; rodada 1)"
+   "motivo": "63% das participacoes sao de times do universo profissional (82 partidas; rodada 1)"
   },
   "20277": {
    "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
@@ -2544,5 +2545,7 @@
    "time_pro": false
   }
  },
- "rebaixadas_na_ultima_rodada": []
+ "rebaixadas_na_ultima_rodada": [
+  "19507"
+ ]
 }

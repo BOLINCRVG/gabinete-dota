@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-25T06:11:16",
+ "gerado_em": "2026-11-25T21:16:14",
  "itens": [
   {
    "familia": "continue_on_error",
@@ -12,7 +12,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:153",
+   "onde": ".github/workflows/dados_diarios_dota.yml:157",
    "chave": "continue_on_error|dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
    "visto_em": "2026-08-26",
    "idade_dias": 91
@@ -20,7 +20,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:190",
+   "onde": ".github/workflows/dados_diarios_dota.yml:194",
    "chave": "continue_on_error|dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
    "visto_em": "2026-08-27",
    "idade_dias": 90
@@ -28,7 +28,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:182",
+   "onde": ".github/workflows/dados_diarios_dota.yml:186",
    "chave": "continue_on_error|dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
    "visto_em": "2026-10-24",
    "idade_dias": 32
@@ -36,7 +36,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:209",
+   "onde": ".github/workflows/dados_diarios_dota.yml:213",
    "chave": "continue_on_error|dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
    "visto_em": "2026-10-24",
    "idade_dias": 32
@@ -44,7 +44,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Frescor das reguas (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:197",
+   "onde": ".github/workflows/dados_diarios_dota.yml:201",
    "chave": "continue_on_error|dados_diarios_dota.yml: Frescor das reguas (so reporta)",
    "visto_em": "2026-10-24",
    "idade_dias": 32
@@ -52,7 +52,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:169",
+   "onde": ".github/workflows/dados_diarios_dota.yml:173",
    "chave": "continue_on_error|dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
    "visto_em": "2026-10-24",
    "idade_dias": 32
@@ -60,7 +60,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Regua das 28 (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:201",
+   "onde": ".github/workflows/dados_diarios_dota.yml:205",
    "chave": "continue_on_error|dados_diarios_dota.yml: Regua das 28 (so reporta)",
    "visto_em": "2026-10-24",
    "idade_dias": 32
@@ -92,7 +92,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Nota por jogador",
-   "onde": ".github/workflows/dados_diarios_dota.yml:159",
+   "onde": ".github/workflows/dados_diarios_dota.yml:163",
    "chave": "continue_on_error|dados_diarios_dota.yml: Nota por jogador",
    "visto_em": "2026-10-28",
    "idade_dias": 28

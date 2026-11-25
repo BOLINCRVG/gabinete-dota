@@ -1,9 +1,9 @@
 {
- "quando": "2026-11-25T05:01:28+00:00",
+ "quando": "2026-11-25T20:09:56+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9104353256,
-  "data": "2026-11-24T21:19:04.000Z"
+  "match_id": 9104580149,
+  "data": "2026-11-25T04:01:26.000Z"
  },
  "estrutura_history": {
   "series_id": "int",
@@ -28,20 +28,8 @@
  "GetMatchHistory_por_liga": {
   "20275": {
    "status": 200,
-   "partidas": 46,
-   "mais_novas_que_a_base": 1,
-   "resultado": 1
-  },
-  "20277": {
-   "status": 200,
-   "partidas": 49,
-   "mais_novas_que_a_base": 0,
-   "resultado": 1
-  },
-  "20276": {
-   "status": 200,
-   "partidas": 53,
-   "mais_novas_que_a_base": 0,
+   "partidas": 47,
+   "mais_novas_que_a_base": 13,
    "resultado": 1
   }
  },
@@ -68,8 +56,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 6,
-  "com_scoreboard": 6,
+  "jogos": 26,
+  "com_scoreboard": 23,
   "estrutura_jogo": {
    "players": [
     {
@@ -78,6 +66,18 @@
      "team": "int"
     }
    ],
+   "radiant_team": {
+    "team_name": "str",
+    "team_id": "int",
+    "team_logo": "int",
+    "complete": "bool"
+   },
+   "dire_team": {
+    "team_name": "str",
+    "team_id": "int",
+    "team_logo": "int",
+    "complete": "bool"
+   },
    "lobby_id": "int",
    "match_id": "int",
    "spectators": "int",
@@ -88,16 +88,19 @@
    "dire_series_wins": "int",
    "series_type": "int",
    "scoreboard": {
-    "duration": "float",
+    "duration": "int",
     "roshan_respawn_timer": "int",
     "radiant": {
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "picks": [
       "dict"
      ],
-     "abilities": [
+     "bans": [
+      "dict"
+     ],
+     "players": [
       "dict"
      ]
     },
@@ -105,56 +108,59 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "picks": [
       "dict"
      ],
-     "abilities": [
+     "bans": [
+      "dict"
+     ],
+     "players": [
       "dict"
      ]
     }
    }
   },
-  "lidos_pelo_app": 4,
+  "lidos_pelo_app": 10,
   "exemplo_lido": {
-   "radiant": "",
-   "dire": "",
+   "radiant": "Alte Hunde",
+   "dire": "1. Esport Club Frankfurt",
    "picks": [
     [
-     "61",
-     "91",
-     "72",
+     "121",
      "50",
-     "86"
+     "60",
+     "126",
+     "114"
     ],
     [
-     "36",
+     "86",
+     "79",
      "18",
-     "16",
-     "75",
-     "121"
+     "74",
+     "29"
     ]
    ],
    "bans": [
     [
-     "76",
-     "32",
-     "80",
+     "38",
+     "102",
+     "65",
+     "16",
      "77",
-     "2",
-     "17",
-     "106"
+     "57",
+     "33"
     ],
     [
-     "30",
-     "102",
-     "51",
-     "54",
-     "49",
-     "107",
-     "43"
+     "14",
+     "120",
+     "43",
+     "21",
+     "7",
+     "109",
+     "70"
     ]
    ],
-   "duracao": 728.2333374023438
+   "duracao": 0.0
   }
  }
 }
