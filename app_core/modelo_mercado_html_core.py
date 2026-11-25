@@ -235,6 +235,15 @@ def html_vencedor(comp: Mapping[str, Any], *, time_a: str, time_b: str, bo: int,
         if v is not None and v > 0 and l.get("selo") not in ("forte", "entre casas"):
             html += '<div class="nota">{}: a Polymarket esta {:.1f}% mais barata que a Pinnacle.</div>'.format(
                 escape(nome), v).replace(".", ",", 1)
+    # 25/11/2026: aviso quando o modelo discorda 10+ pontos (por mapa) da Pinnacle -- ali a Pinnacle acerta mais
+    try:
+        from app_core.discorda_pinnacle_core import aviso as _aviso_pin, sem_margem as _sem_margem
+        _txt = _aviso_pin(_num(la.get("p_modelo")), _sem_margem(la.get("odd_pinnacle"), lb.get("odd_pinnacle")),
+                          time_a=time_a, time_b=time_b, bo=int(bo or 1))
+    except Exception:  # noqa: BLE001 -- aviso nunca derruba a tela
+        _txt = ""
+    if _txt:
+        html += '<div class="selo desc">{}</div>'.format(escape(_txt))
     if comp.get("casas_discordam"):
         html += '<div class="nota">As duas casas discordam entre si em {:.0f} pontos: mercado dividido.</div>'.format(
             100 * (_num(comp.get("diferenca_casas")) or 0))
