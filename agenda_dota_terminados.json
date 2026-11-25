@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-25T02:49:30+00:00",
+ "atualizado_em": "2026-11-25T14:52:39+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -591,6 +591,36 @@
    "pagina": "BLAST/SLAM/9",
    "terminado": true,
    "placar": "1-2"
+  },
+  {
+   "time_a": "Power Rangers",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-24 20:25:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "InterActive Philippines",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-25 10:30:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-25 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "2-0"
   }
  ]
 }
