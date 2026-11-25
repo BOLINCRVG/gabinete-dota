@@ -28,6 +28,11 @@ class TestCompletudeDota(unittest.TestCase):
         self.assertIn("ainda não trouxe", f[0]["motivo"])
         self.assertIn("Time Novo", f[1]["motivo"])
 
+    def test_sem_placar_e_wo_ou_adiada(self):
+        series = [{"time_a": "Aurora Gaming", "time_b": "LGD Gaming", "inicio_utc": "2026-11-23 16:50:00+00", "placar": ""}]
+        f = CD.conferir(series, BASE, lambda n: RES(n) or "")
+        self.assertIn("W.O. ou adiada", f[0]["motivo"])
+
 
 if __name__ == "__main__":
     unittest.main()

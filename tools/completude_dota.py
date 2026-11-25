@@ -41,7 +41,10 @@ def conferir(series: list, base: pd.DataFrame, resolver) -> list:
             continue
         ini = pd.Timestamp(item["inicio"])
         if not any(par == {a, b} and ini - pd.Timedelta(days=1) <= dt <= ini + pd.Timedelta(days=2) for dt, par in jogos):
-            faltam.append({**item, "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"})
+            # 25/11/2026: as unicas series "faltando" eram justamente as SEM placar na Liquipedia (terminadas sem
+            # resultado): nao houve jogo para coletar -- W.O. ou adiada. O motivo diz isso, nao culpa a coleta.
+            faltam.append({**item, "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)" if item["placar"]
+                           else "a Liquipedia não tem placar desta série (provável W.O. ou adiada) — sem jogo para coletar"})
     return faltam
 
 
