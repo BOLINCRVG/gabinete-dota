@@ -1,48 +1,28 @@
 {
- "quando": "2026-11-24T20:52:21+00:00",
+ "quando": "2026-11-24T23:41:55+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
   "match_id": 9097015818,
   "data": "2026-11-19T17:42:17.000Z"
  },
- "estrutura_history": {
-  "series_id": "int",
-  "series_type": "int",
-  "match_id": "int",
-  "match_seq_num": "int",
-  "start_time": "int",
-  "lobby_type": "int",
-  "radiant_team_id": "int",
-  "dire_team_id": "int",
-  "players": [
-   {
-    "account_id": "int",
-    "player_slot": "int",
-    "team_number": "int",
-    "team_slot": "int",
-    "hero_id": "int",
-    "hero_variant": "int"
-   }
-  ]
- },
  "GetMatchHistory_por_liga": {
   "20275": {
-   "status": 200,
-   "partidas": 47,
-   "mais_novas_que_a_base": 47,
-   "resultado": 1
+   "status": 503,
+   "partidas": 0,
+   "mais_novas_que_a_base": 0,
+   "resultado": null
   },
   "20277": {
-   "status": 200,
-   "partidas": 49,
-   "mais_novas_que_a_base": 10,
-   "resultado": 1
+   "status": 503,
+   "partidas": 0,
+   "mais_novas_que_a_base": 0,
+   "resultado": null
   },
   "18631": {
-   "status": 200,
-   "partidas": 25,
-   "mais_novas_que_a_base": 8,
-   "resultado": 1
+   "status": 503,
+   "partidas": 0,
+   "mais_novas_que_a_base": 0,
+   "resultado": null
   }
  },
  "GetMatchDetails": {
@@ -68,6 +48,53 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 25
+  "jogos": 2,
+  "com_scoreboard": 1,
+  "estrutura_jogo": {
+   "players": [
+    {
+     "account_id": "int",
+     "hero_id": "int",
+     "team": "int"
+    }
+   ],
+   "lobby_id": "int",
+   "match_id": "int",
+   "spectators": "int",
+   "league_id": "int",
+   "league_node_id": "int",
+   "stream_delay_s": "int",
+   "radiant_series_wins": "int",
+   "dire_series_wins": "int",
+   "series_type": "int",
+   "scoreboard": {
+    "duration": "float",
+    "roshan_respawn_timer": "int",
+    "radiant": {
+     "score": "int",
+     "tower_state": "int",
+     "barracks_state": "int",
+     "players": [
+      "dict"
+     ],
+     "abilities": [
+      "dict"
+     ]
+    },
+    "dire": {
+     "score": "int",
+     "tower_state": "int",
+     "barracks_state": "int",
+     "players": [
+      "dict"
+     ],
+     "abilities": [
+      "dict"
+     ]
+    }
+   }
+  },
+  "lidos_pelo_app": 0,
+  "exemplo_lido": null
  }
 }

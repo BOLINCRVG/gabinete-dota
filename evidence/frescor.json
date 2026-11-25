@@ -1,6 +1,13 @@
 {
- "gerado_em": "2026-11-19T20:06:25",
+ "gerado_em": "2026-11-25T00:59:12",
  "reguas": [
+  {
+   "arquivo": "frescor.json",
+   "rotulo": "esta propria varredura",
+   "cadencia_dias": 1.0,
+   "idade_dias": 5.2,
+   "estado": "VELHA"
+  },
   {
    "arquivo": "dota_scorecard.json",
    "rotulo": "regua do Dota (esteira 2x ao dia)",
@@ -16,38 +23,31 @@
    "estado": "SEM CARIMBO"
   },
   {
-   "arquivo": "frescor.json",
-   "rotulo": "esta propria varredura",
-   "cadencia_dias": 1.0,
-   "idade_dias": 3.0,
-   "estado": "atrasada"
+   "arquivo": "regua_28.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 5.2,
+   "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "regua_pinnacle_vencedor_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 23.0,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "regua_28.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 3.0,
+   "idade_dias": 0.6,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.3,
+   "idade_dias": 0.1,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "suite_esteira.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.3,
+   "idade_dias": 0.1,
    "estado": "frequencia nao declarada"
   },
   {
@@ -59,6 +59,13 @@
   },
   {
    "arquivo": "canario_liberacao.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "completude_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": null,
@@ -87,6 +94,13 @@
   },
   {
    "arquivo": "regua_28_declaracoes.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": null,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "sonda_steam_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": null,
