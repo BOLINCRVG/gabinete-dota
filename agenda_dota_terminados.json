@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-25T16:06:24+00:00",
+ "atualizado_em": "2026-11-25T17:39:14+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -621,6 +621,16 @@
    "pagina": "Esports Pro Circuit/4",
    "terminado": true,
    "placar": "2-0"
+  },
+  {
+   "time_a": "Zero Tenacity",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-25 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
   }
  ]
 }

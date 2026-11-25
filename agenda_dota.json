@@ -1,17 +1,7 @@
 {
- "coletado_em": "2026-11-25T16:06:24+00:00",
+ "coletado_em": "2026-11-25T17:39:14+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
-  {
-   "time_a": "Zero Tenacity",
-   "time_b": "Power Rangers",
-   "inicio_utc": "2026-11-25 13:00:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41",
-   "pagina": "European Pro League/41",
-   "terminado": false,
-   "placar": "0-1"
-  },
   {
    "time_a": "V",
    "time_b": "Amaru Gaming",
@@ -20,7 +10,7 @@
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
    "terminado": false,
-   "placar": "0-0"
+   "placar": "0-1"
   },
   {
    "time_a": "Team Spirit Academy",
@@ -30,7 +20,7 @@
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",
    "terminado": false,
-   "placar": ""
+   "placar": "0-0"
   },
   {
    "time_a": "PuckChamp",
@@ -303,6 +293,26 @@
    "placar": ""
   },
   {
+   "time_a": "Troll Division",
+   "time_b": "Old blood",
+   "inicio_utc": "2026-12-01 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Zero Tenacity",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-25 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
    "time_a": "Team Allied",
    "time_b": "Amaru Gaming",
    "inicio_utc": "2026-11-25 12:00:00+00",
@@ -311,16 +321,6 @@
    "pagina": "Esports Pro Circuit/4",
    "terminado": true,
    "placar": "2-0"
-  },
-  {
-   "time_a": "InterActive Philippines",
-   "time_b": "Team Synapse",
-   "inicio_utc": "2026-11-25 10:30:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41",
-   "pagina": "European Pro League/41",
-   "terminado": true,
-   "placar": "0-2"
   }
  ],
  "jogos_na_pagina": 100

@@ -1,16 +1,16 @@
 {
- "coletado_em": "2026-11-25T16:06:35+00:00",
+ "coletado_em": "2026-11-25T17:39:24+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=102366",
  "partidas": [
   {
    "time_a": "1win",
    "time_b": "Team Liquid",
-   "p_a": 0.455,
-   "p_b": 0.545,
+   "p_a": 0.465,
+   "p_b": 0.535,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 20045.4025,
-   "volume": 8288.963096000001,
+   "liquidez": 34934.8248,
+   "volume": 8770.779528000001,
    "bo": 3,
    "torneio": "BLAST Slam Playoffs",
    "inicio_utc": "2026-11-26 13:30:00+00",
@@ -24,10 +24,10 @@
       "1win",
       "Team Liquid"
      ],
-     "p1": 0.46,
+     "p1": 0.465,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.02,
-     "liquidez": 9141.1993
+     "spread": 0.01,
+     "liquidez": 9878.2551
     },
     {
      "tipo": "child_moneyline",
@@ -40,7 +40,7 @@
      "p1": 0.465,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 8418.9363
+     "liquidez": 8646.5733
     },
     {
      "tipo": "totals",
@@ -53,7 +53,7 @@
      "p1": 0.495,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 7714.4579
+     "liquidez": 7295.5331
     },
     {
      "tipo": "map_handicap",
@@ -63,22 +63,22 @@
       "Team Liquid",
       "1win"
      ],
-     "p1": 0.295,
+     "p1": 0.28,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 9630.3175
+     "spread": 0.02,
+     "liquidez": 9488.739
     }
    ]
   },
   {
    "time_a": "GamerLegion",
    "time_b": "Aurora",
-   "p_a": 0.345,
-   "p_b": 0.655,
+   "p_a": 0.355,
+   "p_b": 0.645,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 28719.6906,
-   "volume": 6043.334774,
+   "liquidez": 33774.2288,
+   "volume": 6585.231696,
    "bo": 3,
    "torneio": "BLAST Slam Playoffs",
    "inicio_utc": "2026-11-26 10:00:00+00",
@@ -95,7 +95,7 @@
      "p1": 0.415,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 11738.602
+     "liquidez": 11838.2742
     },
     {
      "tipo": "child_moneyline",
@@ -108,7 +108,7 @@
      "p1": 0.405,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 10882.5983
+     "liquidez": 11341.1442
     },
     {
      "tipo": "totals",
@@ -118,10 +118,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.475,
+     "p1": 0.48,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 7803.9558
+     "spread": 0.02,
+     "liquidez": 7198.923
     },
     {
      "tipo": "map_handicap",
@@ -134,19 +134,19 @@
      "p1": 0.355,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 10175.8203
+     "liquidez": 10283.1073
     }
    ]
   },
   {
    "time_a": "PuckChamp",
    "time_b": "Inner Circle",
-   "p_a": 0.23,
-   "p_b": 0.77,
+   "p_a": 0.225,
+   "p_b": 0.775,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.02,
-   "liquidez": 5676.1261,
-   "volume": 445.46626599999996,
+   "spread": 0.03,
+   "liquidez": 6259.4474,
+   "volume": 508.76564099999996,
    "bo": 3,
    "torneio": "European Pro League Playoffs",
    "inicio_utc": "2026-11-25 19:00:00+00",
@@ -160,10 +160,10 @@
       "PuckChamp",
       "Inner Circle"
      ],
-     "p1": 0.285,
+     "p1": 0.28,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.09,
-     "liquidez": 1514.6149
+     "spread": 0.1,
+     "liquidez": 1404.7766
     },
     {
      "tipo": "child_moneyline",
@@ -173,10 +173,10 @@
       "PuckChamp",
       "Inner Circle"
      ],
-     "p1": 0.27,
+     "p1": 0.28,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.12,
-     "liquidez": 1176.9298
+     "spread": 0.1,
+     "liquidez": 1601.0019
     },
     {
      "tipo": "totals",
@@ -189,7 +189,7 @@
      "p1": 0.375,
      "fonte_preco": "meio_do_livro",
      "spread": 0.13,
-     "liquidez": 232.0684
+     "liquidez": 195.2161
     },
     {
      "tipo": "map_handicap",
@@ -199,10 +199,10 @@
       "Inner Circle",
       "PuckChamp"
      ],
-     "p1": 0.465,
+     "p1": 0.48,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.03,
-     "liquidez": 924.288
+     "spread": 0.06,
+     "liquidez": 736.0109
     }
    ]
   }
