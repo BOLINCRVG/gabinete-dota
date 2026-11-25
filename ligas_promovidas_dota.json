@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-25T00:10:42",
+ "gerado_em": "2026-11-25T05:32:29",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -84,20 +84,20 @@
   "18866": {
    "nome": "European Pro League  2025-2026 Season",
    "tier": "excluded",
-   "partidas": 780,
-   "pct_pro": 73.5,
+   "partidas": 837,
+   "pct_pro": 70.7,
    "ate": "2026-09-25",
    "promovida": true,
-   "motivo": "74% das participacoes sao de times do universo profissional (780 partidas; rodada 1)"
+   "motivo": "71% das participacoes sao de times do universo profissional (837 partidas; rodada 1)"
   },
   "18867": {
    "nome": "Ultras Dota Pro League  2025-26",
    "tier": "excluded",
-   "partidas": 4197,
-   "pct_pro": 49.6,
+   "partidas": 4699,
+   "pct_pro": 47.6,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "50% das participacoes sao de times do universo profissional (4197 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
+   "motivo": "48% das participacoes sao de times do universo profissional (4699 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
   },
   "18940": {
    "nome": "Tennisi Stampede Champions - Season 1",
@@ -217,11 +217,10 @@
    "nome": "Tennisi Stampede Champions - Season 2",
    "tier": "excluded",
    "partidas": 28,
-   "pct_pro": 44.6,
+   "pct_pro": 66.1,
    "ate": "2026-03-27",
-   "promovida": false,
-   "motivo": "liga de nível mais baixo: 45% de times profissionais (corte: 50%)",
-   "nivel_baixo": true
+   "promovida": true,
+   "motivo": "66% das participacoes sao de times do universo profissional (28 partidas; rodada 2)"
   },
   "19421": {
    "nome": "CCT Dota 2 Season 2 Series 8",
@@ -353,11 +352,11 @@
   "20026": {
    "nome": "Asgard Championship",
    "tier": "excluded",
-   "partidas": 183,
-   "pct_pro": 66.1,
+   "partidas": 223,
+   "pct_pro": 63.2,
    "ate": "2026-11-20",
    "promovida": true,
-   "motivo": "66% das participacoes sao de times do universo profissional (183 partidas; rodada 1)"
+   "motivo": "63% das participacoes sao de times do universo profissional (223 partidas; rodada 1)"
   },
   "20030": {
    "nome": "The Boris Invitational: Streamer Battles 2",
@@ -422,9 +421,9 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 343,
-   "pct_pro": 47.7,
-   "ate": "2026-11-24",
+   "partidas": 344,
+   "pct_pro": 47.8,
+   "ate": "2026-11-25",
    "promovida": false,
    "motivo": "liga de nível mais baixo: 48% de times profissionais (corte: 50%)",
    "nivel_baixo": true

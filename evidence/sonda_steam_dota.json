@@ -1,28 +1,48 @@
 {
- "quando": "2026-11-24T23:41:55+00:00",
+ "quando": "2026-11-25T05:01:28+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9097015818,
-  "data": "2026-11-19T17:42:17.000Z"
+  "match_id": 9104353256,
+  "data": "2026-11-24T21:19:04.000Z"
+ },
+ "estrutura_history": {
+  "series_id": "int",
+  "series_type": "int",
+  "match_id": "int",
+  "match_seq_num": "int",
+  "start_time": "int",
+  "lobby_type": "int",
+  "radiant_team_id": "int",
+  "dire_team_id": "int",
+  "players": [
+   {
+    "account_id": "int",
+    "player_slot": "int",
+    "team_number": "int",
+    "team_slot": "int",
+    "hero_id": "int",
+    "hero_variant": "int"
+   }
+  ]
  },
  "GetMatchHistory_por_liga": {
   "20275": {
-   "status": 503,
-   "partidas": 0,
-   "mais_novas_que_a_base": 0,
-   "resultado": null
+   "status": 200,
+   "partidas": 46,
+   "mais_novas_que_a_base": 1,
+   "resultado": 1
   },
   "20277": {
-   "status": 503,
-   "partidas": 0,
+   "status": 200,
+   "partidas": 49,
    "mais_novas_que_a_base": 0,
-   "resultado": null
+   "resultado": 1
   },
-  "18631": {
-   "status": 503,
-   "partidas": 0,
+  "20276": {
+   "status": 200,
+   "partidas": 53,
    "mais_novas_que_a_base": 0,
-   "resultado": null
+   "resultado": 1
   }
  },
  "GetMatchDetails": {
@@ -48,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 2,
-  "com_scoreboard": 1,
+  "jogos": 6,
+  "com_scoreboard": 6,
   "estrutura_jogo": {
    "players": [
     {
@@ -94,7 +114,47 @@
     }
    }
   },
-  "lidos_pelo_app": 0,
-  "exemplo_lido": null
+  "lidos_pelo_app": 4,
+  "exemplo_lido": {
+   "radiant": "",
+   "dire": "",
+   "picks": [
+    [
+     "61",
+     "91",
+     "72",
+     "50",
+     "86"
+    ],
+    [
+     "36",
+     "18",
+     "16",
+     "75",
+     "121"
+    ]
+   ],
+   "bans": [
+    [
+     "76",
+     "32",
+     "80",
+     "77",
+     "2",
+     "17",
+     "106"
+    ],
+    [
+     "30",
+     "102",
+     "51",
+     "54",
+     "49",
+     "107",
+     "43"
+    ]
+   ],
+   "duracao": 728.2333374023438
+  }
  }
 }
