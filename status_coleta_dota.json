@@ -1,54 +1,13 @@
 {
- "quando": "2026-11-24T21:58:52+00:00",
- "resultado": "failure",
- "rodada": "https://github.com/BOLINCRVG/gabinete-dota/actions/runs/45485148844",
+ "quando": "2026-11-25T00:59:21+00:00",
+ "resultado": "success",
+ "rodada": "https://github.com/BOLINCRVG/gabinete-dota/actions/runs/45512063692",
  "contrato": {
-  "ok": false,
-  "jogos": 7581,
-  "falhas": [
-   "jogos cairam de 10265 para 7581 (> 10%)"
-  ],
-  "jogos_aprovados": 10265
+  "ok": true,
+  "jogos": 10794,
+  "falhas": [],
+  "jogos_aprovados": 10794
  },
- "diagnostico": {
-  "jogos_antes": 10265,
-  "jogos_agora": 7581,
-  "perdas_por_liga": {
-   "Ultras Dota Pro League  2025-26": -2881
-  },
-  "perdas_por_time": {
-   "Nethercore": -453,
-   "Ghost Sheep": -337,
-   "Teiko #9729268": -258,
-   "BloodyRose #9729767": -250,
-   "PYPSIKI": -223,
-   "Air Defence #9828921": -215,
-   "Nethercore #9691942": -144,
-   "Cinqueblinks": -136,
-   "Elite Eclipse #9397016": -132,
-   "Eye Gaming #9718665": -128,
-   "Air Defence": -122,
-   "Elite Eclipse #9878408": -109
-  },
-  "jogos_que_sumiram": 2881,
-  "exemplos": [
-   "DOTA_8632521228",
-   "DOTA_8633036170",
-   "DOTA_8633092175",
-   "DOTA_8633226995",
-   "DOTA_8633313615",
-   "DOTA_8633377529",
-   "DOTA_8633516312",
-   "DOTA_8633636253",
-   "DOTA_8633715318",
-   "DOTA_8633796175",
-   "DOTA_8633890868",
-   "DOTA_8633959817",
-   "DOTA_8634050644",
-   "DOTA_8634138251",
-   "DOTA_8634773856"
-  ]
- },
- "motivo": "contrato de dados reprovou: jogos cairam de 10265 para 7581 (> 10%)",
- "ultimo_sucesso": "2026-11-19T20:06:00+00:00"
+ "motivo": "",
+ "ultimo_sucesso": "2026-11-25T00:59:21+00:00"
 }
