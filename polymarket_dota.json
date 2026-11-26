@@ -1,5 +1,5 @@
 {
- "coletado_em": "2026-11-26T19:16:46+00:00",
+ "coletado_em": "2026-11-26T19:47:28+00:00",
  "fonte": "https://gamma-api.polymarket.com/events?tag_id=102366",
  "partidas": [
   {
@@ -9,7 +9,7 @@
    "p_b": 0.225,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 14012.0352,
+   "liquidez": 14373.1908,
    "volume": 547.09218,
    "bo": 3,
    "torneio": "BLAST Slam Playoffs",
@@ -27,7 +27,7 @@
      "p1": 0.7,
      "fonte_preco": "meio_do_livro",
      "spread": 0.02,
-     "liquidez": 9377.6628
+     "liquidez": 9666.277
     },
     {
      "tipo": "child_moneyline",
@@ -37,10 +37,10 @@
       "PARIVISION",
       "Team Liquid"
      ],
-     "p1": 0.705,
+     "p1": 0.7,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.01,
-     "liquidez": 9161.2547
+     "spread": 0.02,
+     "liquidez": 9152.8992
     },
     {
      "tipo": "totals",
@@ -53,7 +53,7 @@
      "p1": 0.415,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 5830.0471
+     "liquidez": 6084.5688
     },
     {
      "tipo": "map_handicap",
@@ -66,7 +66,7 @@
      "p1": 0.505,
      "fonte_preco": "meio_do_livro",
      "spread": 0.01,
-     "liquidez": 7094.4542
+     "liquidez": 7588.607
     }
    ]
   },
@@ -77,8 +77,8 @@
    "p_b": 0.565,
    "fonte_preco": "meio_do_livro",
    "spread": 0.01,
-   "liquidez": 2730.6145,
-   "volume": 80.18474599999999,
+   "liquidez": 7595.2152,
+   "volume": 171.084746,
    "bo": 3,
    "torneio": "BLAST Slam Playoffs",
    "inicio_utc": "2026-11-27 13:30:00+00",
@@ -92,10 +92,10 @@
       "GamerLegion",
       "1win"
      ],
-     "p1": 0.5,
+     "p1": 0.455,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.9,
-     "liquidez": 95.0392
+     "spread": 0.01,
+     "liquidez": 4885.0998
     },
     {
      "tipo": "child_moneyline",
@@ -105,10 +105,10 @@
       "GamerLegion",
       "1win"
      ],
-     "p1": 0.495,
+     "p1": 0.45,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.91,
-     "liquidez": 94.5332
+     "spread": 0.02,
+     "liquidez": 4638.3495
     },
     {
      "tipo": "totals",
@@ -118,10 +118,10 @@
       "Over",
       "Under"
      ],
-     "p1": 0.505,
+     "p1": 0.495,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.89,
-     "liquidez": 29.7188
+     "spread": 0.03,
+     "liquidez": 285.1786
     },
     {
      "tipo": "map_handicap",
@@ -131,21 +131,21 @@
       "1win",
       "GamerLegion"
      ],
-     "p1": 0.48,
+     "p1": 0.305,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.76,
-     "liquidez": 64.1236
+     "spread": 0.01,
+     "liquidez": 1111.4766
     }
    ]
   },
   {
    "time_a": "Team Synapse",
    "time_b": "Power Rangers",
-   "p_a": 0.5,
-   "p_b": 0.5,
+   "p_a": 0.235,
+   "p_b": 0.765,
    "fonte_preco": "meio_do_livro",
-   "spread": 0.94,
-   "liquidez": 92.2,
+   "spread": 0.37,
+   "liquidez": 335.6355,
    "volume": null,
    "bo": 3,
    "torneio": "European Pro League Playoffs",
@@ -162,8 +162,8 @@
      ],
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.94,
-     "liquidez": 69.2
+     "spread": 0.92,
+     "liquidez": 76.944
     },
     {
      "tipo": "child_moneyline",
@@ -175,8 +175,8 @@
      ],
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
-     "spread": 0.94,
-     "liquidez": 69.2
+     "spread": 0.92,
+     "liquidez": 77.6568
     },
     {
      "tipo": "totals",
@@ -185,6 +185,19 @@
      "lados": [
       "Over",
       "Under"
+     ],
+     "p1": 0.5,
+     "fonte_preco": "meio_do_livro",
+     "spread": 0.92,
+     "liquidez": 4.519
+    },
+    {
+     "tipo": "map_handicap",
+     "mapa": 0,
+     "linha": -1.5,
+     "lados": [
+      "Power Rangers",
+      "Team Synapse"
      ],
      "p1": 0.5,
      "fonte_preco": "meio_do_livro",
