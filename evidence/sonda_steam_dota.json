@@ -1,9 +1,9 @@
 {
- "quando": "2026-11-26T04:21:10+00:00",
+ "quando": "2026-11-26T19:49:03+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9105439005,
-  "data": "2026-11-25T18:48:55.000Z"
+  "match_id": 9105608424,
+  "data": "2026-11-25T21:32:50.000Z"
  },
  "estrutura_history": {
   "series_id": "int",
@@ -28,14 +28,14 @@
  "GetMatchHistory_por_liga": {
   "20275": {
    "status": 200,
-   "partidas": 42,
-   "mais_novas_que_a_base": 3,
+   "partidas": 43,
+   "mais_novas_que_a_base": 15,
    "resultado": 1
   },
   "20276": {
    "status": 200,
-   "partidas": 53,
-   "mais_novas_que_a_base": 2,
+   "partidas": 55,
+   "mais_novas_que_a_base": 6,
    "resultado": 1
   },
   "18631": {
@@ -68,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 8,
-  "com_scoreboard": 7,
+  "jogos": 25,
+  "com_scoreboard": 24,
   "estrutura_jogo": {
    "players": [
     {
@@ -79,12 +79,6 @@
     }
    ],
    "radiant_team": {
-    "team_name": "str",
-    "team_id": "int",
-    "team_logo": "int",
-    "complete": "bool"
-   },
-   "dire_team": {
     "team_name": "str",
     "team_id": "int",
     "team_logo": "int",
@@ -106,12 +100,6 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "picks": [
-      "dict"
-     ],
-     "bans": [
-      "dict"
-     ],
      "players": [
       "dict"
      ],
@@ -123,12 +111,6 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "picks": [
-      "dict"
-     ],
-     "bans": [
-      "dict"
-     ],
      "players": [
       "dict"
      ],
@@ -138,47 +120,47 @@
     }
    }
   },
-  "lidos_pelo_app": 3,
+  "lidos_pelo_app": 17,
   "exemplo_lido": {
-   "radiant": "Spence Swim Team",
-   "dire": "Party Planning Committee",
+   "radiant": "New Manik",
+   "dire": "AloneWolf01",
    "picks": [
     [
-     "2",
-     "95",
-     "9",
-     "74",
-     "85"
+     "102",
+     "26",
+     "65",
+     "68",
+     "87"
     ],
     [
-     "77",
-     "47",
-     "54",
-     "62",
-     "50"
+     "13",
+     "137",
+     "93",
+     "40",
+     "79"
     ]
    ],
    "bans": [
     [
-     "71",
-     "43",
-     "87",
-     "96",
-     "49",
-     "32",
-     "28"
+     "50",
+     "7",
+     "37",
+     "38",
+     "69",
+     "15",
+     "60"
     ],
     [
-     "38",
+     "21",
+     "131",
+     "77",
+     "71",
+     "1",
      "76",
-     "92",
-     "60",
-     "61",
-     "12",
-     "109"
+     "126"
     ]
    ],
-   "duracao": 870.4666748046875
+   "duracao": 1263.366943359375
   }
  }
 }

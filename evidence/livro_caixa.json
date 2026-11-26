@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-26T05:17:17",
+ "gerado_em": "2026-11-26T20:50:16",
  "itens": [
   {
    "familia": "continue_on_error",
@@ -12,7 +12,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:157",
+   "onde": ".github/workflows/dados_diarios_dota.yml:168",
    "chave": "continue_on_error|dados_diarios_dota.yml: Recalcular a nota por torneio (o aviso da tela)",
    "visto_em": "2026-08-26",
    "idade_dias": 92
@@ -20,7 +20,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:194",
+   "onde": ".github/workflows/dados_diarios_dota.yml:205",
    "chave": "continue_on_error|dados_diarios_dota.yml: Livro-caixa do silencio (so reporta)",
    "visto_em": "2026-08-27",
    "idade_dias": 91
@@ -28,7 +28,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:186",
+   "onde": ".github/workflows/dados_diarios_dota.yml:197",
    "chave": "continue_on_error|dados_diarios_dota.yml: Canario (modelo novo x modelo no ar)",
    "visto_em": "2026-10-24",
    "idade_dias": 33
@@ -36,7 +36,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:213",
+   "onde": ".github/workflows/dados_diarios_dota.yml:224",
    "chave": "continue_on_error|dados_diarios_dota.yml: Escalar declaracao vencida (abre issue)",
    "visto_em": "2026-10-24",
    "idade_dias": 33
@@ -44,7 +44,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Frescor das reguas (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:201",
+   "onde": ".github/workflows/dados_diarios_dota.yml:212",
    "chave": "continue_on_error|dados_diarios_dota.yml: Frescor das reguas (so reporta)",
    "visto_em": "2026-10-24",
    "idade_dias": 33
@@ -52,7 +52,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:173",
+   "onde": ".github/workflows/dados_diarios_dota.yml:184",
    "chave": "continue_on_error|dados_diarios_dota.yml: Guardas pós-retreino (qualidade antes de publicar o modelo)",
    "visto_em": "2026-10-24",
    "idade_dias": 33
@@ -60,7 +60,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Regua das 28 (so reporta)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:205",
+   "onde": ".github/workflows/dados_diarios_dota.yml:216",
    "chave": "continue_on_error|dados_diarios_dota.yml: Regua das 28 (so reporta)",
    "visto_em": "2026-10-24",
    "idade_dias": 33
@@ -92,7 +92,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Nota por jogador",
-   "onde": ".github/workflows/dados_diarios_dota.yml:163",
+   "onde": ".github/workflows/dados_diarios_dota.yml:174",
    "chave": "continue_on_error|dados_diarios_dota.yml: Nota por jogador",
    "visto_em": "2026-10-28",
    "idade_dias": 29
@@ -100,7 +100,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Forma recente",
-   "onde": ".github/workflows/dados_diarios_dota.yml:95",
+   "onde": ".github/workflows/dados_diarios_dota.yml:101",
    "chave": "continue_on_error|dados_diarios_dota.yml: Forma recente",
    "visto_em": "2026-11-19",
    "idade_dias": 7
@@ -108,7 +108,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Herois dos jogos e camada pos-draft (SUPER-LIVE)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:99",
+   "onde": ".github/workflows/dados_diarios_dota.yml:105",
    "chave": "continue_on_error|dados_diarios_dota.yml: Herois dos jogos e camada pos-draft (SUPER-LIVE)",
    "visto_em": "2026-11-19",
    "idade_dias": 7
@@ -140,7 +140,7 @@
   {
    "familia": "continue_on_error",
    "item": "dados_diarios_dota.yml: Nomes dos jogadores (tela de draft colado)",
-   "onde": ".github/workflows/dados_diarios_dota.yml:104",
+   "onde": ".github/workflows/dados_diarios_dota.yml:115",
    "chave": "continue_on_error|dados_diarios_dota.yml: Nomes dos jogadores (tela de draft colado)",
    "visto_em": "2026-11-25",
    "idade_dias": 1
@@ -152,6 +152,22 @@
    "chave": "continue_on_error|dados_diarios_dota.yml: Sonda da API da Valve (so registra)",
    "visto_em": "2026-11-25",
    "idade_dias": 1
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Posicao de costume dos jogadores (tela de draft colado)",
+   "onde": ".github/workflows/dados_diarios_dota.yml:110",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Posicao de costume dos jogadores (tela de draft colado)",
+   "visto_em": "2026-11-26",
+   "idade_dias": 0
+  },
+  {
+   "familia": "continue_on_error",
+   "item": "dados_diarios_dota.yml: Vigia de troca de ID de time",
+   "onde": ".github/workflows/dados_diarios_dota.yml:90",
+   "chave": "continue_on_error|dados_diarios_dota.yml: Vigia de troca de ID de time",
+   "visto_em": "2026-11-26",
+   "idade_dias": 0
   }
  ]
 }

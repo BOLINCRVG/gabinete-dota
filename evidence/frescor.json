@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-26T05:17:17",
+ "gerado_em": "2026-11-26T20:50:16",
  "reguas": [
   {
    "arquivo": "dota_scorecard.json",
@@ -19,25 +19,25 @@
    "arquivo": "regua_pinnacle_vencedor_dota.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 1.7,
+   "idade_dias": 2.4,
+   "estado": "frequencia nao declarada"
+  },
+  {
+   "arquivo": "regua_28.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.6,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "desempenho.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
-   "idade_dias": 0.6,
+   "idade_dias": 0.3,
    "estado": "frequencia nao declarada"
   },
   {
    "arquivo": "suite_esteira.json",
-   "rotulo": "(nao declarada)",
-   "cadencia_dias": null,
-   "idade_dias": 0.6,
-   "estado": "frequencia nao declarada"
-  },
-  {
-   "arquivo": "regua_28.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
    "idade_dias": 0.3,
@@ -86,6 +86,13 @@
    "estado": "frequencia nao declarada"
   },
   {
+   "arquivo": "ids_suspeitos_dota.json",
+   "rotulo": "(nao declarada)",
+   "cadencia_dias": null,
+   "idade_dias": 0.0,
+   "estado": "frequencia nao declarada"
+  },
+  {
    "arquivo": "regua_28_declaracoes.json",
    "rotulo": "(nao declarada)",
    "cadencia_dias": null,
@@ -103,7 +110,7 @@
    "arquivo": "frescor.json",
    "rotulo": "esta propria varredura",
    "cadencia_dias": 1.0,
-   "idade_dias": 0.3,
+   "idade_dias": 0.6,
    "estado": "ok"
   },
   {
