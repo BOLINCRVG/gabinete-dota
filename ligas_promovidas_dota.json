@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-25T20:39:29",
+ "gerado_em": "2026-11-26T04:35:24",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -84,20 +84,20 @@
   "18866": {
    "nome": "European Pro League  2025-2026 Season",
    "tier": "excluded",
-   "partidas": 934,
-   "pct_pro": 67.2,
+   "partidas": 937,
+   "pct_pro": 67.3,
    "ate": "2026-09-25",
    "promovida": true,
-   "motivo": "67% das participacoes sao de times do universo profissional (934 partidas; rodada 1)"
+   "motivo": "67% das participacoes sao de times do universo profissional (937 partidas; rodada 1)"
   },
   "18867": {
    "nome": "Ultras Dota Pro League  2025-26",
    "tier": "excluded",
-   "partidas": 5072,
+   "partidas": 5086,
    "pct_pro": 47.4,
    "ate": "2026-11-01",
    "promovida": true,
-   "motivo": "47% das participacoes sao de times do universo profissional (5072 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
+   "motivo": "47% das participacoes sao de times do universo profissional (5086 partidas; rodada 1); ja promovida: so sai abaixo de 40%"
   },
   "18940": {
    "nome": "Tennisi Stampede Champions - Season 1",
@@ -422,7 +422,7 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 357,
+   "partidas": 360,
    "pct_pro": 49.0,
    "ate": "2026-11-25",
    "promovida": false,
@@ -432,11 +432,11 @@
   "20276": {
    "nome": "European Pro League  2026-2027 Season",
    "tier": "excluded",
-   "partidas": 82,
-   "pct_pro": 62.8,
+   "partidas": 84,
+   "pct_pro": 63.7,
    "ate": "2026-11-25",
    "promovida": true,
-   "motivo": "63% das participacoes sao de times do universo profissional (82 partidas; rodada 1)"
+   "motivo": "64% das participacoes sao de times do universo profissional (84 partidas; rodada 1)"
   },
   "20277": {
    "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
@@ -2545,7 +2545,5 @@
    "time_pro": false
   }
  },
- "rebaixadas_na_ultima_rodada": [
-  "19507"
- ]
+ "rebaixadas_na_ultima_rodada": []
 }

@@ -1,9 +1,9 @@
 {
- "quando": "2026-11-25T20:09:56+00:00",
+ "quando": "2026-11-26T04:21:10+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9104580149,
-  "data": "2026-11-25T04:01:26.000Z"
+  "match_id": 9105439005,
+  "data": "2026-11-25T18:48:55.000Z"
  },
  "estrutura_history": {
   "series_id": "int",
@@ -28,8 +28,20 @@
  "GetMatchHistory_por_liga": {
   "20275": {
    "status": 200,
-   "partidas": 47,
-   "mais_novas_que_a_base": 13,
+   "partidas": 42,
+   "mais_novas_que_a_base": 3,
+   "resultado": 1
+  },
+  "20276": {
+   "status": 200,
+   "partidas": 53,
+   "mais_novas_que_a_base": 2,
+   "resultado": 1
+  },
+  "18631": {
+   "status": 200,
+   "partidas": 25,
+   "mais_novas_que_a_base": 0,
    "resultado": 1
   }
  },
@@ -56,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 26,
-  "com_scoreboard": 23,
+  "jogos": 8,
+  "com_scoreboard": 7,
   "estrutura_jogo": {
    "players": [
     {
@@ -88,7 +100,7 @@
    "dire_series_wins": "int",
    "series_type": "int",
    "scoreboard": {
-    "duration": "int",
+    "duration": "float",
     "roshan_respawn_timer": "int",
     "radiant": {
      "score": "int",
@@ -101,6 +113,9 @@
       "dict"
      ],
      "players": [
+      "dict"
+     ],
+     "abilities": [
       "dict"
      ]
     },
@@ -116,51 +131,54 @@
      ],
      "players": [
       "dict"
+     ],
+     "abilities": [
+      "dict"
      ]
     }
    }
   },
-  "lidos_pelo_app": 10,
+  "lidos_pelo_app": 3,
   "exemplo_lido": {
-   "radiant": "Alte Hunde",
-   "dire": "1. Esport Club Frankfurt",
+   "radiant": "Spence Swim Team",
+   "dire": "Party Planning Committee",
    "picks": [
     [
-     "121",
-     "50",
-     "60",
-     "126",
-     "114"
+     "2",
+     "95",
+     "9",
+     "74",
+     "85"
     ],
     [
-     "86",
-     "79",
-     "18",
-     "74",
-     "29"
+     "77",
+     "47",
+     "54",
+     "62",
+     "50"
     ]
    ],
    "bans": [
     [
-     "38",
-     "102",
-     "65",
-     "16",
-     "77",
-     "57",
-     "33"
+     "71",
+     "43",
+     "87",
+     "96",
+     "49",
+     "32",
+     "28"
     ],
     [
-     "14",
-     "120",
-     "43",
-     "21",
-     "7",
-     "109",
-     "70"
+     "38",
+     "76",
+     "92",
+     "60",
+     "61",
+     "12",
+     "109"
     ]
    ],
-   "duracao": 0.0
+   "duracao": 870.4666748046875
   }
  }
 }

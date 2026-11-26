@@ -1,4 +1,14 @@
 match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duration,result,teamkills,oppkills,towers,opp_towers,roshans,opp_roshans,barracks,opp_barracks,league_id,start_time,has_objectives,objective_events,data_quality,quality_flags,source_mode,first_blood,first_tower,first_roshan,firsts_pass
+9105608424,2026-11-25T21:32:50.000Z,2026,Ultras Dota Pro League  2026-2027,10356164,Blink Dagger Club,10060977,Cinqueblinks,radiant,2581,0,53,68,3,7,0,1,0,0,20275.0,1795642370.0,True,21.0,ok,,opendota_api,0.0,1.0,0.0,1.0
+9105608424,2026-11-25T21:32:50.000Z,2026,Ultras Dota Pro League  2026-2027,10060977,Cinqueblinks,10356164,Blink Dagger Club,dire,2581,1,68,53,7,3,1,0,0,0,20275.0,1795642370.0,True,21.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+9105573027,2026-11-25T20:50:27.000Z,2026,Ultras Dota Pro League  2026-2027,10340388,Blink Dagger Club,10060977,Cinqueblinks,dire,1584,0,20,49,2,7,0,0,0,0,20275.0,1795639827.0,True,17.0,ok,,opendota_api,1.0,0.0,,1.0
+9105573027,2026-11-25T20:50:27.000Z,2026,Ultras Dota Pro League  2026-2027,10060977,Cinqueblinks,10340388,Blink Dagger Club,radiant,1584,1,49,20,7,2,0,0,0,0,20275.0,1795639827.0,True,17.0,ok,,opendota_api,0.0,1.0,,1.0
+9105561912,2026-11-25T20:38:29.000Z,2026,European Pro League  2026-2027 Season,10251974,Inner Circle x Insanity,10164236,PuckChamp,dire,2139,1,49,19,11,1,2,0,6,0,20276.0,1795639109.0,True,32.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9105561912,2026-11-25T20:38:29.000Z,2026,European Pro League  2026-2027 Season,10164236,PuckChamp,10251974,Inner Circle x Insanity,radiant,2139,0,19,49,1,11,0,2,0,6,20276.0,1795639109.0,True,32.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9105525906,2026-11-25T20:03:51.000Z,2026,Ultras Dota Pro League  2026-2027,10356164,Blink Dagger Club,10060977,Cinqueblinks,radiant,1854,1,44,20,4,3,1,0,0,0,20275.0,1795637031.0,True,15.0,ok,,opendota_api,0.0,1.0,1.0,1.0
+9105525906,2026-11-25T20:03:51.000Z,2026,Ultras Dota Pro League  2026-2027,10060977,Cinqueblinks,10356164,Blink Dagger Club,dire,1854,0,20,44,3,4,0,1,0,0,20275.0,1795637031.0,True,15.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+9105492177,2026-11-25T19:40:38.000Z,2026,European Pro League  2026-2027 Season,10251974,Inner Circle x Insanity,10164236,PuckChamp,radiant,1955,1,27,10,9,1,2,0,4,0,20276.0,1795635638.0,True,27.0,ok,,opendota_api,1.0,1.0,1.0,1.0
+9105492177,2026-11-25T19:40:38.000Z,2026,European Pro League  2026-2027 Season,10164236,PuckChamp,10251974,Inner Circle x Insanity,dire,1955,0,10,27,1,9,0,2,0,4,20276.0,1795635638.0,True,27.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 9105439005,2026-11-25T18:48:55.000Z,2026,Ultras Dota Pro League  2026-2027,10340388,Blink Dagger Club,9849465,Nethercore,radiant,3371,0,37,54,3,11,0,4,0,4,20275.0,1795632535.0,True,35.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 9105439005,2026-11-25T18:48:55.000Z,2026,Ultras Dota Pro League  2026-2027,9849465,Nethercore,10340388,Blink Dagger Club,dire,3371,1,54,37,11,3,4,0,4,0,20275.0,1795632535.0,True,35.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 9105404257,2026-11-25T18:33:20.000Z,2026,European Pro League  2026-2027 Season,10322861,Angry Birds,9948367,Team Spirit Academy,radiant,2126,0,13,44,1,11,0,1,0,6,20276.0,1795631600.0,True,25.0,ok,,opendota_api,1.0,0.0,0.0,1.0
@@ -46539,6 +46549,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8556111450,2025-11-13T07:15:40.000Z,2025,Destiny League,9768243,Night Force,2443375,Foxy gaming,radiant,1551,0,26,26,0,0,0,0,0,0,17233.0,1763018140.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8556107261,2025-11-13T07:11:48.000Z,2025,EPL World Series: Southeast Asia 2025-2026 Season,9939386,Komodo,9828897,REKONIX,dire,1754,0,12,41,0,0,0,0,0,0,18865.0,1763017908.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8556107261,2025-11-13T07:11:48.000Z,2025,EPL World Series: Southeast Asia 2025-2026 Season,9828897,REKONIX,9939386,Komodo,radiant,1754,1,41,12,0,0,0,0,0,0,18865.0,1763017908.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8556100541,2025-11-13T07:03:30.000Z,2025,Ultras Dota Pro League  2025-26,9844598,La Passion,9965265,Еlite Eclipse,dire,3075,0,0,0,5,10,0,0,0,4,18867.0,1763017410.0,True,20.0,ok,,opendota_api,,1.0,,1.0
+8556100541,2025-11-13T07:03:30.000Z,2025,Ultras Dota Pro League  2025-26,9965265,Еlite Eclipse,9844598,La Passion,radiant,3075,1,0,0,10,5,0,0,4,0,18867.0,1763017410.0,True,20.0,ok,,opendota_api,,0.0,,1.0
 8556081056,2025-11-13T06:34:04.000Z,2025,Destiny League,2443375,Foxy gaming,9768243,Night Force,radiant,1972,0,38,39,0,0,0,0,0,0,17233.0,1763015644.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8556081056,2025-11-13T06:34:04.000Z,2025,Destiny League,9768243,Night Force,2443375,Foxy gaming,dire,1972,1,39,38,0,0,0,0,0,0,17233.0,1763015644.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8556072248,2025-11-13T06:22:20.000Z,2025,Destiny League,9425656,LSG,9768002,Lunar Vibes,dire,1719,0,26,37,0,0,0,0,0,0,17233.0,1763014940.0,False,0.0,partial,missing_objectives,opendota_list,,,,
@@ -46887,6 +46899,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8553075021,2025-11-11T10:20:06.000Z,2025,Destiny League,9768243,Night Force,9768002,Lunar Vibes,radiant,1541,0,26,28,0,0,0,0,0,0,17233.0,1762856406.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8553060496,2025-11-11T10:10:11.000Z,2025,CIS Battle 3,9928746,Most Wanted,9948367,Team Spirit Academy,radiant,2495,0,26,33,3,9,1,1,0,6,18660.0,1762855811.0,True,28.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8553060496,2025-11-11T10:10:11.000Z,2025,CIS Battle 3,9948367,Team Spirit Academy,9928746,Most Wanted,dire,2495,1,33,26,9,3,1,1,6,0,18660.0,1762855811.0,True,28.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8553054377,2025-11-11T10:05:28.000Z,2025,European Pro League  2025-2026 Season,9895544,Inner Circle,9928636,Team Lynx,radiant,3173,0,3,1,6,11,0,0,1,4,18866.0,1762855528.0,True,24.0,ok,,opendota_api,1.0,0.0,,1.0
+8553054377,2025-11-11T10:05:28.000Z,2025,European Pro League  2025-2026 Season,9928636,Team Lynx,9895544,Inner Circle,dire,3173,1,1,3,11,6,0,0,4,1,18866.0,1762855528.0,True,24.0,ok,,opendota_api,0.0,1.0,,1.0
 8553033821,2025-11-11T09:40:17.000Z,2025,Destiny League,9768002,Lunar Vibes,9768243,Night Force,radiant,1603,1,35,31,0,0,0,0,0,0,17233.0,1762854017.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8553033821,2025-11-11T09:40:17.000Z,2025,Destiny League,9768243,Night Force,9768002,Lunar Vibes,dire,1603,0,31,35,0,0,0,0,0,0,17233.0,1762854017.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8553005857,2025-11-11T09:39:37.000Z,2025,CIS Battle 3,9586122,4Pirates,9758040,Runa Team,radiant,1820,0,16,46,0,11,0,2,0,6,18660.0,1762853977.0,True,24.0,ok,,opendota_api,0.0,0.0,0.0,1.0
@@ -47327,6 +47341,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8549306196,2025-11-08T19:38:25.000Z,2025,WBT CYBER CLUB #1,9956694,Team Wibe(TW),9956692,ChimneySweeps,radiant,4030,0,67,54,10,9,4,1,4,2,17909.0,1762630705.0,True,44.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8549276995,2025-11-08T19:18:03.000Z,2025,WBT CYBER CLUB #1,9948273,5 неразложенных ШК,9691622,Arjenka68,radiant,2444,1,38,22,10,3,2,0,3,0,17909.0,1762629483.0,True,26.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8549276995,2025-11-08T19:18:03.000Z,2025,WBT CYBER CLUB #1,9691622,Arjenka68,9948273,5 неразложенных ШК,dire,2444,0,22,38,3,10,0,2,0,3,17909.0,1762629483.0,True,26.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8549260986,2025-11-08T19:06:04.000Z,2025,Ultras Dota Pro League  2025-26,9828921,Air Defence,9928428,Dominion,dire,3121,0,0,0,5,10,0,0,0,2,18867.0,1762628764.0,True,18.0,ok,,opendota_api,,0.0,,1.0
+8549260986,2025-11-08T19:06:04.000Z,2025,Ultras Dota Pro League  2025-26,9928428,Dominion,9828921,Air Defence,radiant,3121,1,0,0,10,5,0,0,2,0,18867.0,1762628764.0,True,18.0,ok,,opendota_api,,1.0,,1.0
 8549220341,2025-11-08T18:45:26.000Z,2025,DreamLeague Division 2 Season 2,9928746,Most Wanted,9814008,eSpoiled,dire,1985,0,6,26,1,9,0,1,0,5,18897.0,1762627526.0,True,22.0,ok,,opendota_api,1.0,1.0,0.0,1.0
 8549220341,2025-11-08T18:45:26.000Z,2025,DreamLeague Division 2 Season 2,9814008,eSpoiled,9928746,Most Wanted,radiant,1985,1,26,6,9,1,1,0,5,0,18897.0,1762627526.0,True,22.0,ok,,opendota_api,0.0,0.0,1.0,1.0
 8549187783,2025-11-08T18:16:47.000Z,2025,WBT CYBER CLUB #1,9948273,5 неразложенных ШК,9691622,Arjenka68,dire,2356,0,28,35,2,11,0,2,0,6,17909.0,1762625807.0,True,28.0,ok,,opendota_api,0.0,0.0,0.0,1.0
@@ -47357,8 +47373,12 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8548983113,2025-11-08T16:10:39.000Z,2025,WBT CYBER CLUB #1,9691895,Team.City,9477537,52TURBO,dire,1530,0,17,47,0,11,0,0,0,6,17909.0,1762618239.0,True,19.0,ok,,opendota_api,1.0,0.0,,1.0
 8548979253,2025-11-08T16:08:49.000Z,2025,WBT CYBER CLUB #1,9957513,Ballas,9958028,scream dushi,dire,1881,1,27,16,9,3,1,0,2,0,17909.0,1762618129.0,True,24.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8548979253,2025-11-08T16:08:49.000Z,2025,WBT CYBER CLUB #1,9958028,scream dushi,9957513,Ballas,radiant,1881,0,16,27,3,9,0,1,0,2,17909.0,1762618129.0,True,24.0,ok,,opendota_api,0.0,0.0,0.0,1.0
+8548977607,2025-11-08T16:06:57.000Z,2025,European Pro League  2025-2026 Season,9895544,Inner Circle,9600141,Zero Tenacity,dire,3072,1,0,0,11,6,0,0,4,0,18866.0,1762618017.0,True,22.0,ok,,opendota_api,,0.0,,1.0
+8548977607,2025-11-08T16:06:57.000Z,2025,European Pro League  2025-2026 Season,9600141,Zero Tenacity,9895544,Inner Circle,radiant,3072,0,0,0,6,11,0,0,0,4,18866.0,1762618017.0,True,22.0,ok,,opendota_api,,1.0,,1.0
 8548926024,2025-11-08T15:54:42.000Z,2025,Ultras Dota Pro League  2025-26,9828921,Air Defence,9956396,BloodyRose,radiant,1983,1,59,32,0,0,0,0,0,0,18867.0,1762617282.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8548926024,2025-11-08T15:54:42.000Z,2025,Ultras Dota Pro League  2025-26,9956396,BloodyRose,9828921,Air Defence,dire,1983,0,32,59,0,0,0,0,0,0,18867.0,1762617282.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8548927610,2025-11-08T15:44:18.000Z,2025,European Pro League  2025-2026 Season,9895544,Inner Circle,9600141,Zero Tenacity,dire,3151,0,1,0,8,10,0,0,2,3,18866.0,1762616658.0,True,24.0,ok,,opendota_api,,1.0,,1.0
+8548927610,2025-11-08T15:44:18.000Z,2025,European Pro League  2025-2026 Season,9600141,Zero Tenacity,9895544,Inner Circle,radiant,3151,1,0,1,10,8,0,0,3,2,18866.0,1762616658.0,True,24.0,ok,,opendota_api,,0.0,,1.0
 8548906652,2025-11-08T15:27:12.000Z,2025,Party To Play league,9627650,5vpotoke,9907018,KVASIK+1,radiant,2376,0,40,36,7,10,1,1,2,6,16251.0,1762615632.0,True,38.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8548906652,2025-11-08T15:27:12.000Z,2025,Party To Play league,9907018,KVASIK+1,9627650,5vpotoke,dire,2376,1,36,40,10,7,1,1,6,2,16251.0,1762615632.0,True,38.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 8548868918,2025-11-08T15:05:35.000Z,2025,CIS Battle 3,9758040,Runa Team,2576071,Yellow Submarine,radiant,2437,0,22,43,3,9,0,2,0,6,18660.0,1762614335.0,True,29.0,ok,,opendota_api,1.0,0.0,0.0,1.0
@@ -47383,6 +47403,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8548686626,2025-11-08T13:26:35.000Z,2025,DreamLeague Division 2 Season 2,9640842,Team Tidebound,9885667,Team Tea,radiant,2030,1,27,14,6,2,2,0,0,0,18897.0,1762608395.0,True,17.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8548658273,2025-11-08T13:06:31.000Z,2025,Ultras Dota Pro League  2025-26,8831040,Ghost Sheep,9691942,Nethercore,dire,2184,0,28,50,0,0,0,0,0,0,18867.0,1762607191.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8548658273,2025-11-08T13:06:31.000Z,2025,Ultras Dota Pro League  2025-26,9691942,Nethercore,8831040,Ghost Sheep,radiant,2184,1,50,28,0,0,0,0,0,0,18867.0,1762607191.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8548650004,2025-11-08T13:00:40.000Z,2025,Ultras Dota Pro League  2025-26,0,Dire,0,Radiant,dire,3136,0,0,0,6,9,0,0,0,2,18867.0,1762606840.0,True,18.0,partial,"missing_team_id,placeholder_radiant_name,placeholder_dire_name",opendota_api,,0.0,,1.0
+8548650004,2025-11-08T13:00:40.000Z,2025,Ultras Dota Pro League  2025-26,0,Radiant,0,Dire,radiant,3136,1,0,0,9,6,0,0,2,0,18867.0,1762606840.0,True,18.0,partial,"missing_team_id,placeholder_radiant_name,placeholder_dire_name",opendota_api,,1.0,,1.0
 8548628459,2025-11-08T12:51:13.000Z,2025,CIS Battle 3,9303383,L1GA TEAM,9928746,Most Wanted,dire,2172,1,31,10,5,3,1,0,2,0,18660.0,1762606273.0,True,24.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8548628459,2025-11-08T12:51:13.000Z,2025,CIS Battle 3,9928746,Most Wanted,9303383,L1GA TEAM,radiant,2172,0,10,31,3,5,0,1,0,2,18660.0,1762606273.0,True,24.0,ok,,opendota_api,0.0,0.0,0.0,1.0
 8548606633,2025-11-08T12:47:12.000Z,2025,SLAM IV,9303484,HEROIC,9247354,Team Falcons,radiant,2561,0,12,37,3,9,1,2,0,4,17419.0,1762606032.0,True,30.0,ok,,opendota_api,0.0,1.0,0.0,1.0
@@ -47617,6 +47639,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8546835325,2025-11-07T09:46:53.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,9691942,Nethercore,dire,2737,0,55,52,0,0,0,0,0,0,18867.0,1762508813.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8546822765,2025-11-07T09:36:14.000Z,2025,SLAM IV,9338413,MOUZ,7119388,Team Spirit,radiant,3267,1,43,24,9,5,2,1,2,0,17419.0,1762508174.0,True,32.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8546822765,2025-11-07T09:36:14.000Z,2025,SLAM IV,7119388,Team Spirit,9338413,MOUZ,dire,3267,0,24,43,5,9,1,2,0,2,17419.0,1762508174.0,True,32.0,ok,,opendota_api,1.0,0.0,0.0,1.0
+8546819554,2025-11-07T09:27:30.000Z,2025,Ultras Dota Pro League  2025-26,9593609,Nethercore,9729268,Teiko,radiant,2846,0,0,0,5,9,0,0,0,2,18867.0,1762507650.0,True,17.0,ok,,opendota_api,,0.0,,1.0
+8546819554,2025-11-07T09:27:30.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,9593609,Nethercore,dire,2846,1,0,0,9,5,0,0,2,0,18867.0,1762507650.0,True,17.0,ok,,opendota_api,,1.0,,1.0
 8546800469,2025-11-07T09:07:02.000Z,2025,CIS Battle 3,9586122,4Pirates,9303383,L1GA TEAM,dire,2184,0,18,39,3,11,0,2,0,6,18660.0,1762506422.0,True,33.0,ok,,opendota_api,1.0,1.0,0.0,1.0
 8546800469,2025-11-07T09:07:02.000Z,2025,CIS Battle 3,9303383,L1GA TEAM,9586122,4Pirates,radiant,2184,1,39,18,11,3,2,0,6,0,18660.0,1762506422.0,True,33.0,ok,,opendota_api,0.0,0.0,1.0,1.0
 8546801785,2025-11-07T09:05:46.000Z,2025,Destiny League,9426115,Dark Rebellion,8629005,Flawless Goblins,radiant,1506,1,26,19,0,0,0,0,0,0,17233.0,1762506346.0,False,0.0,partial,missing_objectives,opendota_list,,,,
@@ -47703,6 +47727,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8546258258,2025-11-06T19:43:25.000Z,2025,DreamLeague Division 2 Season 2,9814008,eSpoiled,9640842,Team Tidebound,dire,2814,0,26,22,7,8,2,1,2,0,18897.0,1762458205.0,True,30.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8546248386,2025-11-06T19:29:07.000Z,2025,Ultras Dota Pro League  2025-26,9684245,Shinigami Gaming,9818938,Teiko,radiant,4222,1,74,72,0,0,0,0,0,0,18867.0,1762457347.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8546248386,2025-11-06T19:29:07.000Z,2025,Ultras Dota Pro League  2025-26,9818938,Teiko,9684245,Shinigami Gaming,dire,4222,0,72,74,0,0,0,0,0,0,18867.0,1762457347.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8546231255,2025-11-06T19:15:31.000Z,2025,Ultras Dota Pro League  2025-26,9684245,Shinigami Gaming,9729268,Teiko,radiant,2983,1,0,0,10,6,0,0,4,0,18867.0,1762456531.0,True,21.0,ok,,opendota_api,,1.0,,1.0
+8546231255,2025-11-06T19:15:31.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,9684245,Shinigami Gaming,dire,2983,0,0,0,6,10,0,0,0,4,18867.0,1762456531.0,True,21.0,ok,,opendota_api,,0.0,,1.0
 8546207296,2025-11-06T18:55:15.000Z,2025,Party To Play league,9823250,...,7777322,Oshi hi teo Gaming,radiant,852,1,8,18,0,3,0,0,0,0,16251.0,1762455315.0,True,7.0,ok,,opendota_api,0.0,0.0,,1.0
 8546207296,2025-11-06T18:55:15.000Z,2025,Party To Play league,7777322,Oshi hi teo Gaming,9823250,...,dire,852,0,18,8,3,0,0,0,0,0,16251.0,1762455315.0,True,7.0,ok,,opendota_api,1.0,1.0,,1.0
 8546203792,2025-11-06T18:53:02.000Z,2025,WBT CYBER CLUB #1,9957137,DBSM,9957140,Fight club,dire,2207,1,32,9,11,1,1,0,6,0,17909.0,1762455182.0,True,22.0,ok,,opendota_api,1.0,1.0,1.0,1.0
@@ -48501,6 +48527,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8538597819,2025-11-01T16:32:58.000Z,2025,FISSURE PLAYGROUND 2,9823272,Team Yandex,8255888,BetBoom Team,radiant,2552,1,33,13,9,3,2,0,6,0,18863.0,1762014778.0,True,29.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8538567555,2025-11-01T16:11:03.000Z,2025,Pakistan Dota Masters - Season 2,9948998,Outsiders,9033695,Spartans,radiant,2235,0,15,34,5,11,0,2,0,6,18676.0,1762013463.0,True,35.0,ok,,opendota_api,0.0,1.0,0.0,1.0
 8538567555,2025-11-01T16:11:03.000Z,2025,Pakistan Dota Masters - Season 2,9033695,Spartans,9948998,Outsiders,dire,2235,1,34,15,11,5,2,0,6,0,18676.0,1762013463.0,True,35.0,ok,,opendota_api,1.0,0.0,1.0,1.0
+8538564057,2025-11-01T16:09:38.000Z,2025,Ultras Dota Pro League  2025-26,9767951,Eye Gaming,9844598,La Passion,dire,3367,1,0,0,11,7,0,0,4,2,18867.0,1762013378.0,True,25.0,ok,,opendota_api,,1.0,,1.0
+8538564057,2025-11-01T16:09:38.000Z,2025,Ultras Dota Pro League  2025-26,9844598,La Passion,9767951,Eye Gaming,radiant,3367,0,0,0,7,11,0,0,2,4,18867.0,1762013378.0,True,25.0,ok,,opendota_api,,0.0,,1.0
 8538454488,2025-11-01T15:20:04.000Z,2025,FISSURE PLAYGROUND 2,8255888,BetBoom Team,9823272,Team Yandex,radiant,2785,1,30,24,7,5,1,2,2,0,18863.0,1762010404.0,True,27.0,ok,,opendota_api,0.0,1.0,0.0,1.0
 8538454488,2025-11-01T15:20:04.000Z,2025,FISSURE PLAYGROUND 2,9823272,Team Yandex,8255888,BetBoom Team,dire,2785,0,24,30,5,7,2,1,0,2,18863.0,1762010404.0,True,27.0,ok,,opendota_api,1.0,0.0,1.0,1.0
 8538470904,2025-11-01T15:15:31.000Z,2025,Party To Play league,7777322,Oshi hi teo Gaming,9735353,denisebet(prime),radiant,887,1,28,11,3,0,0,0,0,0,16251.0,1762010131.0,True,7.0,ok,,opendota_api,0.0,1.0,,1.0
@@ -48665,6 +48693,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8536821163,2025-10-31T14:34:10.000Z,2025,Pakistan Dota Masters - Season 2,9917512,Primordials,7642015,Origin Unknown,radiant,2323,1,38,24,8,2,2,0,4,0,18676.0,1761921250.0,True,25.0,ok,,opendota_api,1.0,1.0,1.0,1.0
 8536812095,2025-10-31T14:28:47.000Z,2025,Destiny League,8629005,Flawless Goblins,9814269,Riftwalkers,radiant,1233,0,24,31,0,0,0,0,0,0,17233.0,1761920927.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8536812095,2025-10-31T14:28:47.000Z,2025,Destiny League,9814269,Riftwalkers,8629005,Flawless Goblins,dire,1233,1,31,24,0,0,0,0,0,0,17233.0,1761920927.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8536810053,2025-10-31T14:26:05.000Z,2025,Ultras Dota Pro League  2025-26,9866145,La Passion,9628678,Teiko,radiant,2877,1,1,0,9,6,0,0,2,0,18867.0,1761920765.0,True,18.0,ok,,opendota_api,,1.0,,1.0
+8536810053,2025-10-31T14:26:05.000Z,2025,Ultras Dota Pro League  2025-26,9628678,Teiko,9866145,La Passion,dire,2877,0,0,1,6,9,0,0,0,2,18867.0,1761920765.0,True,18.0,ok,,opendota_api,,0.0,,1.0
 8536770518,2025-10-31T14:02:55.000Z,2025,Pakistan Dota Masters - Season 2,9928175,Team Police,8320272,The Flying Circus,radiant,1713,1,42,27,8,1,1,0,4,0,18676.0,1761919375.0,True,17.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8536770518,2025-10-31T14:02:55.000Z,2025,Pakistan Dota Masters - Season 2,8320272,The Flying Circus,9928175,Team Police,dire,1713,0,27,42,1,8,0,1,0,4,18676.0,1761919375.0,True,17.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 8536760934,2025-10-31T13:57:36.000Z,2025,Pakistan Dota Masters - Season 2,2098192,Paradox Gaming,9517326,Team Egypt,dire,1987,0,29,54,2,9,0,2,0,6,18676.0,1761919056.0,True,25.0,ok,,opendota_api,0.0,0.0,0.0,1.0
@@ -48847,6 +48877,10 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8535613171,2025-10-30T17:05:20.000Z,2025,CCT Dota 2 Season 2 South America Series 1,9885130,Perú Rejects,9081369,Infamous Gaming,radiant,1038,1,26,5,5,1,0,0,0,0,18799.0,1761843920.0,True,8.0,ok,,opendota_api,1.0,1.0,,1.0
 8535610584,2025-10-30T17:01:26.000Z,2025,Ultras Dota Pro League  2025-26,9879307,Air Defence,9773195,Shinigami Gaming,radiant,1990,0,29,54,0,0,0,0,0,0,18867.0,1761843686.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8535610584,2025-10-30T17:01:26.000Z,2025,Ultras Dota Pro League  2025-26,9773195,Shinigami Gaming,9879307,Air Defence,dire,1990,1,54,29,0,0,0,0,0,0,18867.0,1761843686.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8535602031,2025-10-30T16:55:25.000Z,2025,Ultras Dota Pro League  2025-26,9879307,Air Defence,9773195,Shinigami Gaming,radiant,3064,1,0,0,9,6,0,0,2,2,18867.0,1761843325.0,True,20.0,ok,,opendota_api,,1.0,,1.0
+8535602031,2025-10-30T16:55:25.000Z,2025,Ultras Dota Pro League  2025-26,9773195,Shinigami Gaming,9879307,Air Defence,dire,3064,0,0,0,6,9,0,0,2,2,18867.0,1761843325.0,True,20.0,ok,,opendota_api,,0.0,,1.0
+8535586693,2025-10-30T16:45:32.000Z,2025,Ultras Dota Pro League  2025-26,9879307,Air Defence,9729268,Teiko,radiant,2980,1,0,0,10,6,0,0,4,0,18867.0,1761842732.0,True,21.0,ok,,opendota_api,,1.0,,1.0
+8535586693,2025-10-30T16:45:32.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,9879307,Air Defence,dire,2980,0,0,0,6,10,0,0,0,4,18867.0,1761842732.0,True,21.0,ok,,opendota_api,,0.0,,1.0
 8535528112,2025-10-30T16:06:39.000Z,2025,Ultras Dota Pro League  2025-26,9710806,Air Defence,9773195,Shinigami Gaming,dire,1420,0,18,45,0,0,0,0,0,0,18867.0,1761840399.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8535528112,2025-10-30T16:06:39.000Z,2025,Ultras Dota Pro League  2025-26,9773195,Shinigami Gaming,9710806,Air Defence,radiant,1420,1,45,18,0,0,0,0,0,0,18867.0,1761840399.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8535527144,2025-10-30T16:06:38.000Z,2025,Destiny League,9768243,Night Force,9814269,Riftwalkers,dire,853,0,4,24,0,0,0,0,0,0,17233.0,1761840398.0,False,0.0,partial,missing_objectives,opendota_list,,,,
@@ -48891,6 +48925,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8535006176,2025-10-30T09:50:25.000Z,2025,Ancients League,9332069,Mister Maniacs,9018528,Crew X,radiant,1370,0,26,45,1,6,0,0,0,2,16379.0,1761817825.0,True,13.0,ok,,opendota_api,0.0,0.0,,1.0
 8535005754,2025-10-30T09:49:12.000Z,2025,Ultras Dota Pro League  2025-26,9855297,Eye Gaming,9677506,Shinigami Gaming,radiant,1280,0,22,42,0,0,0,0,0,0,18867.0,1761817752.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8535005754,2025-10-30T09:49:12.000Z,2025,Ultras Dota Pro League  2025-26,9677506,Shinigami Gaming,9855297,Eye Gaming,dire,1280,1,42,22,0,0,0,0,0,0,18867.0,1761817752.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8534993920,2025-10-30T09:36:35.000Z,2025,Ultras Dota Pro League  2025-26,9855297,Eye Gaming,9677506,Shinigami Gaming,radiant,3349,0,0,0,7,11,0,0,2,4,18867.0,1761816995.0,True,25.0,ok,,opendota_api,,1.0,,1.0
+8534993920,2025-10-30T09:36:35.000Z,2025,Ultras Dota Pro League  2025-26,9677506,Shinigami Gaming,9855297,Eye Gaming,dire,3349,1,0,0,11,7,0,0,4,2,18867.0,1761816995.0,True,25.0,ok,,opendota_api,,0.0,,1.0
 8534983239,2025-10-30T09:25:33.000Z,2025,Destiny League,8629005,Flawless Goblins,9878494,LV United,dire,1712,0,28,35,0,0,0,0,0,0,17233.0,1761816333.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8534983239,2025-10-30T09:25:33.000Z,2025,Destiny League,9878494,LV United,8629005,Flawless Goblins,radiant,1712,1,35,28,0,0,0,0,0,0,17233.0,1761816333.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8534968166,2025-10-30T09:07:45.000Z,2025,Ancients League,9018528,Crew X,9332069,Mister Maniacs,radiant,1836,1,43,31,7,2,0,0,3,0,16379.0,1761815265.0,True,16.0,ok,,opendota_api,0.0,1.0,,1.0
@@ -49185,6 +49221,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8532449073,2025-10-28T13:50:16.000Z,2025,Destiny League,8629315,Wiser Warriors,8629005,Flawless Goblins,radiant,1762,0,26,30,0,0,0,0,0,0,17233.0,1761659416.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532434447,2025-10-28T13:40:41.000Z,2025,Ultras Dota Pro League  2025-26,8831040,Ghost Sheep,9729268,Teiko,dire,2556,0,51,60,0,0,0,0,0,0,18867.0,1761658841.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532434447,2025-10-28T13:40:41.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,8831040,Ghost Sheep,radiant,2556,1,60,51,0,0,0,0,0,0,18867.0,1761658841.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8532410345,2025-10-28T13:25:55.000Z,2025,Ultras Dota Pro League  2025-26,8831040,Ghost Sheep,9729268,Teiko,dire,3127,1,0,0,9,6,0,0,2,0,18867.0,1761657955.0,True,18.0,ok,,opendota_api,,1.0,,1.0
+8532410345,2025-10-28T13:25:55.000Z,2025,Ultras Dota Pro League  2025-26,9729268,Teiko,8831040,Ghost Sheep,radiant,3127,0,0,0,6,9,0,0,0,2,18867.0,1761657955.0,True,18.0,ok,,opendota_api,,0.0,,1.0
 8532389295,2025-10-28T13:12:14.000Z,2025,Destiny League,9426115,Dark Rebellion,9767998,Nova Pulse,radiant,1620,0,11,37,0,0,0,0,0,0,17233.0,1761657134.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532389295,2025-10-28T13:12:14.000Z,2025,Destiny League,9767998,Nova Pulse,9426115,Dark Rebellion,dire,1620,1,37,11,0,0,0,0,0,0,17233.0,1761657134.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532378577,2025-10-28T13:08:17.000Z,2025,CCT Dota 2 Season 2 South America Series 1,8965331,Chandogs,9878333,Flame,dire,1648,0,17,33,2,3,0,1,0,0,18799.0,1761656897.0,True,11.0,ok,,opendota_api,1.0,1.0,0.0,1.0
@@ -49227,6 +49265,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8532136510,2025-10-28T09:39:40.000Z,2025,Ancients League,9018543,Hustlers,8893840,Big Bang Gaming,radiant,1393,0,17,34,3,4,0,0,0,0,16379.0,1761644380.0,True,11.0,ok,,opendota_api,0.0,1.0,,1.0
 8532128916,2025-10-28T09:30:09.000Z,2025,Ultras Dota Pro League  2025-26,9866145,La Passion,9773195,Shinigami Gaming,dire,1849,0,40,48,0,0,0,0,0,0,18867.0,1761643809.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532128916,2025-10-28T09:30:09.000Z,2025,Ultras Dota Pro League  2025-26,9773195,Shinigami Gaming,9866145,La Passion,radiant,1849,1,48,40,0,0,0,0,0,0,18867.0,1761643809.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8532120621,2025-10-28T09:20:54.000Z,2025,Ultras Dota Pro League  2025-26,9866145,La Passion,9724426,Shinigami Gaming,radiant,3240,1,0,0,9,10,0,0,2,2,18867.0,1761643254.0,True,24.0,ok,,opendota_api,,0.0,,1.0
+8532120621,2025-10-28T09:20:54.000Z,2025,Ultras Dota Pro League  2025-26,9724426,Shinigami Gaming,9866145,La Passion,dire,3240,0,0,0,10,9,0,0,2,2,18867.0,1761643254.0,True,24.0,ok,,opendota_api,,1.0,,1.0
 8532115334,2025-10-28T09:14:48.000Z,2025,Destiny League,9426115,Dark Rebellion,9878494,LV United,radiant,2459,0,28,38,0,0,0,0,0,0,17233.0,1761642888.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532115334,2025-10-28T09:14:48.000Z,2025,Destiny League,9878494,LV United,9426115,Dark Rebellion,dire,2459,1,38,28,0,0,0,0,0,0,17233.0,1761642888.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532090226,2025-10-28T09:00:01.000Z,2025,FISSURE PLAYGROUND 2,9823272,Team Yandex,8291895,Tundra Esports,radiant,1832,0,15,34,2,6,1,1,0,2,18863.0,1761642001.0,True,19.0,ok,,opendota_api,1.0,0.0,1.0,1.0
@@ -49239,6 +49279,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8532088953,2025-10-28T08:42:57.000Z,2025,Destiny League,9878494,LV United,9426115,Dark Rebellion,radiant,1364,1,37,9,0,0,0,0,0,0,17233.0,1761640977.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532086212,2025-10-28T08:38:19.000Z,2025,Ultras Dota Pro League  2025-26,9866145,La Passion,9724426,Shinigami Gaming,radiant,2180,0,28,51,0,0,0,0,0,0,18867.0,1761640699.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8532086212,2025-10-28T08:38:19.000Z,2025,Ultras Dota Pro League  2025-26,9724426,Shinigami Gaming,9866145,La Passion,dire,2180,1,51,28,0,0,0,0,0,0,18867.0,1761640699.0,False,0.0,partial,missing_objectives,opendota_list,,,,
+8532077461,2025-10-28T08:27:18.000Z,2025,Ultras Dota Pro League  2025-26,9866145,La Passion,9773195,Shinigami Gaming,radiant,3082,1,0,0,9,8,0,0,2,2,18867.0,1761640038.0,True,22.0,ok,,opendota_api,,1.0,,1.0
+8532077461,2025-10-28T08:27:18.000Z,2025,Ultras Dota Pro League  2025-26,9773195,Shinigami Gaming,9866145,La Passion,dire,3082,0,0,0,8,9,0,0,2,2,18867.0,1761640038.0,True,22.0,ok,,opendota_api,,0.0,,1.0
 8532074449,2025-10-28T08:24:30.000Z,2025,Ancients League,8893840,Big Bang Gaming,9018543,Hustlers,dire,1391,1,28,19,3,2,0,0,0,0,16379.0,1761639870.0,True,8.0,ok,,opendota_api,0.0,1.0,,1.0
 8532074449,2025-10-28T08:24:30.000Z,2025,Ancients League,9018543,Hustlers,8893840,Big Bang Gaming,radiant,1391,0,19,28,2,3,0,0,0,0,16379.0,1761639870.0,True,8.0,ok,,opendota_api,1.0,0.0,,1.0
 8532055043,2025-10-28T07:58:08.000Z,2025,Destiny League,8629005,Flawless Goblins,2443375,Foxy gaming,radiant,1876,1,37,32,0,0,0,0,0,0,17233.0,1761638288.0,False,0.0,partial,missing_objectives,opendota_list,,,,
@@ -49327,6 +49369,8 @@ match_id,date,year,league,team_id,teamname,opp_team_id,opp_teamname,side,duratio
 8531383924,2025-10-27T17:43:22.000Z,2025,Ultras Dota Pro League  2025-26,9878408,Elite Eclipse,9916420,Dominion,dire,2355,0,30,34,0,0,0,0,0,0,18867.0,1761587002.0,False,0.0,partial,missing_objectives,opendota_list,,,,
 8531359648,2025-10-27T17:31:00.000Z,2025,FISSURE PLAYGROUND 2,9303484,HEROIC,726228,Vici Gaming,dire,4501,1,38,27,11,9,2,3,6,6,18863.0,1761586260.0,True,58.0,ok,,opendota_api,1.0,1.0,0.0,1.0
 8531359648,2025-10-27T17:31:00.000Z,2025,FISSURE PLAYGROUND 2,726228,Vici Gaming,9303484,HEROIC,radiant,4501,0,27,38,9,11,3,2,6,6,18863.0,1761586260.0,True,58.0,ok,,opendota_api,0.0,0.0,1.0,1.0
+8531365118,2025-10-27T17:30:47.000Z,2025,Ultras Dota Pro League  2025-26,9916420,Dominion,9878408,Elite Eclipse,radiant,3158,1,0,0,9,8,0,0,2,0,18867.0,1761586247.0,True,20.0,ok,,opendota_api,,1.0,,1.0
+8531365118,2025-10-27T17:30:47.000Z,2025,Ultras Dota Pro League  2025-26,9878408,Elite Eclipse,9916420,Dominion,dire,3158,0,0,0,8,9,0,0,0,2,18867.0,1761586247.0,True,20.0,ok,,opendota_api,,0.0,,1.0
 8531322171,2025-10-27T17:16:35.000Z,2025,European Pro League  2024-2025 Season,9895247,Kalmychata,9928746,Most Wanted,radiant,2650,1,25,15,11,6,2,0,6,0,17381.0,1761585395.0,True,39.0,ok,,opendota_api,0.0,1.0,1.0,1.0
 8531322171,2025-10-27T17:16:35.000Z,2025,European Pro League  2024-2025 Season,9928746,Most Wanted,9895247,Kalmychata,dire,2650,0,15,25,6,11,0,2,0,6,17381.0,1761585395.0,True,39.0,ok,,opendota_api,1.0,0.0,0.0,1.0
 8531329491,2025-10-27T17:07:33.000Z,2025,CCT Dota 2 Season 2 South America Series 1,8965331,Chandogs,9081369,Infamous Gaming,radiant,2129,1,39,13,6,1,1,0,0,0,18799.0,1761584853.0,True,16.0,ok,,opendota_api,0.0,0.0,1.0,1.0
