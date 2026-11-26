@@ -1,5 +1,5 @@
 {
- "quando": "2026-11-26T01:11:27+00:00",
+ "quando": "2026-11-26T05:17:26+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
  "series_conferidas": 66,
@@ -67,14 +67,6 @@
    "liga": "EPC Season 4",
    "placar": "0-2",
    "motivo": "time não reconhecido na base: V"
-  },
-  {
-   "inicio": "2026-11-25T19:40:00+00:00",
-   "a": "PuckChamp",
-   "b": "Inner Circle x Insanity",
-   "liga": "EPL Season 41",
-   "placar": "0-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   }
  ]
 }
