@@ -1136,7 +1136,7 @@ _MAJOR_LEAGUES = {
 
 
 @st.cache_data(show_spinner=False)
-def _load_identity_registry_cached(_sig: Tuple[str, int, int]) -> Dict[str, Any]:
+def _load_identity_registry_cached(sig: Tuple[str, int, int]) -> Dict[str, Any]:
     path = APP_ROOT / "identity_registry.json"
     return dict(core_load_identity_registry(path))
 
@@ -1211,9 +1211,9 @@ def _league_inference_csv_sigs(
 
 
 @st.cache_data(show_spinner=False)
-def _infer_team_league_from_csv(_csv_sig: Tuple[str, int, int], team: str, year: Optional[int]) -> str:
+def _infer_team_league_from_csv(csv_sig: Tuple[str, int, int], team: str, year: Optional[int]) -> str:
     aliases = _identity_team_name_candidates(team)
-    for _sig in _league_inference_csv_sigs(_csv_sig, year):
+    for _sig in _league_inference_csv_sigs(csv_sig, year):
         out = core_infer_team_league_from_csv(
             _sig,
             team,
@@ -1232,10 +1232,10 @@ def _infer_team_league_from_csv(_csv_sig: Tuple[str, int, int], team: str, year:
 
 
 @st.cache_data(show_spinner=False)
-def _infer_match_league_from_csv(_csv_sig: Tuple[str, int, int], teamA: str, teamB: str, year: Optional[int]) -> str:
+def _infer_match_league_from_csv(csv_sig: Tuple[str, int, int], teamA: str, teamB: str, year: Optional[int]) -> str:
     aliases_a = _identity_team_name_candidates(teamA)
     aliases_b = _identity_team_name_candidates(teamB)
-    for _sig in _league_inference_csv_sigs(_csv_sig, year):
+    for _sig in _league_inference_csv_sigs(csv_sig, year):
         out = core_infer_match_league_from_csv(
             _sig,
             teamA,
