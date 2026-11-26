@@ -107,20 +107,44 @@ def ler_draft(texto: str, catalogo: Mapping[str, str]) -> Tuple[Optional[Tuple[L
     return (a, b), [], ""
 
 
-def atribuir(contas: Sequence[str], herois: Sequence[str], estado: CD.EstadoDraft) -> List[Optional[str]]:
+PESO_POSICAO = 3.0   # a posicao manda; o historico de herois desempata (e decide quem nao tem posicao conhecida)
+
+
+def nota_posicao(contagem: Optional[Mapping[str, int]], pos: int) -> float:
+    """Pura. log da fracao (suavizada) de jogos do jogador na posicao `pos` (1..5). Sem dado: neutro (0)."""
+    if not contagem:
+        return 0.0
+    tot = sum(int(v) for v in contagem.values())
+    if tot < 5:
+        return 0.0
+    # pos 4 x pos 5: pelo ouro por minuto os dois suportes se confundem (medido 26/11: Bignum/Speeed trocados na
+    # GamerLegion) -- viram um grupo so, e o historico de herois decide entre eles.
+    if pos in (4, 5):
+        n = int(contagem.get("4", 0)) + int(contagem.get("5", 0))
+        return math.log((n + 0.5) / (tot + 2.5)) - math.log(0.4)
+    return math.log((int(contagem.get(str(pos), 0)) + 0.5) / (tot + 2.5)) - math.log(0.2)
+
+
+def atribuir(contas: Sequence[str], herois: Sequence[str], estado: CD.EstadoDraft,
+             posicoes: Optional[Mapping[str, Mapping[str, int]]] = None) -> List[Optional[str]]:
     """Pura. Quem joga cada heroi: a combinacao em que os 5 jogadores somam MAIS jogos nos herois
-    (log, para um especialista nao engolir o resto); empate -> mais vitorias. Sem elenco: Nones."""
+    (log, para um especialista nao engolir o resto); empate -> mais vitorias. Sem elenco: Nones.
+    posicoes (Dota, 26/11/2026; ele: "o Ws esta de Dragon Knight e o Mikoto de Slark"): os herois vem na ordem
+    pos 1..5 (captura da cyberscore / texto), e cada conta tem {posicao: jogos} (tools/posicoes_jogadores_dota.py).
+    A posicao de costume pesa PESO_POSICAO vezes; o historico de herois desempata."""
     cs = [str(c) for c in contas][:5]
     if len(cs) < 5:
         return [None] * len(herois)
     melhor, chave = None, None
     for perm in itertools.permutations(cs):
-        jogos = vit = 0.0
-        for c, h in zip(perm, herois):
+        jogos = vit = pos = 0.0
+        for i, (c, h) in enumerate(zip(perm, herois)):
             v, n = estado.jogos_no_campeao(CD.chave_jogador(c), CD.chave_campeao(h))
             jogos += math.log1p(n)
             vit += v
-        k = (round(jogos, 9), vit)
+            if posicoes:
+                pos += nota_posicao(posicoes.get(c), i + 1)
+        k = (round(PESO_POSICAO * pos + jogos, 9), vit)
         if chave is None or k > chave:
             melhor, chave = perm, k
     return list(melhor)

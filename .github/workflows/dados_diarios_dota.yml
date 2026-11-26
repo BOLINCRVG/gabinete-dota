@@ -99,6 +99,11 @@ jobs:
         continue-on-error: true
         run: python tools/camada_draft.py --picks
 
+      # POSICAO DE COSTUME (26/11/2026): quem joga cada heroi da captura (ordem pos 1..5) -- ouro por minuto no time.
+      - name: Posicao de costume dos jogadores (tela de draft colado)
+        continue-on-error: true
+        run: python tools/posicoes_jogadores_dota.py
+
       # DRAFT COLADO (23/11/2026): nome profissional das contas dos elencos (1 chamada a OpenDota).
       - name: Nomes dos jogadores (tela de draft colado)
         continue-on-error: true
@@ -235,7 +240,7 @@ jobs:
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
           fi
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json nomes_jogadores_dota.json forma_recente_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json nomes_jogadores_dota.json posicoes_jogadores_dota.json forma_recente_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
           git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"

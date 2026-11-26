@@ -367,6 +367,26 @@ def lado_provavel(estado: Any, elencos: Mapping[str, Any], t1: str, t2: str, esq
     return (None if abs(margem) < MARGEM_LADO else margem > 0), margem
 
 
+def _posicoes(raiz: Path, esporte: str) -> Optional[Dict[str, Any]]:
+    """{conta: {posicao: jogos}} do Dota (posicoes_jogadores_dota.json), lido uma vez por versao do arquivo."""
+    if esporte != "dota":
+        return None
+    arq = Path(raiz) / "posicoes_jogadores_dota.json"
+    try:
+        mt = arq.stat().st_mtime
+    except OSError:
+        return None
+    if _POS_CACHE.get("mt") != mt:
+        try:
+            _POS_CACHE.update(mt=mt, d=json.loads(arq.read_text(encoding="utf-8")).get("contas") or {})
+        except (OSError, ValueError):
+            return None
+    return _POS_CACHE.get("d")
+
+
+_POS_CACHE: Dict[str, Any] = {}
+
+
 def _valve_do_jogo(st: Any, raiz: Path, esporte: str, t1: str, t2: str,
                    resolver: Callable[[str], str]) -> Optional[Dict[str, Any]]:
     """O jogo ao vivo destes dois times pela Valve (cache de 20 s na sessao), ou None -- dizendo o porque."""
@@ -472,7 +492,7 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
             contas = [str(x) for x in (el.get("jogadores") or [])]
             col.markdown(f"**{tm}** ({ld})" + (f" — elenco de {str(el.get('visto_em'))[8:10]}/{str(el.get('visto_em'))[5:7]}"
                                                if el.get("visto_em") else " — sem elenco na base"))
-            quem = DC.atribuir(contas, [CD.chave_campeao(h) for h in hs], estado)
+            quem = DC.atribuir(contas, [CD.chave_campeao(h) for h in hs], estado, posicoes=_posicoes(raiz, esporte))
             if da_valve:   # a Valve diz quem joga cada heroi
                 quem = [str(vj["contas"].get(str(h)) or q or "") for h, q in zip(hs, quem)]
                 contas = contas + [c for c in quem if c and c not in contas]
