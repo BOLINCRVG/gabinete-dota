@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-25T17:39:14+00:00",
+ "atualizado_em": "2026-11-26T00:38:11+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -626,6 +626,36 @@
    "time_a": "Zero Tenacity",
    "time_b": "Power Rangers",
    "inicio_utc": "2026-11-25 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "V",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-25 15:10:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "Team Spirit Academy",
+   "time_b": "Angry Birds",
+   "inicio_utc": "2026-11-25 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "2-1"
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-25 19:40:00+00",
    "bo": 3,
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",

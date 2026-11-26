@@ -1,37 +1,7 @@
 {
- "coletado_em": "2026-11-25T17:39:14+00:00",
+ "coletado_em": "2026-11-26T00:38:11+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
-  {
-   "time_a": "V",
-   "time_b": "Amaru Gaming",
-   "inicio_utc": "2026-11-25 15:10:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": "0-1"
-  },
-  {
-   "time_a": "Team Spirit Academy",
-   "time_b": "Angry Birds",
-   "inicio_utc": "2026-11-25 16:00:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41",
-   "pagina": "European Pro League/41",
-   "terminado": false,
-   "placar": "0-0"
-  },
-  {
-   "time_a": "PuckChamp",
-   "time_b": "Inner Circle x Insanity",
-   "inicio_utc": "2026-11-25 19:00:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41",
-   "pagina": "European Pro League/41",
-   "terminado": false,
-   "placar": ""
-  },
   {
    "time_a": "Direborn Esports",
    "time_b": "Execration",
@@ -73,12 +43,32 @@
    "placar": ""
   },
   {
+   "time_a": "PuckChamp",
+   "time_b": "Team Synapse",
+   "inicio_utc": "2026-11-26 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": false,
+   "placar": ""
+  },
+  {
    "time_a": "Team Allied",
    "time_b": "Zero Tenacity",
    "inicio_utc": "2026-11-26 12:00:00+00",
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Angry Birds",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-26 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
    "terminado": false,
    "placar": ""
   },
@@ -99,6 +89,16 @@
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Spirit Academy",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-26 16:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
    "terminado": false,
    "placar": ""
   },
@@ -303,24 +303,44 @@
    "placar": ""
   },
   {
-   "time_a": "Zero Tenacity",
-   "time_b": "Power Rangers",
-   "inicio_utc": "2026-11-25 13:00:00+00",
+   "time_a": "Hokori",
+   "time_b": "Red John",
+   "inicio_utc": "2026-12-01 18:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "4ikibamboni",
+   "inicio_utc": "2026-12-02 09:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Old blood",
+   "time_b": "Legends Gaming",
+   "inicio_utc": "2026-12-02 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "PuckChamp",
+   "time_b": "Inner Circle x Insanity",
+   "inicio_utc": "2026-11-25 19:40:00+00",
    "bo": 3,
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",
    "terminado": true,
    "placar": "0-2"
-  },
-  {
-   "time_a": "Team Allied",
-   "time_b": "Amaru Gaming",
-   "inicio_utc": "2026-11-25 12:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": true,
-   "placar": "2-0"
   }
  ],
  "jogos_na_pagina": 100
