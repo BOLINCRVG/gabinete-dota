@@ -1,13 +1,13 @@
 {
- "quando": "2026-11-26T05:17:27+00:00",
+ "quando": "2026-11-26T20:50:51+00:00",
  "resultado": "success",
- "rodada": "https://github.com/BOLINCRVG/gabinete-dota/actions/runs/45754589493",
+ "rodada": "https://github.com/BOLINCRVG/gabinete-dota/actions/runs/45886371356",
  "contrato": {
   "ok": true,
-  "jogos": 11934,
+  "jogos": 11956,
   "falhas": [],
-  "jogos_aprovados": 11934
+  "jogos_aprovados": 11956
  },
  "motivo": "",
- "ultimo_sucesso": "2026-11-26T05:17:27+00:00"
+ "ultimo_sucesso": "2026-11-26T20:50:51+00:00"
 }

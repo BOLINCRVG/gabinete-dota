@@ -1,5 +1,5 @@
 {
- "quando": "2026-11-26T19:47:27+00:00",
+ "quando": "2026-11-26T20:50:50+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
  "series_conferidas": 78,
@@ -69,60 +69,12 @@
    "motivo": "time não reconhecido na base: V"
   },
   {
-   "inicio": "2026-11-26T04:10:00+00:00",
-   "a": "Direborn Esports",
-   "b": "Execration",
-   "liga": "EPL World SEA S20",
-   "placar": "2-0",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T07:05:00+00:00",
-   "a": "Yangon Galacticos",
-   "b": "Cloud Rising",
-   "liga": "EPL World SEA S20",
-   "placar": "0-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
    "inicio": "2026-11-26T09:00:00+00:00",
    "a": "4ikibamboni",
    "b": "V",
    "liga": "EPC Season 4",
    "placar": "1-2",
    "motivo": "time não reconhecido na base: V"
-  },
-  {
-   "inicio": "2026-11-26T09:55:00+00:00",
-   "a": "GamerLegion",
-   "b": "Aurora Gaming",
-   "liga": "BLAST SLAM IX",
-   "placar": "2-0",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T10:00:00+00:00",
-   "a": "PuckChamp",
-   "b": "Team Synapse",
-   "liga": "EPL Season 41",
-   "placar": "1-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T10:05:00+00:00",
-   "a": "Execration",
-   "b": "RyVex Esports",
-   "liga": "EPL World SEA S20",
-   "placar": "1-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T10:05:00+00:00",
-   "a": "PuckChamp",
-   "b": "Team Synapse",
-   "liga": "EPL Season 41",
-   "placar": "1-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   },
   {
    "inicio": "2026-11-26T12:40:00+00:00",
@@ -133,34 +85,10 @@
    "motivo": "time não reconhecido na base: Team Allied"
   },
   {
-   "inicio": "2026-11-26T12:40:00+00:00",
-   "a": "1w Team",
-   "b": "Team Liquid",
-   "liga": "BLAST SLAM IX",
-   "placar": "0-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T14:25:00+00:00",
-   "a": "Angry Birds",
-   "b": "Power Rangers",
-   "liga": "EPL Season 41",
-   "placar": "1-2",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
    "inicio": "2026-11-26T15:00:00+00:00",
    "a": "Team Synapse",
    "b": "Amaru Gaming",
    "liga": "EPC Season 4",
-   "placar": "2-0",
-   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
-  },
-  {
-   "inicio": "2026-11-26T15:30:00+00:00",
-   "a": "Team Yandex",
-   "b": "GamerLegion",
-   "liga": "BLAST SLAM IX",
    "placar": "2-0",
    "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   }
