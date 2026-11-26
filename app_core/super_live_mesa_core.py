@@ -436,6 +436,10 @@ def _render_jogo(st: Any, *, raiz: Path, esporte: str, jogo: Dict[str, Any], tim
     try:
         from app_core.confianca_base_core import texto_ultimo_jogo
         st.caption(texto_ultimo_jogo(raiz, esporte, [t1, t2]))
+        from app_core import identidade_time_core as _idt   # 26/11/2026: o time e aquele time? (pelo elenco)
+        _idt.render(st, raiz, esporte, [t1, t2])
+        for _t in _idt.texto_troca(raiz, esporte, [t1, t2]):
+            st.warning(_t)
     except Exception as e:  # noqa: BLE001
         st.caption(f"Último jogo de cada time: não abriu ({type(e).__name__})")
     vj = _valve_do_jogo(st, raiz, esporte, t1, t2, resolver) if esporte == "dota" else None

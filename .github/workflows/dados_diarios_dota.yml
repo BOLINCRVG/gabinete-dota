@@ -84,6 +84,12 @@ jobs:
           OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
         run: python tools/escalacoes_dota.py --raw raw_matches.jsonl --backfill 900
 
+      # VIGIA DE TROCA DE ID (26/11/2026, regra dele: historico partido, nunca): mesmo elenco 5/5 (ou 4/5 com o
+      # mesmo nome) em ids diferentes -> uniao_ids_dota.json, que o adaptador aplica logo abaixo.
+      - name: Vigia de troca de ID de time
+        continue-on-error: true
+        run: python tools/vigia_trocas_id_dota.py
+
       - name: Regenerar CSVs no schema OracleElixir-like
         run: python dota_adapter.py
 
@@ -240,7 +246,7 @@ jobs:
             echo "::warning::Trava de qualidade REPROVOU: os dados saem, o modelo publicado continua o anterior."
             git checkout HEAD -- ml_artifact.json
           fi
-          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json nomes_jogadores_dota.json posicoes_jogadores_dota.json forma_recente_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
+          git add data.csv CSV_DIARIO CSV_HISTORICO CSV_DOTA ligas_promovidas_dota.json picks_dota.jsonl camada_draft_dota.json nomes_jogadores_dota.json posicoes_jogadores_dota.json uniao_ids_dota.json forma_recente_dota.json ml_artifact.json team_api_cache.json league_tiers.csv timeline_snapshots.csv elencos_times_dota.json escalacoes_dota.json nota_jogadores_dota.json evidence
           git add -f evidence/contrato_dados_dota.json
           if git diff --cached --quiet; then
             echo "nada novo hoje — sem commit"

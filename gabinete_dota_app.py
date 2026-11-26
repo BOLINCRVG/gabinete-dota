@@ -2819,6 +2819,15 @@ if teamA or teamB:
             st.caption(_txt_ult)
     except Exception as _e_ult:
         st.caption("Último jogo de cada time: não abriu ({})".format(type(_e_ult).__name__))
+    # IDENTIDADE PELO ELENCO (26/11/2026): ele quer ter certeza de que o time e aquele time -- jogador novo,
+    # elenco remontado ou possivel troca de ID aparecem aqui (app_core/identidade_time_core.py).
+    try:
+        from app_core import identidade_time_core as _idt
+        _idt.render(st, APP_ROOT, "dota", [str(teamA or ""), str(teamB or "")])
+        for _t in _idt.texto_troca(APP_ROOT, "dota", [str(teamA or ""), str(teamB or "")]):
+            st.warning(_t)
+    except Exception as _e_idt:
+        st.caption("Conferência de elenco: não abriu ({})".format(type(_e_idt).__name__))
 
 core_render_schedule_alias_mapping(
     st.session_state,

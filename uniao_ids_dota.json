@@ -1,17 +1,240 @@
 {
   "_como": "Mesmo time em dois team_id, auditado a mao (08/11/2026). Regra dele: historico partido, nunca. Prova: mesmo nome, elenco da MESMA EPOCA 4+ de 5 (ou janelas coladas), nunca se enfrentaram, nunca comecaram partidas a menos de 45 min. Fica versionado porque o robo so guarda os 30 ultimos jogos de cada id e nao conseguiria refazer a prova.",
   "unioes": [
-    {"nome": "Zero Tenacity", "ids": [9600141, 10208035], "prova": "elenco 5/5 na epoca; id novo so na Games of the Future 2026"},
-    {"nome": "Yakult Brothers", "ids": [9351740, 10208034], "prova": "elenco 4/5 na epoca; id novo a partir da Games of the Future 2026"},
-    {"nome": "GLYPH", "ids": [10081680, 10208003], "prova": "elenco 4/5 na epoca; id novo so na Games of the Future 2026"},
-    {"nome": "The Bug", "ids": [9658086, 10170364], "prova": "elenco 4/5; janelas sem sobreposicao"},
-    {"nome": "ToLight", "ids": [9724713, 9895695], "prova": "elenco 4/5; um id termina em 25/09/2025 e o outro comeca em 26/09/2025"},
-    {"nome": "Komodo", "ids": [9939386, 9973599], "prova": "elenco 5/5 na epoca"},
-    {"nome": "Nigma Galaxy", "ids": [7554697, 10136357], "prova": "elenco 3/5; um id termina em 08/05/2026 e o outro comeca em 09/05/2026"},
-    {"nome": "Yangon Galacticos", "ids": [7653080, 8944230, 9546449], "prova": "mesmos jogadores nos 3 ids, nunca se enfrentaram; o unico jogo 'na mesma hora' e o mapa seguinte da mesma serie (mesmo adversario, 22 min depois do fim do anterior)"},
-    {"nome": "Yellow Submarine", "ids": [2576071, 10207957], "prova": "o id antigo tem 1 jogo na propria Games of the Future 2026, com os mesmos 5 do id novo"},
-    {"nome": "Hokori", "ids": [1798457, 7119077], "prova": "o id antigo tem 1 jogo no mesmo qualifier da DreamLeague 29, com os mesmos 5 do id novo"},
-    {"nome": "PlayTime", "ids": [10020555, 10207983], "prova": "3 dos 5 titulares no ultimo torneio antes do id novo; o id antigo ficou parado de 19/06 a 19/09/2026, exatamente quando o novo jogou"},
-    {"nome": "BetBoom Team / DO KONCA", "ids": [8255888, 10331139], "prova": "auditado 24/11/2026: elenco 4/5 (MieRo, Kiritych~, Kataomi`, Save-; so swedenstrong -> kiyotaka); o id antigo (BetBoom/BoomBoys) joga ate 27/10/2026 e o novo (DO KONCA) comeca em 12/11/2026; nunca se enfrentaram"}
+    {
+      "nome": "Zero Tenacity",
+      "ids": [
+        9600141,
+        10208035
+      ],
+      "prova": "elenco 5/5 na epoca; id novo so na Games of the Future 2026"
+    },
+    {
+      "nome": "Yakult Brothers",
+      "ids": [
+        9351740,
+        10208034
+      ],
+      "prova": "elenco 4/5 na epoca; id novo a partir da Games of the Future 2026"
+    },
+    {
+      "nome": "GLYPH",
+      "ids": [
+        10081680,
+        10208003
+      ],
+      "prova": "elenco 4/5 na epoca; id novo so na Games of the Future 2026"
+    },
+    {
+      "nome": "The Bug",
+      "ids": [
+        9658086,
+        10170364
+      ],
+      "prova": "elenco 4/5; janelas sem sobreposicao"
+    },
+    {
+      "nome": "ToLight",
+      "ids": [
+        9724713,
+        9895695
+      ],
+      "prova": "elenco 4/5; um id termina em 25/09/2025 e o outro comeca em 26/09/2025"
+    },
+    {
+      "nome": "Komodo",
+      "ids": [
+        9939386,
+        9973599
+      ],
+      "prova": "elenco 5/5 na epoca"
+    },
+    {
+      "nome": "Nigma Galaxy",
+      "ids": [
+        7554697,
+        10136357
+      ],
+      "prova": "elenco 3/5; um id termina em 08/05/2026 e o outro comeca em 09/05/2026"
+    },
+    {
+      "nome": "Yangon Galacticos",
+      "ids": [
+        7653080,
+        8944230,
+        9546449
+      ],
+      "prova": "mesmos jogadores nos 3 ids, nunca se enfrentaram; o unico jogo 'na mesma hora' e o mapa seguinte da mesma serie (mesmo adversario, 22 min depois do fim do anterior)"
+    },
+    {
+      "nome": "Yellow Submarine",
+      "ids": [
+        2576071,
+        10207957
+      ],
+      "prova": "o id antigo tem 1 jogo na propria Games of the Future 2026, com os mesmos 5 do id novo"
+    },
+    {
+      "nome": "Hokori",
+      "ids": [
+        1798457,
+        7119077
+      ],
+      "prova": "o id antigo tem 1 jogo no mesmo qualifier da DreamLeague 29, com os mesmos 5 do id novo"
+    },
+    {
+      "nome": "PlayTime",
+      "ids": [
+        10020555,
+        10207983
+      ],
+      "prova": "3 dos 5 titulares no ultimo torneio antes do id novo; o id antigo ficou parado de 19/06 a 19/09/2026, exatamente quando o novo jogou"
+    },
+    {
+      "nome": "BetBoom Team / DO KONCA",
+      "ids": [
+        8255888,
+        10331139
+      ],
+      "prova": "auditado 24/11/2026: elenco 4/5 (MieRo, Kiritych~, Kataomi`, Save-; so swedenstrong -> kiyotaka); o id antigo (BetBoom/BoomBoys) joga ate 27/10/2026 e o novo (DO KONCA) comeca em 12/11/2026; nunca se enfrentaram"
+    },
+    {
+      "nome": "Stormrage",
+      "ids": [
+        7626304,
+        10164102
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'SAND KING GÓMEZ' ate 31/05/2026, 'Stormrage' desde 03/06/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Egypt",
+      "ids": [
+        9517326,
+        10186456
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'Team Egypt' ate 29/06/2026, 'Egypt' desde 29/06/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Inner Circle x Insanity",
+      "ids": [
+        10019843,
+        10251974
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5 e mesmo nome; 'Inner Circle x Insanity #10019843' ate 04/09/2026, 'Inner Circle x Insanity' desde 14/09/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Winter Squadron",
+      "ids": [
+        10101762,
+        10108685
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5 e mesmo nome; 'WinteR Squadron' ate 16/06/2026, 'Winter Squadron' desde 15/06/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "4ikibamboni #10233067",
+      "ids": [
+        10163973,
+        10233067
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'RE ARISE' ate 28/08/2026, '4ikibamboni #10233067' desde 30/08/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Dominion #10176913",
+      "ids": [
+        10176913,
+        10176915
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5 e mesmo nome; 'Dominion #10176915' ate 17/06/2026, 'Dominion #10176913' desde 17/06/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Syria",
+      "ids": [
+        10176802,
+        10182458
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'Team Syria' ate 30/06/2026, 'Syria' desde 30/06/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Team Synapse",
+      "ids": [
+        10212329,
+        10212359
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'Team Syntax #10212359' ate 02/08/2026, 'Team Synapse' desde 05/08/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "OSESNOS FC",
+      "ids": [
+        10151438,
+        10170943
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5; 'Fanatic' ate 09/10/2026, 'OSESNOS FC' desde 09/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "CDUB",
+      "ids": [
+        10292588,
+        10302083
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5 e mesmo nome; 'CDUB #10292588' ate 11/10/2026, 'CDUB' desde 12/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Resp Gaming",
+      "ids": [
+        10252235,
+        10340711
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 5/5 e mesmo nome; 'Resp Gaming #10252235' ate 16/11/2026, 'Resp Gaming' desde 14/11/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Teiko",
+      "ids": [
+        10088184,
+        10192189
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Teiko #10088184' ate 10/07/2026, 'Teiko' desde 11/07/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Team TpaBoMaH",
+      "ids": [
+        9731156,
+        10271406
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Team TpaBoMaH #10271406' ate 24/09/2026, 'Team TpaBoMaH' desde 22/09/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Jebzhiki #10282751",
+      "ids": [
+        10282751,
+        10291484
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Jebzhiki #10291484' ate 07/10/2026, 'Jebzhiki #10282751' desde 03/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Toxicity",
+      "ids": [
+        10282692,
+        10291722
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Toxicity #10291722' ate 06/10/2026, 'Toxicity' desde 06/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "SHADOW DANCE",
+      "ids": [
+        10292424,
+        10302403
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Shadow Dance' ate 13/10/2026, 'SHADOW DANCE' desde 14/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    },
+    {
+      "nome": "Scarlet Lotus",
+      "ids": [
+        10302165,
+        10302663,
+        10312799,
+        10313314
+      ],
+      "prova": "automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Scarlet Lotus #10302165' ate 15/10/2026, 'Scarlet Lotus' desde 15/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min | automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Scarlet Lotus' ate 21/10/2026, 'Scarlet Lotus #10313314' desde 22/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min | automatico 26/11/2026 (vigia_trocas_id_dota): elenco 4/5 e mesmo nome; 'Scarlet Lotus #10312799' ate 20/10/2026, 'Scarlet Lotus #10313314' desde 22/10/2026; nunca se enfrentaram nem jogaram a menos de 45 min"
+    }
   ]
 }

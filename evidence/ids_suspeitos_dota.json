@@ -1,0 +1,53 @@
+{
+ "gerado_em": "2026-11-26T09:21:19",
+ "suspeitos": [
+  {
+   "velho": "La Passion #9939126",
+   "novo": "La Passion",
+   "ids": [
+    9939126,
+    10210517
+   ],
+   "jogadores_iguais": 5,
+   "velho_ate": "01/08/2026",
+   "novo_desde": "01/08/2026",
+   "por_que_nao_uni": "jogaram ao mesmo tempo"
+  },
+  {
+   "velho": "Level UP esports",
+   "novo": "CyberHero",
+   "ids": [
+    9256405,
+    10282069
+   ],
+   "jogadores_iguais": 4,
+   "velho_ate": "30/09/2026",
+   "novo_desde": "05/10/2026",
+   "por_que_nao_uni": "so 4 de 5 jogadores iguais e nomes diferentes: confira"
+  },
+  {
+   "velho": "Wraiths",
+   "novo": "potn9ki",
+   "ids": [
+    10212409,
+    10271553
+   ],
+   "jogadores_iguais": 4,
+   "velho_ate": "04/08/2026",
+   "novo_desde": "10/10/2026",
+   "por_que_nao_uni": "so 4 de 5 jogadores iguais e nomes diferentes: confira"
+  },
+  {
+   "velho": "Team avice",
+   "novo": "Team by_Owl",
+   "ids": [
+    10183170,
+    10271251
+   ],
+   "jogadores_iguais": 4,
+   "velho_ate": "27/09/2026",
+   "novo_desde": "12/10/2026",
+   "por_que_nao_uni": "so 4 de 5 jogadores iguais e nomes diferentes: confira"
+  }
+ ]
+}
