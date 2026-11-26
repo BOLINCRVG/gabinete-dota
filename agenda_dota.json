@@ -1,56 +1,26 @@
 {
- "coletado_em": "2026-11-26T17:21:07+00:00",
+ "coletado_em": "2026-11-26T19:16:38+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
   {
-   "time_a": "Angry Birds",
-   "time_b": "Power Rangers",
-   "inicio_utc": "2026-11-26 14:25:00+00",
-   "bo": 3,
-   "torneio": "EPL Season 41",
-   "pagina": "European Pro League/41",
-   "terminado": false,
-   "placar": "1-0"
-  },
-  {
    "time_a": "Team Synapse",
-   "time_b": "Amaru Gaming",
-   "inicio_utc": "2026-11-26 15:00:00+00",
+   "time_b": "Team Allied",
+   "inicio_utc": "2026-11-26 18:10:00+00",
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": "1-0"
-  },
-  {
-   "time_a": "Team Yandex",
-   "time_b": "GamerLegion",
-   "inicio_utc": "2026-11-26 15:30:00+00",
-   "bo": 3,
-   "torneio": "BLAST SLAM IX",
-   "pagina": "BLAST/SLAM/9",
    "terminado": false,
    "placar": "1-0"
   },
   {
    "time_a": "Team Spirit Academy",
    "time_b": "Inner Circle x Insanity",
-   "inicio_utc": "2026-11-26 16:45:00+00",
+   "inicio_utc": "2026-11-26 18:45:00+00",
    "bo": 3,
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",
    "terminado": false,
-   "placar": ""
-  },
-  {
-   "time_a": "Team Synapse",
-   "time_b": "Team Allied",
-   "inicio_utc": "2026-11-26 18:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": ""
+   "placar": "0-0"
   },
   {
    "time_a": "Yangon Galacticos",
@@ -99,6 +69,26 @@
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-27 13:00:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": false,
+   "placar": ""
+  },
+  {
+   "time_a": "GamerLegion",
+   "time_b": "1w Team",
+   "inicio_utc": "2026-11-27 13:30:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
    "terminado": false,
    "placar": ""
   },
@@ -323,24 +313,34 @@
    "placar": ""
   },
   {
-   "time_a": "Team Allied",
-   "time_b": "Zero Tenacity",
-   "inicio_utc": "2026-11-26 12:40:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": true,
-   "placar": "0-2"
-  },
-  {
-   "time_a": "1w Team",
-   "time_b": "Team Liquid",
-   "inicio_utc": "2026-11-26 12:40:00+00",
+   "time_a": "Team Yandex",
+   "time_b": "GamerLegion",
+   "inicio_utc": "2026-11-26 15:30:00+00",
    "bo": 3,
    "torneio": "BLAST SLAM IX",
    "pagina": "BLAST/SLAM/9",
    "terminado": true,
-   "placar": "0-2"
+   "placar": "2-0"
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "Amaru Gaming",
+   "inicio_utc": "2026-11-26 15:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "2-0"
+  },
+  {
+   "time_a": "Angry Birds",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-26 14:25:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "1-2"
   }
  ],
  "jogos_na_pagina": 100
