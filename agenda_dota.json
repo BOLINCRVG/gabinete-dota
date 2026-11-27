@@ -1,56 +1,26 @@
 {
- "coletado_em": "2026-11-27T11:24:03+00:00",
+ "coletado_em": "2026-11-27T14:15:21+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "partidas": [
   {
-   "time_a": "Team Allied",
-   "time_b": "V",
-   "inicio_utc": "2026-11-27 09:10:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": "0-1"
-  },
-  {
-   "time_a": "PARIVISION",
-   "time_b": "Team Liquid",
-   "inicio_utc": "2026-11-27 09:55:00+00",
-   "bo": 3,
-   "torneio": "BLAST SLAM IX",
-   "pagina": "BLAST/SLAM/9",
-   "terminado": false,
-   "placar": "0-1"
-  },
-  {
    "time_a": "RyVex Esports",
    "time_b": "Yangon Galacticos",
-   "inicio_utc": "2026-11-27 10:30:00+00",
+   "inicio_utc": "2026-11-27 10:25:00+00",
    "bo": 3,
    "torneio": "EPL World SEA S20",
    "pagina": "EPL/World Series/Southeast Asia/20",
    "terminado": false,
-   "placar": "0-0"
-  },
-  {
-   "time_a": "4ikibamboni",
-   "time_b": "Zero Tenacity",
-   "inicio_utc": "2026-11-27 12:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": ""
+   "placar": "1-1"
   },
   {
    "time_a": "Team Synapse",
    "time_b": "Power Rangers",
-   "inicio_utc": "2026-11-27 13:00:00+00",
+   "inicio_utc": "2026-11-27 13:15:00+00",
    "bo": 3,
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",
    "terminado": false,
-   "placar": ""
+   "placar": "0-0"
   },
   {
    "time_a": "GamerLegion",
@@ -60,15 +30,15 @@
    "torneio": "BLAST SLAM IX",
    "pagina": "BLAST/SLAM/9",
    "terminado": false,
-   "placar": ""
+   "placar": "0-0"
   },
   {
-   "time_a": "Troll Division",
-   "time_b": "RyVex Esports",
-   "inicio_utc": "2026-11-27 18:00:00+00",
+   "time_a": "PARIVISION",
+   "time_b": "Aurora Gaming",
+   "inicio_utc": "2026-11-27 17:00:00+00",
    "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
    "terminado": false,
    "placar": ""
   },
@@ -83,12 +53,12 @@
    "placar": ""
   },
   {
-   "time_a": "Old blood",
-   "time_b": "RyVex Esports",
-   "inicio_utc": "2026-11-28 12:00:00+00",
+   "time_a": "Team Yandex",
+   "time_b": "Team Liquid",
+   "inicio_utc": "2026-11-28 11:30:00+00",
    "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
    "terminado": false,
    "placar": ""
   },
@@ -106,16 +76,6 @@
    "time_a": "Hokori",
    "time_b": "Legends Gaming",
    "inicio_utc": "2026-11-28 18:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": ""
-  },
-  {
-   "time_a": "Red John",
-   "time_b": "RyVex Esports",
-   "inicio_utc": "2026-11-29 09:00:00+00",
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
@@ -173,16 +133,6 @@
    "placar": ""
   },
   {
-   "time_a": "Hokori",
-   "time_b": "RyVex Esports",
-   "inicio_utc": "2026-11-30 15:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": ""
-  },
-  {
    "time_a": "Red John",
    "time_b": "Old blood",
    "inicio_utc": "2026-11-30 18:00:00+00",
@@ -196,16 +146,6 @@
    "time_a": "Red John",
    "time_b": "Troll Division",
    "inicio_utc": "2026-12-01 09:00:00+00",
-   "bo": 3,
-   "torneio": "EPC Season 4",
-   "pagina": "Esports Pro Circuit/4",
-   "terminado": false,
-   "placar": ""
-  },
-  {
-   "time_a": "RyVex Esports",
-   "time_b": "Legends Gaming",
-   "inicio_utc": "2026-12-01 12:00:00+00",
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
@@ -283,14 +223,34 @@
    "placar": ""
   },
   {
-   "time_a": "Direborn Esports",
-   "time_b": "Cloud Rising",
-   "inicio_utc": "2026-11-27 07:10:00+00",
+   "time_a": "4ikibamboni",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-27 12:00:00+00",
    "bo": 3,
-   "torneio": "EPL World SEA S20",
-   "pagina": "EPL/World Series/Southeast Asia/20",
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
    "terminado": true,
-   "placar": "2-0"
+   "placar": "0-2"
+  },
+  {
+   "time_a": "PARIVISION",
+   "time_b": "Team Liquid",
+   "inicio_utc": "2026-11-27 09:55:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": true,
+   "placar": "1-2"
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "V",
+   "inicio_utc": "2026-11-27 09:10:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "0-2"
   }
  ],
  "jogos_na_pagina": 100

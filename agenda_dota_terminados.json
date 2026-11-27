@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-27T11:24:03+00:00",
+ "atualizado_em": "2026-11-27T14:15:21+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -675,6 +675,16 @@
   {
    "time_a": "Yangon Galacticos",
    "time_b": "Cloud Rising",
+   "inicio_utc": "2026-11-26 07:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "Yangon Galacticos",
+   "time_b": "Cloud Rising",
    "inicio_utc": "2026-11-26 07:05:00+00",
    "bo": 3,
    "torneio": "EPL World SEA S20",
@@ -709,6 +719,16 @@
    "bo": 3,
    "torneio": "EPL Season 41",
    "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "1-2"
+  },
+  {
+   "time_a": "Execration",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-26 10:00:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
    "terminado": true,
    "placar": "1-2"
   },
@@ -821,6 +841,36 @@
    "pagina": "EPL/World Series/Southeast Asia/20",
    "terminado": true,
    "placar": "2-0"
+  },
+  {
+   "time_a": "Team Allied",
+   "time_b": "V",
+   "inicio_utc": "2026-11-27 09:10:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "PARIVISION",
+   "time_b": "Team Liquid",
+   "inicio_utc": "2026-11-27 09:55:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": true,
+   "placar": "1-2"
+  },
+  {
+   "time_a": "4ikibamboni",
+   "time_b": "Zero Tenacity",
+   "inicio_utc": "2026-11-27 12:00:00+00",
+   "bo": 3,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "0-2"
   }
  ]
 }

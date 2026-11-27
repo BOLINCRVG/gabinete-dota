@@ -1,8 +1,8 @@
 {
- "quando": "2026-11-27T11:24:14+00:00",
+ "quando": "2026-11-27T14:15:29+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
- "series_conferidas": 82,
+ "series_conferidas": 87,
  "faltando": [
   {
    "inicio": "2026-11-19T04:00:00+00:00",
@@ -114,6 +114,30 @@
    "b": "Cloud Rising",
    "liga": "EPL World SEA S20",
    "placar": "2-0",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T09:10:00+00:00",
+   "a": "Team Allied",
+   "b": "V",
+   "liga": "EPC Season 4",
+   "placar": "0-2",
+   "motivo": "time não reconhecido na base: Team Allied, V"
+  },
+  {
+   "inicio": "2026-11-27T09:55:00+00:00",
+   "a": "PARIVISION",
+   "b": "Team Liquid",
+   "liga": "BLAST SLAM IX",
+   "placar": "1-2",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T12:00:00+00:00",
+   "a": "4ikibamboni",
+   "b": "Zero Tenacity",
+   "liga": "EPC Season 4",
+   "placar": "0-2",
    "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   }
  ]
