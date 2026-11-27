@@ -1,8 +1,8 @@
 {
- "quando": "2026-11-26T20:50:50+00:00",
+ "quando": "2026-11-27T01:10:00+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
- "series_conferidas": 78,
+ "series_conferidas": 80,
  "faltando": [
   {
    "inicio": "2026-11-19T04:00:00+00:00",
@@ -91,6 +91,14 @@
    "liga": "EPC Season 4",
    "placar": "2-0",
    "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-26T18:10:00+00:00",
+   "a": "Team Synapse",
+   "b": "Team Allied",
+   "liga": "EPC Season 4",
+   "placar": "2-1",
+   "motivo": "time não reconhecido na base: Team Allied"
   }
  ]
 }
