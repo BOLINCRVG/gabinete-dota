@@ -1,5 +1,5 @@
 {
- "quando": "2026-11-27T04:30:48+00:00",
+ "quando": "2026-11-27T19:38:54+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
   "match_id": 9106691128,
@@ -28,20 +28,20 @@
  "GetMatchHistory_por_liga": {
   "20275": {
    "status": 200,
-   "partidas": 43,
-   "mais_novas_que_a_base": 0,
+   "partidas": 46,
+   "mais_novas_que_a_base": 12,
    "resultado": 1
   },
   "20277": {
    "status": 200,
-   "partidas": 50,
-   "mais_novas_que_a_base": 0,
+   "partidas": 52,
+   "mais_novas_que_a_base": 7,
    "resultado": 1
   },
   "20212": {
    "status": 200,
    "partidas": 50,
-   "mais_novas_que_a_base": 1,
+   "mais_novas_que_a_base": 5,
    "resultado": 1
   }
  },
@@ -68,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 8,
-  "com_scoreboard": 8,
+  "jogos": 19,
+  "com_scoreboard": 18,
   "estrutura_jogo": {
    "players": [
     {
@@ -88,19 +88,16 @@
    "dire_series_wins": "int",
    "series_type": "int",
    "scoreboard": {
-    "duration": "int",
+    "duration": "float",
     "roshan_respawn_timer": "int",
     "radiant": {
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "picks": [
-      "dict"
-     ],
-     "bans": [
-      "dict"
-     ],
      "players": [
+      "dict"
+     ],
+     "abilities": [
       "dict"
      ]
     },
@@ -108,59 +105,46 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "picks": [
-      "dict"
-     ],
-     "bans": [
-      "dict"
-     ],
      "players": [
+      "dict"
+     ],
+     "abilities": [
       "dict"
      ]
     }
    }
   },
-  "lidos_pelo_app": 4,
+  "lidos_pelo_app": 10,
   "exemplo_lido": {
-   "radiant": "BIZ GAMING",
-   "dire": "Mamutland",
+   "radiant": "",
+   "dire": "",
    "picks": [
     [
-     "123",
-     "30",
-     "97",
-     "32",
-     "145"
+     "72",
+     "120",
+     "41",
+     "31",
+     "99"
     ],
     [
-     "57",
-     "27",
-     "43",
-     "53",
-     "22"
+     "102",
+     "90",
+     "51",
+     "42",
+     "112"
     ]
    ],
    "bans": [
     [
-     "80",
-     "77",
-     "55",
-     "60",
-     "72",
-     "106",
-     "7"
+     "66",
+     "123"
     ],
     [
-     "100",
-     "87",
-     "135",
-     "16",
-     "86",
-     "13",
-     "39"
+     "81",
+     "131"
     ]
    ],
-   "duracao": 0.0
+   "duracao": 1050.333251953125
   }
  }
 }

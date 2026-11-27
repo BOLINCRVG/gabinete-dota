@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-26T20:03:53",
+ "gerado_em": "2026-11-27T19:55:28",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -402,9 +402,9 @@
   "20212": {
    "nome": "Esportsprocircuit",
    "tier": "excluded",
-   "partidas": 222,
-   "pct_pro": 33.6,
-   "ate": "2026-11-26",
+   "partidas": 227,
+   "pct_pro": 33.5,
+   "ate": "2026-11-27",
    "promovida": false,
    "motivo": "liga de nível mais baixo: 34% de times profissionais (corte: 50%)",
    "nivel_baixo": true
@@ -422,30 +422,29 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 375,
-   "pct_pro": 49.9,
-   "ate": "2026-11-26",
-   "promovida": false,
-   "motivo": "liga de nível mais baixo: 50% de times profissionais (corte: 50%)",
-   "nivel_baixo": true
+   "partidas": 387,
+   "pct_pro": 50.3,
+   "ate": "2026-11-27",
+   "promovida": true,
+   "motivo": "50% das participacoes sao de times do universo profissional (387 partidas; rodada 2)"
   },
   "20276": {
    "nome": "European Pro League  2026-2027 Season",
    "tier": "excluded",
-   "partidas": 91,
-   "pct_pro": 64.8,
-   "ate": "2026-11-26",
+   "partidas": 97,
+   "pct_pro": 67.0,
+   "ate": "2026-11-27",
    "promovida": true,
-   "motivo": "65% das participacoes sao de times do universo profissional (91 partidas; rodada 1)"
+   "motivo": "67% das participacoes sao de times do universo profissional (97 partidas; rodada 1)"
   },
   "20277": {
    "nome": "EPL World Series: Southeast Asia 2026-2027 Season",
    "tier": "excluded",
-   "partidas": 90,
-   "pct_pro": 57.8,
-   "ate": "2026-11-26",
+   "partidas": 97,
+   "pct_pro": 58.2,
+   "ate": "2026-11-27",
    "promovida": true,
-   "motivo": "58% das participacoes sao de times do universo profissional (90 partidas; rodada 2)"
+   "motivo": "58% das participacoes sao de times do universo profissional (97 partidas; rodada 2)"
   },
   "20334": {
    "nome": "NEXUS SERIES II",
@@ -766,7 +765,7 @@
   },
   "20450": {
    "nome": "真神杯",
-   "ids": 1,
+   "ids": 6,
    "time_pro": false
   },
   "20449": {
@@ -876,7 +875,7 @@
   },
   "20424": {
    "nome": "Narod streamers",
-   "ids": 0,
+   "ids": 1,
    "time_pro": false
   },
   "20423": {
@@ -1021,7 +1020,7 @@
   },
   "20387": {
    "nome": "DPL #8",
-   "ids": 0,
+   "ids": 2,
    "time_pro": false
   },
   "20386": {
