@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-27T14:15:21+00:00",
+ "atualizado_em": "2026-11-27T17:00:01+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -863,12 +863,42 @@
    "placar": "1-2"
   },
   {
+   "time_a": "RyVex Esports",
+   "time_b": "Yangon Galacticos",
+   "inicio_utc": "2026-11-27 10:25:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "2-1"
+  },
+  {
    "time_a": "4ikibamboni",
    "time_b": "Zero Tenacity",
    "inicio_utc": "2026-11-27 12:00:00+00",
    "bo": 3,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "Team Synapse",
+   "time_b": "Power Rangers",
+   "inicio_utc": "2026-11-27 13:15:00+00",
+   "bo": 3,
+   "torneio": "EPL Season 41",
+   "pagina": "European Pro League/41",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "GamerLegion",
+   "time_b": "1w Team",
+   "inicio_utc": "2026-11-27 13:35:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
    "terminado": true,
    "placar": "0-2"
   }
