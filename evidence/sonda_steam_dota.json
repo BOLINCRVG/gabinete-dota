@@ -1,9 +1,9 @@
 {
- "quando": "2026-11-26T19:49:03+00:00",
+ "quando": "2026-11-27T04:30:48+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9105608424,
-  "data": "2026-11-25T21:32:50.000Z"
+  "match_id": 9106691128,
+  "data": "2026-11-26T18:47:58.000Z"
  },
  "estrutura_history": {
   "series_id": "int",
@@ -29,19 +29,19 @@
   "20275": {
    "status": 200,
    "partidas": 43,
-   "mais_novas_que_a_base": 15,
-   "resultado": 1
-  },
-  "20276": {
-   "status": 200,
-   "partidas": 55,
-   "mais_novas_que_a_base": 6,
-   "resultado": 1
-  },
-  "18631": {
-   "status": 200,
-   "partidas": 25,
    "mais_novas_que_a_base": 0,
+   "resultado": 1
+  },
+  "20277": {
+   "status": 200,
+   "partidas": 50,
+   "mais_novas_que_a_base": 0,
+   "resultado": 1
+  },
+  "20212": {
+   "status": 200,
+   "partidas": 50,
+   "mais_novas_que_a_base": 1,
    "resultado": 1
   }
  },
@@ -68,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 25,
-  "com_scoreboard": 24,
+  "jogos": 8,
+  "com_scoreboard": 8,
   "estrutura_jogo": {
    "players": [
     {
@@ -78,12 +78,6 @@
      "team": "int"
     }
    ],
-   "radiant_team": {
-    "team_name": "str",
-    "team_id": "int",
-    "team_logo": "int",
-    "complete": "bool"
-   },
    "lobby_id": "int",
    "match_id": "int",
    "spectators": "int",
@@ -94,16 +88,19 @@
    "dire_series_wins": "int",
    "series_type": "int",
    "scoreboard": {
-    "duration": "float",
+    "duration": "int",
     "roshan_respawn_timer": "int",
     "radiant": {
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "picks": [
       "dict"
      ],
-     "abilities": [
+     "bans": [
+      "dict"
+     ],
+     "players": [
       "dict"
      ]
     },
@@ -111,56 +108,59 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "picks": [
       "dict"
      ],
-     "abilities": [
+     "bans": [
+      "dict"
+     ],
+     "players": [
       "dict"
      ]
     }
    }
   },
-  "lidos_pelo_app": 17,
+  "lidos_pelo_app": 4,
   "exemplo_lido": {
-   "radiant": "New Manik",
-   "dire": "AloneWolf01",
+   "radiant": "BIZ GAMING",
+   "dire": "Mamutland",
    "picks": [
     [
-     "102",
-     "26",
-     "65",
-     "68",
-     "87"
+     "123",
+     "30",
+     "97",
+     "32",
+     "145"
     ],
     [
-     "13",
-     "137",
-     "93",
-     "40",
-     "79"
+     "57",
+     "27",
+     "43",
+     "53",
+     "22"
     ]
    ],
    "bans": [
     [
-     "50",
-     "7",
-     "37",
-     "38",
-     "69",
-     "15",
-     "60"
+     "80",
+     "77",
+     "55",
+     "60",
+     "72",
+     "106",
+     "7"
     ],
     [
-     "21",
-     "131",
-     "77",
-     "71",
-     "1",
-     "76",
-     "126"
+     "100",
+     "87",
+     "135",
+     "16",
+     "86",
+     "13",
+     "39"
     ]
    ],
-   "duracao": 1263.366943359375
+   "duracao": 0.0
   }
  }
 }
