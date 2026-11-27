@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-27T04:29:28+00:00",
+ "atualizado_em": "2026-11-27T11:24:03+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -801,6 +801,26 @@
    "pagina": "European Pro League/41",
    "terminado": true,
    "placar": "1-2"
+  },
+  {
+   "time_a": "Yangon Galacticos",
+   "time_b": "Resp Gaming",
+   "inicio_utc": "2026-11-27 04:15:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "2-0"
+  },
+  {
+   "time_a": "Direborn Esports",
+   "time_b": "Cloud Rising",
+   "inicio_utc": "2026-11-27 07:10:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "2-0"
   }
  ]
 }

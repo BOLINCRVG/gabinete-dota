@@ -1,8 +1,8 @@
 {
- "quando": "2026-11-27T04:56:27+00:00",
+ "quando": "2026-11-27T11:24:14+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
- "series_conferidas": 80,
+ "series_conferidas": 82,
  "faltando": [
   {
    "inicio": "2026-11-19T04:00:00+00:00",
@@ -99,6 +99,22 @@
    "liga": "EPC Season 4",
    "placar": "2-1",
    "motivo": "time não reconhecido na base: Team Allied"
+  },
+  {
+   "inicio": "2026-11-27T04:15:00+00:00",
+   "a": "Yangon Galacticos",
+   "b": "Resp Gaming",
+   "liga": "EPL World SEA S20",
+   "placar": "2-0",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T07:10:00+00:00",
+   "a": "Direborn Esports",
+   "b": "Cloud Rising",
+   "liga": "EPL World SEA S20",
+   "placar": "2-0",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   }
  ]
 }
