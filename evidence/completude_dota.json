@@ -1,8 +1,8 @@
 {
- "quando": "2026-11-27T17:00:12+00:00",
+ "quando": "2026-11-27T20:17:37+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
- "series_conferidas": 90,
+ "series_conferidas": 94,
  "faltando": [
   {
    "inicio": "2026-11-19T04:00:00+00:00",
@@ -157,12 +157,44 @@
    "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
   },
   {
+   "inicio": "2026-11-27T13:30:00+00:00",
+   "a": "GamerLegion",
+   "b": "1w Team",
+   "liga": "BLAST SLAM IX",
+   "placar": "0-2",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
    "inicio": "2026-11-27T13:35:00+00:00",
    "a": "GamerLegion",
    "b": "1w Team",
    "liga": "BLAST SLAM IX",
    "placar": "0-2",
    "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T15:55:00+00:00",
+   "a": "PARIVISION",
+   "b": "Aurora Gaming",
+   "liga": "BLAST SLAM IX",
+   "placar": "2-1",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T16:00:00+00:00",
+   "a": "Team Spirit Academy",
+   "b": "Power Rangers",
+   "liga": "EPL Season 41",
+   "placar": "0-2",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-27T18:00:00+00:00",
+   "a": "Troll Division",
+   "b": "RyVex Esports",
+   "liga": "EPC Season 4",
+   "placar": "",
+   "motivo": "time não reconhecido na base: Troll Division"
   }
  ]
 }
