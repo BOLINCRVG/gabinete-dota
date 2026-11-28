@@ -1,5 +1,5 @@
 {
- "atualizado_em": "2026-11-28T12:19:34+00:00",
+ "atualizado_em": "2026-11-28T15:51:03+00:00",
  "fonte": "Liquipedia (CC-BY-SA): Liquipedia:Matches",
  "series": [
   {
@@ -936,6 +936,46 @@
    "time_a": "Troll Division",
    "time_b": "RyVex Esports",
    "inicio_utc": "2026-11-27 18:00:00+00",
+   "bo": null,
+   "torneio": "EPC Season 4",
+   "pagina": "Esports Pro Circuit/4",
+   "terminado": true,
+   "placar": ""
+  },
+  {
+   "time_a": "Cloud Rising",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-28 04:10:00+00",
+   "bo": 3,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "1-2"
+  },
+  {
+   "time_a": "Direborn Esports",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-28 08:30:00+00",
+   "bo": 5,
+   "torneio": "EPL World SEA S20",
+   "pagina": "EPL/World Series/Southeast Asia/20",
+   "terminado": true,
+   "placar": "3-1"
+  },
+  {
+   "time_a": "Team Yandex",
+   "time_b": "Team Liquid",
+   "inicio_utc": "2026-11-28 11:30:00+00",
+   "bo": 3,
+   "torneio": "BLAST SLAM IX",
+   "pagina": "BLAST/SLAM/9",
+   "terminado": true,
+   "placar": "0-2"
+  },
+  {
+   "time_a": "Old blood",
+   "time_b": "RyVex Esports",
+   "inicio_utc": "2026-11-28 12:00:00+00",
    "bo": null,
    "torneio": "EPC Season 4",
    "pagina": "Esports Pro Circuit/4",

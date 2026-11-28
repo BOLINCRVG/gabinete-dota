@@ -1,8 +1,8 @@
 {
- "quando": "2026-11-28T12:19:47+00:00",
+ "quando": "2026-11-28T15:51:13+00:00",
  "fonte": "Liquipedia:Matches",
  "janela_dias": 21,
- "series_conferidas": 94,
+ "series_conferidas": 98,
  "faltando": [
   {
    "inicio": "2026-11-19T04:00:00+00:00",
@@ -123,6 +123,38 @@
    "liga": "EPC Season 4",
    "placar": "",
    "motivo": "time não reconhecido na base: Troll Division"
+  },
+  {
+   "inicio": "2026-11-28T04:10:00+00:00",
+   "a": "Cloud Rising",
+   "b": "RyVex Esports",
+   "liga": "EPL World SEA S20",
+   "placar": "1-2",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-28T08:30:00+00:00",
+   "a": "Direborn Esports",
+   "b": "RyVex Esports",
+   "liga": "EPL World SEA S20",
+   "placar": "3-1",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-28T11:30:00+00:00",
+   "a": "Team Yandex",
+   "b": "Team Liquid",
+   "liga": "BLAST SLAM IX",
+   "placar": "0-2",
+   "motivo": "não está na base (a coleta da OpenDota ainda não trouxe)"
+  },
+  {
+   "inicio": "2026-11-28T12:00:00+00:00",
+   "a": "Old blood",
+   "b": "RyVex Esports",
+   "liga": "EPC Season 4",
+   "placar": "",
+   "motivo": "a Liquipedia não tem placar desta série (provável W.O. ou adiada) — sem jogo para coletar"
   }
  ]
 }
