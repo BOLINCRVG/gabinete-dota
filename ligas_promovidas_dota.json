@@ -1,6 +1,6 @@
 {
  "_como": "ligas que a OpenDota marca fora de professional/premium; promovida = entra no produto como professional (ligas_dota.classificar). acompanhar = ligas cujas partidas o robo traz pelo /leagues/{id}/matchIds. julgadas = ligas ja olhadas pela varredura.",
- "gerado_em": "2026-11-27T19:55:28",
+ "gerado_em": "2026-11-28T04:24:08",
  "ligas": {
   "16110": {
    "nome": "Dota 2 Space League",
@@ -422,11 +422,11 @@
   "20275": {
    "nome": "Ultras Dota Pro League  2026-2027",
    "tier": "excluded",
-   "partidas": 387,
-   "pct_pro": 50.3,
+   "partidas": 390,
+   "pct_pro": 50.1,
    "ate": "2026-11-27",
    "promovida": true,
-   "motivo": "50% das participacoes sao de times do universo profissional (387 partidas; rodada 2)"
+   "motivo": "50% das participacoes sao de times do universo profissional (390 partidas; rodada 2)"
   },
   "20276": {
    "nome": "European Pro League  2026-2027 Season",

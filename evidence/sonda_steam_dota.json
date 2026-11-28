@@ -1,9 +1,9 @@
 {
- "quando": "2026-11-27T19:38:54+00:00",
+ "quando": "2026-11-28T04:12:35+00:00",
  "tem_chave": true,
  "ultimo_jogo_na_base": {
-  "match_id": 9106691128,
-  "data": "2026-11-26T18:47:58.000Z"
+  "match_id": 9107983470,
+  "data": "2026-11-27T18:46:33.000Z"
  },
  "estrutura_history": {
   "series_id": "int",
@@ -26,22 +26,22 @@
   ]
  },
  "GetMatchHistory_por_liga": {
-  "20275": {
-   "status": 200,
-   "partidas": 46,
-   "mais_novas_que_a_base": 12,
-   "resultado": 1
-  },
   "20277": {
    "status": 200,
    "partidas": 52,
-   "mais_novas_que_a_base": 7,
+   "mais_novas_que_a_base": 0,
+   "resultado": 1
+  },
+  "20275": {
+   "status": 200,
+   "partidas": 44,
+   "mais_novas_que_a_base": 2,
    "resultado": 1
   },
   "20212": {
    "status": 200,
    "partidas": 50,
-   "mais_novas_que_a_base": 5,
+   "mais_novas_que_a_base": 0,
    "resultado": 1
   }
  },
@@ -68,8 +68,8 @@
  },
  "GetLiveLeagueGames": {
   "status": 200,
-  "jogos": 19,
-  "com_scoreboard": 18,
+  "jogos": 8,
+  "com_scoreboard": 7,
   "estrutura_jogo": {
    "players": [
     {
@@ -88,16 +88,16 @@
    "dire_series_wins": "int",
    "series_type": "int",
    "scoreboard": {
-    "duration": "float",
+    "duration": "int",
     "roshan_respawn_timer": "int",
     "radiant": {
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "bans": [
       "dict"
      ],
-     "abilities": [
+     "players": [
       "dict"
      ]
     },
@@ -105,46 +105,56 @@
      "score": "int",
      "tower_state": "int",
      "barracks_state": "int",
-     "players": [
+     "bans": [
       "dict"
      ],
-     "abilities": [
+     "players": [
       "dict"
      ]
     }
    }
   },
-  "lidos_pelo_app": 10,
+  "lidos_pelo_app": 4,
   "exemplo_lido": {
-   "radiant": "",
+   "radiant": "Los ronderos de Castillo",
    "dire": "",
    "picks": [
     [
-     "72",
-     "120",
-     "41",
-     "31",
-     "99"
+     "35",
+     "48",
+     "105",
+     "108",
+     "86"
     ],
     [
-     "102",
-     "90",
-     "51",
-     "42",
-     "112"
+     "15",
+     "7",
+     "60",
+     "27",
+     "121"
     ]
    ],
    "bans": [
     [
-     "66",
-     "123"
+     "16",
+     "19",
+     "31",
+     "135",
+     "78",
+     "36",
+     "90"
     ],
     [
-     "81",
-     "131"
+     "123",
+     "119",
+     "45",
+     "71",
+     "93",
+     "126",
+     "106"
     ]
    ],
-   "duracao": 1050.333251953125
+   "duracao": 1990.8333740234375
   }
  }
 }

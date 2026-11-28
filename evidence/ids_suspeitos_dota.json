@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-11-27T20:31:09",
+ "gerado_em": "2026-11-28T04:32:19",
  "suspeitos": [
   {
    "velho": "La Passion #9939126",
@@ -11,6 +11,18 @@
    "jogadores_iguais": 5,
    "velho_ate": "01/08/2026",
    "novo_desde": "01/08/2026",
+   "por_que_nao_uni": "jogaram ao mesmo tempo"
+  },
+  {
+   "velho": "KIRIN #10331778",
+   "novo": "KIRIN",
+   "ids": [
+    10331417,
+    10331778
+   ],
+   "jogadores_iguais": 5,
+   "velho_ate": "24/11/2026",
+   "novo_desde": "24/11/2026",
    "por_que_nao_uni": "jogaram ao mesmo tempo"
   },
   {
